@@ -1,7 +1,7 @@
 #pragma once
 #include <cmath>
 #include <iostream>
-#define phi (1.0f + sqrt(5.0f))*0.5f
+#define phi (1.0 + sqrt(5.0))*0.5
 
 typedef double(*func)(const double);
 

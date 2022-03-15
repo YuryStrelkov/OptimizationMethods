@@ -202,3 +202,67 @@ static double partial2(func_n func, vec_n& x, const int coord_index_1, const int
 	x[coord_index_2] -= eps;
 	return (f_r - f_l) / eps * 0.5f;
 }
+
+static double max(vec_n& x, int& index) 
+{
+	double max_ = x[0];
+	int i = 0;
+	for (auto& const x_i : x) 
+	{
+		if (x_i > max_) 
+		{
+			max_ = x_i;
+			index = i;
+		}
+		i++;
+	}
+	return max_;
+}
+
+static double min(vec_n& x, int& index)
+{
+	double min_ = x[0];
+	int i = 0;
+	for (auto& const x_i : x)
+	{
+		if (x_i < min_)
+		{
+			min_ = x_i;
+			index = i;
+		}
+		i++;
+	}
+	return min_;
+}
+
+static double abs_max(vec_n& x, int& index)
+{
+	double max_ = abs(x[0]);
+	int i = 0;
+	for (auto& const x_i : x)
+	{
+		if (abs(x_i) > max_)
+		{
+			max_ = abs(x_i);
+			index = i;
+		}
+		i++;
+	}
+	return max_;
+}
+
+static double abs_min(vec_n& x, int& index)
+{
+	double min_ = abs(x[0]);
+	int i = 0;
+	for (auto& const x_i : x)
+	{
+		if (abs(x_i) < min_)
+		{
+			min_ = abs(x_i);
+			index = i;
+		}
+		i++;
+	}
+	return min_;
+}

@@ -265,6 +265,7 @@ static vec_n newtone_raphson(func_n f, const vec_n& x_start, const double eps = 
 #endif
 	return (x_i_1 + x_i) * 0.5f;
 }
+ 
 
 /// <summary>
 /// Âûחûגאועסÿ ג main

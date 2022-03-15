@@ -303,7 +303,10 @@ static vec_n linsolve(const mat_mn& mat, const vec_n& b)
 
 	int cols = mat[0].size();
 
-	assert(rows == cols, "non square matrix");
+	if (rows != cols)
+	{
+		throw std::runtime_error("error :: matrix inversion :: non square matrix");
+	}
 
 	mat_mn low, up;
 
@@ -354,6 +357,97 @@ static mat_mn invert(const mat_mn& mat)
 		}
 	}
 	return inv;
+}
+const double mat_eps = 1E-9;
+
+mat_mn& add_row(mat_mn& mat, const vec_n& row)
+{
+	if (mat.size() == 0)
+	{
+		mat.push_back(row);
+		return mat;
+	}
+	if (mat[0].size() != row.size())
+	{
+		throw std::runtime_error("error :: add_row");
+	}
+	mat.push_back(row);
+	return mat;
+}
+
+mat_mn& add_col(mat_mn& mat, const vec_n& col)
+{
+	if (mat.size() == 0)
+	{
+		for (int i = 0;i < col.size(); i++)
+		{
+			mat.push_back(vec_n());
+			mat[i].push_back(col[i]);
+		}
+		return mat;
+	}
+	if (mat.size() != col.size())
+	{
+		throw std::runtime_error("error :: add_col");
+	}
+	for (int i = 0; i < col.size(); i++)
+	{
+		mat[i].push_back(col[i]);
+	}
+	return mat;
+}
+
+int rank(mat_mn& A)
+{
+	int n = A.size();
+
+	int m = A[0].size();
+
+	int rank = 0;
+
+	std::vector<bool> row_selected(n, false);
+
+	for (int i = 0; i < m; i++)
+	{
+		int j;
+		for (j = 0; j < n; j++)
+		{
+			if (!row_selected[j] && abs(A[j][i]) > mat_eps)
+			{
+				break;
+			}
+		}
+
+		if (j != n)
+		{
+			++rank;
+
+			row_selected[j] = true;
+
+			for (int p = i + 1; p < m; p++)
+			{
+				A[j][p] /= A[j][i];
+			}
+
+			for (int k = 0; k < n; k++)
+			{
+				if (k != j && abs(A[k][i]) > mat_eps)
+				{
+					for (int p = i + 1; p < m; p++)
+					{
+						A[k][p] -= A[j][p] * A[k][i];
+					}
+				}
+			}
+		}
+	}
+	return rank;
+}
+
+int rank(const mat_mn& a)
+{
+	mat_mn A = a;
+	return rank(A);
 }
 
 // тестовая унимодальна двумерная функция с минимумом в точке {2,2,2} 
