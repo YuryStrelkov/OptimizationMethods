@@ -9,11 +9,6 @@
 #define N_DIM_ACCURACY 1e-6
 #define N_DIM_ITERS_MAX 1000
 
-// тестовая унимодальна двумерная функция с минимумом в точке {2,2} 
-static double test_function(const vec_n& args)
-{
-	return  (args[0] - 2) * (args[0] - 2) + (args[1] - 2) * (args[1] - 2);
-}
 // Методы n-мерной дихотомии, золотого сечения и Фибоначчи определяют минимум строго вдоль направления из  x_0 в x_1
 // т.е., если истинный минимум функции на этом направлении не лежит, метод всё равно найдёт минимальное значение, но оно 
 // будет отличаться от истинного минимума
@@ -117,13 +112,23 @@ static vec_n fibonacci(func_n f, const vec_n& x_0, const vec_n& x_1, const doubl
 // Покоординатный спуск, градиентный спуск и спуск с помощью сопряжённых градиентов, определяют
 // минимальное значение функции только по одной начальной точке x_start.
 // Поэтому не зависят от выбора направления.
+
 static vec_n per_coord_descend(func_n f, const vec_n& x_start, const double eps = N_DIM_ACCURACY, const int max_iters = N_DIM_ITERS_MAX)
 {
 	int cntr = 0;
+	
 	vec_n x_0(x_start);
+	
 	vec_n x_1(x_start);
+
 	double step = 1.0f;
+	
+	double x_i;
+
+	int opt_coord_n = 0;
+
 	double y_1, y_0;
+	
 	while (true)
 	{
 		for (int i = 0; i < x_0.size(); i++)
@@ -132,34 +137,46 @@ static vec_n per_coord_descend(func_n f, const vec_n& x_start, const double eps 
 			if (cntr == max_iters)
 			{
 #if _DEBUG
-				std::cout << "gradient descend iterations number : " << cntr << "\n";
+				std::cout << "per coord descend iterations number : " << cntr << "\n";
 #endif
 				return x_0;
 			}
-		
+
 			x_1[i] -= eps;
+			
 			y_0     = f(x_1);
-			x_1[i] += 2 *eps;
+			
+			x_1[i] += 2 * eps;
+			
 			y_1     = f(x_1);
+
 			x_1[i] -= eps;
 
-			if (y_0 > y_1)
-			{
-				x_1[i] += step;
-			}
-			else
-			{
-				x_1[i] -= step;
-			}
+			x_1[i] = y_0 > y_1 ? x_1[i] += step : x_1[i] -= step;
+
+			x_i = x_0[i];
+
 			x_1 = dihotomia(f, x_0, x_1, eps, max_iters);
-			if (magnitude(x_1 - x_0) < eps) 
-			{
 #if _DEBUG
-				std::cout << "gradient_descend iterations number : " << cntr << "\n";
+			std::cout << "x_0 " << x_0 << std::endl;
+			std::cout << "x_1 " << x_1 << std::endl;
 #endif
-				return x_0;
-			}
 			x_0 = x_1;
+
+			if (abs(x_1[i] - x_i) < eps)
+			{
+				opt_coord_n++;
+
+				if (opt_coord_n == x_1.size())
+				{
+#if _DEBUG
+					std::cout << "per coord descend iterations number : " << cntr << "\n";
+#endif
+					return x_0;
+				}
+				continue;
+			}
+			opt_coord_n = 0;
 		}
 	}
 }
@@ -270,23 +287,3 @@ static vec_n newtone_raphson(func_n f, const vec_n& x_start, const double eps = 
 /// <summary>
 /// Вызывается в main
 /// </summary>
-static void multi_dimensional_methods_test()
-{
-	vec_n x_0 = { 0,0 };
-	vec_n x_1 = { 5,5 };
-	
-	std::cout << "\n";
-	std::cout << "{ x, y } = agrmin((x - 2) * (x - 2) + (y - 2) * (y - 2))\n";
-	std::cout << "x_0 = " << x_0 << ", x_1 = " << x_1 << "\n";
-	std::cout << "dihotomia             : " << dihotomia   (test_function, x_1, x_0, 1e-3f) << "\n";
-	std::cout << "golden_ratio          : " << golden_ratio(test_function, x_1, x_0, 1e-3f) << "\n";
-	std::cout << "fibonacci             : " << fibonacci  (test_function,  x_1, x_0, 1e-3f) << "\n";
-	std::cout << "\n";
-	vec_n x_start = {-14,3.98f};
-
-	std::cout << "x_start = " << x_start << "\n";
-	std::cout << "per_coord_descend     : " << per_coord_descend    (test_function,   x_start,     1e-5f) << "\n";
-	std::cout << "gradient_descend      : " << gradient_descend     (test_function,   x_start,     1e-5f) << "\n";
-	std::cout << "conj_gradient_descend : " << conj_gradient_descend(test_function,   x_start,     1e-5f) << "\n";
-	std::cout << "newtone_raphson       : " << newtone_raphson      (test_function_3, {-2, 6, 12}, 1e-5f) << "\n";
-}

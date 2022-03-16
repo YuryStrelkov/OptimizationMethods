@@ -5,11 +5,6 @@
 
 typedef double(*func)(const double);
 
-static double test_f(const double arg) 
-{
-	return arg * (arg - 5);
-}
-
 static double dihotomia(func f, const double x_0, const double x_1, const double eps = 1e-6f, const int max_iters = 1000)
 {
 	double x_0_ = x_0 , x_1_ = x_1, x_c = 0.0f;
@@ -150,20 +145,6 @@ static double fibonacci(func f, const double x_0, const double x_1, const double
 	std::cout << "fibonacchi iterations number : " << cntr << "\n";
 #endif
 	return (x_1_ + x_0_) * 0.5f;
-}
-/// <summary>
-/// Âûחûגאועסÿ ג main
-/// </summary>
-static void  one_dimensional_methods_test()
-{
-	double x_0 =  10;
-	double x_1 = -1;
-	std::cout << "\n";
-	std::cout << "x = agrmin(x * (x - 5))\n";
-	std::cout << "x_0 = " << x_0 << ", x_1 = " << x_1 << "\n";
-	std::cout << "dihotomia   : " << dihotomia   (test_f, x_0, x_1, 1e-3f) << "\n";
-	std::cout << "golden_ratio: " << golden_ratio(test_f, x_0, x_1, 1e-3f) << "\n";
-	std::cout << "fibonacci   : " << fibonacci   (test_f, x_0, x_1, 1e-3f) << "\n";
 }
 
 

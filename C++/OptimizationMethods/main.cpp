@@ -1,11 +1,89 @@
-#include "one_dimensional.h";
-#include "multi_dimensional.h";
-#include "matrix_utils.h"
+#include "test.h";
+
+////////////////////
+/// Lab. work #1 ///
+////////////////////
+
+static double test_func(const double x)
+{
+	return (x - 5) * x; // min at point x = 2.5
+}
+
+static void  lab_1(func f)
+{
+	std::cout << "\n////////////////////\n";
+	std::cout <<   "/// Lab. work #1 ///\n";
+	std::cout <<   "////////////////////\n\n";
+	
+	double x_0 = 10;
+	double x_1 = -1;
+	std::cout << "x_0 = " << x_0 << ", x_1 = " << x_1 << "\n";
+	std::cout << "dihotomia   : " << dihotomia   (f, x_0, x_1, 1e-3) << "\n";
+	std::cout << "golden_ratio: " << golden_ratio(f, x_0, x_1, 1e-3) << "\n";
+	std::cout << "fibonacci   : " << fibonacci   (f, x_0, x_1, 1e-3) << "\n";
+}
+
+////////////////////
+/// Lab. work #2 ///
+////////////////////
+
+static double test_func_2(const vec_n& x)
+{
+	return (x[0] - 5) * x[0] + (x[1] - 3) * x[1]; // min at point x = 2.5, y = 1.5
+}
+static void  lab_2(func_n f)
+{
+	std::cout << "\n////////////////////\n";
+	std::cout <<   "/// Lab. work #2 ///\n";
+	std::cout <<   "////////////////////\n\n";
+	
+	vec_n x_0 = { 0,0 };
+	vec_n x_1 = { 5,3 };
+
+	std::cout << "{ x, y } = agrmin((x - 2) * (x - 2) + (y - 2) * (y - 2))\n";
+	std::cout << "x_0 = " << x_0 << ", x_1 = " << x_1 << "\n";
+	///  Для реализации по-координтаного спуска необходимо реализовать один из следующих трех методов для работы с vec_n
+	std::cout << "dihotomia             : " << dihotomia   (f, x_1, x_0, 1e-3f) << "\n";
+	std::cout << "golden_ratio          : " << golden_ratio(f, x_1, x_0, 1e-3f) << "\n";
+	std::cout << "fibonacci             : " << fibonacci   (f, x_1, x_0, 1e-3f) << "\n";
+	std::cout << "\n";
+
+	vec_n x_start = { -14, -33.98f };
+	std::cout << "x_start = " << x_start << "\n";
+	std::cout << "per_coord_descend     : " << per_coord_descend    (f, x_start, 1e-5) << "\n";
+}
+
+////////////////////
+/// Lab. work #3 ///
+////////////////////
+
+static void  lab_3(func_n f)
+{
+	std::cout << "\n////////////////////\n";
+	std::cout <<   "/// Lab. work #3 ///\n";
+	std::cout <<   "////////////////////\n\n";
+	vec_n x_start = { -4.0, 3.98 };
+	std::cout << "x_start = " << x_start << "\n";
+	std::cout << "gradient_descend      : " << gradient_descend     (f, x_start, 1e-5) << "\n";
+	std::cout << "conj_gradient_descend : " << conj_gradient_descend(f, x_start, 1e-5) << "\n";
+}
+
+////////////////////
+/// Lab. work #4 ///
+////////////////////
+
+static void  lab_4(func_n f)
+{
+	std::cout << "\n////////////////////\n";
+	std::cout <<   "/// Lab. work #4 ///\n";
+	std::cout <<   "////////////////////\n\n";
+}
 
 int main()
 {
-	one_dimensional_methods_test();
-	multi_dimensional_methods_test();
-	matrix_test();
+	lab_1(  test_func);
+	lab_2(test_func_2);
+	lab_3(test_func_2);
+	lab_4(test_func_2);
 	return 0;
 }
