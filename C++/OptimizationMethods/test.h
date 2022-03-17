@@ -2,6 +2,7 @@
 #include "one_dimensional.h";
 #include "multi_dimensional.h";
 #include "matrix_utils.h"
+#include "symplex.h"
 
 // тестовая унимодальная одномерная функция с минимумом в точке {2} 
 static double test_function_1d(const double x)
@@ -96,10 +97,24 @@ static void matrix_test()
 	std::cout << hessian(test_function_nd, x_) << "\n";
 }
 
+static void symplex_method_test()
+{
+	mat_mn A = 
+	{ {-2, 6},
+	  { 3, 2},
+	  { 2,-1}};
+	vec_n  b = {40, 28, 14};
+	vec_n  c = {2, 3};
+	///write_symplex(A, b, c);
+	symplex_solve(A, c, b, {-1, -1, -1});
+
+}
+
 static int test_all()
 {
-	one_dimensional_methods_test();
-	multi_dimensional_methods_test();
-	matrix_test();
+	//  one_dimensional_methods_test();
+	//	multi_dimensional_methods_test();
+	//	matrix_test();
+	symplex_method_test();
 	return 0;
 }

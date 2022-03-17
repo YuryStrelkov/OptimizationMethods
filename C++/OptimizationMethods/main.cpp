@@ -31,6 +31,7 @@ static double test_func_2(const vec_n& x)
 {
 	return (x[0] - 5) * x[0] + (x[1] - 3) * x[1]; // min at point x = 2.5, y = 1.5
 }
+
 static void  lab_2(func_n f)
 {
 	std::cout << "\n////////////////////\n";
@@ -62,7 +63,7 @@ static void  lab_3(func_n f)
 	std::cout << "\n////////////////////\n";
 	std::cout <<   "/// Lab. work #3 ///\n";
 	std::cout <<   "////////////////////\n\n";
-	vec_n x_start = { -4.0, 3.98 };
+	vec_n x_start = { -14, -33.98f };
 	std::cout << "x_start = " << x_start << "\n";
 	std::cout << "gradient_descend      : " << gradient_descend     (f, x_start, 1e-5) << "\n";
 	std::cout << "conj_gradient_descend : " << conj_gradient_descend(f, x_start, 1e-5) << "\n";
@@ -81,9 +82,10 @@ static void  lab_4(func_n f)
 
 int main()
 {
-	lab_1(  test_func);
+/*	lab_1(  test_func);
 	lab_2(test_func_2);
 	lab_3(test_func_2);
-	lab_4(test_func_2);
+	lab_4(test_func_2);*/
+	test_all();
 	return 0;
 }
