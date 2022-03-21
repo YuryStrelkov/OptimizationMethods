@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
 
@@ -10,13 +11,13 @@ namespace OptimizationMethods
         /// <summary>
         /// Массив элементов
         /// </summary>
-        private double[] data;
+        private List<double> data;
         /// <summary>
         /// Размерность вектора
         /// </summary>
         public int Size
         {
-            get { return data.Length; }
+            get { return data.Count; }
         }
 
         /// <summary>
@@ -265,9 +266,22 @@ namespace OptimizationMethods
             {
                 return;
             }
-            double[] data_ = new double[size];
-            Array.Copy(data, data_, Math.Min(size, Size));
-            data = data_;
+
+            if (size > Size)
+            {
+                for (int i = 0; i < size - Size; i++)
+                {
+                    data.Add(0.0);
+                }
+                return;
+            }
+
+            data.RemoveRange(size, Size);
+        }
+
+        public void PushBack(double val)
+        {
+            data.Add(val);
         }
         /// <summary>
         /// Строковое представление вектора
@@ -276,11 +290,11 @@ namespace OptimizationMethods
         public override string ToString()
         {
             string s = "{ ";
-            for (int i = 0; i < data.Length - 1; i++)
+            for (int i = 0; i < data.Count - 1; i++)
             {
-                s += string.Format("{0,6:F}, ", data[i]);// .ToString();
+                s += string.Format("{0,0}, ", String.Format("{0:0.000}", data[i]));// .ToString();
             }
-            s += string.Format("{0,6:F}", data[data.Length - 1]);// data[data.Length - 1].ToString();
+            s += string.Format("{0,0}", String.Format("{0:0.000}", data[data.Count - 1]));// data[data.Length - 1].ToString();
             s += " }";
             return s;
         }
@@ -347,7 +361,7 @@ namespace OptimizationMethods
         /// <param name="_data"></param>
         public Vector(double[] _data)
         {
-            data = _data;
+            data = new List<double>(_data);
         }
         /// <summary>
         /// Конструктор вектора по размеру и элементу по умолчанию
@@ -356,10 +370,10 @@ namespace OptimizationMethods
         /// <param name="defaultValue"></param>
         public Vector(int size, double defaultValue = 0.0f)
         {
-            data = new double[size];
+            data = new List<double>(size);
             for (int i = 0; i < size; i++)
             {
-                data[i] = defaultValue;
+                data.Add(defaultValue);
             }
         }
         /// <summary>
@@ -368,8 +382,7 @@ namespace OptimizationMethods
         /// <param name="vect"></param>
         public Vector(Vector vect)
         {
-            data = new double[vect.Size];
-            Array.Copy(vect.data, data, vect.Size);
+            data = new  List<double>(vect.data);
         }
     }
 }

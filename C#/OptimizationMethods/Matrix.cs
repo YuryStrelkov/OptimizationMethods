@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
 namespace OptimizationMethods
@@ -6,35 +7,9 @@ namespace OptimizationMethods
     public class Matrix : IEquatable<Matrix>
     {
         /// <summary>
-        /// проверка работоспособности класса
-        /// </summary>
-        public static void MatrixTest()
-        {
-            ///У меня всё работает, у вас мой класс тоже заработает
-            Matrix matrix = new Vector[] { new double[] { 8, 1, 6 }, new double[] { 3, 5, 7 }, new double[] { 4, 9, 2 } };
-            Console.WriteLine(matrix);
-            Console.WriteLine("\nmatrix + matrix:\n" + (matrix + matrix));
-            Console.WriteLine("\nmatrix - matrix:\n" + (matrix - matrix));
-            Console.WriteLine("\nmatrix * matrix:\n" + (matrix * matrix));
-            Matrix l, u;
-            LU(ref matrix, out l, out u);
-            Console.WriteLine("\nL  matrix:\n" + l);
-            Console.WriteLine("\nU  matrix:\n" + u);
-            Console.WriteLine("\nL * U - matrix:\n" + (l * u - matrix));
-            Vector b = new double[] { 1, 2, 3 };
-            /// x = {0.05,0.3,0.05};
-            Vector x = Linsolve(matrix, b);
-            Console.WriteLine("\nx vector:\n" + x);
-            Console.WriteLine("\nAx - b:\n" + (matrix * x - b));
-            Console.WriteLine("\nA*inv(A):\n" + matrix * Invert(matrix));
-            Matrix matrix_ = new Vector[] { new double[] { 8, 1, 6 }, new double[] { 3, 5, 7 }};
-            Console.WriteLine("\nnon rect mat:\n" + matrix_);
-            Console.WriteLine("\nnon rect mat mul by transposed it self :\n" + matrix_*Transpose(matrix_));
-        }
-        /// <summary>
         /// Массив строк матрицы
         /// </summary>
-        private Vector[] rows;
+        private List<Vector> rows;
         /// <summary>
         /// Позволяет при иницилизации экземпляра класса вместо:
         /// Vector [] rows = new Vector[] { new double[] { 8, 1}, new double[] { 3, 5}, new double[] { 4, 9} };
@@ -44,7 +19,7 @@ namespace OptimizationMethods
         /// </summary>
         /// <param name="rows"></param>
         public static implicit operator Matrix(Vector[] rows)
-        {   
+        {
             return new Matrix(rows);
         }
         /// <summary>
@@ -66,6 +41,63 @@ namespace OptimizationMethods
                 }
             }
             return res;
+        }
+
+        /// <summary>
+        /// Определят ранг матрицы
+        /// </summary>
+        /// <param name="A"></param>
+        /// <returns></returns>
+        public static int Rank(Matrix A)
+        {
+            int n = A.NRows;
+
+            int m = A.NCols;
+
+            int rank = 0;
+
+            bool[] row_selected = new bool[n];
+
+            for (int i = 0; i < row_selected.Length; i++)
+            {
+                row_selected[i] = false;
+            }
+
+            for (int i = 0; i < m; i++)
+            {
+                int j;
+                for (j = 0; j < n; j++)
+                {
+                    if (!row_selected[j] && Math.Abs(A[j][i]) > 1e-12)
+                    {
+                        break;
+                    }
+                }
+
+                if (j != n)
+                {
+                    ++rank;
+
+                    row_selected[j] = true;
+
+                    for (int p = i + 1; p < m; p++)
+                    {
+                        A[j][p] /= A[j][i];
+                    }
+
+                    for (int k = 0; k < n; k++)
+                    {
+                        if (k != j && Math.Abs(A[k][i]) > 1e-12)
+                        {
+                            for (int p = i + 1; p < m; p++)
+                            {
+                                A[k][p] -= A[j][p] * A[k][i];
+                            }
+                        }
+                    }
+                }
+            }
+            return rank;
         }
 
         /// <summary>
@@ -445,6 +477,29 @@ namespace OptimizationMethods
         }
 
 
+        public Matrix AddCol(Vector col)
+        {
+            if (col.Size != NRows)
+            {
+                throw new Exception("Error::AddCol::col.Size != NRows");
+            }
+            for (int i = 0; i < rows.Count; i++)
+            {
+                rows[i].PushBack(col[i]);
+            }
+            return this;
+        }
+
+        public Matrix AddRow(Vector row)
+        {
+            if (row.Size != NCols)
+            {
+                throw new Exception("Error::AddRow::row.Size != NCols");
+            }
+            rows.Add(row);
+            return this;
+        }
+
         /// <summary>
         /// Сравнение матриц
         /// </summary>
@@ -452,11 +507,11 @@ namespace OptimizationMethods
         /// <returns></returns>
         public bool Equals([AllowNull] Matrix other)
         {
-            if (other.rows.Length != rows.Length)
+            if (other.rows.Count != rows.Count)
             {
                 return false;
             }
-            for (int i = 0; i < rows.Length; i++)
+            for (int i = 0; i < rows.Count; i++)
             {
                 if (!other[i].Equals(this[i]))
                 {
@@ -493,12 +548,12 @@ namespace OptimizationMethods
         public override string ToString()
         {
             string s = "{\n";
-            for (int i = 0; i < rows.Length - 1; i++)
+            for (int i = 0; i < rows.Count - 1; i++)
             {
                 s += " " + rows[i].ToString();
                 s += ",\n";
             }
-            s += " " + rows[rows.Length - 1].ToString();
+            s += " " + rows[rows.Count - 1].ToString();
             s += "\n}";
             return s;
         }
@@ -525,7 +580,7 @@ namespace OptimizationMethods
         {
             get
             {
-                return rows.Length;
+                return rows.Count;
             }
         }
         /// <summary>
@@ -542,6 +597,15 @@ namespace OptimizationMethods
                 return rows[0].Size;
             }
         }
+
+        public List<Vector> Rows
+        {
+            get 
+            {
+                return rows;
+            }
+        }
+
         /// <summary>
         /// Рамерность матрицы
         /// </summary>
@@ -577,7 +641,7 @@ namespace OptimizationMethods
                     throw new Exception("Incorrect matrix data");
                 }
             }
-            this.rows = rows;
+            this.rows = new List<Vector>(rows);
         }
         /// <summary>
         /// Конструктор матрцы по ее размерам и элементу по умолчанию
@@ -587,11 +651,11 @@ namespace OptimizationMethods
         /// <param name="defualtVal">значение элементов матрицы по умолчанию</param>
         public Matrix(int n_rows, int n_cols, double defualtVal = 0.0f)
         {
-            rows = new Vector[n_rows];
+            rows = new List<Vector>(n_rows);
 
             for (int i = 0; i < n_rows; i++)
             {
-                rows[i] = new Vector(n_cols, defualtVal);
+                rows.Add(new Vector(n_cols, defualtVal));
             }
         }
         /// <summary>
@@ -600,11 +664,11 @@ namespace OptimizationMethods
         /// <param name="original"></param>
         public Matrix(Matrix original)
         {
-            rows = new Vector[original.rows.Length];
+            rows = new List<Vector>(original.rows.Count);
 
-            for (int i = 0; i < rows.Length; i++)
+            for (int i = 0; i < original.rows.Count; i++)
             {
-                rows[i] = new Vector(original.rows[i]);
+                rows.Add(new Vector(original.rows[i]));
             }
         }
     }

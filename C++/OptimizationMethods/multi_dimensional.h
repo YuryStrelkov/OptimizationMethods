@@ -157,10 +157,7 @@ static vec_n per_coord_descend(func_n f, const vec_n& x_start, const double eps 
 			x_i = x_0[i];
 
 			x_1 = dihotomia(f, x_0, x_1, eps, max_iters);
-#if _DEBUG
-			std::cout << "x_0 " << x_0 << std::endl;
-			std::cout << "x_1 " << x_1 << std::endl;
-#endif
+
 			x_0 = x_1;
 
 			if (abs(x_1[i] - x_i) < eps)

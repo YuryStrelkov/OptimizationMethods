@@ -5,6 +5,14 @@ namespace OptimizationMethods
     public delegate double func_1(double x);
     public static class OneDimensional
     {
+        ////////////////////
+        /// Lab. work #1 ///
+        ////////////////////
+        public static double TestFunc(double x)
+        {
+	        return (x - 5) * x; // min at point x = 2.5
+        }
+
         public static readonly double Phi = (1.0f + MathF.Sqrt(5.0f)) * 0.5f;
         static void Swap<T>(ref T lhs, ref T rhs)
         {
@@ -144,15 +152,6 @@ namespace OptimizationMethods
             Console.WriteLine("fibonacchi iterations number : " + cntr + "\n");
 #endif
             return (x_1 + x_0) * 0.5f;
-        }
-        public static void OneDimensionalMethodsTest(func_1 f)
-        {
-            const double x_0 = 10;
-            const double x_1 = -1;
-            Console.WriteLine("x_0 = " + x_0 + ", x_1 = " + x_1 + "\n");
-            Console.WriteLine("Dihotomia   : " + Dihotomia  (f, x_0, x_1, 1e-3f));
-            Console.WriteLine("GoldenRatio : " + GoldenRatio(f, x_0, x_1, 1e-3f));
-            Console.WriteLine("Fibonacchi  : " + Fibonacci  (f, x_0, x_1, 1e-3f)+ "\n");
         }
     }
 }

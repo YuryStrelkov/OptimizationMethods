@@ -73,11 +73,31 @@ static void  lab_3(func_n f)
 /// Lab. work #4 ///
 ////////////////////
 
+/// Пример применения функций штрафа
+/// Уловие 1
+static double psi1(const vec_n& args)
+{
+	return 1 / (5 - args[0] * 2 + args[1] * 3);
+}
+/// Уловие 1
+static double psi2(const vec_n& args)
+{
+	return 1 / (6 + args[0] * 3 - args[1]);
+}
+///Ишем минимум функции  Testf2 при условии Psi1 и Psi2(Это внутренний штраф)
+static double bouded_func(const vec_n& args)
+{
+	return test_func_2(args) + psi2(args) + psi1(args);
+}
 static void  lab_4(func_n f)
 {
 	std::cout << "\n////////////////////\n";
 	std::cout <<   "/// Lab. work #4 ///\n";
 	std::cout <<   "////////////////////\n\n";
+	vec_n x_start = { -14, -33.98f };
+	std::cout << "newtone_raphson       : " << newtone_raphson(f, x_start, 1e-5) << "\n";
+	//Поиск минимума функции при наличии функций штрафа
+	std::cout << "newtone_raphson       : " << newtone_raphson(bouded_func, x_start, 1e-5) << "\n";
 }
 
 int main()
@@ -86,6 +106,5 @@ int main()
 	lab_2(test_func_2);
 	lab_3(test_func_2);
 	lab_4(test_func_2);*/
-	test_all();
 	return 0;
 }

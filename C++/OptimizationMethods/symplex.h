@@ -34,10 +34,10 @@ static void write_symplex(const  mat_mn& A, const std::vector<int>& basis_args)
 	int i = 0;
 	for (;i < A[0].size() - 1; i++)
 	{
-		std::cout << std::left << std::setw(colom_w) << std::setfill(separator) << " x " + std::to_string(i + 1);
+		std::cout << std::left << std::setw(colom_w) << std::setfill(separator) << "| x " + std::to_string(i + 1);
 	}
 
-	std::cout << std::left << std::setw(colom_w) << std::setfill(separator) << "b";
+	std::cout << std::left << std::setw(colom_w) << std::setfill(separator) << "| b";
 	std::cout << std::endl;
 
 	int n_row = -1;
@@ -59,10 +59,10 @@ static void write_symplex(const  mat_mn& A, const std::vector<int>& basis_args)
 		{
 			if (row[col] >= 0)
 			{
-				std::cout << std::left << std::setw(colom_w) << std::setfill(separator) << " " +  std::to_string(row[col]);
+				std::cout << std::left << std::setw(colom_w) << std::setfill(separator) << "| " +  std::to_string(row[col]);
 				continue;
 			}
-			std::cout << std::left << std::setw(colom_w) << std::setfill(separator) << std::to_string(row[col]);
+			std::cout << std::left << std::setw(colom_w) << std::setfill(separator) << "|" + std::to_string(row[col]);
 
 		}
 		std::cout << std::endl;
@@ -71,16 +71,16 @@ static void write_symplex(const  mat_mn& A, const std::vector<int>& basis_args)
 }
 
 /// <summary>
-/// Проверяет совместность СЛАУ вида ax = b. Используется теорема Кронекера-Капелли 
+/// Проверяет совместность СЛАУ вида Ax = b. Используется теорема Кронекера-Капелли 
 /// </summary>
-/// <param name="a"></param>
+/// <param name="A"></param>
 /// <param name="b"></param>
 /// <returns>0 - нет решений, 1 - одно решение, 2 - бесконечное множествое решений</returns>
-int check_system(const  mat_mn&a, const vec_n&b)
+int check_system(const  mat_mn&A, const vec_n&b)
 {
-	int rank_a   = rank(a);
+	int rank_a   = rank(A);
 	
-	mat_mn ab = a;
+	mat_mn ab = A;
 	
 	int rank_a_b = rank(add_col(ab,b));
 
@@ -118,28 +118,71 @@ int check_system(const  mat_mn&a, const vec_n&b)
 //mode = 
 #define SYMPLEX_MAX  0
 #define SYMPLEX_MIN  1
-
-bool is_plane_optimal(const mat_mn& A, const int mode = SYMPLEX_MAX)
+/// <summary>
+/// Проверяет оптимальность плана в соответсвии с тем типом экстремума, которыей требуется найти.
+/// Провеяются элменты от 1:n-1 полсдней строки СМ таблицы 
+/// </summary>
+/// <param name="A">СМ таблицa</param>
+/// <param name="mode"></param>
+/// <returns></returns>
+bool is_plan_optimal(const mat_mn& A, const int mode = SYMPLEX_MAX)
 {
 	const vec_n& deltas = A[A.size() - 1];
 
+	if (mode == SYMPLEX_MAX)
+	{
+		for (int i = 0; i < deltas.size() - 1; i++)
+		{
+			if (deltas[i] < 0)
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
 	for (int i = 0; i < deltas.size() - 1; i++)
 	{
-		if (deltas[i] < 0)
+		if (deltas[i] > 0)
 		{
 			return false;
 		}
 	}
 	return true;
 }
-
-int get_main_col(const mat_mn& A)
+/// <summary>
+/// Определяет ведущий столбец в соответсвии с тем типом экстремума, который требуется найти.
+/// Исследуются элменты от 1:n-1 полсдней строки СМ таблицы 
+/// </summary>
+/// <param name="A"></param>
+/// <returns></returns>
+int get_main_col(const mat_mn& A, const int mode = SYMPLEX_MAX)
 {
 	double delta = 0;
-	
+
 	int index = -1;
-	
+
 	const vec_n& c = A[A.size() - 1];
+
+	if (SYMPLEX_MIN == mode)
+	{
+		for (int i = 0; i < c.size() - 1; i++)
+		{
+			if (c[i] <= 0)
+			{
+				continue;
+			}
+			if (c[i] > delta)
+			{
+				continue;
+			}
+
+			delta = c[i];
+
+			index = i;
+		}
+		return index;
+	}
 
 	for (int i = 0; i < c.size() - 1; i++) 
 	{
@@ -156,15 +199,25 @@ int get_main_col(const mat_mn& A)
 
 		index = i;
 	}
+	
 	return index;
 }
-
+/// <summary>
+/// Определяет ведущую строку 
+/// </summary>
+/// <param name="symplex_col">ведущий столбец</param>
+/// <param name="A">СМ таблица</param>
+/// <returns></returns>
 int get_main_row(const int symplex_col, const  mat_mn& A) 
 {
 	double delta = 1e12;
+
 	int index = -1;
-	float a_ik;
+	
+	double a_ik;
+	
 	int b_index = A[0].size() - 1;
+	
 	for (int i = 0; i < A.size(); i++)
 	{
 		a_ik = A[i][symplex_col];
@@ -182,6 +235,14 @@ int get_main_row(const int symplex_col, const  mat_mn& A)
 	}
 	return index;
 }
+
+/// <summary>
+/// Выводит текущее решение СМ таблицы для не искусственных переменных
+/// </summary>
+/// <param name="A">СМ таблица</param>
+/// <param name="basis">список базисных параметров</param>
+/// <param name="n_agrs">количество исходных переменных</param>
+/// <returns></returns>
 vec_n current_symplex_solution(const mat_mn& A,const std::vector<int> basis, const int n_agrs)
 {
 	vec_n solution(n_agrs);
@@ -196,39 +257,70 @@ vec_n current_symplex_solution(const mat_mn& A,const std::vector<int> basis, con
 	return solution;
 }
 
-
 /// <summary>
-/// Строит расширенную матрицу для СМ задачи
+/// Строит СМ таблицу для задачи вида:
+/// Маирица системы ограниченй:
+///		|u 0 0|	
+/// A = |0 v 0|
+///		|0 0 w|
+/// Вектор ограничений
+///		|a|	
+/// b = |d|
+///		|f|
+/// с -коэффициенты целевой функции 
+/// f = (x,c)->extr
+///	|u 0 0|   |x| <= |b|
+/// |0 v 0| * |x| >= |f|
+///	|0 0 w|   |x| =  |d|
+/// 
+///  СМ таблицу из A,b,c параметров
 /// </summary>
-/// <param name="A">Ax <= b   -> (A|I)(x|w) = b </param>
-/// <param name="c"> (c,x) ->((c|i),(x|w)) </param>
+/// <param name="A"> Ax <= b   -> (A|I)(x|w) = b </param>
+/// <param name="c"> (c,x) ->((-c|0),(x|w)) </param>
 /// <param name="ineq"> знак неравентсва =, >=, <= </param>
 /// <param name="b"></param>
+///( A|I)  b
+///(-c|0)  F(x,c)
 std::vector<int> build_symplex_table(mat_mn& A, const mat_mn& a, const vec_n& c, const vec_n& b, std::vector<int> ineq)
 {
 	int cntr = 0;
+	
 	A = a;
+	
 	std::vector<int> basis;
+
 	for(auto& row : A)
 	{
 		basis.push_back(-1);
+		
 		for (int j = 0; j < b.size(); j++)
 		{
 		    if (ineq[j] == EQUAL)
 			{
-				basis[basis.size() - 1]  = (j);
+				basis[basis.size() - 1]  = j;
 				continue;
 			}
 			if (ineq[j] == MORE_EQUAL)
 			{
-				basis[basis.size() - 1] = c.size() + j;
-				row.push_back(cntr == j ? -1.0 : 0.0);
+				if (cntr == j) 
+				{
+					basis[basis.size() - 1] = c.size() + j;
+					row.push_back(-1.0);
+					continue;
+				}
+				row.push_back(0.0);
 				continue;
 			}
 			if (ineq[j] == LESS_EQUAL)
 			{
-				basis[basis.size() - 1] = c.size() + j;
-				row.push_back(cntr == j ? 1.0 : 0.0);
+
+				if (cntr == j)
+				{
+					basis[basis.size() - 1] = c.size() + j;
+					row.push_back(1.0);
+					continue;
+				}
+				row.push_back(0.0);
 				continue;
 			}
 		}
@@ -241,6 +333,7 @@ std::vector<int> build_symplex_table(mat_mn& A, const mat_mn& a, const vec_n& c,
 
 		cntr++;
 	}
+
 	vec_n C(A[0].size());
 
 	for (int j = 0; j < C.size(); j++)
@@ -267,7 +360,7 @@ vec_n symplex_solve(const mat_mn& a, const vec_n& c, const vec_n& b, const std::
 	{
 		return linsolve(a, b);
 	}
-
+	
 	double a_ik;
 	
 	int main_row;
@@ -282,9 +375,9 @@ vec_n symplex_solve(const mat_mn& a, const vec_n& c, const vec_n& b, const std::
 	write_symplex(A, basis);
 #endif
 
-	while (!is_plane_optimal(A))
+	while (!is_plan_optimal(A, mode))
 	{
-		main_col = get_main_col(A);
+		main_col = get_main_col(A, mode);
 
 		if (main_col == -1) 
 		{

@@ -5,6 +5,25 @@ namespace OptimizationMethods
 
     public static class MultiDimensional
     {
+        public static double TestFunc2D(Vector x)
+        {
+            return (x[0] - 5) * x[0] + (x[1] - 3) * x[1]; // min at point x = 2.5, y = 1.5
+        }
+
+        public static double TestFuncND(Vector x)
+        {
+
+            double val = 0.0;
+            for (int i=0; i < x.Size;i++) 
+            {
+                val += (x[i] - i) * x[i];
+            }
+
+            return val; // min at point x_i = i/2, i from 0 to x.Size-1
+        }
+        ////////////////////
+        /// Lab. work #2 ///
+        ////////////////////
         public static Vector Dihotomia(func_n f, Vector x_0, Vector x_1, double eps = 1e-6f, int max_iters = 1000)
         {
             Vector x_c, dir;
@@ -36,7 +55,9 @@ namespace OptimizationMethods
         public static Vector GoldenRatio(func_n f, Vector x_0, Vector x_1, double eps = 1e-6f, int max_iters = 1000)
         {
             Vector a = new Vector(x_0);
+
             Vector b = new Vector(x_1);
+
             Vector dx;
 
             int cntr = 0;
@@ -71,7 +92,9 @@ namespace OptimizationMethods
             int max_iters = OneDimensional.ClosestFibonacci((x_1 - x_0).Magnitude / eps);
 
             Vector a = new Vector(x_0);
+
             Vector b = new Vector(x_1);
+
             Vector dx;
 
             double f_1 = 1.0f, f_2 = 2.0f, f_3 = 3.0f;
@@ -108,10 +131,19 @@ namespace OptimizationMethods
         public static Vector PerCoordDescend(func_n f, Vector x_start, double eps = 1e-6f, int max_iters = 1000)
         {
             int cntr = 0;
+
             Vector x_0 = new Vector(x_start);
+
             Vector x_1 = new Vector(x_start);
+
             double step = 1.0f;
+
+            double x_i;
+
+            int opt_coord_n = 0;
+
             double y_1, y_0;
+
             while (true)
             {
                 for (int i = 0; i < x_0.Size; i++)
@@ -125,45 +157,60 @@ namespace OptimizationMethods
                         return x_0;
                     }
                     x_1[i] -= eps;
+
                     y_0 = f(x_1);
+
                     x_1[i] += 2 * eps;
+
                     y_1 = f(x_1);
+
                     x_1[i] -= eps;
 
-                    if (y_0 > y_1)
-                    {
-                        x_1[i] += step;
-                    }
+                    x_1[i] = y_0 > y_1 ? x_1[i] += step : x_1[i] -= step;
 
-                    else
-                    {
-                        x_1[i] -= step;
-                    }
+                    x_i = x_0[i];
+
                     x_1 = Dihotomia(f, x_0, x_1, eps, max_iters);
-                    if ((x_1 - x_0).Magnitude < eps)
+
+                    if (Math.Abs(x_1[i] - x_i) < eps)
                     {
+                        opt_coord_n++;
+
+                        if (opt_coord_n == x_1.Size)
+                        {
 #if DEBUG
-                        Console.WriteLine("per coord descend iterations number : " + cntr);
+                            Console.WriteLine("per coord descend iterations number : " + cntr);
 #endif
-                        return x_0;
+                            return x_0;
+                        }
+                        continue;
                     }
-                    x_0 = new Vector(x_1);
+                    opt_coord_n = 0;
                 }
             }
         }
+        ////////////////////
+        /// Lab. work #3 ///
+        ////////////////////
         public static Vector GradientDescend(func_n f, Vector x_start, double eps = 1e-6f, int max_iters = 1000)
         {
             Vector x_i = new Vector(x_start);
+
             Vector x_i_1 = new Vector(x_start); ;
+
             int cntr = 0;
+
             while (true)
             {
                 cntr++;
+
                 if (cntr == max_iters)
                 {
                     break;
                 }
+
                 x_i_1 = x_i - Vector.Gradient(f, x_i, eps);
+
                 x_i_1 = Dihotomia(f, x_i, x_i_1, eps, max_iters);
 
                 if ((x_i_1 - x_i).Magnitude < eps)
@@ -180,11 +227,16 @@ namespace OptimizationMethods
         }
         public static Vector СonjGradientDescend(func_n f, Vector x_start, double eps = 1e-6f, int max_iters = 1000)
         {
-            Vector x_i   = new Vector(x_start);
+            Vector x_i = new Vector(x_start);
+
             Vector x_i_1 = new Vector(x_start);
-            Vector s_i   = Vector.Gradient(f, x_start, eps) * (-1.0f), s_i_1;
+
+            Vector s_i = Vector.Gradient(f, x_start, eps) * (-1.0f), s_i_1;
+
             double omega;
+
             int cntr = 0;
+
             while (true)
             {
                 cntr++;
@@ -216,15 +268,21 @@ namespace OptimizationMethods
 #endif
             return (x_i_1 + x_i) * 0.5f;
         }
-
+        ////////////////////
+        /// Lab. work #4 ///
+        ////////////////////
         public static Vector NewtoneRaphson(func_n f, Vector x_start, double eps = 1e-6f, int max_iters = 1000)
         {
-            Vector x_i  = new Vector(x_start);
+            Vector x_i = new Vector(x_start);
+
             Vector x_i_1 = new Vector(x_start);
+
             int cntr = 0;
+
             while (true)
             {
                 cntr++;
+
                 if (cntr == max_iters)
                 {
                     break;
@@ -243,20 +301,6 @@ namespace OptimizationMethods
             Console.WriteLine("gradient descend iterations number : " + cntr);
 #endif
             return (x_i_1 + x_i) * 0.5f;
-        }
-        public static void MultiDimensionalMethodsTest(func_n f)
-        {
-            Vector x_1 = new double[] { 0, 0 };
-            Vector x_0 = new double[] { 5, 5 };
-            Console.WriteLine("{ x, y } = agrmin((x - 2) * (x - 2) + (y - 2) * (y - 2))\n");
-            Console.WriteLine("x_0 = " + x_0 + ", x_1 = " + x_1 + "\n");
-            Console.WriteLine("Dihotomia              : " + Dihotomia(f, x_1, x_0).ToString());
-            Console.WriteLine("GoldenRatio            : " + GoldenRatio(f, x_1, x_0).ToString());
-            Console.WriteLine("Fibonacci              : " + Fibonacci(f, x_1, x_0).ToString());
-            Console.WriteLine("PerCoordDescend        : " + PerCoordDescend(f, x_1).ToString());
-            Console.WriteLine("GradientDescend        : " + GradientDescend(f, x_1).ToString());
-            Console.WriteLine("СonjGradientDescend    : " + СonjGradientDescend(f, x_1).ToString());
-            Console.WriteLine("NewtoneRaphson         : " + NewtoneRaphson(f, x_1).ToString());
         }
     }
 }
