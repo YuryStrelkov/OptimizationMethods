@@ -174,7 +174,7 @@ static vec_n gradient(func_n fun, const vec_n& x, const double eps = 1e-6f)
 	}
 	return df;
 }
-
+// частная производная по i-ой координате
 static double partial(func_n func, vec_n& x, const int coord_index, const double eps = 1e-6f)
 {
 	if (x.size() <= coord_index)
@@ -188,7 +188,7 @@ static double partial(func_n func, vec_n& x, const int coord_index, const double
 	x[coord_index] += eps;
 	return (f_r - f_l) / eps * 0.5f;
 }
-
+//вторая частная производная по i-ой j-ой координатам
 static double partial2(func_n func, vec_n& x, const int coord_index_1, const int coord_index_2, const double eps = 1e-6f)
 {
 	if (x.size() <= coord_index_2)
@@ -203,7 +203,7 @@ static double partial2(func_n func, vec_n& x, const int coord_index_1, const int
 	return (f_r - f_l) / eps * 0.5f;
 }
 
-static double max(vec_n& x, int& index) 
+static double max(const vec_n& x, int& index) 
 {
 	double max_ = x[0];
 	int i = 0;
@@ -219,7 +219,7 @@ static double max(vec_n& x, int& index)
 	return max_;
 }
 
-static double min(vec_n& x, int& index)
+static double min(const vec_n& x, int& index)
 {
 	double min_ = x[0];
 	int i = 0;
@@ -235,7 +235,7 @@ static double min(vec_n& x, int& index)
 	return min_;
 }
 
-static double abs_max(vec_n& x, int& index)
+static double abs_max(const vec_n& x, int& index)
 {
 	double max_ = abs(x[0]);
 	int i = 0;
@@ -251,7 +251,7 @@ static double abs_max(vec_n& x, int& index)
 	return max_;
 }
 
-static double abs_min(vec_n& x, int& index)
+static double abs_min(const vec_n& x, int& index)
 {
 	double min_ = abs(x[0]);
 	int i = 0;
