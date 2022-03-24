@@ -446,6 +446,6 @@ int rank(mat_mn& A)
 
 int rank(const mat_mn& a)
 {
-	mat_mn A = a;
+	mat_mn A(a);
 	return rank(A);
 }
