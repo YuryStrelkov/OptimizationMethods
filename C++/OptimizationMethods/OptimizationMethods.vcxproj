@@ -144,6 +144,7 @@
   <ItemGroup>
     <ClInclude Include="matrix_utils.h" />
     <ClInclude Include="multi_dimensional.h" />
+    <ClInclude Include="numeric_utils.h" />
     <ClInclude Include="one_dimensional.h" />
     <ClInclude Include="symplex.h" />
     <ClInclude Include="test.h" />

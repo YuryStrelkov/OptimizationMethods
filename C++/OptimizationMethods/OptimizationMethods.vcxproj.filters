@@ -38,5 +38,8 @@
     <ClInclude Include="test.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="numeric_utils.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

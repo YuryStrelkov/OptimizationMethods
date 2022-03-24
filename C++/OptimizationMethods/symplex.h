@@ -1,6 +1,7 @@
 #pragma once
 #include "vector_utils.h"
 #include "matrix_utils.h"
+#include "numeric_utils.h"
 #include <iomanip>
 #include <string>
 
@@ -8,6 +9,43 @@
 #define EQUAL       0
 #define LESS_EQUAL -1
 #define MORE_EQUAL  1
+
+static std::string str_rational(const double val, const bool full_rational =  true)
+{
+	int r_part;
+	int nom;
+	int denom;
+
+	decimal_to_rational(val, r_part, nom, denom);
+	if (nom == 0)
+	{
+		return std::to_string(r_part);
+	}
+	if (r_part == 0)
+	{
+		return std::to_string(nom) + "/" + std::to_string(denom);
+	}
+
+	if (full_rational)
+	{
+		return std::to_string((nom + abs(r_part) * denom) * (r_part >= 0 ? 1 : -1)) + "/" + std::to_string(denom);
+	}
+	return std::to_string(denom) + " " + std::to_string(nom) + "/" + std::to_string(denom);
+}
+
+static std::string str_rational(const vec_n& val, const bool full_rational = true)
+{
+	std::string str = "{ ";
+	for (int i = 0; i < val.size() - 1; i++) 
+	{
+		str += str_rational(val[i], full_rational);
+		str += ", ";
+	}
+	str += str_rational(val[val.size() - 1], full_rational);
+
+	str += " }";
+	return str;
+}
 
 static void write_symplex(const  mat_mn& A, const std::vector<int>& basis_args)
 {
@@ -59,10 +97,10 @@ static void write_symplex(const  mat_mn& A, const std::vector<int>& basis_args)
 		{
 			if (row[col] >= 0)
 			{
-				std::cout << std::left << std::setw(colom_w) << std::setfill(separator) << "| " +  std::to_string(row[col]);
+				std::cout << std::left << std::setw(colom_w) << std::setfill(separator) << "| " + str_rational(row[col]);
 				continue;
 			}
-			std::cout << std::left << std::setw(colom_w) << std::setfill(separator) << "|" + std::to_string(row[col]);
+			std::cout << std::left << std::setw(colom_w) << std::setfill(separator) << "|" + str_rational(row[col]);
 
 		}
 		std::cout << std::endl;
@@ -406,9 +444,9 @@ vec_n symplex_solve(const mat_mn& a, const vec_n& c, const vec_n& b, const std::
 			A[i] = A[i] - A[i][main_col] * A[main_row];
 		}
 #if _DEBUG
-		std::cout << "a_main { " << main_row + 1 << ", " << main_col + 1 << " } = " << a_ik << std::endl;
+		std::cout << "a_main { " << main_row + 1 << ", " << main_col + 1 << " } = " << str_rational(a_ik) << std::endl;
 		write_symplex(A, basis);
-		std::cout << "current_solution" << current_symplex_solution(A, basis, c.size())<<std::endl;
+		std::cout << "current_solution" << str_rational(current_symplex_solution(A, basis, c.size()))<<std::endl;
 		std::cout << std::endl;
 
 #endif

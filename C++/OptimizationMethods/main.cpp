@@ -106,5 +106,6 @@ int main()
 	lab_2(test_func_2);
 	lab_3(test_func_2);
 	lab_4(test_func_2);*/
+	test_all();
 	return 0;
 }

@@ -3,7 +3,7 @@
 #include "multi_dimensional.h";
 #include "matrix_utils.h"
 #include "symplex.h"
-
+#include "numeric_utils.h"
 // тестовая унимодальная одномерная функция с минимумом в точке {2} 
 static double test_function_1d(const double x)
 {
@@ -110,11 +110,30 @@ static void symplex_method_test()
 
 }
 
+
+static void numeric_tests()
+{
+	int rational;
+	int nominator;
+	int denominator;
+	decimal_to_rational(1.6666, rational, nominator, denominator);
+	std::cout << rational << " " << nominator << "/" << denominator << std::endl;
+	decimal_to_rational(0.6666, rational, nominator, denominator);
+	std::cout << rational << " " << nominator << "/" << denominator << std::endl;
+	decimal_to_rational(-3, rational, nominator, denominator);
+	std::cout << rational << " " << nominator << "/" << denominator << std::endl;
+	decimal_to_rational(-0.125, rational, nominator, denominator);
+	std::cout << rational << " " << nominator << "/" << denominator << std::endl;
+	decimal_to_rational(3.769230769230769230769, rational, nominator, denominator);
+	std::cout << rational << " " << nominator << "/" << denominator << std::endl;
+}
+
 static int test_all()
 {
 	//  one_dimensional_methods_test();
 	//	multi_dimensional_methods_test();
 	//	matrix_test();
 	symplex_method_test();
+	//numeric_tests();
 	return 0;
 }
