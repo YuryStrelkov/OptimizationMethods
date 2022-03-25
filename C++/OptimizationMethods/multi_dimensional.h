@@ -115,67 +115,57 @@ static vec_n fibonacci(func_n f, const vec_n& x_0, const vec_n& x_1, const doubl
 
 static vec_n per_coord_descend(func_n f, const vec_n& x_start, const double eps = N_DIM_ACCURACY, const int max_iters = N_DIM_ITERS_MAX)
 {
-	int cntr = 0;
-	
 	vec_n x_0(x_start);
 	
 	vec_n x_1(x_start);
 
 	double step = 1.0f;
 	
-	double x_i;
+	double x_i, y_1, y_0;
 
-	int opt_coord_n = 0;
+	int opt_coord_n = 0, coord_id;
 
-	double y_1, y_0;
-	
-	while (true)
+	for (int i = 0; i < max_iters; i++)
 	{
-		for (int i = 0; i < x_0.size(); i++)
+		coord_id = i % x_0.size();
+
+		x_1[coord_id] -= eps;
+
+		y_0 = f(x_1);
+
+		x_1[coord_id] += 2 * eps;
+
+		y_1 = f(x_1);
+
+		x_1[coord_id] -= eps;
+
+		x_1[coord_id] = y_0 > y_1 ? x_1[coord_id] += step : x_1[coord_id] -= step;
+
+		x_i = x_0[coord_id];
+
+		x_1 = dihotomia(f, x_0, x_1, eps, max_iters);
+
+		x_0 = x_1;
+
+		if (abs(x_1[coord_id] - x_i) < eps)
 		{
-			cntr++;
-			if (cntr == max_iters)
+			opt_coord_n++;
+
+			if (opt_coord_n == x_1.size())
 			{
 #if _DEBUG
-				std::cout << "per coord descend iterations number : " << cntr << "\n";
+				std::cout << "per coord descend iterations number : " << i << "\n";
 #endif
 				return x_0;
 			}
-
-			x_1[i] -= eps;
-			
-			y_0     = f(x_1);
-			
-			x_1[i] += 2 * eps;
-			
-			y_1     = f(x_1);
-
-			x_1[i] -= eps;
-
-			x_1[i] = y_0 > y_1 ? x_1[i] += step : x_1[i] -= step;
-
-			x_i = x_0[i];
-
-			x_1 = dihotomia(f, x_0, x_1, eps, max_iters);
-
-			x_0 = x_1;
-
-			if (abs(x_1[i] - x_i) < eps)
-			{
-				opt_coord_n++;
-
-				if (opt_coord_n == x_1.size())
-				{
-#if _DEBUG
-					std::cout << "per coord descend iterations number : " << cntr << "\n";
-#endif
-					return x_0;
-				}
-				continue;
-			}
-			opt_coord_n = 0;
+			continue;
 		}
+		opt_coord_n = 0;
 	}
+#if _DEBUG
+	std::cout << "per coord descend iterations number : " << max_iters << "\n";
+#endif
+	return x_0;
 }
 //
 static vec_n gradient_descend(func_n f, const vec_n& x_start, const double eps = N_DIM_ACCURACY, const int max_iters = N_DIM_ITERS_MAX)

@@ -138,56 +138,51 @@ namespace OptimizationMethods
 
             double step = 1.0f;
 
-            double x_i;
+            double x_i, y_1, y_0;
 
-            int opt_coord_n = 0;
+            int opt_coord_n = 0, coord_id;
 
-            double y_1, y_0;
-
-            while (true)
+            for (int i = 0; i < max_iters; i++)
             {
-                for (int i = 0; i < x_0.Size; i++)
+                coord_id = i % x_0.Size;
+
+                x_1[coord_id] -= eps;
+
+                y_0 = f(x_1);
+
+                x_1[coord_id] += 2 * eps;
+
+                y_1 = f(x_1);
+
+                x_1[coord_id] -= eps;
+
+                x_1[coord_id] = y_0 > y_1 ? x_1[coord_id] += step : x_1[coord_id] -= step;
+
+                x_i = x_0[coord_id];
+
+                x_1 = Dihotomia(f, x_0, x_1, eps, max_iters);
+
+                x_0 = new Vector(x_1);
+
+                if (Math.Abs(x_1[coord_id] - x_i) < eps)
                 {
-                    cntr++;
-                    if (cntr == max_iters)
+                    opt_coord_n++;
+
+                    if (opt_coord_n == x_1.Size)
                     {
 #if DEBUG
-                        Console.WriteLine("per coord descend iterations number : " + cntr);
+                        Console.WriteLine($"per coord descend iterations number : {cntr}\n");
 #endif
                         return x_0;
                     }
-                    x_1[i] -= eps;
-
-                    y_0 = f(x_1);
-
-                    x_1[i] += 2 * eps;
-
-                    y_1 = f(x_1);
-
-                    x_1[i] -= eps;
-
-                    x_1[i] = y_0 > y_1 ? x_1[i] += step : x_1[i] -= step;
-
-                    x_i = x_0[i];
-
-                    x_1 = Dihotomia(f, x_0, x_1, eps, max_iters);
-
-                    if (Math.Abs(x_1[i] - x_i) < eps)
-                    {
-                        opt_coord_n++;
-
-                        if (opt_coord_n == x_1.Size)
-                        {
-#if DEBUG
-                            Console.WriteLine("per coord descend iterations number : " + cntr);
-#endif
-                            return x_0;
-                        }
-                        continue;
-                    }
-                    opt_coord_n = 0;
+                    continue;
                 }
+                opt_coord_n = 0;
             }
+#if DEBUG
+            Console.WriteLine($"per coord descend iterations number : {cntr}\n");
+#endif
+            return x_0;
         }
         ////////////////////
         /// Lab. work #3 ///

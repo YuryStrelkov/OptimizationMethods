@@ -19,169 +19,6 @@ namespace OptimizationMethods
         {
             get { return data.Count; }
         }
-
-        /// <summary>
-        /// Элементарные математические операции над векторами
-        /// </summary>
-        public static Vector operator +(Vector a, Vector b)
-        {
-            if (a.Size != b.Size)
-            {
-                throw new Exception("error:: operator+:: vectors of different dimensions");
-            }
-
-            Vector res = new Vector(a);
-            for (int i = 0; i < a.Size; i++)
-            {
-                res[i] = a[i] + b[i];
-            }
-            return res;
-        }
-        public static Vector operator +(Vector a, double b)
-        {
-            Vector res = new Vector(a);
-            for (int i = 0; i < a.Size; i++)
-            {
-                res[i] = a[i] + b;
-            }
-            return res;
-        }
-        public static Vector operator +(double b, Vector a)
-        {
-            return a + b;
-        }
-        public static Vector operator -(Vector a, Vector b)
-        {
-            if (a.Size != b.Size)
-            {
-                throw new Exception("error:: operator-:: vectors of different dimensions");
-            }
-
-            Vector res = new Vector(a);
-            for (int i = 0; i < a.Size; i++)
-            {
-                res[i] = a[i] - b[i];
-            }
-            return res;
-        }
-        public static Vector operator -(Vector a, double b)
-        {
-            Vector res = new Vector(a);
-            for (int i = 0; i < a.Size; i++)
-            {
-                res[i] = a[i] - b;
-            }
-            return res;
-        }
-        public static Vector operator -(double b, Vector a)
-        {
-            Vector res = new Vector(a);
-            for (int i = 0; i < a.Size; i++)
-            {
-                res[i] = b - a[i];
-            }
-            return res;
-        }
-        public static Vector operator *(Vector a, double val)
-        {
-            Vector res = new Vector(a);
-            for (int i = 0; i < a.Size; i++)
-            {
-                res[i] = a[i] * val;
-            }
-            return res;
-        }
-        public static Vector operator *(double val, Vector a)
-        {
-            return a * val;
-        }
-
-        /// <summary>
-        /// Позволяет при иницилизации экземпляра класса вместо:
-        /// double [] vals = new double[] {1,2,3};
-        /// Vector v = new Vector(rows);
-        /// делать так:
-        /// Vector v = vals;
-        /// </summary>
-        /// <param name="value"></param>
-        public static implicit operator Vector(double[] value)
-        {
-            return new Vector(value);
-        }
-        /// <summary>
-        /// Рассчитывет единичный вектор в направлении от a до b
-        /// </summary>
-        /// <param name="a"></param>
-        /// <param name="b"></param>
-        /// <returns></returns>
-        public static Vector Direction(Vector a, Vector b)
-        {
-            if (a.Size != b.Size)
-            {
-                return a;
-            }
-            return (b - a).Normalized;
-        }
-        /// <summary>
-        /// Градиент скалярной функции векторного аргумента 
-        /// </summary>
-        /// <param name="func">функция для которой рассчитываем градиент</param>
-        /// <param name="x">   точка, где рассчитываем градиент</param>
-        /// <param name="eps"> шаг центрального разностного аналога</param>
-        /// <returns></returns>
-        public static Vector Gradient(func_n func, Vector x, double eps = 1e-6)
-        {
-            Vector x_l = new Vector(x);
-            Vector x_r = new Vector(x);
-            Vector df = new Vector(x.Size);
-            for (int i = 0; i < x.Size; i++)
-            {
-                x_l[i] -= eps;
-                x_r[i] += eps;
-
-                df[i] = (func(x_r) - func(x_l)) * (0.5f / eps);
-
-                x_l[i] += eps;
-                x_r[i] -= eps;
-            }
-            return df;
-        }
-        /// <summary>
-        /// Частная производная в точке x вдоль координаты coord_index
-        /// </summary>
-        /// <param name="func"></param>
-        /// <param name="x"></param>
-        /// <param name="coord"></param>
-        /// <param name="eps"></param>
-        /// <returns></returns>
-        public static double  Partial (func_n func, Vector x, int coord_index, double eps = 1e-6)
-        {
-            if (x.Size <= coord_index)
-            {
-                throw new Exception("Partial derivative index out of bounds!");
-            }
-            x[coord_index] += eps;
-            double f_r = func(x);
-            x[coord_index] -= (2.0f * eps);
-            double f_l = func(x);
-            x[coord_index] += eps;
-            return (f_r - f_l) / eps * 0.5f;
-        }
-
-        public static double Partial2(func_n func, Vector x, int coord_index_1, int coord_index_2, double eps = 1e-6)
-        {
-            if (x.Size <= coord_index_2)
-            {
-                throw new Exception("Partial derivative index out of bounds!");
-            }
-            x[coord_index_2] -= eps;
-            double f_l = Partial(func, x, coord_index_1, eps);
-            x[coord_index_2] += (2 * eps);
-            double f_r = Partial(func, x, coord_index_1, eps);
-            x[coord_index_2] -= eps;
-            return (f_r - f_l) / eps * 0.5f;
-        }
-
         /// <summary>
         /// Длина вектра
         /// </summary>
@@ -237,7 +74,7 @@ namespace OptimizationMethods
             {
                 throw new Exception("Unable vector dot multiply");
             }
-            
+
             double dot = 0.0f;
 
             for (int i = 0; i < other.Size; i++)
@@ -246,16 +83,7 @@ namespace OptimizationMethods
             }
             return dot;
         }
-        /// <summary>
-        /// Скалярное произведение (a;b)
-        /// </summary>
-        /// <param name="a"></param>
-        /// <param name="b"></param>
-        /// <returns>(a;b)</returns>
-        public static double Dot(Vector a, Vector b) 
-        {
-            return a.Dot(b);
-        }
+
         /// <summary>
         /// Изменение размера вектора
         /// </summary>
@@ -382,7 +210,178 @@ namespace OptimizationMethods
         /// <param name="vect"></param>
         public Vector(Vector vect)
         {
-            data = new  List<double>(vect.data);
+            data = new List<double>(vect.data);
+        }
+
+        /// <summary>
+        /// Элементарные математические операции над векторами
+        /// </summary>
+        public static Vector operator +(Vector a, Vector b)
+        {
+            if (a.Size != b.Size)
+            {
+                throw new Exception("error:: operator+:: vectors of different dimensions");
+            }
+
+            Vector res = new Vector(a);
+            for (int i = 0; i < a.Size; i++)
+            {
+                res[i] = a[i] + b[i];
+            }
+            return res;
+        }
+        public static Vector operator +(Vector a, double b)
+        {
+            Vector res = new Vector(a);
+            for (int i = 0; i < a.Size; i++)
+            {
+                res[i] = a[i] + b;
+            }
+            return res;
+        }
+        public static Vector operator +(double b, Vector a)
+        {
+            return a + b;
+        }
+        public static Vector operator -(Vector a, Vector b)
+        {
+            if (a.Size != b.Size)
+            {
+                throw new Exception("error:: operator-:: vectors of different dimensions");
+            }
+
+            Vector res = new Vector(a);
+            for (int i = 0; i < a.Size; i++)
+            {
+                res[i] = a[i] - b[i];
+            }
+            return res;
+        }
+        public static Vector operator -(Vector a, double b)
+        {
+            Vector res = new Vector(a);
+            for (int i = 0; i < a.Size; i++)
+            {
+                res[i] = a[i] - b;
+            }
+            return res;
+        }
+        public static Vector operator -(double b, Vector a)
+        {
+            Vector res = new Vector(a);
+            for (int i = 0; i < a.Size; i++)
+            {
+                res[i] = b - a[i];
+            }
+            return res;
+        }
+        public static Vector operator *(Vector a, double val)
+        {
+            Vector res = new Vector(a);
+            for (int i = 0; i < a.Size; i++)
+            {
+                res[i] = a[i] * val;
+            }
+            return res;
+        }
+        public static Vector operator *(double val, Vector a)
+        {
+            return a * val;
+        }
+        /// <summary>
+        /// Позволяет при иницилизации экземпляра класса вместо:
+        /// double [] vals = new double[] {1,2,3};
+        /// Vector v = new Vector(rows);
+        /// делать так:
+        /// Vector v = vals;
+        /// </summary>
+        /// <param name="value"></param>
+        public static implicit operator Vector(double[] value)
+        {
+            return new Vector(value);
+        }
+        /// <summary>
+        /// Рассчитывет единичный вектор в направлении от a до b
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static Vector Direction(Vector a, Vector b)
+        {
+            if (a.Size != b.Size)
+            {
+                return a;
+            }
+            return (b - a).Normalized;
+        }
+        /// <summary>
+        /// Градиент скалярной функции векторного аргумента 
+        /// </summary>
+        /// <param name="func">функция для которой рассчитываем градиент</param>
+        /// <param name="x">   точка, где рассчитываем градиент</param>
+        /// <param name="eps"> шаг центрального разностного аналога</param>
+        /// <returns></returns>
+        public static Vector Gradient(func_n func, Vector x, double eps = 1e-6)
+        {
+            Vector x_l = new Vector(x);
+            Vector x_r = new Vector(x);
+            Vector df = new Vector(x.Size);
+            for (int i = 0; i < x.Size; i++)
+            {
+                x_l[i] -= eps;
+                x_r[i] += eps;
+
+                df[i] = (func(x_r) - func(x_l)) * (0.5f / eps);
+
+                x_l[i] += eps;
+                x_r[i] -= eps;
+            }
+            return df;
+        }
+        /// <summary>
+        /// Частная производная в точке x вдоль координаты coord_index
+        /// </summary>
+        /// <param name="func"></param>
+        /// <param name="x"></param>
+        /// <param name="coord"></param>
+        /// <param name="eps"></param>
+        /// <returns></returns>
+        public static double  Partial (func_n func, Vector x, int coord_index, double eps = 1e-6)
+        {
+            if (x.Size <= coord_index)
+            {
+                throw new Exception("Partial derivative index out of bounds!");
+            }
+            x[coord_index] += eps;
+            double f_r = func(x);
+            x[coord_index] -= (2.0f * eps);
+            double f_l = func(x);
+            x[coord_index] += eps;
+            return (f_r - f_l) / eps * 0.5f;
+        }
+
+        public static double Partial2(func_n func, Vector x, int coord_index_1, int coord_index_2, double eps = 1e-6)
+        {
+            if (x.Size <= coord_index_2)
+            {
+                throw new Exception("Partial derivative index out of bounds!");
+            }
+            x[coord_index_2] -= eps;
+            double f_l = Partial(func, x, coord_index_1, eps);
+            x[coord_index_2] += (2 * eps);
+            double f_r = Partial(func, x, coord_index_1, eps);
+            x[coord_index_2] -= eps;
+            return (f_r - f_l) / eps * 0.5f;
+        }
+        /// <summary>
+        /// Скалярное произведение (a;b)
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns>(a;b)</returns>
+        public static double Dot(Vector a, Vector b)
+        {
+            return a.Dot(b);
         }
     }
 }

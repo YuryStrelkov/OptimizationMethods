@@ -18,7 +18,7 @@ namespace OptimizationMethods
         public static void MultiDimensionalMethodsTest()
         {
             Vector x_1 = new double[] { 0, 0 };
-            Vector x_0 = new double[] { 5, 5 };
+            Vector x_0 = new double[] { 5, 3 };
             Console.WriteLine("x_0 = " + x_0 + ", x_1 = " + x_1 + "\n");
             Console.WriteLine("Dihotomia              : " + MultiDimensional.Dihotomia(MultiDimensional.TestFunc2D, x_1, x_0).ToString());
             Console.WriteLine("GoldenRatio            : " + MultiDimensional.GoldenRatio(MultiDimensional.TestFunc2D, x_1, x_0).ToString());
@@ -57,6 +57,24 @@ namespace OptimizationMethods
             Console.WriteLine(m.ToString());
         }
 
+        public static void NumericTests()
+        {
+            int rational;
+            int nominator;
+            int denominator;
+            NumericUtils.DecimalToRational(1.6666,out rational, out nominator, out denominator);
+            Console.WriteLine($"{rational} {nominator} / {denominator}\n");
+            NumericUtils.DecimalToRational(0.6666, out rational, out nominator, out denominator);
+            Console.WriteLine($"{rational} {nominator} / {denominator}\n");
+            NumericUtils.DecimalToRational(-3, out rational, out nominator, out denominator);
+            Console.WriteLine($"{rational} {nominator} / {denominator}\n");
+            NumericUtils.DecimalToRational(-0.125, out rational, out nominator, out denominator);
+            Console.WriteLine($"{rational} {nominator} / {denominator}\n");
+            NumericUtils.DecimalToRational(3.769230769230769230769, out rational, out nominator, out denominator);
+            Console.WriteLine($"{rational} {nominator} / {denominator}\n");
+        }
+
+
         public static void SympexTest() 
         {
             Matrix A = new Vector[]
@@ -71,16 +89,17 @@ namespace OptimizationMethods
 /*            Matrix table = null;
             List<int> basis = Symplex.BuildSymplexTable(out table, A, c, b, new List<Sign>(){ Sign.Less, Sign.Less, Sign.Less });
             Console.WriteLine(Symplex.SymplexToString(table, basis));*/
-
+            
             Symplex.SymplexSolve(A, c, b, new List<Sign>() { Sign.Less, Sign.Less, Sign.Less });
         }
 
         public static void TestAll() 
         {
-            /*OneDimensionalMethodsTest();
+            OneDimensionalMethodsTest();
             MultiDimensionalMethodsTest();
-            MatrixTest();*/
+           // MatrixTest();
             SympexTest();
+            NumericTests();
         }
     }
 }

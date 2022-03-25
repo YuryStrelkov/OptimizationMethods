@@ -1,5 +1,13 @@
 #pragma once
 #define MAX_DENOMINATOR 1000
+/// <summary>
+/// Конвертирует десятичную запись числа в рациональную, например, для числа 1.666 получим 1 2/3
+/// </summary>
+/// <param name="value">исходное число</param>
+/// <param name="rational_part">целые части</param>
+/// <param name="nominator">числитель</param>
+/// <param name="denominator">знаменатель</param>
+/// <param name="max_den">максимально допустимый знаменатель</param>
 static void decimal_to_rational(const double value, int& rational_part, int& nominator, int& denominator, const int max_den = MAX_DENOMINATOR)
 {
 	long m[2][2];

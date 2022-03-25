@@ -10,6 +10,200 @@ namespace OptimizationMethods
         /// Массив строк матрицы
         /// </summary>
         private List<Vector> rows;
+        public Matrix AddCol(Vector col)
+        {
+            if (col.Size != NRows)
+            {
+                throw new Exception("Error::AddCol::col.Size != NRows");
+            }
+            for (int i = 0; i < rows.Count; i++)
+            {
+                rows[i].PushBack(col[i]);
+            }
+            return this;
+        }
+
+        public Matrix AddRow(Vector row)
+        {
+            if (row.Size != NCols)
+            {
+                throw new Exception("Error::AddRow::row.Size != NCols");
+            }
+            rows.Add(row);
+            return this;
+        }
+        /// <summary>
+        /// Сравнение матриц
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
+        public bool Equals([AllowNull] Matrix other)
+        {
+            if (other.rows.Count != rows.Count)
+            {
+                return false;
+            }
+            for (int i = 0; i < rows.Count; i++)
+            {
+                if (!other[i].Equals(this[i]))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+        /// <summary>
+        /// Базовое сравнение матриц
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
+        public override bool Equals(object other)
+        {
+            if (!(other is Matrix))
+            {
+                return false;
+            }
+            return Equals(other as Matrix);
+        }
+        /// <summary>
+        /// Не поверите, но расчитывает хеш-код, лол...
+        /// </summary>
+        /// <returns></returns>
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(rows);
+        }
+        /// <summary>
+        /// Строковое предствление матрицы
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            string s = "{\n";
+            for (int i = 0; i < rows.Count - 1; i++)
+            {
+                s += " " + rows[i].ToString();
+                s += ",\n";
+            }
+            s += " " + rows[rows.Count - 1].ToString();
+            s += "\n}";
+            return s;
+        }
+        /// <summary>
+        /// Получение строки матрицы
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public Vector this[int id]
+        {
+            get
+            {
+                return rows[id];
+            }
+            set
+            {
+                rows[id] = value;
+            }
+        }
+        /// <summary>
+        ///  Количество строк
+        /// </summary>
+        public int NRows
+        {
+            get
+            {
+                return rows.Count;
+            }
+        }
+        /// <summary>
+        /// Количество столбцов
+        /// </summary>
+        public int NCols
+        {
+            get
+            {
+                if (NRows == 0)
+                {
+                    return 0;
+                }
+                return rows[0].Size;
+            }
+        }
+        
+        public List<Vector> Rows
+        {
+            get
+            {
+                return rows;
+            }
+        }
+
+        /// <summary>
+        /// Рамерность матрицы
+        /// </summary>
+        public int[] Size
+        {
+            get
+            {
+                return new int[] { NRows, NCols };
+            }
+        }
+        /// <summary>
+        /// Конструктор матрицы из массива строк
+        /// </summary>
+        /// <param name="rows"></param>
+        public Matrix(Vector[] rows)
+        {
+            if (rows == null)
+            {
+                throw new Exception("Data is null...");
+            }
+
+            if (rows.Length == 0)
+            {
+                throw new Exception("Data is empty...");
+            }
+
+            int row_size = rows[0].Size;
+
+            for (int i = 0; i < rows.Length; i++)
+            {
+                if (rows[i].Size != row_size)
+                {
+                    throw new Exception("Incorrect matrix data");
+                }
+            }
+            this.rows = new List<Vector>(rows);
+        }
+        /// <summary>
+        /// Конструктор матрцы по ее размерам и элементу по умолчанию
+        /// </summary>
+        /// <param name="n_rows">колическтво строк</param>
+        /// <param name="n_cols">количество столбцов</param>
+        /// <param name="defualtVal">значение элементов матрицы по умолчанию</param>
+        public Matrix(int n_rows, int n_cols, double defualtVal = 0.0f)
+        {
+            rows = new List<Vector>(n_rows);
+
+            for (int i = 0; i < n_rows; i++)
+            {
+                rows.Add(new Vector(n_cols, defualtVal));
+            }
+        }
+        /// <summary>
+        /// Конструктор копирования
+        /// </summary>
+        /// <param name="original"></param>
+        public Matrix(Matrix original)
+        {
+            rows = new List<Vector>(original.rows.Count);
+
+            for (int i = 0; i < original.rows.Count; i++)
+            {
+                rows.Add(new Vector(original.rows[i]));
+            }
+        }
+
         /// <summary>
         /// Позволяет при иницилизации экземпляра класса вместо:
         /// Vector [] rows = new Vector[] { new double[] { 8, 1}, new double[] { 3, 5}, new double[] { 4, 9} };
@@ -474,202 +668,6 @@ namespace OptimizationMethods
                 result[i] = b - a[i];
             }
             return result;
-        }
-
-
-        public Matrix AddCol(Vector col)
-        {
-            if (col.Size != NRows)
-            {
-                throw new Exception("Error::AddCol::col.Size != NRows");
-            }
-            for (int i = 0; i < rows.Count; i++)
-            {
-                rows[i].PushBack(col[i]);
-            }
-            return this;
-        }
-
-        public Matrix AddRow(Vector row)
-        {
-            if (row.Size != NCols)
-            {
-                throw new Exception("Error::AddRow::row.Size != NCols");
-            }
-            rows.Add(row);
-            return this;
-        }
-
-        /// <summary>
-        /// Сравнение матриц
-        /// </summary>
-        /// <param name="other"></param>
-        /// <returns></returns>
-        public bool Equals([AllowNull] Matrix other)
-        {
-            if (other.rows.Count != rows.Count)
-            {
-                return false;
-            }
-            for (int i = 0; i < rows.Count; i++)
-            {
-                if (!other[i].Equals(this[i]))
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-        /// <summary>
-        /// Базовое сравнение матриц
-        /// </summary>
-        /// <param name="other"></param>
-        /// <returns></returns>
-        public override bool Equals(object other)
-        {
-            if (!(other is Matrix))
-            {
-                return false;
-            }
-            return Equals(other as Matrix);
-        }
-        /// <summary>
-        /// Не поверите, но расчитывает хеш-код, лол...
-        /// </summary>
-        /// <returns></returns>
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(rows);
-        }
-        /// <summary>
-        /// Строковое предствление матрицы
-        /// </summary>
-        /// <returns></returns>
-        public override string ToString()
-        {
-            string s = "{\n";
-            for (int i = 0; i < rows.Count - 1; i++)
-            {
-                s += " " + rows[i].ToString();
-                s += ",\n";
-            }
-            s += " " + rows[rows.Count - 1].ToString();
-            s += "\n}";
-            return s;
-        }
-        /// <summary>
-        /// Получение строки матрицы
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public Vector this[int id]
-        {
-            get
-            {
-                return rows[id];
-            }
-            set
-            {
-                rows[id] = value;
-            }
-        }
-        /// <summary>
-        ///  Количество строк
-        /// </summary>
-        public int NRows
-        {
-            get
-            {
-                return rows.Count;
-            }
-        }
-        /// <summary>
-        /// Количество столбцов
-        /// </summary>
-        public int NCols
-        {
-            get
-            {
-                if (NRows == 0)
-                {
-                    return 0;
-                }
-                return rows[0].Size;
-            }
-        }
-
-        public List<Vector> Rows
-        {
-            get 
-            {
-                return rows;
-            }
-        }
-
-        /// <summary>
-        /// Рамерность матрицы
-        /// </summary>
-        public int[] Size
-        {
-            get
-            {
-                return new int[] { NRows, NCols };
-            }
-        }
-        /// <summary>
-        /// Конструктор матрицы из массива строк
-        /// </summary>
-        /// <param name="rows"></param>
-        public Matrix(Vector[] rows)
-        {
-            if (rows == null)
-            {
-                throw new Exception("Data is null...");
-            }
-
-            if (rows.Length == 0)
-            {
-                throw new Exception("Data is empty...");
-            }
-
-            int row_size = rows[0].Size;
-
-            for (int i = 0; i < rows.Length; i++)
-            {
-                if (rows[i].Size != row_size)
-                {
-                    throw new Exception("Incorrect matrix data");
-                }
-            }
-            this.rows = new List<Vector>(rows);
-        }
-        /// <summary>
-        /// Конструктор матрцы по ее размерам и элементу по умолчанию
-        /// </summary>
-        /// <param name="n_rows">колическтво строк</param>
-        /// <param name="n_cols">количество столбцов</param>
-        /// <param name="defualtVal">значение элементов матрицы по умолчанию</param>
-        public Matrix(int n_rows, int n_cols, double defualtVal = 0.0f)
-        {
-            rows = new List<Vector>(n_rows);
-
-            for (int i = 0; i < n_rows; i++)
-            {
-                rows.Add(new Vector(n_cols, defualtVal));
-            }
-        }
-        /// <summary>
-        /// Конструктор копирования
-        /// </summary>
-        /// <param name="original"></param>
-        public Matrix(Matrix original)
-        {
-            rows = new List<Vector>(original.rows.Count);
-
-            for (int i = 0; i < original.rows.Count; i++)
-            {
-                rows.Add(new Vector(original.rows[i]));
-            }
         }
     }
 }

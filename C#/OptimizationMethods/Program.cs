@@ -96,7 +96,6 @@ namespace OptimizationMethods
             Console.WriteLine("x_0 = " + x_0 + ", x_1 = " + x_1 + "\n");
             Console.WriteLine("NewtoneRaphson         : " + MultiDimensional.NewtoneRaphson(Testf2, x_1).ToString());
             Console.WriteLine("NewtoneRaphson         : " + MultiDimensional.NewtoneRaphson(Func, x_1).ToString());
-
         }
 
 

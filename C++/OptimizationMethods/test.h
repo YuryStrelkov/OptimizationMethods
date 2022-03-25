@@ -13,7 +13,7 @@ static double test_function_1d(const double x)
 // тестовая унимодальная двумерная функция с минимумом в точке {2,2} 
 static double test_function_2d(const vec_n& args)
 {
-	return test_function_1d(args[0]) + test_function_1d(args[1]);
+	return (args[0] - 5) * args[0] + (args[1] - 3) * args[1];
 }
 
 // тестовая унимодальная n - мерная функция с минимумом в точке {2,...,2} 
@@ -42,22 +42,20 @@ static void  one_dimensional_methods_test()
 static void multi_dimensional_methods_test()
 {
 	vec_n x_0 = { 0,0 };
-	vec_n x_1 = { 5,5 };
+	vec_n x_1 = { 5,3 };
 
 	std::cout << "\n";
-	std::cout << "{ x, y } = agrmin((x - 2) * (x - 2) + (y - 2) * (y - 2))\n";
 	std::cout << "x_0 = " << x_0 << ", x_1 = " << x_1 << "\n";
-	std::cout << "dihotomia             : " << dihotomia   (test_function_2d, x_1, x_0, 1e-3) << "\n";
-	std::cout << "golden_ratio          : " << golden_ratio(test_function_2d, x_1, x_0, 1e-3) << "\n";
-	std::cout << "fibonacci             : " << fibonacci   (test_function_2d, x_1, x_0, 1e-3) << "\n";
+	std::cout << "dihotomia             : " << dihotomia   (test_function_2d, x_1, x_0, 1e-5) << "\n";
+	std::cout << "golden_ratio          : " << golden_ratio(test_function_2d, x_1, x_0, 1e-5) << "\n";
+	std::cout << "fibonacci             : " << fibonacci   (test_function_2d, x_1, x_0, 1e-5) << "\n";
 	std::cout << "\n";
-	vec_n x_start = { -14,3.98f };
+	vec_n x_start = { -0,0 };
 
-	std::cout << "x_start = " << x_start << "\n";
 	std::cout << "per_coord_descend     : " << per_coord_descend    (test_function_2d, x_start,       1e-5) << "\n";
 	std::cout << "gradient_descend      : " << gradient_descend     (test_function_2d, x_start,       1e-5) << "\n";
 	std::cout << "conj_gradient_descend : " << conj_gradient_descend(test_function_2d, x_start,       1e-5) << "\n";
-	std::cout << "newtone_raphson       : " << newtone_raphson      (test_function_nd, { -2, 6, 12 }, 1e-5) << "\n";
+	std::cout << "newtone_raphson       : " << newtone_raphson      (test_function_2d, x_start, 1e-5) << "\n";
 }
 
 static void matrix_test()
@@ -131,9 +129,9 @@ static void numeric_tests()
 static int test_all()
 {
 	//  one_dimensional_methods_test();
-	//	multi_dimensional_methods_test();
+		multi_dimensional_methods_test();
 	//	matrix_test();
-	symplex_method_test();
+	//	symplex_method_test();
 	//numeric_tests();
 	return 0;
 }

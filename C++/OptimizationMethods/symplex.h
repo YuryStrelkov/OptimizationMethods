@@ -9,7 +9,9 @@
 #define EQUAL       0
 #define LESS_EQUAL -1
 #define MORE_EQUAL  1
-
+////////////////////
+/// Lab. work #5 ///
+////////////////////
 static std::string str_rational(const double val, const bool full_rational =  true)
 {
 	int r_part;
@@ -385,7 +387,7 @@ std::vector<int> build_symplex_table(mat_mn& A, const mat_mn& a, const vec_n& c,
 
 vec_n symplex_solve(const mat_mn& a, const vec_n& c, const vec_n& b, const std::vector<int> ineq, const int mode = SYMPLEX_MAX)
 {
-	vec_n solution(c.size());
+	vec_n solution;
 	
 	int system_condition = check_system(a, b);
 
