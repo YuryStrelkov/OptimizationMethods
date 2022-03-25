@@ -112,18 +112,18 @@ static void symplex_method_test()
 static void numeric_tests()
 {
 	int rational;
-	int nominator;
+	int numerator;
 	int denominator;
-	decimal_to_rational(1.6666, rational, nominator, denominator);
-	std::cout << rational << " " << nominator << "/" << denominator << std::endl;
-	decimal_to_rational(0.6666, rational, nominator, denominator);
-	std::cout << rational << " " << nominator << "/" << denominator << std::endl;
-	decimal_to_rational(-3, rational, nominator, denominator);
-	std::cout << rational << " " << nominator << "/" << denominator << std::endl;
-	decimal_to_rational(-0.125, rational, nominator, denominator);
-	std::cout << rational << " " << nominator << "/" << denominator << std::endl;
-	decimal_to_rational(3.769230769230769230769, rational, nominator, denominator);
-	std::cout << rational << " " << nominator << "/" << denominator << std::endl;
+	decimal_to_rational(1.6666, rational, numerator, denominator);
+	std::cout << rational << " " << numerator << "/" << denominator << std::endl;
+	decimal_to_rational(0.6666, rational, numerator, denominator);
+	std::cout << rational << " " << numerator << "/" << denominator << std::endl;
+	decimal_to_rational(-3, rational, numerator, denominator);
+	std::cout << rational << " " << numerator << "/" << denominator << std::endl;
+	decimal_to_rational(-0.125, rational, numerator, denominator);
+	std::cout << rational << " " << numerator << "/" << denominator << std::endl;
+	decimal_to_rational(3.769230769230769230769, rational, numerator, denominator);
+	std::cout << rational << " " << numerator << "/" << denominator << std::endl;
 }
 
 static int test_all()

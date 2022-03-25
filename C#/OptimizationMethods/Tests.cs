@@ -60,18 +60,18 @@ namespace OptimizationMethods
         public static void NumericTests()
         {
             int rational;
-            int nominator;
+            int numerator;
             int denominator;
-            NumericUtils.DecimalToRational(1.6666,out rational, out nominator, out denominator);
-            Console.WriteLine($"{rational} {nominator} / {denominator}\n");
-            NumericUtils.DecimalToRational(0.6666, out rational, out nominator, out denominator);
-            Console.WriteLine($"{rational} {nominator} / {denominator}\n");
-            NumericUtils.DecimalToRational(-3, out rational, out nominator, out denominator);
-            Console.WriteLine($"{rational} {nominator} / {denominator}\n");
-            NumericUtils.DecimalToRational(-0.125, out rational, out nominator, out denominator);
-            Console.WriteLine($"{rational} {nominator} / {denominator}\n");
-            NumericUtils.DecimalToRational(3.769230769230769230769, out rational, out nominator, out denominator);
-            Console.WriteLine($"{rational} {nominator} / {denominator}\n");
+            NumericUtils.DecimalToRational(1.6666,out rational, out numerator, out denominator);
+            Console.WriteLine($"{rational} {numerator} / {denominator}\n");
+            NumericUtils.DecimalToRational(0.6666, out rational, out numerator, out denominator);
+            Console.WriteLine($"{rational} {numerator} / {denominator}\n");
+            NumericUtils.DecimalToRational(-3, out rational, out numerator, out denominator);
+            Console.WriteLine($"{rational} {numerator} / {denominator}\n");
+            NumericUtils.DecimalToRational(-0.125, out rational, out numerator, out denominator);
+            Console.WriteLine($"{rational} {numerator} / {denominator}\n");
+            NumericUtils.DecimalToRational(3.769230769230769230769, out rational, out numerator, out denominator);
+            Console.WriteLine($"{rational} {numerator} / {denominator}\n");
         }
 
 

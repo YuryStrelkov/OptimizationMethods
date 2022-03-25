@@ -15,24 +15,24 @@
 static std::string str_rational(const double val, const bool full_rational =  true)
 {
 	int r_part;
-	int nom;
+	int num;
 	int denom;
 
-	decimal_to_rational(val, r_part, nom, denom);
-	if (nom == 0)
+	decimal_to_rational(val, r_part, num, denom);
+	if (num == 0)
 	{
 		return std::to_string(r_part);
 	}
 	if (r_part == 0)
 	{
-		return std::to_string(nom) + "/" + std::to_string(denom);
+		return std::to_string(num) + "/" + std::to_string(denom);
 	}
 
 	if (full_rational)
 	{
-		return std::to_string((nom + abs(r_part) * denom) * (r_part >= 0 ? 1 : -1)) + "/" + std::to_string(denom);
+		return std::to_string((num + abs(r_part) * denom) * (r_part >= 0 ? 1 : -1)) + "/" + std::to_string(denom);
 	}
-	return std::to_string(denom) + " " + std::to_string(nom) + "/" + std::to_string(denom);
+	return std::to_string(denom) + " " + std::to_string(num) + "/" + std::to_string(denom);
 }
 
 static std::string str_rational(const vec_n& val, const bool full_rational = true)

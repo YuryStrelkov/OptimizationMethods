@@ -19,7 +19,7 @@ namespace OptimizationMethods
         /// <param name="nominator">числитель</param>
         /// <param name="denominator">знаменатель</param>
         /// <param name="max_den">максимально допустимый знаменатель</param>
-        public static void DecimalToRational(double value, out int rational_part, out int nominator, out int denominator, int max_den = 1000)
+        public static void DecimalToRational(double value, out int rational_part, out int numerator, out int denominator, int max_den = 1000)
         {
             mat2 m;
 
@@ -60,7 +60,7 @@ namespace OptimizationMethods
 
             if ((rational_part = (int)(m.m00 / m.m10)) != 0)
             {
-                nominator = (int)(m.m00 - rational_part * m.m10);
+                numerator = (int)(m.m00 - rational_part * m.m10);
 
                 rational_part *= sign;
 
@@ -70,7 +70,7 @@ namespace OptimizationMethods
             }
             rational_part = 0;
 
-            nominator = (int)(sign * m.m00);
+            numerator = (int)(sign * m.m00);
 
             denominator = (int)m.m10;
         }

@@ -8,7 +8,7 @@
 /// <param name="nominator">числитель</param>
 /// <param name="denominator">знаменатель</param>
 /// <param name="max_den">максимально допустимый знаменатель</param>
-static void decimal_to_rational(const double value, int& rational_part, int& nominator, int& denominator, const int max_den = MAX_DENOMINATOR)
+static void decimal_to_rational(const double value, int& rational_part, int& numerator, int& denominator, const int max_den = MAX_DENOMINATOR)
 {
 	long m[2][2];
 	
@@ -50,7 +50,7 @@ static void decimal_to_rational(const double value, int& rational_part, int& nom
  
 	if ((rational_part = m[0][0] / m[1][0]) != 0)
 	{
-		nominator    = m[0][0] - rational_part * m[1][0];
+		numerator = m[0][0] - rational_part * m[1][0];
 		
 		rational_part *= sign;
 
@@ -60,7 +60,7 @@ static void decimal_to_rational(const double value, int& rational_part, int& nom
 	}
 	rational_part = 0;
 
-	nominator = sign * m[0][0];
+	numerator = sign * m[0][0];
 
 	denominator = m[1][0];
 }

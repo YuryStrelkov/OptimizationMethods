@@ -32,25 +32,25 @@ namespace OptimizationMethods
         {
             int r_part;
             
-            int nom;
+            int num;
             
             int denom;
 
-            NumericUtils.DecimalToRational(value,out r_part, out nom, out denom);
-            if (nom == 0)
+            NumericUtils.DecimalToRational(value,out r_part, out num, out denom);
+            if (num == 0)
             {
                 return r_part.ToString();
             }
             if (r_part == 0)
             {
-                return nom.ToString() + "/" + denom.ToString();
+                return num.ToString() + "/" + denom.ToString();
             }
 
             if (fullRational)
             {
-                return ((nom + Math.Abs(r_part) * denom) * (r_part >= 0 ? 1 : -1)).ToString() + "/" + denom.ToString();
+                return ((num + Math.Abs(r_part) * denom) * (r_part >= 0 ? 1 : -1)).ToString() + "/" + denom.ToString();
             }
-            return denom.ToString() + " " + nom.ToString() + "/" + denom.ToString();
+            return denom.ToString() + " " + num.ToString() + "/" + denom.ToString();
         }
         private static string ToRationalStr(Vector value, bool fullRational = true)
         {
