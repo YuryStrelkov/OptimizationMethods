@@ -21,16 +21,22 @@ static void decimal_to_rational(const double value, int& rational_part, int& nom
 	
 	int sign = value >= 0 ? 1 : -1;
 	
-	x = startx = abs(value);
+	x = abs(value);
+	
+	long t;
 
 	while (m[1][0] * (ai = (long)x) + m[1][1] <= max_den) {
-		long t;
+	
 		t = m[0][0] * ai + m[0][1];
+		
 		m[0][1] = m[0][0];
 		m[0][0] = t;
+		
 		t = m[1][0] * ai + m[1][1];
+		
 		m[1][1] = m[1][0];
 		m[1][0] = t;
+		
 		if (x == (double)ai)
 		{
 			break;

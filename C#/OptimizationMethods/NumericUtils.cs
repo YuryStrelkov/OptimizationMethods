@@ -21,7 +21,7 @@ namespace OptimizationMethods
         /// <param name="max_den">максимально допустимый знаменатель</param>
         public static void DecimalToRational(double value, out int rational_part, out int nominator, out int denominator, int max_den = 1000)
         {
-            mat2 m = new mat2();
+            mat2 m;
 
             m.m00 = m.m11 = 1;
             m.m01 = m.m10 = 0;
@@ -33,14 +33,18 @@ namespace OptimizationMethods
             int sign = value >= 0 ? 1 : -1;
 
             x = Math.Abs(value);
+           
+            long t;
 
             while (m.m10 * (ai = (long)x) + m.m11 <= max_den)
             {
-                long t;
                 t = m.m00 * ai + m.m01;
+            
                 m.m01 = m.m00;
                 m.m00 = t;
+                
                 t = m.m10 * ai + m.m11;
+                
                 m.m11 = m.m10;
                 m.m10 = t;
                 if (x == (double)ai)
