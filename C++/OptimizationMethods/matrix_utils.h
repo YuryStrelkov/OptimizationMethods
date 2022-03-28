@@ -32,7 +32,7 @@ static mat_mn identity(const int rows, const int cols)
 		row.resize(cols);
 		for (int i = 0; i < cols; i++)
 		{
-			row[i] = row_n == i ? 1.0f : 0.0f;
+			row[i] = row_n == i ? 1.0 : 0.0;
 		}
 		row_n++;
 	}
@@ -67,7 +67,7 @@ static std::ostream& operator<<(std::ostream& steram, const mat_mn& v)
 	return steram;
 }
 
-static mat_mn hessian(func_n func, vec_n& x, const double eps = 1e-6f)
+static mat_mn hessian(func_n func, vec_n& x, const double eps = 1e-6)
 {
 	mat_mn res = zeros(x.size(), x.size());
 	int row, col;
@@ -254,7 +254,7 @@ static void lu(const mat_mn& mat, mat_mn& low, mat_mn& up)
 
 static vec_n linsolve(const mat_mn& low, const mat_mn& up, const vec_n& b)
 {
-	double det = 1.0f;
+	double det = 1.0;
 	
 	vec_n x, z;
 
@@ -263,7 +263,7 @@ static vec_n linsolve(const mat_mn& low, const mat_mn& up, const vec_n& b)
 		det *= (up[i][i] * up[i][i]);
 	}
 
-	if (fabs(det) < 1e-12f)
+	if (fabs(det) < 1e-12)
 	{
 		return x;
 	}
@@ -286,7 +286,7 @@ static vec_n linsolve(const mat_mn& low, const mat_mn& up, const vec_n& b)
 
 	for (int i = z.size() - 1; i >= 0; i--)
 	{
-		tmp = 0.0f;
+		tmp = 0.0;
 		for (int j = i + 1; j < z.size(); j++)
 		{
 			tmp += x[j] * up[i][j];
@@ -336,21 +336,21 @@ static mat_mn invert(const mat_mn& mat)
 
 	for (int i = 0; i < b.size(); i++)
 	{
-		b[i] = 0.0f;
+		b[i] = 0.0;
 	}
 
 	inv = zeros(rows);
 
 	for (int i = 0; i < cols; i++)
 	{
-		b[i] = 1.0f;
+		b[i] = 1.0;
 		col = linsolve(low, up, b);
 		if (col.size() == 0)
 		{
 			throw std::runtime_error("error :: unable to find matrix inversion");
 		}
 
-		b[i] = 0.0f;
+		b[i] = 0.0;
 		for (int j = 0; j < rows; j++)
 		{
 			inv[j][i] = col[j];
@@ -358,7 +358,7 @@ static mat_mn invert(const mat_mn& mat)
 	}
 	return inv;
 }
-const double mat_eps = 1E-9;
+const double mat_eps = 1e-9;
 
 mat_mn& add_row(mat_mn& mat, const vec_n& row)
 {
@@ -379,7 +379,7 @@ mat_mn& add_col(mat_mn& mat, const vec_n& col)
 {
 	if (mat.size() == 0)
 	{
-		for (int i = 0;i < col.size(); i++)
+		for (int i = 0; i < col.size(); i++)
 		{
 			mat.push_back(vec_n());
 			mat[i].push_back(col[i]);

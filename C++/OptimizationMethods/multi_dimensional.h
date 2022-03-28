@@ -26,7 +26,7 @@ static vec_n dihotomia(func_n f, const vec_n& x_0, const vec_n& x_1, const doubl
 		{
 			break;
 		}
-		x_c = (x_1_ + x_0_) * 0.5f;
+		x_c = (x_1_ + x_0_) * 0.5;
 
 		if (f(x_c + dir * eps) > f(x_c - dir * eps))
 		{
@@ -71,7 +71,7 @@ static vec_n golden_ratio(func_n f, const vec_n& x_0, const vec_n& x_1, const do
 #if _DEBUG
 	std::cout <<"golden ratio iterations number : " << cntr << "\n";
 #endif
-	return (a + b) * 0.5f;
+	return (a + b) * 0.5;
 }
 
 static vec_n fibonacci(func_n f, const vec_n& x_0, const vec_n& x_1, const double eps = N_DIM_ACCURACY)
@@ -107,7 +107,7 @@ static vec_n fibonacci(func_n f, const vec_n& x_0, const vec_n& x_1, const doubl
 #if _DEBUG
 	std::cout << "fibonacchi iterations number : " << max_iters << "\n";
 #endif
-	return (x_1_ + x_0_) * 0.5f;
+	return (x_1_ + x_0_) * 0.5;
 }
 // Покоординатный спуск, градиентный спуск и спуск с помощью сопряжённых градиентов, определяют
 // минимальное значение функции только по одной начальной точке x_start.
@@ -119,7 +119,7 @@ static vec_n per_coord_descend(func_n f, const vec_n& x_start, const double eps 
 	
 	vec_n x_1(x_start);
 
-	double step = 1.0f;
+	double step = 1.0;
 	
 	double x_i, y_1, y_0;
 
@@ -195,14 +195,14 @@ static vec_n gradient_descend(func_n f, const vec_n& x_start, const double eps =
 #if _DEBUG
 	std::cout << "gradient descend iterations number : " << cntr << "\n";
 #endif
-	return (x_i_1 + x_i) * 0.5f;
+	return (x_i_1 + x_i) * 0.5;
 }
 
 static vec_n conj_gradient_descend(func_n f, const vec_n& x_start, const double eps = N_DIM_ACCURACY, const int max_iters = N_DIM_ITERS_MAX)
 {
 	vec_n x_i(x_start);
 	vec_n x_i_1;
-	vec_n s_i = gradient(f, x_start, eps)*(-1.0f), s_i_1;
+	vec_n s_i = gradient(f, x_start, eps)*(-1.0), s_i_1;
 	double omega;
 	int cntr = 0;
 	while (true)
@@ -234,7 +234,7 @@ static vec_n conj_gradient_descend(func_n f, const vec_n& x_start, const double 
 #if _DEBUG
 	std::cout << "conj gradient descend iterations number : " << cntr << "\n";
 #endif
-	return (x_i_1 + x_i) * 0.5f;
+	return (x_i_1 + x_i) * 0.5;
 }
 
 static vec_n newtone_raphson(func_n f, const vec_n& x_start, const double eps = N_DIM_ACCURACY, const int max_iters = N_DIM_ITERS_MAX)
@@ -267,5 +267,5 @@ static vec_n newtone_raphson(func_n f, const vec_n& x_start, const double eps = 
 #if _DEBUG
 	std::cout << "Newtone-Raphson method iterations number : " << cntr << "\n";
 #endif
-	return (x_i_1 + x_i) * 0.5f;
+	return (x_i_1 + x_i) * 0.5;
 }

@@ -26,7 +26,7 @@ namespace OptimizationMethods
         {
             get
             {
-                double mag = 0.0f;
+                double mag = 0.0;
                 foreach (double element in data)
                 {
                     mag += (element * element);
@@ -42,7 +42,7 @@ namespace OptimizationMethods
             get
             {
                 Vector v = new Vector(this);
-                double inv_mag = 1.0f / v.Magnitude;
+                double inv_mag = 1.0 / v.Magnitude;
                 for (int i = 0; i < v.Size; i++)
                 {
                     v[i] *= inv_mag;
@@ -56,7 +56,7 @@ namespace OptimizationMethods
         /// <returns></returns>
         public Vector Normalize()
         {
-            double inv_mag = 1.0f / Magnitude;
+            double inv_mag = 1.0 / Magnitude;
             for (int i = 0; i < Size; i++)
             {
                 this[i] *= inv_mag;
@@ -75,7 +75,7 @@ namespace OptimizationMethods
                 throw new Exception("Unable vector dot multiply");
             }
 
-            double dot = 0.0f;
+            double dot = 0.0;
 
             for (int i = 0; i < other.Size; i++)
             {
@@ -196,7 +196,7 @@ namespace OptimizationMethods
         /// </summary>
         /// <param name="size"></param>
         /// <param name="defaultValue"></param>
-        public Vector(int size, double defaultValue = 0.0f)
+        public Vector(int size, double defaultValue = 0.0)
         {
             data = new List<double>(size);
             for (int i = 0; i < size; i++)
@@ -331,7 +331,7 @@ namespace OptimizationMethods
                 x_l[i] -= eps;
                 x_r[i] += eps;
 
-                df[i] = (func(x_r) - func(x_l)) * (0.5f / eps);
+                df[i] = (func(x_r) - func(x_l)) * (0.5 / eps);
 
                 x_l[i] += eps;
                 x_r[i] -= eps;
@@ -354,10 +354,10 @@ namespace OptimizationMethods
             }
             x[coord_index] += eps;
             double f_r = func(x);
-            x[coord_index] -= (2.0f * eps);
+            x[coord_index] -= (2.0 * eps);
             double f_l = func(x);
             x[coord_index] += eps;
-            return (f_r - f_l) / eps * 0.5f;
+            return (f_r - f_l) / eps * 0.5;
         }
 
         public static double Partial2(func_n func, Vector x, int coord_index_1, int coord_index_2, double eps = 1e-6)
@@ -371,7 +371,7 @@ namespace OptimizationMethods
             x[coord_index_2] += (2 * eps);
             double f_r = Partial(func, x, coord_index_1, eps);
             x[coord_index_2] -= eps;
-            return (f_r - f_l) / eps * 0.5f;
+            return (f_r - f_l) / eps * 0.5;
         }
         /// <summary>
         /// Скалярное произведение (a;b)

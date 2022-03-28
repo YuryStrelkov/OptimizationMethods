@@ -181,7 +181,7 @@ namespace OptimizationMethods
         /// <param name="n_rows">колическтво строк</param>
         /// <param name="n_cols">количество столбцов</param>
         /// <param name="defualtVal">значение элементов матрицы по умолчанию</param>
-        public Matrix(int n_rows, int n_cols, double defualtVal = 0.0f)
+        public Matrix(int n_rows, int n_cols, double defualtVal = 0.0)
         {
             rows = new List<Vector>(n_rows);
 
@@ -326,7 +326,7 @@ namespace OptimizationMethods
             for (int i = 0; i < Math.Min(n_rows, n_cols); i++)
             {
                 Vector v = I[i];
-                v[i] = 1.0f;
+                v[i] = 1.0;
                 I[i] = v;
             }
             return I;
@@ -382,7 +382,7 @@ namespace OptimizationMethods
                     }
                     if (j == i)
                     {
-                        up[i][j] = 1.0f;
+                        up[i][j] = 1.0;
                         continue;
                     }
                     up[i][j] = src[i][j] / low[i][i];
@@ -403,7 +403,7 @@ namespace OptimizationMethods
         /// <returns>x</returns>
         private static Vector Linsolve(ref Matrix low, ref Matrix up, ref Vector b)
         {
-            double det = 1.0f;
+            double det = 1.0;
 
             Vector x, z;
 
@@ -412,7 +412,7 @@ namespace OptimizationMethods
                 det *= (up[i][i] * up[i][i]);
             }
 
-            if (Math.Abs(det) < 1e-12f)
+            if (Math.Abs(det) < 1e-12)
             {
                 return null;
             }
@@ -423,7 +423,7 @@ namespace OptimizationMethods
 
             for (int i = 0; i < z.Size; i++)
             {
-                tmp = 0.0f;
+                tmp = 0.0;
                 for (int j = 0; j < i; j++)
                 {
                     tmp += z[j] * low[i][j];
@@ -435,7 +435,7 @@ namespace OptimizationMethods
 
             for (int i = z.Size - 1; i >= 0; i--)
             {
-                tmp = 0.0f;
+                tmp = 0.0;
                 for (int j = i + 1; j < z.Size; j++)
                 {
                     tmp += x[j] * up[i][j];
@@ -486,14 +486,14 @@ namespace OptimizationMethods
 
             for (int i = 0; i < b.Size; i++)
             {
-                b[i] = 0.0f;
+                b[i] = 0.0;
             }
 
             inv = Zeros(mat.NRows);
 
             for (int i = 0; i < mat.NCols; i++)
             {
-                b[i] = 1.0f;
+                b[i] = 1.0;
                 col = Linsolve(ref low, ref up, ref b);
                 if (col == null)
                 {
@@ -503,7 +503,7 @@ namespace OptimizationMethods
                 {
                     throw new Exception("unable to find matrix inversion");
                 }
-                b[i] = 0.0f;
+                b[i] = 0.0;
                 for (int j = 0; j < mat.NRows; j++)
                 {
                     inv[j][i] = col[j];

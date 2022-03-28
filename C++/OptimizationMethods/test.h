@@ -127,10 +127,10 @@ static void numeric_tests()
 
 static int test_all()
 {
-	//		 one_dimensional_methods_test();
+	one_dimensional_methods_test();
 	multi_dimensional_methods_test();
-	//	matrix_test();
-	//		symplex_method_test();
-	//numeric_tests();
+	matrix_test();
+	symplex_method_test();
+	numeric_tests();
 	return 0;
 }

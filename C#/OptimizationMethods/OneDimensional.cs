@@ -11,10 +11,10 @@ namespace OptimizationMethods
         ////////////////////
         public static double TestFunc(double x)
         {
-	        return (x - 5) * (x - 2); // min at point x = 2.5
+	        return (x - 5) * (x - 2); // min at point x = 3.5
         }
 
-        public static readonly double Phi = (1.0f + MathF.Sqrt(5.0f)) * 0.5f;
+        public static readonly double Phi = (1.0 + Math.Sqrt(5.0)) * 0.5;
         static void Swap<T>(ref T lhs, ref T rhs)
         {
             T temp;
@@ -22,9 +22,9 @@ namespace OptimizationMethods
             lhs = rhs;
             rhs = temp;
         }
-        public static double Dihotomia  (func_1 f, double x_0, double x_1, double eps = 1e-6f, int max_iters = 1000)
+        public static double Dihotomia  (func_1 f, double x_0, double x_1, double eps = 1e-6, int max_iters = 1000)
         {
-            double x_c = 0.0f;
+            double x_c = 0.0;
 
             if (x_0 > x_1)
             {
@@ -39,7 +39,7 @@ namespace OptimizationMethods
                 {
                     break;
                 }
-                x_c = (x_1 + x_0) * 0.5f;
+                x_c = (x_1 + x_0) * 0.5;
 
                 if (f(x_c + eps) > f(x_c - eps))
                 {
@@ -53,7 +53,7 @@ namespace OptimizationMethods
 #endif
             return x_c;
         }
-        public static double GoldenRatio(func_1 f, double x_0, double x_1, double eps = 1e-6f, int max_iters = 1000)
+        public static double GoldenRatio(func_1 f, double x_0, double x_1, double eps = 1e-6, int max_iters = 1000)
         {
             if (x_0 > x_1)
             {
@@ -83,7 +83,7 @@ namespace OptimizationMethods
 #if DEBUG
             Console.WriteLine("golden ratio iterations number : " + cntr + "\n");
 #endif
-            return (x_1 + x_0) * 0.5f;
+            return (x_1 + x_0) * 0.5;
         }
         public static int[] FibonacchiNumbers(int index)
         {
@@ -139,7 +139,7 @@ namespace OptimizationMethods
                 cntr++;
             }
         }
-        public static double Fibonacci(func_1 f, double x_0, double x_1, double eps = 1e-6f)
+        public static double Fibonacci(func_1 f, double x_0, double x_1, double eps = 1e-6)
         {
             if (x_0 > x_1)
             {
@@ -175,7 +175,7 @@ namespace OptimizationMethods
 #if DEBUG
             Console.WriteLine("fibonacchi iterations number : " + max_iters + "\n");
 #endif
-            return (x_1 + x_0) * 0.5f;
+            return (x_1 + x_0) * 0.5;
         }
     }
 }

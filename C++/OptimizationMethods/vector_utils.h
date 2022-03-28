@@ -9,13 +9,13 @@ typedef double(*func_n)(const vec_n&);
 template<typename T>
 static bool operator == (const std::vector<T> & a, const std::vector<T> & b)
 {
-	if (a.size()!=b.size())
+	if (a.size() != b.size())
 	{
 		return false;
 	}
-	for (int i = 0;i<a.size();i++) 
+	for (int i = 0;i < a.size();i++) 
 	{
-		if (a[i]!=b[i])
+		if (a[i] != b[i])
 		{
 			return false;
 		}
@@ -107,7 +107,7 @@ static double dot(const vec_n& a, const vec_n& b)
 	{
 		throw std::runtime_error("error :: dot product :: vectors of different dimensions");
 	}
-	double res = 0.0f;
+	double res = 0.0;
 
 	for (int i = 0; i < a.size(); i++)
 	{
@@ -143,7 +143,7 @@ static double magnitude(const  vec_n& a)
 // нормализация вектора vec_n
 static vec_n& normalize(vec_n& vec)
 {
-	double mag = 1.0f / magnitude(vec);
+	double mag = 1.0 / magnitude(vec);
 	for (int i = 0; i < vec.size(); i++)
 	{
 		vec[i] *= mag;
@@ -157,7 +157,7 @@ static vec_n direction(const vec_n& a, const vec_n& b)
 	return normalize(res);
 }
 // производная (центральный разностный аналог) n-мерной функции в точке x с шагом eps
-static vec_n gradient(func_n fun, const vec_n& x, const double eps = 1e-6f)
+static vec_n gradient(func_n fun, const vec_n& x, const double eps = 1e-6)
 {
 	vec_n df, x_l(x), x_r(x);
 
@@ -167,7 +167,7 @@ static vec_n gradient(func_n fun, const vec_n& x, const double eps = 1e-6f)
 		x_l[i] -= eps;
 		x_r[i] += eps;
 
-		df[i] = (fun(x_r) - fun(x_l)) * (0.5f / eps);
+		df[i] = (fun(x_r) - fun(x_l)) * (0.5 / eps);
 
 		x_l[i] += eps;
 		x_r[i] -= eps;
@@ -175,7 +175,7 @@ static vec_n gradient(func_n fun, const vec_n& x, const double eps = 1e-6f)
 	return df;
 }
 // частная производная по i-ой координате
-static double partial(func_n func, vec_n& x, const int coord_index, const double eps = 1e-6f)
+static double partial(func_n func, vec_n& x, const int coord_index, const double eps = 1e-6)
 {
 	if (x.size() <= coord_index)
 	{
@@ -183,13 +183,13 @@ static double partial(func_n func, vec_n& x, const int coord_index, const double
 	}
 	x[coord_index] += eps;
 	double f_r = func(x);
-	x[coord_index] -= (2.0f * eps);
+	x[coord_index] -= (2.0 * eps);
 	double f_l = func(x);
 	x[coord_index] += eps;
-	return (f_r - f_l) / eps * 0.5f;
+	return (f_r - f_l) / eps * 0.5;
 }
 //вторая частная производная по i-ой j-ой координатам
-static double partial2(func_n func, vec_n& x, const int coord_index_1, const int coord_index_2, const double eps = 1e-6f)
+static double partial2(func_n func, vec_n& x, const int coord_index_1, const int coord_index_2, const double eps = 1e-6)
 {
 	if (x.size() <= coord_index_2)
 	{
@@ -197,10 +197,10 @@ static double partial2(func_n func, vec_n& x, const int coord_index_1, const int
 	}
 	x[coord_index_2] -= eps;
 	double f_l = partial(func, x, coord_index_1, eps);
-	x[coord_index_2] += (2 * eps);
+	x[coord_index_2] += (2.0 * eps);
 	double f_r = partial(func, x, coord_index_1, eps);
 	x[coord_index_2] -= eps;
-	return (f_r - f_l) / eps * 0.5f;
+	return (f_r - f_l) / eps * 0.5;
 }
 
 static double max(const vec_n& x, int& index) 

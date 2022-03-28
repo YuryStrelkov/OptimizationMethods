@@ -6,9 +6,9 @@
 
 typedef double(*func)(const double);
 
-static double dihotomia(func f, const double x_0, const double x_1, const double eps = 1e-6f, const int max_iters = 1000)
+static double dihotomia(func f, const double x_0, const double x_1, const double eps = 1e-6, const int max_iters = 1000)
 {
-	double x_0_ = x_0 , x_1_ = x_1, x_c = 0.0f;
+	double x_0_ = x_0 , x_1_ = x_1, x_c = 0.0;
 	
 	if (x_0_ > x_1_)
 	{
@@ -23,7 +23,7 @@ static double dihotomia(func f, const double x_0, const double x_1, const double
 		{
 			break;
 		}
-		x_c = (x_1_ + x_0_) * 0.5f;
+		x_c = (x_1_ + x_0_) * 0.5;
 
 		if (f(x_c + eps) > f(x_c - eps))
 		{
@@ -38,7 +38,7 @@ static double dihotomia(func f, const double x_0, const double x_1, const double
 	return x_c;
 }
 
-static double golden_ratio(func f, const double x_0, const double x_1, const double eps = 1e-6f, const int max_iters = 1000)
+static double golden_ratio(func f, const double x_0, const double x_1, const double eps = 1e-6, const int max_iters = 1000)
 {
 	double a = x_0, b = x_1;
 	
@@ -72,7 +72,7 @@ static double golden_ratio(func f, const double x_0, const double x_1, const dou
 #if _DEBUG
 	std::cout << "golden ratio iterations number : " << cntr << "\n";
 #endif
-	return (x_1_ + x_0_) * 0.5f;
+	return (x_1_ + x_0_) * 0.5;
 }
 
 static int   closest_fibonacci(double value)
@@ -132,7 +132,7 @@ static std::vector<T> fibonacci_numbers(int index)
 	return res;
 }
 
-static double fibonacci(func f, const double x_0, const double x_1, const double eps = 1e-6f)
+static double fibonacci(func f, const double x_0, const double x_1, const double eps = 1e-6)
 {
 	double a = x_0, b = x_1;
 
@@ -169,7 +169,7 @@ static double fibonacci(func f, const double x_0, const double x_1, const double
 #if _DEBUG
 	std::cout << "fibonacchi iterations number : " << max_iters << "\n";
 #endif
-	return (x_1_ + x_0_) * 0.5f;
+	return (x_1_ + x_0_) * 0.5;
 }
 
 
