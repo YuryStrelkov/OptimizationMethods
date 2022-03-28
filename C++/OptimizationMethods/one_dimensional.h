@@ -1,7 +1,8 @@
 #pragma once
 #include <cmath>
 #include <iostream>
-#define phi (1.0 + sqrt(5.0))*0.5
+#include <vector>
+#define phi ((1.0 + sqrt(5.0))*0.5)
 
 typedef double(*func)(const double);
 
@@ -46,7 +47,7 @@ static double golden_ratio(func f, const double x_0, const double x_1, const dou
 		std::swap(a, b);
 	}
 
-	double x_0_ = a, x_1_ = b,dx_;
+	double x_0_ = a, x_1_ = b, dx;
 
 	int cntr = 0;
 
@@ -56,17 +57,17 @@ static double golden_ratio(func f, const double x_0, const double x_1, const dou
 		{
 			break;
 		}
-		dx_ = (b - a) / phi;
+		dx = b - a;
 
-		x_0_ = b - dx_;
-		x_1_ = a + dx_;
+		x_0_ = b - dx / phi;
+		x_1_ = a + dx / phi;
 
-		if (f(x_0_) > f(x_1_))
+		if (f(x_0_) >= f(x_1_))
 		{
-			b = x_0_;
+			a = x_0_;
 			continue;
 		}
-		a = x_1_;
+		b = x_1_;
 	}
 #if _DEBUG
 	std::cout << "golden ratio iterations number : " << cntr << "\n";
@@ -105,6 +106,32 @@ static int   closest_fibonacci(double value)
 	}
 }
 
+template<typename T>
+static std::vector<T> fibonacci_numbers(int index)
+{
+	if (index < 0)
+	{
+		return {(T)0};
+	}
+	if (index == 0 || index == 1)
+	{
+		return {(T)1};
+	}
+	
+	std::vector<T> res(index);
+	
+	res.at(0) = (T)1;
+	
+	res.at(1) = (T)1;
+
+	for (int i = 2; i < index; i++)
+	{
+		res.at(i) = res.at(i - 2) + res.at(i - 1);
+	}
+
+	return res;
+}
+
 static double fibonacci(func f, const double x_0, const double x_1, const double eps = 1e-6f)
 {
 	double a = x_0, b = x_1;
@@ -115,34 +142,32 @@ static double fibonacci(func f, const double x_0, const double x_1, const double
 	}
 
 	double x_0_ = a, x_1_ = b, dx;
-	double f_1 = 1.0f, f_2 = 2.0f, f_3 = 3.0f;
-	int cntr = 0;
-
+	
 	int max_iters = closest_fibonacci((b - a) / eps);
 
-	for (; cntr != max_iters; cntr++)
+	int cntr = max_iters - 1;
+
+	std::vector<double> f_n_s = fibonacci_numbers<double>(max_iters);
+
+	for (; cntr >= 2; cntr--)
 	{
 		if (fabs(x_1_ - x_0_) < eps)
 		{
 			break;
 		}
 		dx = (b - a);
-		x_0_ = b - dx * f_1 / f_3;
-		x_1_ = b + dx * f_2 / f_3;
-
-		f_1 = f_2;
-		f_2 = f_3;
-		f_3 = f_1 + f_2;
+		x_0_ = a + dx * f_n_s[cntr - 2] / f_n_s[cntr];
+		x_1_ = a + dx * f_n_s[cntr - 1] / f_n_s[cntr];
 
 		if (f(x_0_) < f(x_1_))
 		{
-			b = x_0_;
+			b = x_1_;
 			continue;
 		}
-		a = x_1_;
+		a = x_0_;
 	}
 #if _DEBUG
-	std::cout << "fibonacchi iterations number : " << cntr << "\n";
+	std::cout << "fibonacchi iterations number : " << max_iters << "\n";
 #endif
 	return (x_1_ + x_0_) * 0.5f;
 }

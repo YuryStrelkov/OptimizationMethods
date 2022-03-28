@@ -7,7 +7,7 @@
 // тестовая унимодальная одномерная функция с минимумом в точке {2} 
 static double test_function_1d(const double x)
 {
-	return  (x - 2) * (x - 2);
+	return  (x - 2) * (x - 5);
 }
 
 // тестовая унимодальная двумерная функция с минимумом в точке {2,2} 
@@ -29,14 +29,14 @@ static double test_function_nd(const vec_n& args)
 
 static void  one_dimensional_methods_test()
 {
-	double x_0 = 10;
-	double x_1 = -1;
+	double x_0 = 125;
+	double x_1 = -5;
 	std::cout << "\n";
 	std::cout << "x = agrmin(x * (x - 5))\n";
 	std::cout << "x_0 = " << x_0 << ", x_1 = " << x_1 << "\n";
-	std::cout << "dihotomia   : " << dihotomia   (test_function_1d, x_0, x_1, 1e-3) << "\n";
-	std::cout << "golden_ratio: " << golden_ratio(test_function_1d, x_0, x_1, 1e-3) << "\n";
-	std::cout << "fibonacci   : " << fibonacci   (test_function_1d, x_0, x_1, 1e-3) << "\n";
+	std::cout << "dihotomia   : " << dihotomia   (test_function_1d, x_0, x_1, 1e-4) << "\n";
+	std::cout << "golden_ratio: " << golden_ratio(test_function_1d, x_0, x_1, 1e-4) << "\n";
+	std::cout << "fibonacci   : " << fibonacci   (test_function_1d, x_0, x_1, 1e-4) << "\n";
 }
 
 static void multi_dimensional_methods_test()
@@ -51,10 +51,9 @@ static void multi_dimensional_methods_test()
 	std::cout << "fibonacci             : " << fibonacci   (test_function_2d, x_1, x_0, 1e-5) << "\n";
 	std::cout << "\n";
 	vec_n x_start = { -0,0 };
-
-	std::cout << "per_coord_descend     : " << per_coord_descend    (test_function_2d, x_start,       1e-5) << "\n";
-	std::cout << "gradient_descend      : " << gradient_descend     (test_function_2d, x_start,       1e-5) << "\n";
-	std::cout << "conj_gradient_descend : " << conj_gradient_descend(test_function_2d, x_start,       1e-5) << "\n";
+	std::cout << "per_coord_descend     : " << per_coord_descend    (test_function_2d, x_start, 1e-5) << "\n";
+	std::cout << "gradient_descend      : " << gradient_descend     (test_function_2d, x_start, 1e-5) << "\n";
+	std::cout << "conj_gradient_descend : " << conj_gradient_descend(test_function_2d, x_start, 1e-5) << "\n";
 	std::cout << "newtone_raphson       : " << newtone_raphson      (test_function_2d, x_start, 1e-5) << "\n";
 }
 
@@ -123,15 +122,15 @@ static void numeric_tests()
 	decimal_to_rational(-0.125, rational, numerator, denominator);
 	std::cout << rational << " " << numerator << "/" << denominator << std::endl;
 	decimal_to_rational(3.769230769230769230769, rational, numerator, denominator);
-	std::cout << rational << " " << numerator << "/" << denominator << std::endl;
+	std::cout << rational << " " << numerator	 << "/" << denominator << std::endl;
 }
 
 static int test_all()
 {
-	//  one_dimensional_methods_test();
-		multi_dimensional_methods_test();
+	//		 one_dimensional_methods_test();
+	multi_dimensional_methods_test();
 	//	matrix_test();
-	//	symplex_method_test();
+	//		symplex_method_test();
 	//numeric_tests();
 	return 0;
 }

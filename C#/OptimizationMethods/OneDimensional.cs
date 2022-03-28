@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace OptimizationMethods
 {
@@ -10,7 +11,7 @@ namespace OptimizationMethods
         ////////////////////
         public static double TestFunc(double x)
         {
-	        return (x - 5) * x; // min at point x = 2.5
+	        return (x - 5) * (x - 2); // min at point x = 2.5
         }
 
         public static readonly double Phi = (1.0f + MathF.Sqrt(5.0f)) * 0.5f;
@@ -68,21 +69,45 @@ namespace OptimizationMethods
                 {
                     break;
                 }
-                dx = b - a;
-                x_0 = a + dx / Phi;
-                x_1 = b - dx / Phi;
+                dx  = b - a;
+                x_0 = b - dx / Phi;
+                x_1 = a + dx / Phi;
 
-                if (f(x_0) > f(x_1))
+                if (f(x_0) >= f(x_1))
                 {
-                    b = x_0;
+                    a = x_0;
                     continue;
                 }
-                a = x_1;
+                b = x_1;
             }
 #if DEBUG
             Console.WriteLine("golden ratio iterations number : " + cntr + "\n");
 #endif
             return (x_1 + x_0) * 0.5f;
+        }
+        public static int[] FibonacchiNumbers(int index)
+        {
+            if (index < 0)
+            {
+                return new int[]{ 0 };
+            }
+            if (index == 0 || index == 1)
+            {
+                return new int[]{ 1 };
+            }
+
+            int[] res = new int[index];
+
+            res[0] = 1;
+
+            res[1] = 1;
+
+            for (int i = 2; i < index; i++)
+            {
+                res[i] = res[i - 1] + res[i - 2];
+            }
+
+            return res;
         }
         public static int ClosestFibonacci(double value)
         {
@@ -120,36 +145,35 @@ namespace OptimizationMethods
             {
                 Swap(ref x_0, ref x_1);
             }
+            
             double a = x_0, b = x_1, dx;
-            double f_1 = 1.0f, f_2 = 2.0f, f_3 = 3.0f;
-            int cntr = 0;
 
             int max_iters = ClosestFibonacci((b - a) / eps);
 
-            for (; cntr != max_iters; cntr++)
+            int cntr = max_iters - 1;
+
+            int[] f_n_s = FibonacchiNumbers(max_iters);
+
+            for (; cntr >= 2; cntr--)
             {
                 if (Math.Abs(x_1 - x_0) < eps)
                 {
                     break;
                 }
 
-                dx  = b - a;
-                x_0 = b - dx * f_1 / f_3;
-                x_1 = b + dx * f_2 / f_3;
-
-                f_1 = f_2;
-                f_2 = f_3;
-                f_3 = f_1 + f_2;
-
+                dx = (b - a);
+                x_0 = a + dx * f_n_s[cntr - 2] / f_n_s[cntr];
+                x_1 = a + dx * f_n_s[cntr - 1] / f_n_s[cntr];
+               
                 if (f(x_0) < f(x_1))
                 {
-                    b = x_0;
+                    b = x_1;
                     continue;
                 }
-                a = x_1;
+                a = x_0;
             }
 #if DEBUG
-            Console.WriteLine("fibonacchi iterations number : " + cntr + "\n");
+            Console.WriteLine("fibonacchi iterations number : " + max_iters + "\n");
 #endif
             return (x_1 + x_0) * 0.5f;
         }

@@ -5,7 +5,7 @@
 /// </summary>
 /// <param name="value">исходное число</param>
 /// <param name="rational_part">целые части</param>
-/// <param name="nominator">числитель</param>
+/// <param name="numerator">числитель</param>
 /// <param name="denominator">знаменатель</param>
 /// <param name="max_den">максимально допустимый знаменатель</param>
 static void decimal_to_rational(const double value, int& rational_part, int& numerator, int& denominator, const int max_den = MAX_DENOMINATOR)

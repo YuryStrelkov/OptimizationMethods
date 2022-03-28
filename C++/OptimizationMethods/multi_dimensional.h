@@ -61,12 +61,12 @@ static vec_n golden_ratio(func_n f, const vec_n& x_0, const vec_n& x_1, const do
 		x_0_ =  b - dx;
 		x_1_ =  a + dx;
 
-		if (f(x_0_) > f(x_1_))
+		if (f(x_0_) >= f(x_1_))
 		{
-			b = x_0_;
+			a = x_0_;
 			continue;
 		}
-		a = x_1_;
+		b = x_1_;
 	}
 #if _DEBUG
 	std::cout <<"golden ratio iterations number : " << cntr << "\n";
@@ -77,35 +77,35 @@ static vec_n golden_ratio(func_n f, const vec_n& x_0, const vec_n& x_1, const do
 static vec_n fibonacci(func_n f, const vec_n& x_0, const vec_n& x_1, const double eps = N_DIM_ACCURACY)
 {
 	vec_n a(x_0), b(x_1);
+	
 	vec_n x_0_(x_0), x_1_(x_1), dx;
-	double f_1 = 1.0f, f_2 = 2.0f, f_3 = 3.0f;
-	int cntr = 0;
-
+	
 	int max_iters = closest_fibonacci(magnitude(x_1 - x_0) / eps);
+	
+	int cntr = max_iters - 1;
 
-	for (; cntr != max_iters; cntr++)
+	std::vector<double> f_n_s = fibonacci_numbers<double>(max_iters);
+
+
+	for (; cntr >= 2; cntr--)
 	{
 		if (magnitude(x_1_ - x_0_) < eps)
 		{
 			break;
 		}
 		dx   = b - a;
-		x_0_ = b - dx * (f_1 / f_3);
-		x_1_ = b + dx * (f_2 / f_3);
-
-		f_1 = f_2;
-		f_2 = f_3;
-		f_3 = f_1 + f_2;
+		x_0_ = a + dx * ((double)f_n_s[cntr - 2] / f_n_s[cntr]);
+		x_1_ = a + dx * ((double)f_n_s[cntr - 1] / f_n_s[cntr]);
 
 		if (f(x_0_) < f(x_1_))
 		{
-			b = x_0_;
+			b = x_1_;
 			continue;
 		}
-		a = x_1_;
+		a = x_0_;
 	}
 #if _DEBUG
-	std::cout << "fibonacchi iterations number : " << cntr << "\n";
+	std::cout << "fibonacchi iterations number : " << max_iters << "\n";
 #endif
 	return (x_1_ + x_0_) * 0.5f;
 }
@@ -269,8 +269,3 @@ static vec_n newtone_raphson(func_n f, const vec_n& x_start, const double eps = 
 #endif
 	return (x_i_1 + x_i) * 0.5f;
 }
- 
-
-/// <summary>
-/// Âûחûגאועסÿ ג main
-/// </summary>
