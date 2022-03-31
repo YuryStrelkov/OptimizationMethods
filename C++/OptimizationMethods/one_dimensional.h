@@ -2,7 +2,7 @@
 #include <cmath>
 #include <iostream>
 #include <vector>
-#define phi ((1.0 + sqrt(5.0))*0.5)
+#define phi 1.61803398874989484820
 
 typedef double(*func)(const double);
 

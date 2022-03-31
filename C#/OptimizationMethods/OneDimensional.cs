@@ -14,7 +14,7 @@ namespace OptimizationMethods
 	        return (x - 5) * (x - 2); // min at point x = 3.5
         }
 
-        public static readonly double Phi = (1.0 + Math.Sqrt(5.0)) * 0.5;
+        public static readonly double Phi = 1.61803398874989484820;
         static void Swap<T>(ref T lhs, ref T rhs)
         {
             T temp;
