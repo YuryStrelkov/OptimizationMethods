@@ -106,11 +106,9 @@ namespace OptimizationMethods
                 {
                     if (row[col] >= 0)
                     {
-                        ///sb.AppendFormat("|{0,-12}", " " + String.Format("{0:0.00}", row[col]));
                         sb.AppendFormat("|{0,-12}", " " + ToRationalStr(row[col]));
                         continue;
                     }
-                    ///sb.AppendFormat("|{0,-12}", String.Format("{0:0.00}", row[col]));
                     sb.AppendFormat("|{0,-12}", ToRationalStr(row[col]));
 
                 }
@@ -137,8 +135,8 @@ namespace OptimizationMethods
             int rank_a_b = Matrix.Rank(ab.AddCol(b));
 
 #if DEBUG
-            Console.WriteLine("rank ( A ) " + rank_a + "\n");
-            Console.WriteLine("rank (A|b) " + rank_a_b + "\n");
+            Console.WriteLine($"rank ( A ) {rank_a}\n");
+            Console.WriteLine($"rank (A|b) {rank_a_b}\n");
             if (rank_a == rank_a_b)
             {
                 Console.WriteLine("one solution\n");
@@ -207,7 +205,6 @@ namespace OptimizationMethods
         /// <returns></returns>
         public static int GetMainCol(Matrix A, SymplexProblemType mode)
         {
-
             double delta = 0;
 
             int index = -1;
@@ -436,8 +433,7 @@ namespace OptimizationMethods
 
             List<int> basis = BuildSymplexTable(out A, a, c, b, ineq);
 #if DEBUG
-            Console.WriteLine("Start symplex table:\n");
-            Console.WriteLine(SymplexToString(A, basis));
+            Console.WriteLine($"Start symplex table:\n\n{SymplexToString(A, basis)}");
 #endif
 
             while (!IsPlanOptimal(A, mode))
@@ -471,10 +467,9 @@ namespace OptimizationMethods
                     A[i] = A[i] - A[i][main_col] * A[main_row];
                 }
 #if DEBUG
-                Console.WriteLine("a_main{"+(main_row + 1) +", "+(main_col + 1) +"} = "+ ToRationalStr(a_ik) + "\n");
+                Console.WriteLine($"a_main {{{(main_row + 1)} , {(main_col + 1)}}} = {ToRationalStr(a_ik)} \n");
                 Console.WriteLine(SymplexToString(A, basis));
-                Console.WriteLine("current_solution : " + ToRationalStr(CurrentSymplexSolution(A, basis, c.Size)));
-                Console.WriteLine("\n");
+                Console.WriteLine($"current_solution : {ToRationalStr(CurrentSymplexSolution(A, basis, c.Size))}\n");
 #endif
             }
             /// формирование ответа

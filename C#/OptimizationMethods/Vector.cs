@@ -120,9 +120,9 @@ namespace OptimizationMethods
             string s = "{ ";
             for (int i = 0; i < data.Count - 1; i++)
             {
-                s += string.Format("{0,0}, ", String.Format("{0:0.000}", data[i]));// .ToString();
+                s += string.Format("{0,0}, ", String.Format("{0:0.000}", data[i]));
             }
-            s += string.Format("{0,0}", String.Format("{0:0.000}", data[data.Count - 1]));// data[data.Length - 1].ToString();
+            s += string.Format("{0,0}", String.Format("{0:0.000}", data[data.Count - 1]));
             s += " }";
             return s;
         }

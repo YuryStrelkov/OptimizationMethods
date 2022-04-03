@@ -24,11 +24,11 @@ namespace OptimizationMethods
         ////////////////////
         /// Lab. work #2 ///
         ////////////////////
-        public static Vector Dihotomia      (func_n f, Vector x_0, Vector x_1, double eps = 1e-4, int max_iters = 1000)
+        public static Vector Dihotomia      (func_n f, Vector x_0, Vector x_1, double eps = 1e-5, int max_iters = 1000)
         {
             Vector x_c, dir;
 
-            dir = Vector.Direction(x_0, x_1);
+            dir = Vector.Direction(x_0, x_1) * eps;
 
             int cntr = 0;
 
@@ -40,7 +40,7 @@ namespace OptimizationMethods
                 }
                 x_c = (x_1 + x_0) * (0.5);
 
-                if (f(x_c + dir * eps) > f(x_c - dir * eps))
+                if (f(x_c + dir) > f(x_c - dir))
                 {
                     x_1 = x_c;
                     continue;
@@ -48,11 +48,11 @@ namespace OptimizationMethods
                 x_0 = x_c;
             }
 #if DEBUG
-            Console.WriteLine("dihotomia iterations number : " + cntr);
+            Console.WriteLine($"dihotomia iterations number : {cntr}");
 #endif
             return (x_1 + x_0) * 0.5;
         }
-        public static Vector GoldenRatio    (func_n f, Vector x_0, Vector x_1, double eps = 1e-4, int max_iters = 1000)
+        public static Vector GoldenRatio    (func_n f, Vector x_0, Vector x_1, double eps = 1e-5, int max_iters = 1000)
         {
             Vector a = new Vector(x_0);
 
@@ -83,11 +83,11 @@ namespace OptimizationMethods
                 b = x_1;
             }
 #if DEBUG
-            Console.WriteLine("golden ratio iterations number : " + cntr);
+            Console.WriteLine($"golden ratio iterations number : {cntr}");
 #endif
             return (a + b) * 0.5;
         }
-        public static Vector Fibonacci      (func_n f, Vector x_0, Vector x_1, double eps = 1e-4)
+        public static Vector Fibonacci      (func_n f, Vector x_0, Vector x_1, double eps = 1e-5)
         {
             int max_iters = OneDimensional.ClosestFibonacci((x_1 - x_0).Magnitude / eps);
 
@@ -119,14 +119,12 @@ namespace OptimizationMethods
                 a = x_0;
             }
 #if DEBUG
-            Console.WriteLine("fibonacci iterations number : " + max_iters);
+            Console.WriteLine($"fibonacci iterations number : {max_iters}");
 #endif
             return (a + b) * 0.5;
         }
-        public static Vector PerCoordDescend(func_n f, Vector x_start, double eps = 1e-4, int max_iters = 1000)
+        public static Vector PerCoordDescend(func_n f, Vector x_start, double eps = 1e-5, int max_iters = 1000)
         {
-            int cntr = 0;
-
             Vector x_0 = new Vector(x_start);
 
             Vector x_1 = new Vector(x_start);
@@ -136,8 +134,10 @@ namespace OptimizationMethods
             double x_i, y_1, y_0;
 
             int opt_coord_n = 0, coord_id;
+            
+            int i = 0;
 
-            for (int i = 0; i < max_iters; i++)
+            for (i = 0; i < max_iters; i++)
             {
                 coord_id = i % x_0.Size;
 
@@ -166,7 +166,7 @@ namespace OptimizationMethods
                     if (opt_coord_n == x_1.Size)
                     {
 #if DEBUG
-                        Console.WriteLine($"per coord descend iterations number : {cntr}\n");
+                        Console.WriteLine($"per coord descend iterations number : {i}");
 #endif
                         return x_0;
                     }
@@ -175,14 +175,14 @@ namespace OptimizationMethods
                 opt_coord_n = 0;
             }
 #if DEBUG
-            Console.WriteLine($"per coord descend iterations number : {cntr}\n");
+            Console.WriteLine($"per coord descend iterations number : {max_iters}");
 #endif
             return x_0;
         }
         ////////////////////
         /// Lab. work #3 ///
         ////////////////////
-        public static Vector GradientDescend(func_n f, Vector x_start, double eps = 1e-4, int max_iters = 1000)
+        public static Vector GradientDescend(func_n f, Vector x_start, double eps = 1e-5, int max_iters = 1000)
         {
             Vector x_i = new Vector(x_start);
 
@@ -211,11 +211,11 @@ namespace OptimizationMethods
                 x_i = x_i_1;
             }
 #if DEBUG
-            Console.WriteLine("gradient descend iterations number : " + cntr);
+            Console.WriteLine($"gradient descend iterations number : {cntr}");
 #endif
             return (x_i_1 + x_i) * 0.5;
         }
-        public static Vector СonjGradientDescend(func_n f, Vector x_start, double eps = 1e-4, int max_iters = 1000)
+        public static Vector СonjGradientDescend(func_n f, Vector x_start, double eps = 1e-5, int max_iters = 1000)
         {
             Vector x_i = new Vector(x_start);
 
@@ -254,20 +254,20 @@ namespace OptimizationMethods
                 x_i = x_i_1;
             }
 #if DEBUG
-            Console.WriteLine("conj gradient descend iterations number : " + cntr);
+            Console.WriteLine($"conj gradient descend iterations number : {cntr}");
 #endif
             return (x_i_1 + x_i) * 0.5;
         }
         ////////////////////
         /// Lab. work #4 ///
         ////////////////////
-        public static Vector NewtoneRaphson(func_n f, Vector x_start, double eps = 1e-4, int max_iters = 1000)
+        public static Vector NewtoneRaphson(func_n f, Vector x_start, double eps = 1e-6, int max_iters = 1000)
         {
             Vector x_i = new Vector(x_start);
 
             Vector x_i_1 = new Vector(x_start);
 
-            int cntr = 0;
+            int cntr = -1;
 
             while (true)
             {
@@ -288,7 +288,7 @@ namespace OptimizationMethods
                 x_i = x_i_1;
             }
 #if DEBUG
-            Console.WriteLine("gradient descend iterations number : " + cntr);
+            Console.WriteLine($"Newtone - Raphson iterations number : {cntr}");
 #endif
             return (x_i_1 + x_i) * 0.5;
         }

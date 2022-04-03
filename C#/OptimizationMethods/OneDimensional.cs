@@ -49,7 +49,7 @@ namespace OptimizationMethods
                 x_0 = x_c;
             }
 #if DEBUG
-            Console.WriteLine("dihotomia iterations number : " + cntr + "\n");
+            Console.WriteLine($"dihotomia iterations number : {cntr}");
 #endif
             return x_c;
         }
@@ -81,7 +81,7 @@ namespace OptimizationMethods
                 b = x_1;
             }
 #if DEBUG
-            Console.WriteLine("golden ratio iterations number : " + cntr + "\n");
+            Console.WriteLine($"golden ratio iterations number : {cntr}");
 #endif
             return (x_1 + x_0) * 0.5;
         }
@@ -173,7 +173,7 @@ namespace OptimizationMethods
                 a = x_0;
             }
 #if DEBUG
-            Console.WriteLine("fibonacchi iterations number : " + max_iters + "\n");
+            Console.WriteLine($"fibonacchi iterations number : {max_iters}");
 #endif
             return (x_1 + x_0) * 0.5;
         }

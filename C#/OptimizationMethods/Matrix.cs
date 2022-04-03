@@ -325,9 +325,7 @@ namespace OptimizationMethods
 
             for (int i = 0; i < Math.Min(n_rows, n_cols); i++)
             {
-                Vector v = I[i];
-                v[i] = 1.0;
-                I[i] = v;
+                I[i][i] = 1.0;
             }
             return I;
         }
@@ -424,6 +422,7 @@ namespace OptimizationMethods
             for (int i = 0; i < z.Size; i++)
             {
                 tmp = 0.0;
+
                 for (int j = 0; j < i; j++)
                 {
                     tmp += z[j] * low[i][j];

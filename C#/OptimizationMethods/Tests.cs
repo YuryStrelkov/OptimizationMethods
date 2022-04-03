@@ -10,23 +10,25 @@ namespace OptimizationMethods
         {
             const double x_0 = 10;
             const double x_1 = -1;
-            Console.WriteLine("x_0 = " + x_0 + ", x_1 = " + x_1 + "\n");
-            Console.WriteLine("Dihotomia   : " + OneDimensional.Dihotomia  (OneDimensional.TestFunc, x_0, x_1, 1e-4));
-            Console.WriteLine("GoldenRatio : " + OneDimensional.GoldenRatio(OneDimensional.TestFunc, x_0, x_1, 1e-4));
-            Console.WriteLine("Fibonacchi  : " + OneDimensional.Fibonacci  (OneDimensional.TestFunc, x_0, x_1, 1e-4) + "\n");
+            Console.WriteLine($"x_0 = {x_0}, x_1 = {x_1}\n");
+            Console.WriteLine($"Dihotomia   : {OneDimensional.Dihotomia  (OneDimensional.TestFunc, x_0, x_1, 1e-4)}");
+            Console.WriteLine($"GoldenRatio : {OneDimensional.GoldenRatio(OneDimensional.TestFunc, x_0, x_1, 1e-4)}");
+            Console.WriteLine($"Fibonacchi  : {OneDimensional.Fibonacci  (OneDimensional.TestFunc, x_0, x_1, 1e-4)}\n");
         }
         public static void MultiDimensionalMethodsTest()
         {
             Vector x_1 = new double[] { 0, 0 };
             Vector x_0 = new double[] { 5, 3 };
-            Console.WriteLine("x_0 = " + x_0 + ", x_1 = " + x_1 + "\n");
-            Console.WriteLine("Dihotomia              : " + MultiDimensional.Dihotomia          (MultiDimensional.TestFunc2D, x_1, x_0).ToString());
-            Console.WriteLine("GoldenRatio            : " + MultiDimensional.GoldenRatio        (MultiDimensional.TestFunc2D, x_1, x_0).ToString());
-            Console.WriteLine("Fibonacci              : " + MultiDimensional.Fibonacci          (MultiDimensional.TestFunc2D, x_1, x_0).ToString());
-            Console.WriteLine("PerCoordDescend        : " + MultiDimensional.PerCoordDescend    (MultiDimensional.TestFunc2D, x_1).ToString());
-            Console.WriteLine("GradientDescend        : " + MultiDimensional.GradientDescend    (MultiDimensional.TestFunc2D, x_1).ToString());
-            Console.WriteLine("СonjGradientDescend    : " + MultiDimensional.СonjGradientDescend(MultiDimensional.TestFunc2D, x_1).ToString());
-            Console.WriteLine("NewtoneRaphson         : " + MultiDimensional.NewtoneRaphson     (MultiDimensional.TestFunc2D, x_1).ToString());
+
+
+            Console.WriteLine($"x_0 = {x_0}, x_1 = {x_1}\n") ;
+            Console.WriteLine($"Dihotomia              : {MultiDimensional.Dihotomia          (MultiDimensional.TestFunc2D, x_1, x_0)}");
+            Console.WriteLine($"GoldenRatio            : {MultiDimensional.GoldenRatio        (MultiDimensional.TestFunc2D, x_1, x_0)}");
+            Console.WriteLine($"Fibonacci              : {MultiDimensional.Fibonacci          (MultiDimensional.TestFunc2D, x_1, x_0)}");
+            Console.WriteLine($"PerCoordDescend        : {MultiDimensional.PerCoordDescend    (MultiDimensional.TestFunc2D, x_1)}");
+            Console.WriteLine($"GradientDescend        : {MultiDimensional.GradientDescend    (MultiDimensional.TestFunc2D, x_1)}");
+            Console.WriteLine($"СonjGradientDescend    : {MultiDimensional.СonjGradientDescend(MultiDimensional.TestFunc2D, x_1)}");
+            Console.WriteLine($"NewtoneRaphson         : {MultiDimensional.NewtoneRaphson     (MultiDimensional.TestFunc2D, x_1)}\n");
         }
         /// <summary>
         /// проверка работоспособности класса
@@ -36,25 +38,25 @@ namespace OptimizationMethods
             ///У меня всё работает, у вас мой класс тоже заработает
             Matrix matrix = new Vector[] { new double[] { 8, 1, 6 }, new double[] { 3, 5, 7 }, new double[] { 4, 9, 2 } };
             Console.WriteLine(matrix);
-            Console.WriteLine("\nmatrix + matrix:\n" + (matrix + matrix));
-            Console.WriteLine("\nmatrix - matrix:\n" + (matrix - matrix));
-            Console.WriteLine("\nmatrix * matrix:\n" + (matrix * matrix));
+            Console.WriteLine($"\nmatrix + matrix:\n{ matrix + matrix }\n");
+            Console.WriteLine($"\nmatrix - matrix:\n{ matrix - matrix }\n");
+            Console.WriteLine($"\nmatrix * matrix:\n{ matrix * matrix }\n");
             Matrix l, u;
             Matrix.LU(ref matrix, out l, out u);
-            Console.WriteLine("\nL  matrix:\n" + l);
-            Console.WriteLine("\nU  matrix:\n" + u);
-            Console.WriteLine("\nL * U - matrix:\n" + (l * u - matrix));
+            Console.WriteLine($"\nL  matrix:\n{l}");
+            Console.WriteLine($"\nU  matrix:\n{u}");
+            Console.WriteLine($"\nL * U - matrix:\n{l * u - matrix}");
             Vector b = new double[] { 1, 2, 3 };
             /// x = {0.05,0.3,0.05};
             Vector x = Matrix.Linsolve(matrix, b);
-            Console.WriteLine("\nx vector:\n" + x);
-            Console.WriteLine("\nAx - b:\n" + (matrix * x - b));
-            Console.WriteLine("\nA*inv(A):\n" + matrix * Matrix.Invert(matrix));
+            Console.WriteLine($"\nx vector:\n{x}");
+            Console.WriteLine($"\nAx - b:\n{matrix * x - b}");
+            Console.WriteLine($"\nA*inv(A):\n{matrix * Matrix.Invert(matrix)}");
             Matrix matrix_ = new Vector[] { new double[] { 8, 1, 6 }, new double[] { 3, 5, 7 } };
-            Console.WriteLine("\nnon rect mat:\n" + matrix_);
-            Console.WriteLine("\nnon rect mat mul by transposed it self :\n" + matrix_ * Matrix.Transpose(matrix_));
+            Console.WriteLine($"\nnon rect mat:\n{matrix_}");
+            Console.WriteLine($"\nnon rect mat mul by transposed it self :\n{matrix_ * Matrix.Transpose(matrix_)}");
             Matrix m = Matrix.Hessian(MultiDimensional.TestFuncND, new double[] { 0, 0, 0 });
-            Console.WriteLine(m.ToString());
+            Console.WriteLine($"\nHessian(MultiDimensional.TestFuncND):\n{m}");
         }
 
         public static void NumericTests()
@@ -73,7 +75,6 @@ namespace OptimizationMethods
             NumericUtils.DecimalToRational(3.769230769230769230769, out rational, out numerator, out denominator);
             Console.WriteLine($"{rational} {numerator} / {denominator}\n");
         }
-
 
         public static void SympexTest() 
         {
@@ -95,11 +96,11 @@ namespace OptimizationMethods
 
         public static void TestAll() 
         {
-            ///  OneDimensionalMethodsTest();
-            MultiDimensionalMethodsTest();
-           // MatrixTest();
-           // SympexTest();
-           // NumericTests();
+            // OneDimensionalMethodsTest();
+             MultiDimensionalMethodsTest();
+            // MatrixTest();
+            //SympexTest();
+            // NumericTests();
         }
     }
 }
