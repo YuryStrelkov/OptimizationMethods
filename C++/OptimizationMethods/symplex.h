@@ -212,7 +212,7 @@ int get_main_col(const mat_mn& A, const int mode = SYMPLEX_MAX)
 			{
 				continue;
 			}
-			if (c[i] > delta)
+			if (c[i] < delta)
 			{
 				continue;
 			}
@@ -258,7 +258,7 @@ int get_main_row(const int symplex_col, const  mat_mn& A)
 	
 	int b_index = A[0].size() - 1;
 	
-	for (int i = 0; i < A.size(); i++)
+	for (int i = 0; i < A.size() - 1; i++)
 	{
 		a_ik = A[i][symplex_col];
 
@@ -321,7 +321,7 @@ vec_n current_symplex_solution(const mat_mn& A,const std::vector<int> basis, con
 /// <param name="b"></param>
 ///( A|I)  b
 ///(-c|0)  F(x,c)
-std::vector<int> build_symplex_table(mat_mn& A, const mat_mn& a, const vec_n& c, const vec_n& b, std::vector<int> ineq)
+std::vector<int> build_symplex_table(mat_mn& A, const mat_mn& a, const vec_n& c, const vec_n& b, std::vector<int> ineq, const int mode = SYMPLEX_MAX)
 {
 	int cntr = 0;
 	
@@ -378,10 +378,11 @@ std::vector<int> build_symplex_table(mat_mn& A, const mat_mn& a, const vec_n& c,
 
 	for (int j = 0; j < C.size(); j++)
 	{
-		C[j] = j < c.size()? -c[j] : 0.0;
+		C[j] = j < c.size() ? -c[j] : 0.0;
 	}
+
 	A.push_back(C);
-	
+
 	return basis;
 }
 
@@ -409,7 +410,7 @@ vec_n symplex_solve(const mat_mn& a, const vec_n& c, const vec_n& b, const std::
 
 	mat_mn A ;
 	
-	std::vector<int> basis = build_symplex_table(A, a, c, b, ineq);
+	std::vector<int> basis = build_symplex_table(A, a, c, b, ineq, mode);
 #if _DEBUG
 	std::cout << "Start symplex table"<<std::endl;
 	write_symplex(A, basis);

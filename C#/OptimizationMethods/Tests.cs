@@ -99,7 +99,7 @@ namespace OptimizationMethods
             // OneDimensionalMethodsTest();
              MultiDimensionalMethodsTest();
             // MatrixTest();
-            //SympexTest();
+            SympexTest();
             // NumericTests();
         }
     }

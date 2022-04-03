@@ -16,7 +16,7 @@ static vec_n dihotomia(func_n f, const vec_n& x_0, const vec_n& x_1, const doubl
 {
 	vec_n x_0_ = x_0, x_1_ = x_1, x_c, dir;
 
-	dir = direction(x_0, x_1);
+	dir = direction(x_0, x_1) * eps;
 
 	int cntr = 0;
 
@@ -28,7 +28,7 @@ static vec_n dihotomia(func_n f, const vec_n& x_0, const vec_n& x_1, const doubl
 		}
 		x_c = (x_1_ + x_0_) * 0.5;
 
-		if (f(x_c + dir * eps) > f(x_c - dir * eps))
+		if (f(x_c + dir) > f(x_c - dir))
 		{
 			x_1_ = x_c;
 			continue;

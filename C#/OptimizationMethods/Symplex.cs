@@ -50,7 +50,7 @@ namespace OptimizationMethods
             {
                 return ((num + Math.Abs(r_part) * denom) * (r_part >= 0 ? 1 : -1)).ToString() + "/" + denom.ToString();
             }
-            return denom.ToString() + " " + num.ToString() + "/" + denom.ToString();
+            return r_part.ToString() + " " + num.ToString() + "/" + denom.ToString();
         }
         private static string ToRationalStr(Vector value, bool fullRational = true)
         {
@@ -219,7 +219,7 @@ namespace OptimizationMethods
                     {
                         continue;
                     }
-                    if (c[i] > delta)
+                    if (c[i] < delta)
                     {
                         continue;
                     }
@@ -267,7 +267,7 @@ namespace OptimizationMethods
 
             int b_index = A[0].Size - 1;
 
-            for (int i = 0; i < A.NRows; i++)
+            for (int i = 0; i < A.NRows - 1; i++)
             {
                 a_ik = A[i][symplex_col];
 
@@ -328,7 +328,7 @@ namespace OptimizationMethods
         /// <param name="b"></param>
         ///( A|I)  b
         ///(-c|0)  F(x,c)
-        public static List<int> BuildSymplexTable(out Matrix table, Matrix A, Vector c, Vector b, List<Sign> ineq)
+        public static List<int> BuildSymplexTable(out Matrix table, Matrix A, Vector c, Vector b, List<Sign> ineq, SymplexProblemType type = SymplexProblemType.Max)
         {
             if (A.NRows != b.Size)
             {
@@ -411,6 +411,8 @@ namespace OptimizationMethods
 
         public static Vector SymplexSolve(Matrix a, Vector c, Vector b, List<Sign> ineq, SymplexProblemType mode = SymplexProblemType.Max)
         {
+            Console.WriteLine($"SymplexProblemType : {SymplexProblemType.Max.ToString()}\n");
+
             var system_condition = CheckSystem(a, b);
 
             if (system_condition == SolutionType.None)
@@ -431,7 +433,7 @@ namespace OptimizationMethods
 
             Matrix A;
 
-            List<int> basis = BuildSymplexTable(out A, a, c, b, ineq);
+            List<int> basis = BuildSymplexTable(out A, a, c, b, ineq, mode);
 #if DEBUG
             Console.WriteLine($"Start symplex table:\n\n{SymplexToString(A, basis)}");
 #endif

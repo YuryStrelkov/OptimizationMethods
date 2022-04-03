@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.Arrays;
+
 public class Tests {
     public static void OneDimensionalMethodsTest()
     {
@@ -71,5 +74,19 @@ public class Tests {
         System.out.println("Gradient descend         : "+ MultiDimensional.gradientDescend    (MultiDimensional.testFunc2d, x));
         System.out.println("Conj gradient descend    : "+ MultiDimensional.conjGradientDescend(MultiDimensional.testFunc2d, x));
         System.out.println("Newtone - Raphson        : "+ MultiDimensional.newtoneRaphson     (MultiDimensional.testFunc2d, x_1));
+    }
+
+    public static void symplexTest()throws Exception
+    {
+        Matrix A = new Matrix(new Vector[]
+                {
+                        new Vector(new double[]{-2, 6}),
+                        new Vector(new double[]{ 3, 2}),
+                        new Vector(new double[]{ 2,-1})
+                });
+        Vector b = new Vector(new double[]  { 40, 28, 14 });
+        Vector c = new Vector( new double[] { 2, 3 });
+
+        Symplex.symplexSolve(A, c, b);
     }
 }
