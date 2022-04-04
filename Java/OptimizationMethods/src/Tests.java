@@ -2,19 +2,29 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Tests {
-    public static void OneDimensionalMethodsTest()
+    public static void oneDimensionalMethodsTest()
     {
+        System.out.println("\n///////////////////////////////////////////");
+        System.out.println(  "//////// OneDimensionalMethodsTest ////////");
+        System.out.println(  "///////////////////////////////////////////\n");
+
         double x_0 = 10;
         double x_1 = -1;
 
-        System.out.println("x_0 = {x_0}, x_1 = {x_1}\n");
+        OneDimensional.ShowDebugLog = true;
+        System.out.println("x_0 = " + x_0 + ",\nx_1 = " + x_1 + "\n");
         System.out.println("Dihotomia   : " + OneDimensional.dihotomia   (OneDimensional.testFunc, x_0, x_1, 1e-4));
         System.out.println("GoldenRatio : " + OneDimensional.goldenRatio (OneDimensional.testFunc, x_0, x_1, 1e-4));
         System.out.println("Fibonacchi  : " + OneDimensional.fibonacci   (OneDimensional.testFunc, x_0, x_1, 1e-4) + " \n");
+        OneDimensional.ShowDebugLog = false;
     }
 
-    public static void NumericTests()
+    public static void numericTests()
     {
+        System.out.println("\n//////////////////////////////");
+        System.out.println(  "//////// NumericTests ////////");
+        System.out.println(  "//////////////////////////////\n");
+
         int[] number;
 
         number = NumericUtils.DecimalToRational(1.6666);
@@ -37,9 +47,13 @@ public class Tests {
         System.out.print(number[0]!=0? number[0] + " ":"");
         System.out.print(number[1]!=0? number[1]+"/"+number[2] + "\n":"\n");
     }
-    public static void MatrixTest()throws Exception
+    public static void matrixTest()throws Exception
     {
-        Matrix matrix =  new Matrix( new Vector[] { new Vector(new double[] { 8, 1, 6 }),new Vector( new double[] { 3, 5, 7 }), new Vector(new double[] { 4, 9, 2 } )}) ;
+        System.out.println("\n////////////////////////////");
+        System.out.println(  "//////// MatrixTest ////////");
+        System.out.println(  "////////////////////////////\n");
+
+        Matrix matrix =  new Matrix( new Vector[] {new Vector(new double[] { 8, 1, 6 }), new Vector( new double[] { 3, 5, 7 }), new Vector(new double[] { 4, 9, 2 } )}) ;
         System.out.println(matrix);
         System.out.println("\nmatrix + matrix:\n"+Matrix.add(matrix,matrix) +"\n");
         System.out.println("\nmatrix - matrix:\n"+Matrix.sub(matrix,matrix) +"\n");
@@ -60,13 +74,17 @@ public class Tests {
         Matrix m = Matrix.hessian(MultiDimensional.testFuncNd, new Vector(new double[] { 0, 0, 0 }));
         System.out.println("\nHessian(MultiDimensional.TestFuncND):\n"+m);
     }
-    public static void MultiDimensionalMethodsTest()throws Exception
+    public static void multiDimensionalMethodsTest()throws Exception
     {
-        Vector x_0 = new Vector( new double[] { 5, 3 });
+        System.out.println("\n/////////////////////////////////////////////");
+        System.out.println(  "//////// MultiDimensionalMethodsTest ////////");
+        System.out.println(  "/////////////////////////////////////////////\n");
+
+        Vector x_0 = new Vector (new double[] { 5, 3 });
         Vector x_1 = new Vector (new double[] { 0, 0 });
         Vector x   = new Vector (new double[] { -13.0, 22 });
-
-        System.out.println("x_0 = "+ x_0 + ", x_1 = " + x_1 + "\n") ;
+        MultiDimensional.ShowDebugLog = true;
+        System.out.println("x_0 = "+ x_0 + ",\nx_1 = " + x_1 + "\n") ;
         System.out.println("Dihotomia                : "+ MultiDimensional.dihotomia          (MultiDimensional.testFunc2d, x_1, x_0));
         System.out.println("Golden ratio             : "+ MultiDimensional.goldenRatio        (MultiDimensional.testFunc2d, x_1, x_0));
         System.out.println("Fibonacci                : "+ MultiDimensional.fibonacci          (MultiDimensional.testFunc2d, x_1, x_0));
@@ -74,17 +92,23 @@ public class Tests {
         System.out.println("Gradient descend         : "+ MultiDimensional.gradientDescend    (MultiDimensional.testFunc2d, x));
         System.out.println("Conj gradient descend    : "+ MultiDimensional.conjGradientDescend(MultiDimensional.testFunc2d, x));
         System.out.println("Newtone - Raphson        : "+ MultiDimensional.newtoneRaphson     (MultiDimensional.testFunc2d, x_1));
+        MultiDimensional.ShowDebugLog = false;
     }
 
     public static void symplexTest()throws Exception
     {
+        System.out.println("\n/////////////////////////////");
+        System.out.println(  "//////// SymplexTest ////////");
+        System.out.println(  "/////////////////////////////\n");
+
         Matrix A = new Matrix(new Vector[]
-                {
-                        new Vector(new double[]{-2, 6}),
-                        new Vector(new double[]{ 3, 2}),
-                        new Vector(new double[]{ 2,-1})
-                });
-        Vector b = new Vector(new double[]  { 40, 28, 14 });
+        {
+              new Vector(new double[]{-2, 6}),
+              new Vector(new double[]{ 3, 2}),
+              new Vector(new double[]{ 2,-1})
+        });
+
+        Vector b = new Vector( new double[] { 40, 28, 14 });
         Vector c = new Vector( new double[] { 2, 3 });
 
         Symplex.symplexSolve(A, c, b);

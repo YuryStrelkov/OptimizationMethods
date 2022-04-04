@@ -14,6 +14,8 @@ public final class OneDimensional
         return (x - 5) * (x - 2); // min at point x = 3.5
     }
 
+    public static  boolean ShowDebugLog = false;
+
     public static final double Phi = 1.61803398874989484820;
 
     public static double dihotomia  (IFunction1D f, double x_0, double x_1, double eps, int max_iters)
@@ -45,7 +47,7 @@ public final class OneDimensional
             x_0 = x_c;
         }
 
-        System.out.println("Dihotomia iterations number : " + cntr);
+        if(ShowDebugLog)System.out.println("Dihotomia iterations number : " + cntr);
 
         return x_c;
     }
@@ -89,7 +91,8 @@ public final class OneDimensional
             b = x_1;
         }
 
-        System.out.println("Golden ratio iterations number : " + cntr);
+        if(ShowDebugLog)System.out.println("Golden ratio iterations number : " + cntr);
+
         return (x_1 + x_0) * 0.5;
     }
 
@@ -191,7 +194,7 @@ public final class OneDimensional
             }
             a = x_0;
         }
-        System.out.println("Fibonacchi iterations number : " + max_iters);
+        if(ShowDebugLog)System.out.println("Fibonacchi iterations number : " + max_iters);
 
         return (x_1 + x_0) * 0.5;
     }

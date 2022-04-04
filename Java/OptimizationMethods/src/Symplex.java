@@ -47,10 +47,12 @@ public class Symplex
         }
         return String.valueOf(number[0]) + " " + String.valueOf(number[1]) + "/" + String.valueOf(number[2]);
     }
+
     private static String toRationalStr(double value)
     {
        return toRationalStr(value, true);
     }
+
     private static String toRationalStr(Vector value, boolean fullRational)
     {
         String str = "{ ";
@@ -92,14 +94,14 @@ public class Symplex
 
         int n_row = -1;
 
-        for(Vector row : table.rows)
+        for(Vector row : table.getRows())
         {
             n_row++;
 
             if (n_row == table.rows() - 1)
             {
                ;
-                sb.append(String.format("%-6s","d"));
+                sb.append(String.format("%-6s"," d"));
             }
             else
             {
@@ -179,7 +181,7 @@ public class Symplex
     /// <returns></returns>
     public static boolean isPlanOptimal(Matrix A, SymplexProblemType mode)
     {
-        Vector deltas = A.rows.get(A.rows() - 1);
+        Vector deltas = A.row(A.rows() - 1);
 
         if (mode == SymplexProblemType.Max)
         {
@@ -202,6 +204,7 @@ public class Symplex
         }
         return true;
     }
+
     /// <summary>
     /// Определяет ведущий столбец в соответсвии с тем типом экстремума, который требуется найти.
     /// Исследуются элменты от 1:n-1 полсдней строки СМ таблицы
@@ -414,6 +417,7 @@ public class Symplex
 
         return new Pair<>(basis,table);
     }
+
     public static Vector symplexSolve(Matrix a, Vector c, Vector b, ArrayList<Sign> ineq, SymplexProblemType mode)throws Exception
     {
         System.out.println("SymplexProblemType : " + String.valueOf(mode)+"\n");
@@ -464,7 +468,7 @@ public class Symplex
 
             a_ik = table.get(main_row,main_col);
 
-            table.rows.get(main_row).mul(1.0 / a_ik);
+            table.row(main_row).mul(1.0 / a_ik);
 
             for (int i = 0; i < table.rows(); i++)
             {
@@ -472,7 +476,7 @@ public class Symplex
                 {
                     continue;
                 }
-                table.rows.get(i).sub(Vector.mul(table.rows.get(main_row),table.get(i,main_col)));
+                table.row(i).sub(Vector.mul(table.row(main_row),table.get(i,main_col)));
                 //     A[i] = A[i] - A[i][main_col] * A[main_row];
             }
             System.out.println("a_main {" + (main_row + 1) + ", " + (main_col + 1) + "} = "+toRationalStr(a_ik)+" \n");
@@ -482,10 +486,12 @@ public class Symplex
         /// формирование ответа
         return currentSymplexSolution(table, basis, c.size());
     }
+
     public static Vector symplexSolve(Matrix a, Vector c, Vector b, ArrayList<Sign> ineq)throws Exception
     {
         return  symplexSolve( a,  c,  b,  ineq, SymplexProblemType.Max);
     }
+
     public static Vector symplexSolve(Matrix a, Vector c, Vector b)throws Exception
     {
         ArrayList<Sign> ineq = new ArrayList<>(b.size());

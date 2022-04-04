@@ -1,8 +1,14 @@
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class Matrix {
-    ArrayList<Vector>rows;
+public class Matrix
+{
+    private ArrayList<Vector>rows;
+
+    public Vector row(int rowId)
+    {
+        return rows.get(rowId);
+    }
 
     public int rows()
     {
@@ -28,7 +34,7 @@ public class Matrix {
         }
         for (int i = 0; i < rows.size(); i++)
         {
-            rows.get(i).pushBack(col.get(i));
+            row(i).pushBack(col.get(i));
         }
         return this;
     }
@@ -80,12 +86,14 @@ public class Matrix {
 
     public double get(int i, int j)
     {
-        return rows.get(i).get(j);
+        return row(i).get(j);
     }
+
     public void set(int i, int j, double value)
     {
-        rows.get(i).set(j,value);
+        row(i).set(j,value);
     }
+
     public Matrix(Vector[] rows)throws Exception
     {
         if (rows == null)
@@ -437,6 +445,7 @@ public class Matrix {
         }
         return trans;
     }
+
     public Matrix add(Matrix other)throws Exception
     {
         if(rows()!= other.rows())
@@ -447,20 +456,22 @@ public class Matrix {
         {
             throw new Exception("Dot product :: this.Size()!= other.Size()");
         }
-        for (int i = 0;i<rows();i++)
+        for (int i = 0; i < rows(); i++)
         {
              rows.get(i).add(other.rows.get(i));
         }
         return  this;
     }
+
     public Matrix add(double other)
     {
-        for (int i=0;i<rows();i++)
+        for (int i = 0; i < rows(); i++)
         {
             rows.get(i).add(other);
         }
         return  this;
     }
+
     public Matrix sub(Matrix other)throws Exception
     {
         if(rows()!= other.rows())
@@ -471,31 +482,34 @@ public class Matrix {
         {
             throw new Exception("Dot product :: this.Size()!= other.Size()");
         }
-        for (int i = 0;i < rows();i++)
+        for (int i = 0; i < rows(); i++)
         {
             rows.get(i).sub(other.rows.get(i));
         }
         return  this;
     }
+
     public Matrix sub(double other)
     {
-        for (int i=0;i<rows();i++)
+        for (int i = 0; i < rows(); i++)
         {
             rows.get(i).sub(other);
         }
         return  this;
     }
+
     public Matrix mul(double other)
     {
-        for (int i = 0;i < rows();i++)
+        for (int i = 0; i < rows(); i++)
         {
             rows.get(i).mul(other);
         }
         return  this;
     }
+
     public Matrix div(double other)throws Exception
     {
-        return  this.mul(1.0/other);
+        return  this.mul(1.0 / other);
     }
 
     public static Matrix mul(Matrix a, Matrix b)throws Exception
@@ -518,6 +532,7 @@ public class Matrix {
         }
         return res;
     }
+
     public static Vector mul(Matrix mat, Vector vec)throws Exception
     {
         if (mat.cols() != vec.size())
@@ -532,6 +547,7 @@ public class Matrix {
         }
         return result;
     }
+
     public static Vector mul(Vector vec, Matrix mat)throws Exception
     {
         if (mat.rows() != vec.size())
@@ -544,21 +560,24 @@ public class Matrix {
         {
             for (int j = 0; j < mat.rows(); j++)
             {
-                result.set(i,mat.get(j,i)* vec.get(i));
+                result.set(i, mat.get(j,i) * vec.get(i));
             }
         }
 
         return result;
     }
+
     public static Matrix mul(Matrix mat, double a)
     {
         Matrix result = new Matrix(mat);
         return result.mul(a);
     }
+
     public static Matrix operator(double a, Matrix mat)
     {
         return mul(mat , a);
     }
+
     public static Matrix add(Matrix a, Matrix b)throws Exception
     {
         if (a.cols() != b.cols())
@@ -574,16 +593,19 @@ public class Matrix {
 
         return result.add(b);
     }
+
     public static Matrix add(Matrix a, double b)
     {
         Matrix result = new Matrix(a);
 
         return result.add(b);
     }
+
     public static Matrix add(double b, Matrix a)
     {
         return add(a , b);
     }
+
     public static Matrix sub(Matrix a, Matrix b)throws Exception
     {
         if (a.cols() != b.cols())
@@ -599,19 +621,21 @@ public class Matrix {
 
         return result.sub(b);
     }
+
     public static Matrix sub(Matrix a, double b)
     {
         Matrix result = new Matrix(a);
 
         return result.sub(b);
     }
+
     public static Matrix sub(double b, Matrix a)
     {
         Matrix result = new Matrix(a);
 
         for (int i = 0; i < a.rows(); i++)
         {
-            result.rows.set(i,Vector.sub(b,a.rows.get(i)));
+            result.rows.set(i, Vector.sub(b, a.rows.get(i)));
         }
         return result;
     }

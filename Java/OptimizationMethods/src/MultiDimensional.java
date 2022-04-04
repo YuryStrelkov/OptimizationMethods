@@ -12,6 +12,9 @@ public class MultiDimensional {
             return _testFuncND(arg);
         }
     };
+
+    public static  boolean ShowDebugLog = false;
+
     private static double _testFunc2D(Vector x)
     {
         return (x.get(0) - 5) * x.get(0) + (x.get(1) - 3) * x.get(1); // min at point x = 2.5, y = 1.5
@@ -53,8 +56,7 @@ public class MultiDimensional {
             }
             x_0 =  x_c;
         }
-
-        System.out.println("Dihotomia iterations number : " + cntr);
+        ///if(ShowDebugLog)System.out.println("Dihotomia iterations number : " + cntr);
 
         return  Vector.add(x_1 , x_0).mul(0.5);
     }
@@ -97,7 +99,7 @@ public class MultiDimensional {
             b = x_1;
         }
 
-        System.out.println("golden ratio iterations number : " + cntr);
+        if(ShowDebugLog)System.out.println("golden ratio iterations number : " + cntr);
 
         return  Vector.add(x_1 , x_0).mul(0.5);
     }
@@ -140,7 +142,7 @@ public class MultiDimensional {
             }
             a = x_0;
         }
-        System.out.println("fibonacci iterations number : "+max_iters);
+        if(ShowDebugLog)System.out.println("fibonacci iterations number : "+max_iters);
         return  Vector.add(x_1 , x_0).mul(0.5);
     }
     public static Vector fibonacci      (IFunctionND f, Vector x_0, Vector x_1)throws Exception
@@ -189,14 +191,14 @@ public class MultiDimensional {
 
                 if (opt_coord_n == x_1.size())
                 {
-                  System.out.println("per coord descend iterations number : "+i);
+                    if(ShowDebugLog)System.out.println("per coord descend iterations number : "+i);
                     return x_0;
                 }
                 continue;
             }
             opt_coord_n = 0;
         }
-        System.out.println("per coord descend iterations number : "+max_iters);
+        if(ShowDebugLog)System.out.println("per coord descend iterations number : "+max_iters);
         return x_0;
     }
     public static Vector perCoordDescend(IFunctionND f, Vector x_start, double eps)throws Exception
@@ -239,7 +241,7 @@ public class MultiDimensional {
             x_i = x_i_1;
         }
 
-        System.out.println("gradient descend iterations number : " + cntr);
+        if(ShowDebugLog)System.out.println("gradient descend iterations number : " + cntr);
 
         return Vector.add(x_i_1, x_i).mul(0.5);
     }
@@ -289,7 +291,7 @@ public class MultiDimensional {
 
             x_i = x_i_1;
         }
-        System.out.println("Conj gradient descend iterations number : "+cntr);
+        if(ShowDebugLog)System.out.println("Conj gradient descend iterations number : "+cntr);
         return Vector.add(x_i_1, x_i).mul(0.5);
     }
     public static Vector conjGradientDescend(IFunctionND f, Vector x_start, double eps )throws Exception
@@ -331,7 +333,7 @@ public class MultiDimensional {
             x_i = x_i_1;
         }
 
-        System.out.println("Newtone - Raphson iterations number : " + cntr);
+        if(ShowDebugLog)System.out.println("Newtone - Raphson iterations number : " + cntr);
 
         return Vector.add(x_i_1 ,x_i).mul(0.5);
     }
