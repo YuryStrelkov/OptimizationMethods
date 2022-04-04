@@ -8,20 +8,27 @@ namespace OptimizationMethods
     {
         public static void OneDimensionalMethodsTest()
         {
+            Console.WriteLine("\n///////////////////////////////////////////");
+            Console.WriteLine(  "//////// OneDimensionalMethodsTest ////////");
+            Console.WriteLine(  "///////////////////////////////////////////\n");
+
             const double x_0 = 10;
             const double x_1 = -1;
-            Console.WriteLine($"x_0 = {x_0}, x_1 = {x_1}\n");
+            Console.WriteLine($"x_0 = {x_0},\nx_1 = {x_1}\n");
             Console.WriteLine($"Dihotomia   : {OneDimensional.Dihotomia  (OneDimensional.TestFunc, x_0, x_1, 1e-4)}");
             Console.WriteLine($"GoldenRatio : {OneDimensional.GoldenRatio(OneDimensional.TestFunc, x_0, x_1, 1e-4)}");
             Console.WriteLine($"Fibonacchi  : {OneDimensional.Fibonacci  (OneDimensional.TestFunc, x_0, x_1, 1e-4)}\n");
         }
         public static void MultiDimensionalMethodsTest()
         {
+            Console.WriteLine("\n/////////////////////////////////////////////");
+            Console.WriteLine(  "//////// MultiDimensionalMethodsTest ////////");
+            Console.WriteLine(  "/////////////////////////////////////////////\n");
+
             Vector x_1 = new double[] { 0, 0 };
             Vector x_0 = new double[] { 5, 3 };
 
-
-            Console.WriteLine($"x_0 = {x_0}, x_1 = {x_1}\n") ;
+            Console.WriteLine($"x_0 = {x_0},\nx_1 = {x_1}\n") ;
             Console.WriteLine($"Dihotomia              : {MultiDimensional.Dihotomia          (MultiDimensional.TestFunc2D, x_1, x_0)}");
             Console.WriteLine($"GoldenRatio            : {MultiDimensional.GoldenRatio        (MultiDimensional.TestFunc2D, x_1, x_0)}");
             Console.WriteLine($"Fibonacci              : {MultiDimensional.Fibonacci          (MultiDimensional.TestFunc2D, x_1, x_0)}");
@@ -35,6 +42,10 @@ namespace OptimizationMethods
         /// </summary>
         public static void MatrixTest()
         {
+            Console.WriteLine("\n////////////////////////////");
+            Console.WriteLine(  "//////// MatrixTest ////////");
+            Console.WriteLine(  "////////////////////////////\n");
+
             ///У меня всё работает, у вас мой класс тоже заработает
             Matrix matrix = new Vector[] { new double[] { 8, 1, 6 }, new double[] { 3, 5, 7 }, new double[] { 4, 9, 2 } };
             Console.WriteLine(matrix);
@@ -61,6 +72,10 @@ namespace OptimizationMethods
 
         public static void NumericTests()
         {
+            Console.WriteLine("\n//////////////////////////////");
+            Console.WriteLine(  "//////// NumericTests ////////");
+            Console.WriteLine(  "//////////////////////////////\n");
+
             int rational;
             int numerator;
             int denominator;
@@ -78,6 +93,10 @@ namespace OptimizationMethods
 
         public static void SympexTest() 
         {
+            Console.WriteLine("\n/////////////////////////////");
+            Console.WriteLine(  "//////// SymplexTest ////////");
+            Console.WriteLine(  "/////////////////////////////\n");
+
             Matrix A = new Vector[]
             {
               new double[]{-2, 6},
@@ -96,11 +115,11 @@ namespace OptimizationMethods
 
         public static void TestAll() 
         {
-            // OneDimensionalMethodsTest();
-             MultiDimensionalMethodsTest();
-            // MatrixTest();
+            //OneDimensionalMethodsTest();
+            // MultiDimensionalMethodsTest();
+            //MatrixTest();
             SympexTest();
-            // NumericTests();
+            NumericTests();
         }
     }
 }

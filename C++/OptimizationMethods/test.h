@@ -29,11 +29,14 @@ static double test_function_nd(const vec_n& args)
 
 static void  one_dimensional_methods_test()
 {
+	std::cout << "\n///////////////////////////////////////////" << std::endl;
+	std::cout <<   "//////// OneDimensionalMethodsTest ////////" << std::endl;
+	std::cout <<   "///////////////////////////////////////////\n" << std::endl;
 	double x_0 = 125;
 	double x_1 = -5;
 	std::cout << "\n";
 	std::cout << "x = agrmin(x * (x - 5))\n";
-	std::cout << "x_0 = " << x_0 << ", x_1 = " << x_1 << "\n";
+	std::cout << "x_0 = " << x_0 << ",\nx_1 = " << x_1 << "\n";
 	std::cout << "dihotomia   : " << dihotomia   (test_function_1d, x_0, x_1, 1e-4) << "\n";
 	std::cout << "golden_ratio: " << golden_ratio(test_function_1d, x_0, x_1, 1e-4) << "\n";
 	std::cout << "fibonacci   : " << fibonacci   (test_function_1d, x_0, x_1, 1e-4) << "\n";
@@ -41,11 +44,15 @@ static void  one_dimensional_methods_test()
 
 static void multi_dimensional_methods_test()
 {
+	std::cout << "\n/////////////////////////////////////////////" << std::endl;
+	std::cout <<   "//////// MultiDimensionalMethodsTest ////////" << std::endl;
+	std::cout <<   "/////////////////////////////////////////////\n" << std::endl;
+
 	vec_n x_0 = { 0,0 };
 	vec_n x_1 = { 5,3 };
 
 	std::cout << "\n";
-	std::cout << "x_0 = " << x_0 << ", x_1 = " << x_1 << "\n";
+	std::cout << "x_0 = " << x_0 << ",\nx_1 = " << x_1 << "\n";
 	std::cout << "dihotomia             : " << dihotomia   (test_function_2d, x_1, x_0, 1e-5) << "\n";
 	std::cout << "golden_ratio          : " << golden_ratio(test_function_2d, x_1, x_0, 1e-5) << "\n";
 	std::cout << "fibonacci             : " << fibonacci   (test_function_2d, x_1, x_0, 1e-5) << "\n";
@@ -59,6 +66,10 @@ static void multi_dimensional_methods_test()
 
 static void matrix_test()
 {
+	std::cout << "\n////////////////////////////" << std::endl;
+	std::cout <<   "//////// MatrixTest ////////" << std::endl;
+	std::cout <<   "////////////////////////////\n" << std::endl;
+
 	vec_n b{ 1,2,3 };
 	/*
 	0.05
@@ -96,6 +107,10 @@ static void matrix_test()
 
 static void symplex_method_test()
 {
+	std::cout << "\n/////////////////////////////" << std::endl;
+	std::cout <<   "//////// SymplexTest ////////" << std::endl;
+	std::cout <<   "/////////////////////////////\n" << std::endl;
+
 	mat_mn A = 
 	{ {-2, 6},
 	  { 3, 2},
@@ -110,6 +125,10 @@ static void symplex_method_test()
 
 static void numeric_tests()
 {
+	std::cout << "\n//////////////////////////////" << std::endl;
+	std::cout <<   "//////// NumericTests ////////" << std::endl;
+	std::cout <<   "//////////////////////////////\n" << std::endl;
+
 	int rational;
 	int numerator;
 	int denominator;
@@ -127,10 +146,10 @@ static void numeric_tests()
 
 static int test_all()
 {
-	one_dimensional_methods_test();
-	multi_dimensional_methods_test();
-	matrix_test();
+	//one_dimensional_methods_test();
+	//multi_dimensional_methods_test();
+	//matrix_test();
 	symplex_method_test();
-	numeric_tests();
+	//numeric_tests();
 	return 0;
 }

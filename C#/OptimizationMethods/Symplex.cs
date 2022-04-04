@@ -434,9 +434,8 @@ namespace OptimizationMethods
             Matrix A;
 
             List<int> basis = BuildSymplexTable(out A, a, c, b, ineq, mode);
-#if DEBUG
+       
             Console.WriteLine($"Start symplex table:\n\n{SymplexToString(A, basis)}");
-#endif
 
             while (!IsPlanOptimal(A, mode))
             {
@@ -474,6 +473,7 @@ namespace OptimizationMethods
                 Console.WriteLine($"current_solution : {ToRationalStr(CurrentSymplexSolution(A, basis, c.Size))}\n");
 #endif
             }
+            Console.WriteLine($"solution : {ToRationalStr(CurrentSymplexSolution(A, basis, c.Size))}\n");
             /// формирование ответа
             return CurrentSymplexSolution(A, basis, c.Size);
         }

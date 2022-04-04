@@ -411,10 +411,9 @@ vec_n symplex_solve(const mat_mn& a, const vec_n& c, const vec_n& b, const std::
 	mat_mn A ;
 	
 	std::vector<int> basis = build_symplex_table(A, a, c, b, ineq, mode);
-#if _DEBUG
+	
 	std::cout << "Start symplex table"<<std::endl;
 	write_symplex(A, basis);
-#endif
 
 	while (!is_plan_optimal(A, mode))
 	{
@@ -454,6 +453,9 @@ vec_n symplex_solve(const mat_mn& a, const vec_n& c, const vec_n& b, const std::
 
 #endif
 	}
+
+	std::cout << "solution : "<< str_rational(current_symplex_solution(A, basis, c.size())) << "\n";
+
 	/// формирование ответа
 	return current_symplex_solution(A, basis, c.size());
 }
