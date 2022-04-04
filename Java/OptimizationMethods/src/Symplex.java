@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 
-final class Pair<FisrtItemType,SecondItemType>
+final class Pair <FisrtItemType,SecondItemType>
 {
    public FisrtItemType  item1;
    public SecondItemType item2;
@@ -141,9 +141,9 @@ public class Symplex
 
         int rank_a_b = Matrix.rank(ab.addCol(b));
 
-        System.out.println("rank ( A ) "+rank_a+"\n");
+        System.out.println("rank ( A ) " + rank_a + "\n");
 
-        System.out.println("rank (A|b) "+rank_a_b+"\n");
+        System.out.println("rank (A|b) " + rank_a_b + "\n");
         if (rank_a == rank_a_b)
         {
             System.out.println("one solution\n");
@@ -278,17 +278,17 @@ public class Symplex
 
         for (int i = 0; i < A.rows() - 1; i++)
         {
-            a_ik = A.get(i,symplex_col);// [i][symplex_col];
+            a_ik = A.get(i, symplex_col);// [i][symplex_col];
 
             if (a_ik < 0)
             {
                 continue;
             }
-            if (A.get(i,b_index) / a_ik > delta)
+            if (A.get(i, b_index) / a_ik > delta)
             {
                 continue;
             }
-            delta = A.get(i,b_index) / a_ik;
+            delta = A.get(i, b_index) / a_ik;
             index = i;
         }
         return index;
@@ -303,6 +303,7 @@ public class Symplex
     public static Vector currentSymplexSolution(Matrix A, ArrayList<Integer> basis, int n_agrs)
     {
         Vector solution = new Vector(n_agrs);
+
         for (int i = 0; i < basis.size(); i++)
         {
             if (basis.get(i) >= n_agrs)
@@ -370,7 +371,7 @@ public class Symplex
                     basis.set(basis.size() - 1, j);
                     continue;
                 }
-                if (ineq.get(j) ==Sign.More)
+                if (ineq.get(j) == Sign.More)
                 {
                     if (cntr == j)
                     {
@@ -496,7 +497,7 @@ public class Symplex
     {
         ArrayList<Sign> ineq = new ArrayList<>(b.size());
 
-        for(int i=0;i<b.size();i++)
+        for(int i = 0;i < b.size(); i++)
         {
             ineq.add(Sign.Less);
         }

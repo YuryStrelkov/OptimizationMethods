@@ -54,11 +54,11 @@ public final class OneDimensional
 
     public static double dihotomia  (IFunction1D f, double x_0, double x_1, double eps)
     {
-       return dihotomia(f,x_0,x_1,eps, 1000);
+       return dihotomia(f, x_0, x_1, eps, 1000);
     }
     public static double dihotomia  (IFunction1D f, double x_0, double x_1)
     {
-        return dihotomia(f,x_0,x_1,1e-6, 1000);
+        return dihotomia(f, x_0, x_1, 1e-6, 1000);
     }
 
     public static double goldenRatio(IFunction1D f, double x_0, double x_1, double eps, int max_iters)
@@ -98,11 +98,11 @@ public final class OneDimensional
 
     public static double goldenRatio  (IFunction1D f, double x_0, double x_1, double eps)
     {
-        return goldenRatio(f,x_0,x_1,eps, 1000);
+        return goldenRatio(f, x_0, x_1, eps, 1000);
     }
     public static double goldenRatio  (IFunction1D f, double x_0, double x_1)
     {
-        return goldenRatio(f,x_0,x_1,1e-6, 1000);
+        return goldenRatio(f, x_0, x_1, 1e-6, 1000);
     }
 
     public static int[] fibonacchiNumbers(int index)
@@ -200,6 +200,6 @@ public final class OneDimensional
     }
     public static double fibonacci  (IFunction1D f, double x_0, double x_1)
     {
-        return fibonacci(f,x_0,x_1,1e-6);
+        return fibonacci(f, x_0, x_1, 1e-6);
     }
 }
