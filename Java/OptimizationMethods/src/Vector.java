@@ -41,14 +41,14 @@ public class Vector
         }
     }
 
-    public Double get(int index)
+    public double get(int index)
     {
-        return get(index);
+        return data.get(index);
     }
 
-    public void set(int index,double value)
+    public void set(int index, double value)
     {
-        set(index, value);
+        data.set(index, value);
     }
 
     public  void pushBack(double value)
