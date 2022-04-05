@@ -43,12 +43,12 @@ public class Vector
 
     public Double get(int index)
     {
-        return data.get(index);
+        return get(index);
     }
 
     public void set(int index,double value)
     {
-        data.set(index, value);
+        set(index, value);
     }
 
     public  void pushBack(double value)
@@ -78,7 +78,7 @@ public class Vector
 
         for (int i = 0; i < size(); i++)
         {
-            this.data.set(i,  this.data.get(i) * inv_mag);
+            this.set(i,  this.get(i) * inv_mag);
         }
         return this;
     }
@@ -99,7 +99,7 @@ public class Vector
 
         for (int i = 0; i < other.size(); i++)
         {
-            dot += this.data.get(i) * other.data.get(i);
+            dot += this.get(i) * other.get(i);
         }
         return dot;
     }
@@ -110,20 +110,20 @@ public class Vector
         String s = "{ ";
         for (int i = 0; i < data.size() - 1; i++)
         {
-           if(data.get(i) >= 0)
+           if(get(i) >= 0)
            {
-               s += String.format("%-8s; ",  String.format("%.4f",data.get(i)));
+               s += String.format("%-8s; ",  String.format("%.4f",get(i)));
                continue;
            }
-            s += String.format("%-8s; ", String.format("%.4f",data.get(i)));
+            s += String.format("%-8s; ", String.format("%.4f",get(i)));
         }
-        if(data.get(data.size() - 1) >= 0)
+        if(get(data.size() - 1) >= 0)
         {
-            s += String.format("%-8s ", String.format("%.4f",data.get(data.size() - 1)));
+            s += String.format("%-8s ", String.format("%.4f",get(data.size() - 1)));
             s += " }";
             return s;
         }
-        s += String.format("%-8s ",String.format("%.4f",data.get(data.size() - 1)));
+        s += String.format("%-8s ",String.format("%.4f",get(data.size() - 1)));
         s += " }";
         return s;
     }
@@ -150,7 +150,7 @@ public class Vector
         }
         for (int i = 0; i < other.size(); i++)
         {
-            data.set(i, data.get(i) + other.data.get(i));
+            set(i, get(i) + other.get(i));
         }
         return this;
     }
@@ -159,7 +159,7 @@ public class Vector
     {
         for (int i = 0; i < size(); i++)
         {
-            data.set(i, data.get(i) + other);
+            set(i, get(i) + other);
         }
         return this;
     }
@@ -172,7 +172,7 @@ public class Vector
         }
         for (int i = 0; i < other.size(); i++)
         {
-            data.set(i, data.get(i) - other.data.get(i));
+            set(i, get(i) - other.get(i));
         }
         return this;
     }
@@ -181,7 +181,7 @@ public class Vector
     {
         for (int i = 0; i < size(); i++)
         {
-            data.set(i, data.get(i) - other);
+            set(i, get(i) - other);
         }
         return this;
     }
@@ -190,7 +190,7 @@ public class Vector
     {
         for (int i = 0; i < size(); i++)
         {
-            data.set(i, data.get(i) * other);
+            set(i, get(i) * other);
         }
         return this;
     }
@@ -199,7 +199,7 @@ public class Vector
     {
         for (int i = 0; i < size(); i++)
         {
-            data.set(i, data.get(i) / other);
+            set(i, get(i) / other);
         }
         return this;
     }
@@ -247,7 +247,7 @@ public class Vector
 
         for(int i = 0; i < a.size(); i++)
         {
-            res.data.set(i, b - a.data.get(i));
+            res.set(i, b - a.get(i));
         }
         return  res;
     }
@@ -275,7 +275,7 @@ public class Vector
 
         for(int i = 0; i < a.size(); i++)
         {
-            res.data.set(i, b / a.data.get(i));
+            res.set(i, b / a.get(i));
         }
         return  res;
     }
@@ -301,13 +301,13 @@ public class Vector
         Vector df = new Vector(x.size());
         for (int i = 0; i < x.size(); i++)
         {
-            x_l.data.set(i, x_l.data.get(i) - eps);//   [i] -= eps;
-            x_r.data.set(i, x_r.data.get(i) + eps);
+            x_l.set(i, x_l.get(i) - eps);//   [i] -= eps;
+            x_r.set(i, x_r.get(i) + eps);
 
-            df.data.set(i,(func.execute(x_r) - func.execute(x_l)) * (0.5 / eps));
+            df.set(i,(func.execute(x_r) - func.execute(x_l)) * (0.5 / eps));
 
-            x_l.data.set(i, x_l.data.get(i) + eps);//   [i] -= eps;
-            x_r.data.set(i, x_r.data.get(i) - eps);
+            x_l.set(i, x_l.get(i) + eps);//   [i] -= eps;
+            x_r.set(i, x_r.get(i) - eps);
         }
         return df;
     }
@@ -318,11 +318,11 @@ public class Vector
         {
             throw new Exception("Partial derivative index out of bounds!");
         }
-        x.data.set(index,  x.data.get(index) + eps);//[index] += eps;
+        x.set(index,  x.get(index) + eps);//[index] += eps;
         double f_r = func.execute(x);
-        x.data.set(index,  x.data.get(index) - 2.0 * eps);
+        x.set(index,  x.get(index) - 2.0 * eps);
         double f_l = func.execute(x);
-        x.data.set(index,  x.data.get(index) +  eps);
+        x.set(index,  x.get(index) +  eps);
         return (f_r - f_l) / eps * 0.5;
     }
 
@@ -332,12 +332,12 @@ public class Vector
         {
             throw new Exception("Partial derivative index out of bounds!");
         }
-        x.data.set(index_2,  x.data.get(index_2) - eps);
+        x.set(index_2,  x.get(index_2) - eps);
         double f_l = partial(func, x, index_1, eps);
-        x.data.set(index_2,  x.data.get(index_2) - 2.0 * eps);
+        x.set(index_2,  x.get(index_2) + 2.0 * eps);
         double f_r = partial(func, x, index_1, eps);
-        x.data.set(index_2,  x.data.get(index_2) - eps);
-        return (f_l - f_r) / eps * 0.5;
+        x.set(index_2,  x.get(index_2) - eps);
+        return (f_r - f_l) / eps * 0.5;
     }
 
 }
