@@ -30,10 +30,25 @@ private:
 	std::vector<int> f_mod_args;
 	
 	/// <summary>
+	///индексы естественных переменных
+	/// </summary>
+	std::vector<int> natural_args_ids;
+	
+	/// <summary>
+	///индексы переменных, не являющихся искусственными
+	/// </summary>
+	std::vector<int> artificial_args_ids;
+	
+	/// <summary>
 	/// список индексов текущих базисных переменных 
 	/// </summary>
 	std::vector<int> basis_args;
 	
+	/// <summary>
+	/// Симплекс таблица
+	/// </summary>
+	mat_mn symplex_t;
+
 	/// <summary>
 	/// матрица ограничений
 	/// </summary>
@@ -48,95 +63,109 @@ private:
 	/// вектор стоимостей
 	/// </summary>
 	vec_n prices_v;
-	
-	/// <summary>
-	/// симплекс таблица
-	/// </summary>
-	mat_mn sm_table;
-	
+
 	/// <summary>
 	/// режим поиска решения
 	/// </summary>
 	int mode = SYMPLEX_MAX;
 	
 	/// <summary>
-	/// Проверяет оптимальность плана в соответсвии с тем типом экстремума, которыей требуется найти.
-	/// Провеяются элменты от 1:n-1 полсдней строки СМ таблицы 
+	/// Проверяет оптимальность текущего опорного плана. Исследуется положительность 
+	/// симплекс-разностей в последней строке СТ в диапазоне от 1:n-1.
+	/// Если целевая функция была модифицирована, то исследует две последних строки.
+	/// Если среди элементов от 1:n-1 в последней строке нет отрицательных, то проверяет 
+	/// на неотрицательность только те элементы предпоследней строки, которые не являются
+	/// искусственными.
 	/// </summary>
 	/// <param name="A">СМ таблицa</param>
 	/// <param name="mode"></param>
 	/// <returns></returns>
 	bool is_plan_optimal()const
 	{
-		int last_row_id = sm_table.size() - 1;
 		/// <summary>
-		/// Если целевая функуция была модифицированна 
+		/// Проверяем значения последней строки сиплекс-разностей
+		/// на положительность. Если все положительны, то план оптимален.
 		/// </summary>
+		
+		const vec_n& row = symplex_t[symplex_t.size() - 1];
+		
+		bool opt = true;
+
+		for (int i = 0; i < row.size() - 1; i++)
+		{
+			if (row[i] < 0) 
+			{
+				opt = false;
+				break;
+			}
+		}
+
+		/// <summary>
+		/// если мы модифицировали целевую функцию, то среди списка естественнхых
+		/// агументов проверям на положительнность предпослднюю строку симплекс-разностей 
+		/// </summary>
+
 		if (is_target_f_modified())
 		{
-			const vec_n& row_1 = sm_table[last_row_id];
-			const vec_n& row_2 = sm_table[last_row_id - 1];
-
-			for (int i = 0; i < row_1.size(); i++)
+			if (!opt)
 			{
-				if (row_1[i] <= 0)
+				return opt;
+			}
+			const vec_n& row_ = symplex_t[symplex_t.size() - 2];
+
+			for (const auto& id : natural_args_ids)
+			{
+				if (row_[id] < 0)
 				{
-					if (row_2[i] >= 0)
-					{
-						continue;
-					}
-					return false;
+					opt = false;
+					break;
 				}
-				return false;
 			}
-			return true;
 		}
-		/// <summary>
-		/// Если не была
-		/// </summary>
-		const vec_n& row_1 = sm_table[last_row_id];
 
-		for (int i = 0; i < row_1.size(); i++)
-		{
-			if (row_1[i] >= 0 )
-			{
-				continue;
-			}
-			return false;
-		}
-		return true;
-	}
+		return opt;
+    }
 	
 	/// <summary>
-	/// Определяет ведущий столбец в соответсвии с тем типом экстремума, который требуется найти.
-	/// Исследуются элменты от 1:n-1 полсдней строки СМ таблицы 
+	/// Определяет ведущий столбец. Среди элементов строки симплекс-разностей ищет максимальны по модулю 
+	/// отрицательный элемент. Если целевая функция была модифицирована и среди последней строки нет отрицательных
+	/// элементов, то посик таковых будет продолжен среди только тех элементов предпоследней строки, которые не
+	/// являются искусственными.
 	/// </summary>
 	/// <param name="A"></param>
 	/// <returns></returns>
 	int get_main_col()const
 	{
+		const vec_n& row = symplex_t[symplex_t.size() - 1];
+
 		double delta = 0;
 
-		int index = -1;
+		int    index = -1;
 
-		const vec_n& c = sm_table[sm_table.size() - 1];
-
-		for (int i = 0; i < c.size() - 1; i++)
+		for (int i = 0; i < row.size() - 1; i++)
 		{
-			if (c[i] >= 0)
+			if (row[i] >= delta)
 			{
 				continue;
 			}
-			if (abs(c[i]) < delta)
-			{
-				continue;
-			}
-
-			delta = abs(c[i]);
-
+			delta = row[i];
 			index = i;
 		}
+	
+		if (is_target_f_modified() && index== -1)
+		{
+			const vec_n& row_add = symplex_t[symplex_t.size() - 2];
 
+			for (const auto& id : natural_args_ids)
+			{
+				if (row_add[id] >= delta)
+				{
+					continue;
+				}
+				delta = row_add[id];
+				index = id;
+			}
+		}
 		return index;
 	}
 
@@ -154,32 +183,27 @@ private:
 
 		double a_ik;
 
-		int b_index = sm_table[0].size() - 1;
+		int b_index = symplex_t[0].size() - 1;
 		
 		int cntr = 0;
 
-		int rows_n = is_target_f_modified() ? sm_table.size() - 2 : sm_table.size() - 1;
+		int rows_n = is_target_f_modified() ? symplex_t.size() - 2 : symplex_t.size() - 1;
 
 		for (int i = 0; i < rows_n; i++)
 		{
-			a_ik = sm_table[i][symplex_col];
+			a_ik = symplex_t[i][symplex_col];
 
 			if (a_ik < 0)
 			{
 				cntr++;
 				continue;
 			}
-			if (sm_table[i][b_index] / a_ik > delta)
+			if (symplex_t[i][b_index] / a_ik > delta)
 			{
 				continue;
 			}
-			delta = sm_table[i][b_index] / a_ik;
+			delta = symplex_t[i][b_index] / a_ik;
 			index = i;
-		}
-
-		if (rows_n == cntr)
-		{
-			std::cout << "warning::symplex area is boundless...\n";
 		}
 
 		return index;
@@ -192,61 +216,63 @@ private:
 	/// <param name="_ineq"></param>
 	/// <param name="col_index"></param>
 	/// <param name="col_index_aditional"></param>
-	void build_virtual_basis_col(const int ineq_id, const int _ineq, int& col_index, int& col_index_aditional)
+	bool build_virtual_basis_col( const int ineq_id, const int _ineq, int& col_index, int& col_index_aditional)
 	{
 		if (_ineq == EQUAL)
 		{
-			for (int row = 0; row < sm_table.size(); row++)
+			for (int row = 0; row < symplex_t.size(); row++)
 			{
 				if (row == ineq_id)
 				{
-					sm_table[row].push_back(1.0);
+					symplex_t[row].push_back(1.0);
 					continue;
 				}
-				sm_table[row].push_back(0.0);
+				symplex_t[row].push_back(0.0);
 			}
-			
-			col_index = sm_table[0].size() - 1;
 
-			col_index_aditional = sm_table[0].size() - 1;
+			col_index = symplex_t[0].size() - 1;
+
+			col_index_aditional = symplex_t[0].size() - 1;
 			
-			return;
+			return true;
 		}
 
 		if (_ineq == MORE_EQUAL)
 		{
-			for (int row = 0; row < sm_table.size(); row++)
+			for (int row = 0; row < symplex_t.size(); row++)
 			{
 				if (row == ineq_id)
 				{
-					sm_table[row].push_back(-1.0);
-					sm_table[row].push_back(1.0);
+					symplex_t[row].push_back(-1.0);
+					symplex_t[row].push_back(1.0);
 					continue;
 				}
-				sm_table[row].push_back(0.0);
-				sm_table[row].push_back(0.0);
+				symplex_t[row].push_back(0.0);
+				symplex_t[row].push_back(0.0);
 			}
-		
-			col_index_aditional = sm_table[0].size() - 1;
 
-			col_index = sm_table[0].size() - 2;
+			col_index_aditional = symplex_t[0].size() - 1;
+
+			col_index = symplex_t[0].size() - 2;
 			
-			return;
+			return false;
 		}
 
-		for (int row = 0; row < sm_table.size(); row++)
+		for (int row = 0; row < symplex_t.size(); row++)
 		{
 			if (row == ineq_id)
 			{
-				sm_table[row].push_back(1.0);
+				symplex_t[row].push_back(1.0);
 				continue;
 			}
-			sm_table[row].push_back(0.0);
+			symplex_t[row].push_back(0.0);
 		}
 
 		col_index_aditional = - 1;
 
-		col_index = sm_table[0].size() - 1;
+		col_index = symplex_t[0].size() - 1;
+
+		return true;
 	}
 	
 	/// <summary>
@@ -275,12 +301,14 @@ private:
 	///(-c|0)  F(x,c)
 	void build_symplex_table()
 	{
+		symplex_t = bounds_m;
+
 		int cntr = 0;
 		///
 		/// Если среди вектора b есть отрицательные значения, то соответствующие строки
 		/// матрицы ограничений умножаем на мину один и меняем знак сравнения
 		///
-		for (int row = 0; row < sm_table.size(); row++)
+		for (int row = 0; row < symplex_t.size(); row++)
 		{
 			if (bounds_v[row] >= 0)
 			{
@@ -291,24 +319,33 @@ private:
 			
 			bounds_v[row] *= -1;
 
-			sm_table[row] = sm_table[row] * (-1.0);
+			symplex_t[row] = symplex_t[row] * (-1.0);
+		}
+
+
+		for (int i = 0; i < prices_v.size(); i++)
+		{
+			natural_args_ids.push_back(i);
 		}
 		/// <summary>
 		/// построение искуственного базиса
 		/// </summary>
 		int basis_arg_id;
 		int basis_arg_id_add;
-
 		for (int ineq_id = 0; ineq_id < ineqs.size(); ineq_id++ )
 		{
 			build_virtual_basis_col(ineq_id, ineqs[ineq_id], basis_arg_id, basis_arg_id_add);
-			
+	
+			natural_args_ids.push_back(basis_arg_id);
+
 			if (basis_arg_id_add != -1)
 			{
 				basis_args.push_back(basis_arg_id_add);
 				f_mod_args.push_back(basis_arg_id_add);
+				artificial_args_ids.push_back(basis_arg_id_add);
 				continue;
 			}
+
 			basis_args.push_back(basis_arg_id);
 		}
 
@@ -316,16 +353,16 @@ private:
 		/// добавим столбец ограницений
 		/// </summary>
 
-		for (int row = 0; row < sm_table.size(); row++)
+		for (int row = 0; row < symplex_t.size(); row++)
 		{
-			sm_table[row].push_back(bounds_v[row]);
+			symplex_t[row].push_back(bounds_v[row]);
 		}
 
 		/// <summary>
 		/// Построение симплекс разностей
 		/// </summary>
 
-		vec_n s_deltas(sm_table[0].size());
+		vec_n s_deltas(symplex_t[0].size());
 		
 		if (mode == SYMPLEX_MAX)
 		{
@@ -342,7 +379,7 @@ private:
 			}
 		}
 		
-		sm_table.push_back(s_deltas);
+		symplex_t.push_back(s_deltas);
 
 		/// <summary>
 		/// Если целевая функуция не была модифицирована
@@ -356,14 +393,14 @@ private:
 		/// <summary>
 		/// Если всё же была...
 		/// </summary>
-		vec_n s_deltas_add(sm_table[0].size());
+		vec_n s_deltas_add(symplex_t[0].size());
 
 		for (int j = 0; j < f_mod_args.size(); j++)
 		{
 			s_deltas_add[f_mod_args[j]] = 1.0;
 		}
 
-		sm_table.push_back(s_deltas_add);
+		symplex_t.push_back(s_deltas_add);
 	}
 
 	bool exclude_mod_args()
@@ -373,17 +410,17 @@ private:
 			return false;
 		}
 
-		int last_row_id = sm_table.size() - 1;
+		int last_row_id = symplex_t.size() - 1;
 
 		for (int i = 0; i < f_mod_args.size(); i++)
 		{
-			for (int row = 0; row < sm_table.size(); row++)
+			for (int row = 0; row < symplex_t.size(); row++)
 			{
-				if (sm_table[row][f_mod_args[i]] != 0)
+				if (symplex_t[row][f_mod_args[i]] != 0)
 				{
-					double arg = sm_table[last_row_id][f_mod_args[i]] / sm_table[row][f_mod_args[i]];
+					double arg = symplex_t[last_row_id][f_mod_args[i]] / symplex_t[row][f_mod_args[i]];
 
-					sm_table[last_row_id] = sm_table[last_row_id] - arg * sm_table[row];
+					symplex_t[last_row_id] = symplex_t[last_row_id] - arg * symplex_t[row];
 
 					break;
 				}
@@ -393,24 +430,40 @@ private:
 		return true;
 	}
 
-	bool validate_solution()
+	bool validate_solution()const
 	{
 		double val = 0;
 
-		int n_rows = is_target_f_modified()? sm_table.size() - 2 : sm_table.size() - 1;
+		int n_rows = is_target_f_modified()? symplex_t.size() - 2 : symplex_t.size() - 1;
 
-		int n_cols = sm_table[0].size() - 1;
+		int n_cols = symplex_t[0].size() - 1;
 
 		for (int i = 0; i < basis_args.size(); i++)
 		{
 			if (basis_args[i] < natural_args_n())
 			{
-				val += sm_table[basis_args[i]][n_cols] * prices_v[i];
+				val += symplex_t[i][n_cols] * prices_v[basis_args[i]];
 			}
 		}
-
-		if (abs(val - sm_table[n_rows][n_cols]) < 1e-5)
+		if (mode == SYMPLEX_MAX) 
 		{
+			if (abs(val - symplex_t[n_rows][n_cols]) < 1e-5)
+			{
+				if (is_target_f_modified())
+				{
+					return true & (abs(symplex_t[symplex_t.size() - 1][symplex_t[0].size() - 1]) < 1e-5);
+				}
+
+				return true;
+			}
+		}
+		if (abs(val + symplex_t[n_rows][n_cols]) < 1e-5)
+		{
+			if (is_target_f_modified())
+			{
+				return true & (abs(symplex_t[symplex_t.size() - 1][symplex_t[0].size() - 1]) < 1e-5);
+			}
+
 			return true;
 		}
 		return false;
@@ -432,7 +485,7 @@ public:
 		ineqs.clear();
 		f_mod_args.clear();
 		basis_args.clear();
-		sm_table.clear();
+		///sm_table.clear();
 	}
 
 	inline const mat_mn& bounds_matrix()const
@@ -460,7 +513,7 @@ public:
 		return basis_args;
 	};
 
-	inline const mat_mn & table() const { return sm_table; };
+	inline const mat_mn & table() const { return symplex_t; };
 
 	inline bool is_target_f_modified()const
 	{
@@ -477,7 +530,7 @@ public:
 	/// <returns></returns>
 	vec_n current_symplex_solution(const bool only_natural_args = false)const
 	{
-		vec_n solution( only_natural_args ? natural_args_n() : sm_table[0].size() - 1);
+		vec_n solution( only_natural_args ? natural_args_n() : symplex_t[0].size() - 1);
 
 		for (int i = 0; i < basis_args.size(); i++)
 		{
@@ -486,7 +539,7 @@ public:
 				continue;
 			}
 
-			solution[basis_args[i]] = sm_table[i][sm_table[0].size() - 1];
+			solution[basis_args[i]] = symplex_t[i][symplex_t[0].size() - 1];
 		}
 		return solution;
 	}
@@ -550,17 +603,17 @@ public:
 
 			basis_args[main_row] = main_col;
 
-			a_ik = sm_table[main_row][main_col];
+			a_ik = symplex_t[main_row][main_col];
 
-			sm_table[main_row] = sm_table[main_row] * (1.0 / a_ik);
+			symplex_t[main_row] = symplex_t[main_row] * (1.0 / a_ik);
 
-			for (int i = 0; i < sm_table.size(); i++)
+			for (int i = 0; i < symplex_t.size(); i++)
 			{
 				if (i == main_row)
 				{
 					continue;
 				}
-				sm_table[i] = sm_table[i] - sm_table[i][main_col] * sm_table[main_row];
+				symplex_t[i] = symplex_t[i] - symplex_t[i][main_col] * symplex_t[main_row];
 			}
 			solution = current_symplex_solution();
 
@@ -595,8 +648,6 @@ public:
 			throw std::runtime_error("Error symplex creation :: A.rows_number() != inequarion.size()");
 		}
 
-		sm_table = a;
-
 		bounds_v = b;
 
 		bounds_m = a;
@@ -614,9 +665,7 @@ public:
 		{
 			_ineq.push_back(LESS_EQUAL);
 		}
-		
-		sm_table = a;
-
+	
 		bounds_v = b;
 
 		bounds_m = a;

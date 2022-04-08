@@ -132,9 +132,9 @@ static std::ostream& operator<<(std::ostream& steram, const vec_n& v)
 
 static bool operator>=(const vec_n& a, const double x)
 {
-	for (const auto& val : a)
+	for (int i = 0; i < a.size(); i++)
 	{
-		if (val < x)
+		if (a[i] < x)
 		{
 			return false;
 		}
@@ -144,9 +144,9 @@ static bool operator>=(const vec_n& a, const double x)
 
 static bool operator<=(const vec_n& a, const double x)
 {
-	for (const auto& val : a)
+	for (int i = 0; i < a.size(); i++)
 	{
-		if (val > x)
+		if (a[i] > x)
 		{
 			return false;
 		}
@@ -228,41 +228,41 @@ static double partial2(func_n func, vec_n& x, const int coord_index_1, const int
 	return (f_r - f_l) / eps * 0.5;
 }
 
-static double max(const vec_n& x, int& index) 
+static double max(const vec_n& x, int& index, const int range = 0)
 {
-	double max_ = x[0];
-	int i = 0;
-	for (auto& const x_i : x) 
+	double max_ = -1e32;
+	int index_max = range == 0 ? x.size() : range;
+	for (int i = 0; i < index_max; i++)
 	{
-		if (x_i > max_) 
+		if (x[i] > max_)
 		{
-			max_ = x_i;
+			max_ = x[i];
 			index = i;
 		}
-		i++;
 	}
 	return max_;
 }
 
-static double min(const vec_n& x, int& index)
+static double min(const vec_n& x, int& index, const int range = 0)
 {
-	double min_ = x[0];
-	int i = 0;
-	for (auto& const x_i : x)
+	double min_ = 1e32;
+
+	int index_max = range == 0 ? x.size() : range;
+
+	for (int i = 0; i < index_max; i++)
 	{
-		if (x_i < min_)
+		if (x[i] < min_)
 		{
-			min_ = x_i;
+			min_ = x[i];
 			index = i;
 		}
-		i++;
 	}
 	return min_;
 }
 
-static double abs_max(const vec_n& x, int& index)
+static double abs_max(const vec_n& x, int& index, const int range = 0)
 {
-	double max_ = abs(x[0]);
+	double max_ =  -1e32;
 	int i = 0;
 	for (auto& const x_i : x)
 	{
@@ -278,7 +278,7 @@ static double abs_max(const vec_n& x, int& index)
 
 static double abs_min(const vec_n& x, int& index)
 {
-	double min_ = abs(x[0]);
+	double min_ = 1e32;
 	int i = 0;
 	for (auto& const x_i : x)
 	{
