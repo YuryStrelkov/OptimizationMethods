@@ -4,11 +4,11 @@
 #include "numeric_utils.h"
 #include <iomanip>
 #include <string>
-
-
+////////////////////
+/// Lab. work #5 ///
+////////////////////
 namespace sm
 {
-	///
 constexpr auto EQUAL = 0;
 constexpr auto LESS_EQUAL = -1;
 constexpr auto MORE_EQUAL = 1;
@@ -16,9 +16,6 @@ constexpr auto MORE_EQUAL = 1;
 #define SYMPLEX_MAX  0
 #define SYMPLEX_MIN  1
 
-////////////////////
-/// Lab. work #5 ///
-////////////////////
 class symplex
 {
 private:
