@@ -5,459 +5,718 @@
 #include <iomanip>
 #include <string>
 
-///
-#define EQUAL       0
-#define LESS_EQUAL -1
-#define MORE_EQUAL  1
+
+namespace sm
+{
+	///
+constexpr auto EQUAL = 0;
+constexpr auto LESS_EQUAL = -1;
+constexpr auto MORE_EQUAL = 1;
+
+#define SYMPLEX_MAX  0
+#define SYMPLEX_MIN  1
+
 ////////////////////
 /// Lab. work #5 ///
 ////////////////////
-static std::string str_rational(const double val, const bool full_rational =  true)
+class symplex
 {
-	int r_part;
-	int num;
-	int denom;
-
-	decimal_to_rational(val, r_part, num, denom);
-	if (num == 0)
-	{
-		return std::to_string(r_part);
-	}
-	if (r_part == 0)
-	{
-		return std::to_string(num) + "/" + std::to_string(denom);
-	}
-
-	if (full_rational)
-	{
-		return std::to_string((num + abs(r_part) * denom) * (r_part >= 0 ? 1 : -1)) + "/" + std::to_string(denom);
-	}
-	return std::to_string(denom) + " " + std::to_string(num) + "/" + std::to_string(denom);
-}
-
-static std::string str_rational(const vec_n& val, const bool full_rational = true)
-{
-	std::string str = "{ ";
-	for (int i = 0; i < val.size() - 1; i++) 
-	{
-		str += str_rational(val[i], full_rational);
-		str += ", ";
-	}
-	str += str_rational(val[val.size() - 1], full_rational);
-
-	str += " }";
-	return str;
-}
-
-static void write_symplex(const  mat_mn& A, const std::vector<int>& basis_args)
-{
+private:
 	/// <summary>
-	///	  (x,w)	
-	/// w (A|I)  b
-	///   (c|i)  F(x,c)
+	/// список знаков в неравенств в системе ограничений
 	/// </summary>
-	/// <param name="a"></param>
-	/// <param name="b"></param>
-	/// <param name="c"></param>
-
-	if (A.size() == 0 )
-	{
-		return;
-	}
-
-	const char separator    = ' ';
-	const int colom_title_w = 6;
-	const int colom_w       = 12;
-
-	std::cout << std::left << std::setw(colom_title_w) << std::setfill(separator) << "";
-
-	int i = 0;
-	for (;i < A[0].size() - 1; i++)
-	{
-		std::cout << std::left << std::setw(colom_w) << std::setfill(separator) << "| x " + std::to_string(i + 1);
-	}
-
-	std::cout << std::left << std::setw(colom_w) << std::setfill(separator) << "| b";
-	std::cout << std::endl;
-
-	int n_row = -1;
-
-	for (auto const& row : A) 
-	{
-		n_row++;
-
-		if(n_row == A.size() - 1)
-		{
-			std::cout << std::left << std::setw(colom_title_w) << std::setfill(separator) << " d ";
-		}
-		else 
-		{
-			std::cout << std::left << std::setw(colom_title_w) << std::setfill(separator) << " x " + std::to_string(basis_args[n_row] + 1);
-		}
-
-		for (int col = 0; col < row.size(); col++)
-		{
-			if (row[col] >= 0)
-			{
-				std::cout << std::left << std::setw(colom_w) << std::setfill(separator) << "| " + str_rational(row[col]);
-				continue;
-			}
-			std::cout << std::left << std::setw(colom_w) << std::setfill(separator) << "|" + str_rational(row[col]);
-
-		}
-		std::cout << std::endl;
-	}
-	std::cout << std::endl;
-}
-
-/// <summary>
-/// Проверяет совместность СЛАУ вида Ax = b. Используется теорема Кронекера-Капелли 
-/// </summary>
-/// <param name="A"></param>
-/// <param name="b"></param>
-/// <returns>0 - нет решений, 1 - одно решение, 2 - бесконечное множествое решений</returns>
-int check_system(const  mat_mn&A, const vec_n&b)
-{
-	int rank_a   = rank(A);
+	std::vector<int> ineqs;
 	
-	mat_mn ab = A;
+	/// <summary>
+	/// список индексов переменных которые войдут в целевую функию, модифицируя ее
+	/// </summary>
+	std::vector<int> f_mod_args;
 	
-	int rank_a_b = rank(add_col(ab,b));
-
-#if _DEBUG
-	std::cout << "rank ( A ) " << rank_a   << std::endl;
-	std::cout << "rank (A|b) " << rank_a_b << std::endl;
-	if (rank_a == rank_a_b)
+	/// <summary>
+	/// список индексов текущих базисных переменных 
+	/// </summary>
+	std::vector<int> basis_args;
+	
+	/// <summary>
+	/// матрица ограничений
+	/// </summary>
+	mat_mn bounds_m;
+	
+	/// <summary>
+	/// вектор ограничений
+	/// </summary>
+	vec_n bounds_v;
+	
+	/// <summary>
+	/// вектор стоимостей
+	/// </summary>
+	vec_n prices_v;
+	
+	/// <summary>
+	/// симплекс таблица
+	/// </summary>
+	mat_mn sm_table;
+	
+	/// <summary>
+	/// режим поиска решения
+	/// </summary>
+	int mode = SYMPLEX_MAX;
+	
+	/// <summary>
+	/// Проверяет оптимальность плана в соответсвии с тем типом экстремума, которыей требуется найти.
+	/// Провеяются элменты от 1:n-1 полсдней строки СМ таблицы 
+	/// </summary>
+	/// <param name="A">СМ таблицa</param>
+	/// <param name="mode"></param>
+	/// <returns></returns>
+	bool is_plan_optimal()const
 	{
-		std::cout << "one solution"<< std::endl;
-	}
-	if (rank_a < rank_a_b)
-	{
-		std::cout << "infinite amount of solutions" << std::endl;
-	}
-	if (rank_a > rank_a_b)
-	{
-		std::cout << "no solutions" << std::endl;
-	}
-#endif
-
-	if (rank_a == rank_a_b) 
-	{
-		return 1;
-	}
-	if (rank_a < rank_a_b)
-	{
-		return 2;
-	}
-	if (rank_a > rank_a_b)
-	{
-		return 0;
-	}
-	throw std::runtime_error("error :: check_system");
-}
-//mode = 
-#define SYMPLEX_MAX  0
-#define SYMPLEX_MIN  1
-/// <summary>
-/// Проверяет оптимальность плана в соответсвии с тем типом экстремума, которыей требуется найти.
-/// Провеяются элменты от 1:n-1 полсдней строки СМ таблицы 
-/// </summary>
-/// <param name="A">СМ таблицa</param>
-/// <param name="mode"></param>
-/// <returns></returns>
-bool is_plan_optimal(const mat_mn& A, const int mode = SYMPLEX_MAX)
-{
-	const vec_n& deltas = A[A.size() - 1];
-
-	if (mode == SYMPLEX_MAX)
-	{
-		for (int i = 0; i < deltas.size() - 1; i++)
+		int last_row_id = sm_table.size() - 1;
+		/// <summary>
+		/// Если целевая функуция была модифицированна 
+		/// </summary>
+		if (is_target_f_modified())
 		{
-			if (deltas[i] < 0)
+			const vec_n& row_1 = sm_table[last_row_id];
+			const vec_n& row_2 = sm_table[last_row_id - 1];
+
+			for (int i = 0; i < row_1.size(); i++)
 			{
+				if (row_1[i] <= 0)
+				{
+					if (row_2[i] >= 0)
+					{
+						continue;
+					}
+					return false;
+				}
 				return false;
 			}
+			return true;
+		}
+		/// <summary>
+		/// Если не была
+		/// </summary>
+		const vec_n& row_1 = sm_table[last_row_id];
+
+		for (int i = 0; i < row_1.size(); i++)
+		{
+			if (row_1[i] >= 0 )
+			{
+				continue;
+			}
+			return false;
 		}
 		return true;
 	}
-
-	for (int i = 0; i < deltas.size() - 1; i++)
+	
+	/// <summary>
+	/// Определяет ведущий столбец в соответсвии с тем типом экстремума, который требуется найти.
+	/// Исследуются элменты от 1:n-1 полсдней строки СМ таблицы 
+	/// </summary>
+	/// <param name="A"></param>
+	/// <returns></returns>
+	int get_main_col()const
 	{
-		if (deltas[i] > 0)
-		{
-			return false;
-		}
-	}
-	return true;
-}
-/// <summary>
-/// Определяет ведущий столбец в соответсвии с тем типом экстремума, который требуется найти.
-/// Исследуются элменты от 1:n-1 полсдней строки СМ таблицы 
-/// </summary>
-/// <param name="A"></param>
-/// <returns></returns>
-int get_main_col(const mat_mn& A, const int mode = SYMPLEX_MAX)
-{
-	double delta = 0;
+		double delta = 0;
 
-	int index = -1;
+		int index = -1;
 
-	const vec_n& c = A[A.size() - 1];
+		const vec_n& c = sm_table[sm_table.size() - 1];
 
-	if (SYMPLEX_MIN == mode)
-	{
 		for (int i = 0; i < c.size() - 1; i++)
 		{
-			if (c[i] <= 0)
+			if (c[i] >= 0)
 			{
 				continue;
 			}
-			if (c[i] < delta)
+			if (abs(c[i]) < delta)
 			{
 				continue;
 			}
 
-			delta = c[i];
+			delta = abs(c[i]);
 
 			index = i;
 		}
+
 		return index;
 	}
 
-	for (int i = 0; i < c.size() - 1; i++) 
+	/// <summary>
+	/// Определяет ведущую строку 
+	/// </summary>
+	/// <param name="symplex_col">ведущий столбец</param>
+	/// <param name="A">СМ таблица</param>
+	/// <returns></returns>
+	int get_main_row(const int symplex_col)const
 	{
-		if (c[i]>=0)
-		{
-			continue;
-		}
-		if (abs(c[i]) < delta)
-		{
-			continue;
-		}
+		double delta = 1e12;
 
-		delta = abs(c[i]);
+		int index = -1;
 
-		index = i;
-	}
-	
-	return index;
-}
-/// <summary>
-/// Определяет ведущую строку 
-/// </summary>
-/// <param name="symplex_col">ведущий столбец</param>
-/// <param name="A">СМ таблица</param>
-/// <returns></returns>
-int get_main_row(const int symplex_col, const  mat_mn& A) 
-{
-	double delta = 1e12;
+		double a_ik;
 
-	int index = -1;
-	
-	double a_ik;
-	
-	int b_index = A[0].size() - 1;
-	
-	for (int i = 0; i < A.size() - 1; i++)
-	{
-		a_ik = A[i][symplex_col];
-
-		if (a_ik < 0)
-		{
-			continue;
-		}
-		if (A[i][b_index] / a_ik > delta)
-		{
-			continue;
-		}
-		delta = A[i][b_index] / a_ik;
-		index = i;
-	}
-	return index;
-}
-
-/// <summary>
-/// Выводит текущее решение СМ таблицы для не искусственных переменных
-/// </summary>
-/// <param name="A">СМ таблица</param>
-/// <param name="basis">список базисных параметров</param>
-/// <param name="n_agrs">количество исходных переменных</param>
-/// <returns></returns>
-vec_n current_symplex_solution(const mat_mn& A,const std::vector<int> basis, const int n_agrs)
-{
-	vec_n solution(n_agrs);
-	for (int i = 0; i < basis.size(); i++)
-	{
-		if (basis[i] >= n_agrs)
-		{
-			continue;
-		}
-		solution[basis[i]] = A[i][A[0].size() - 1];
-	}
-	return solution;
-}
-
-/// <summary>
-/// Строит СМ таблицу для задачи вида:
-/// Маирица системы ограниченй:
-///		|u 0 0|	
-/// A = |0 v 0|
-///		|0 0 w|
-/// Вектор ограничений
-///		|a|	
-/// b = |d|
-///		|f|
-/// с -коэффициенты целевой функции 
-/// f = (x,c)->extr
-///	|u 0 0|   |x| <= |b|
-/// |0 v 0| * |x| >= |f|
-///	|0 0 w|   |x| =  |d|
-/// 
-///  СМ таблицу из A,b,c параметров
-/// </summary>
-/// <param name="A"> Ax <= b   -> (A|I)(x|w) = b </param>
-/// <param name="c"> (c,x) ->((-c|0),(x|w)) </param>
-/// <param name="ineq"> знак неравентсва =, >=, <= </param>
-/// <param name="b"></param>
-///( A|I)  b
-///(-c|0)  F(x,c)
-std::vector<int> build_symplex_table(mat_mn& A, const mat_mn& a, const vec_n& c, const vec_n& b, std::vector<int> ineq, const int mode = SYMPLEX_MAX)
-{
-	int cntr = 0;
-	
-	A = a;
-	
-	std::vector<int> basis;
-
-	for(auto& row : A)
-	{
-		basis.push_back(-1);
+		int b_index = sm_table[0].size() - 1;
 		
-		for (int j = 0; j < b.size(); j++)
-		{
-		    if (ineq[j] == EQUAL)
-			{
-				basis[basis.size() - 1]  = j;
-				continue;
-			}
-			if (ineq[j] == MORE_EQUAL)
-			{
-				if (cntr == j) 
-				{
-					basis[basis.size() - 1] = c.size() + j;
-					row.push_back(-1.0);
-					continue;
-				}
-				row.push_back(0.0);
-				continue;
-			}
-			if (ineq[j] == LESS_EQUAL)
-			{
+		int cntr = 0;
 
-				if (cntr == j)
-				{
-					basis[basis.size() - 1] = c.size() + j;
-					row.push_back(1.0);
-					continue;
-				}
-				row.push_back(0.0);
+		int rows_n = is_target_f_modified() ? sm_table.size() - 2 : sm_table.size() - 1;
+
+		for (int i = 0; i < rows_n; i++)
+		{
+			a_ik = sm_table[i][symplex_col];
+
+			if (a_ik < 0)
+			{
+				cntr++;
 				continue;
 			}
-		}
-		row.push_back(b[cntr]);
-
-		if (b[cntr] < 0)
-		{
-			row = row * (-1);
+			if (sm_table[i][b_index] / a_ik > delta)
+			{
+				continue;
+			}
+			delta = sm_table[i][b_index] / a_ik;
+			index = i;
 		}
 
-		cntr++;
+		if (rows_n == cntr)
+		{
+			std::cout << "warning::symplex area is boundless...\n";
+		}
+
+		return index;
 	}
 
-	vec_n C(A[0].size());
-
-	for (int j = 0; j < C.size(); j++)
+	/// <summary>
+	/// строит виртуальный базисный вектор
+	/// </summary>
+	/// <param name="ineq_id"></param>
+	/// <param name="_ineq"></param>
+	/// <param name="col_index"></param>
+	/// <param name="col_index_aditional"></param>
+	void build_virtual_basis_col(const int ineq_id, const int _ineq, int& col_index, int& col_index_aditional)
 	{
-		C[j] = j < c.size() ? -c[j] : 0.0;
+		if (_ineq == EQUAL)
+		{
+			for (int row = 0; row < sm_table.size(); row++)
+			{
+				if (row == ineq_id)
+				{
+					sm_table[row].push_back(1.0);
+					continue;
+				}
+				sm_table[row].push_back(0.0);
+			}
+			
+			col_index = sm_table[0].size() - 1;
+
+			col_index_aditional = sm_table[0].size() - 1;
+			
+			return;
+		}
+
+		if (_ineq == MORE_EQUAL)
+		{
+			for (int row = 0; row < sm_table.size(); row++)
+			{
+				if (row == ineq_id)
+				{
+					sm_table[row].push_back(-1.0);
+					sm_table[row].push_back(1.0);
+					continue;
+				}
+				sm_table[row].push_back(0.0);
+				sm_table[row].push_back(0.0);
+			}
+		
+			col_index_aditional = sm_table[0].size() - 1;
+
+			col_index = sm_table[0].size() - 2;
+			
+			return;
+		}
+
+		for (int row = 0; row < sm_table.size(); row++)
+		{
+			if (row == ineq_id)
+			{
+				sm_table[row].push_back(1.0);
+				continue;
+			}
+			sm_table[row].push_back(0.0);
+		}
+
+		col_index_aditional = - 1;
+
+		col_index = sm_table[0].size() - 1;
 	}
-
-	A.push_back(C);
-
-	return basis;
-}
-
-vec_n symplex_solve(const mat_mn& a, const vec_n& c, const vec_n& b, const std::vector<int> ineq, const int mode = SYMPLEX_MAX)
-{
-	vec_n solution;
 	
-	int system_condition = check_system(a, b);
-
-	if (system_condition == 0)
+	/// <summary>
+	/// Строит СМ таблицу для задачи вида:
+	/// Маирица системы ограниченй:
+	///		|u 0 0|	
+	/// A = |0 v 0|
+	///		|0 0 w|
+	/// Вектор ограничений
+	///		|a|	
+	/// b = |d|
+	///		|f|
+	/// с -коэффициенты целевой функции 
+	/// f = (x,c)->extr
+	///	|u 0 0|   |x| <= |b|
+	/// |0 v 0| * |x| >= |f|
+	///	|0 0 w|   |x| =  |d|
+	/// 
+	///  СМ таблицу из A,b,c параметров
+	/// </summary>
+	/// <param name="A"> Ax <= b   -> (A|I)(x|w) = b </param>
+	/// <param name="c"> (c,x) ->((-c|0),(x|w)) </param>
+	/// <param name="ineq"> знак неравентсва =, >=, <= </param>
+	/// <param name="b"></param>
+	///( A|I)  b
+	///(-c|0)  F(x,c)
+	void build_symplex_table()
 	{
+		int cntr = 0;
+		///
+		/// Если среди вектора b есть отрицательные значения, то соответствующие строки
+		/// матрицы ограничений умножаем на мину один и меняем знак сравнения
+		///
+		for (int row = 0; row < sm_table.size(); row++)
+		{
+			if (bounds_v[row] >= 0)
+			{
+				continue;
+			}
+			
+			ineqs[row] *= -1;
+			
+			bounds_v[row] *= -1;
+
+			sm_table[row] = sm_table[row] * (-1.0);
+		}
+		/// <summary>
+		/// построение искуственного базиса
+		/// </summary>
+		int basis_arg_id;
+		int basis_arg_id_add;
+
+		for (int ineq_id = 0; ineq_id < ineqs.size(); ineq_id++ )
+		{
+			build_virtual_basis_col(ineq_id, ineqs[ineq_id], basis_arg_id, basis_arg_id_add);
+			
+			if (basis_arg_id_add != -1)
+			{
+				basis_args.push_back(basis_arg_id_add);
+				f_mod_args.push_back(basis_arg_id_add);
+				continue;
+			}
+			basis_args.push_back(basis_arg_id);
+		}
+
+		/// <summary>
+		/// добавим столбец ограницений
+		/// </summary>
+
+		for (int row = 0; row < sm_table.size(); row++)
+		{
+			sm_table[row].push_back(bounds_v[row]);
+		}
+
+		/// <summary>
+		/// Построение симплекс разностей
+		/// </summary>
+
+		vec_n s_deltas(sm_table[0].size());
+		
+		if (mode == SYMPLEX_MAX)
+		{
+			for (int j = 0; j < s_deltas.size(); j++)
+			{
+				s_deltas[j] = j < prices_v.size() ? -prices_v[j] : 0.0;
+			}
+		}
+		else 
+		{
+			for (int j = 0; j < s_deltas.size(); j++)
+			{
+				s_deltas[j] = j < prices_v.size() ? prices_v[j] : 0.0;
+			}
+		}
+		
+		sm_table.push_back(s_deltas);
+
+		/// <summary>
+		/// Если целевая функуция не была модифицирована
+		/// </summary>
+
+		if (!is_target_f_modified())
+		{
+			return;
+		}
+		
+		/// <summary>
+		/// Если всё же была...
+		/// </summary>
+		vec_n s_deltas_add(sm_table[0].size());
+
+		for (int j = 0; j < f_mod_args.size(); j++)
+		{
+			s_deltas_add[f_mod_args[j]] = 1.0;
+		}
+
+		sm_table.push_back(s_deltas_add);
+	}
+
+	bool exclude_mod_args()
+	{
+		if (!is_target_f_modified())
+		{
+			return false;
+		}
+
+		int last_row_id = sm_table.size() - 1;
+
+		for (int i = 0; i < f_mod_args.size(); i++)
+		{
+			for (int row = 0; row < sm_table.size(); row++)
+			{
+				if (sm_table[row][f_mod_args[i]] != 0)
+				{
+					double arg = sm_table[last_row_id][f_mod_args[i]] / sm_table[row][f_mod_args[i]];
+
+					sm_table[last_row_id] = sm_table[last_row_id] - arg * sm_table[row];
+
+					break;
+				}
+			}
+		}
+
+		return true;
+	}
+
+	bool validate_solution()
+	{
+		double val = 0;
+
+		int n_rows = is_target_f_modified()? sm_table.size() - 2 : sm_table.size() - 1;
+
+		int n_cols = sm_table[0].size() - 1;
+
+		for (int i = 0; i < basis_args.size(); i++)
+		{
+			if (basis_args[i] < natural_args_n())
+			{
+				val += sm_table[basis_args[i]][n_cols] * prices_v[i];
+			}
+		}
+
+		if (abs(val - sm_table[n_rows][n_cols]) < 1e-5)
+		{
+			return true;
+		}
+		return false;
+	}
+
+public:
+	
+	/// <summary>
+	/// количество аргументов исходной целевой функции
+	/// </summary>
+	int natural_args_n()const 
+	{
+		return prices_v.size();
+	}
+
+
+	inline void clear_symplex()
+	{
+		ineqs.clear();
+		f_mod_args.clear();
+		basis_args.clear();
+		sm_table.clear();
+	}
+
+	inline const mat_mn& bounds_matrix()const
+	{
+		return bounds_m;
+	}
+
+	inline const vec_n& bounds_coeffs()const
+	{
+		return bounds_v;
+	}
+
+	inline const vec_n& prices_coeffs()const
+	{
+		return prices_v;
+	}
+
+	inline const std::vector<int>& inequations()const
+	{
+		return ineqs;
+	};
+
+	inline const std::vector<int>& basis_argsuments()const
+	{
+		return basis_args;
+	};
+
+	inline const mat_mn & table() const { return sm_table; };
+
+	inline bool is_target_f_modified()const
+	{
+		return f_mod_args.size() != 0;
+	}
+
+	friend std::ostream& operator<<(std::ostream& stream, const symplex s);
+	/// <summary>
+	/// Выводит текущее решение СМ таблицы для не искусственных переменных
+	/// </summary>
+	/// <param name="A">СМ таблица</param>
+	/// <param name="basis">список базисных параметров</param>
+	/// <param name="n_agrs">количество исходных переменных</param>
+	/// <returns></returns>
+	vec_n current_symplex_solution(const bool only_natural_args = false)const
+	{
+		vec_n solution( only_natural_args ? natural_args_n() : sm_table[0].size() - 1);
+
+		for (int i = 0; i < basis_args.size(); i++)
+		{
+			if (basis_args[i] >= solution.size())
+			{
+				continue;
+			}
+
+			solution[basis_args[i]] = sm_table[i][sm_table[0].size() - 1];
+		}
 		return solution;
 	}
-	
-	if (system_condition == 1)
+
+	vec_n solve(const int mode = SYMPLEX_MAX)
 	{
-		return linsolve(a, b);
-	}
-	
-	double a_ik;
-	
-	int main_row;
-	
-	int main_col;
+		this->mode = mode;
 
-	mat_mn A ;
-	
-	std::vector<int> basis = build_symplex_table(A, a, c, b, ineq, mode);
-	
-	std::cout << "Start symplex table"<<std::endl;
-	write_symplex(A, basis);
+		build_symplex_table();
 
-	while (!is_plan_optimal(A, mode))
-	{
-		main_col = get_main_col(A, mode);
+		vec_n solution;
 
-		if (main_col == -1) 
+		int system_condition = check_system(bounds_m, bounds_v);
+
+		if (system_condition == 0)
 		{
-			break;
+			return solution;
 		}
 
-		main_row = get_main_row(main_col, A);
-
-		if (main_row == -1)
+		if (system_condition == 1)
 		{
-			break;
+			return linsolve(bounds_m, bounds_v);
 		}
 
-		basis[main_row] = main_col;
+		double a_ik;
 
-		a_ik =  A[main_row][main_col];
+		int main_row;
 
-		A[main_row] = A[main_row] * (1.0 / a_ik);
+		int main_col;
 
-		for (int i = 0; i < A.size(); i++) 
+		std::cout << "Start symplex table:" << std::endl;
+
+		std::cout << *this;
+
+		if (exclude_mod_args())
 		{
-			if (i == main_row) 
+			// второй этап, если задача должна решаться двух проходным(двух этапным) алгоритмом
+			std::cout << "Symplex table after args exclude:" << std::endl;
+
+			std::cout << *this;
+		}
+
+		while (!is_plan_optimal())
+		{
+			main_col = get_main_col();
+
+			if (main_col == -1)
 			{
-				continue;
+				break;
 			}
-			A[i] = A[i] - A[i][main_col] * A[main_row];
-		}
-#if _DEBUG
-		std::cout << "a_main { " << main_row + 1 << ", " << main_col + 1 << " } = " << str_rational(a_ik) << std::endl;
-		write_symplex(A, basis);
-		std::cout << "current_solution" << str_rational(current_symplex_solution(A, basis, c.size()))<<std::endl;
-		std::cout << std::endl;
 
+			main_row = get_main_row(main_col);
+
+			if (main_row == -1)
+			{
+				/// Невозможность определить ведущую строку свидейтельствует о том, что обрасть поиска неограничена
+				std::cout << "Unable to get main row. Symplex is probably boundless...\n";
+				solution.clear();
+				return solution;
+			}
+
+			basis_args[main_row] = main_col;
+
+			a_ik = sm_table[main_row][main_col];
+
+			sm_table[main_row] = sm_table[main_row] * (1.0 / a_ik);
+
+			for (int i = 0; i < sm_table.size(); i++)
+			{
+				if (i == main_row)
+				{
+					continue;
+				}
+				sm_table[i] = sm_table[i] - sm_table[i][main_col] * sm_table[main_row];
+			}
+			solution = current_symplex_solution();
+
+#if _DEBUG
+			std::cout << "a_main { " << main_row + 1 << ", " << main_col + 1 << " } = " << str_rational(a_ik) << std::endl;
+			std::cout << *this;
+			std::cout << "current_solution" << str_rational(solution) << std::endl;
+			std::cout << std::endl;
 #endif
+		}
+		if (validate_solution())
+		{
+			solution = current_symplex_solution(true);
+			/// формирование ответа
+			std::cout << "solution : " << str_rational(solution) << "\n";
+			return solution;
+		}
+		std::cout << "Symplex is unresolvable\n";
+		/// значение целевой функции не равно ее значению от найденного плана
+		solution.clear();
+		return solution;
 	}
 
-	std::cout << "solution : "<< str_rational(current_symplex_solution(A, basis, c.size())) << "\n";
+	symplex(const mat_mn& a, const vec_n& c, const std::vector<int>& _ineq, const vec_n& b) 
+	{
+		if (b.size() != _ineq.size()) 
+		{
+			throw std::runtime_error("Error symplex creation :: b.size() != inequarion.size()");
+		}
+		if (a.size() != _ineq.size())
+		{
+			throw std::runtime_error("Error symplex creation :: A.rows_number() != inequarion.size()");
+		}
 
-	/// формирование ответа
-	return current_symplex_solution(A, basis, c.size());
+		sm_table = a;
+
+		bounds_v = b;
+
+		bounds_m = a;
+
+		prices_v = c;
+
+		ineqs = std::vector<int>(_ineq);
+	}
+
+	symplex(const mat_mn& a, const vec_n& c, const vec_n& b)
+	{
+		std::vector<int> _ineq;
+
+		for (int i = 0; i < b.size(); i++)
+		{
+			_ineq.push_back(LESS_EQUAL);
+		}
+		
+		sm_table = a;
+
+		bounds_v = b;
+
+		bounds_m = a;
+
+		prices_v = c;
+
+		ineqs = std::vector<int>(_ineq);
+	}
+};
+	std::ostream& operator<<(std::ostream& stream, const symplex s)
+{
+		/// <summary>
+		///	  (x,w)	
+		/// w (A|I)  b
+		///   (c|i)  F(x,c)
+		/// </summary>
+		/// <param name="a"></param>
+		/// <param name="b"></param>
+		/// <param name="c"></param>
+
+		const  mat_mn& A = s.table();
+
+		const bool targeFuncMod = s.is_target_f_modified();
+
+		const std::vector<int>& basis_args = s.basis_argsuments();
+
+		if (A.size() == 0)
+		{
+			return stream;
+		}
+
+		const char separator = ' ';
+
+		const int colom_title_w = 6;
+		
+		const int colom_w = 12;
+
+		stream << std::left << std::setw(colom_title_w) << std::setfill(separator) << "";
+
+		int i = 0;
+		
+		for (; i < A[0].size() - 1; i++)
+		{
+			stream << std::left << std::setw(colom_w) << std::setfill(separator) << "| x " + std::to_string(i + 1);
+		}
+
+		stream << std::left << std::setw(colom_w) << std::setfill(separator) << "| b";
+
+		stream << std::endl;
+
+		int n_row = -1;
+
+		for (auto const& row : A)
+		{
+			n_row++;
+
+			if (targeFuncMod)
+			{
+				if (n_row == A.size() - 2)
+				{
+					stream << std::left << std::setw(colom_title_w) << std::setfill(separator) << " d0 ";
+				}
+				else if (n_row == A.size() - 1)
+				{
+					stream << std::left << std::setw(colom_title_w) << std::setfill(separator) << " d1 ";
+				}
+				else
+				{
+					stream << std::left << std::setw(colom_title_w) << std::setfill(separator) << " x " + std::to_string(basis_args[n_row] + 1);
+				}
+			}
+			else
+			{
+				if (n_row == A.size() - 1)
+				{
+					stream << std::left << std::setw(colom_title_w) << std::setfill(separator) << " d1 ";
+				}
+				else
+				{
+					stream << std::left << std::setw(colom_title_w) << std::setfill(separator) << " x " + std::to_string(basis_args[n_row] + 1);
+				}
+			}
+
+			for (int col = 0; col < row.size(); col++)
+			{
+				if (row[col] >= 0)
+				{
+					stream << std::left << std::setw(colom_w) << std::setfill(separator) << "| " + str_rational(row[col]);
+					continue;
+				}
+				stream << std::left << std::setw(colom_w) << std::setfill(separator) << "|" + str_rational(row[col]);
+			}
+
+			stream << std::endl;
+		}
+		stream << std::endl;
+
+		return stream;
 }
-
-
+}

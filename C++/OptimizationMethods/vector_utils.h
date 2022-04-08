@@ -129,6 +129,31 @@ static std::ostream& operator<<(std::ostream& steram, const vec_n& v)
 
 	return steram;
 }
+
+static bool operator>=(const vec_n& a, const double x)
+{
+	for (const auto& val : a)
+	{
+		if (val < x)
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+static bool operator<=(const vec_n& a, const double x)
+{
+	for (const auto& val : a)
+	{
+		if (val > x)
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
 // расчёт длины вектора vec_n
 static double magnitude(const  vec_n& a)
 {

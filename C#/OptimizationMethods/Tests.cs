@@ -106,7 +106,7 @@ namespace OptimizationMethods
             Vector b = new double[] { 40, 28, 14 };
             Vector c = new double[] { 2, 3 };
             ///write_symplex(A, b, c);
-/*            Matrix table = null;
+/*           Matrix table = null;
             List<int> basis = Symplex.BuildSymplexTable(out table, A, c, b, new List<Sign>(){ Sign.Less, Sign.Less, Sign.Less });
             Console.WriteLine(Symplex.SymplexToString(table, basis));*/
             

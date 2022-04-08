@@ -44,6 +44,7 @@ static vec_n dihotomia(func_n f, const vec_n& x_0, const vec_n& x_1, const doubl
 static vec_n golden_ratio(func_n f, const vec_n& x_0, const vec_n& x_1, const double eps = N_DIM_ACCURACY, const int max_iters = N_DIM_ITERS_MAX)
 {
 	vec_n  a = x_0, b = x_1;
+
 	vec_n x_0_(a), x_1_(b), dx;
 
 	int cntr = 0;
@@ -85,7 +86,6 @@ static vec_n fibonacci(func_n f, const vec_n& x_0, const vec_n& x_1, const doubl
 	int cntr = max_iters - 1;
 
 	std::vector<double> f_n_s = fibonacci_numbers<double>(max_iters);
-
 
 	for (; cntr >= 2; cntr--)
 	{

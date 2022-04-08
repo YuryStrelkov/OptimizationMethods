@@ -444,8 +444,55 @@ int rank(mat_mn& A)
 	return rank;
 }
 
+
 int rank(const mat_mn& a)
 {
 	mat_mn A(a);
 	return rank(A);
+}
+
+/// <summary>
+/// Проверяет совместность СЛАУ вида Ax = b. Используется теорема Кронекера-Капелли 
+/// </summary>
+/// <param name="A"></param>
+/// <param name="b"></param>
+/// <returns>0 - нет решений, 1 - одно решение, 2 - бесконечное множествое решений</returns>
+int check_system(const  mat_mn& A, const vec_n& b)
+{
+	int rank_a = rank(A);
+
+	mat_mn ab = A;
+
+	int rank_a_b = rank(add_col(ab, b));
+
+#if _DEBUG
+	std::cout << "rank ( A ) " << rank_a << std::endl;
+	std::cout << "rank (A|b) " << rank_a_b << std::endl;
+	if (rank_a == rank_a_b)
+	{
+		std::cout << "one solution" << std::endl;
+	}
+	if (rank_a < rank_a_b)
+	{
+		std::cout << "infinite amount of solutions" << std::endl;
+	}
+	if (rank_a > rank_a_b)
+	{
+		std::cout << "no solutions" << std::endl;
+	}
+#endif
+
+	if (rank_a == rank_a_b)
+	{
+		return 1;
+	}
+	if (rank_a < rank_a_b)
+	{
+		return 2;
+	}
+	if (rank_a > rank_a_b)
+	{
+		return 0;
+	}
+	throw std::runtime_error("error :: check_system");
 }

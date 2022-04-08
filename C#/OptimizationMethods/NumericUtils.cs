@@ -74,5 +74,43 @@ namespace OptimizationMethods
 
             denominator = (int)m.m10;
         }
+
+        public static string ToRationalStr(double value, bool fullRational = true)
+        {
+            int r_part;
+
+            int num;
+
+            int denom;
+
+            DecimalToRational(value, out r_part, out num, out denom);
+            if (num == 0)
+            {
+                return r_part.ToString();
+            }
+            if (r_part == 0)
+            {
+                return num.ToString() + "/" + denom.ToString();
+            }
+
+            if (fullRational)
+            {
+                return ((num + Math.Abs(r_part) * denom) * (r_part >= 0 ? 1 : -1)).ToString() + "/" + denom.ToString();
+            }
+            return r_part.ToString() + " " + num.ToString() + "/" + denom.ToString();
+        }
+        public static string ToRationalStr(Vector value, bool fullRational = true)
+        {
+            string str = "{ ";
+            for (int i = 0; i < value.Size - 1; i++)
+            {
+                str += ToRationalStr(value[i], fullRational);
+                str += ", ";
+            }
+            str += ToRationalStr(value[value.Size - 1], fullRational);
+
+            str += " }";
+            return str;
+        }
     }
 }

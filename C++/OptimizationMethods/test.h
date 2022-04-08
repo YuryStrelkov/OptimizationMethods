@@ -107,18 +107,44 @@ static void matrix_test()
 
 static void symplex_method_test()
 {
-	std::cout << "\n/////////////////////////////" << std::endl;
-	std::cout <<   "//////// SymplexTest ////////" << std::endl;
-	std::cout <<   "/////////////////////////////\n" << std::endl;
+	std::cout << "\n/////////////////////////////"  << std::endl;
+	std::cout <<   "//////// SymplexTest ////////"  << std::endl;
+	std::cout <<   "/////////////////////////////\n"<< std::endl;
 
-	mat_mn A = 
-	{ {-2, 6},
-	  { 3, 2},
-	  { 2,-1}};
-	vec_n  b = {40, 28, 14};
-	vec_n  c = {2, 3};
-	///write_symplex(A, b, c);
-	symplex_solve(A, c, b, {-1, -1, -1});
+	// f(x,c) = 2x1 + 3x2 -> arg_max = {4, 8}, f(arg_max) = 32 , arg_min = {0, 0}, f(arg_max) = 0 
+	//
+	//         -2x1 + 6x2 <= 40 
+	//          3x1 + 2x2 <= 28
+	//          2x1 -  x2 <= 14
+	//
+	sm::symplex sym_0({ {-2, 6}, { 3, 2}, { 2,-1} }, { 2, 3 }, { sm::LESS_EQUAL, sm::LESS_EQUAL, sm::LESS_EQUAL }, { 40, 28, 14 });
+
+	sym_0.solve(SYMPLEX_MAX);
+
+	std::cout << "/////////////////////////////\n" << std::endl;
+	// f(x,c) = 2x1 + 3x2 -> arg_min = {62/5, 54/5}, f(arg_min) = 57 1/5 , arg_max = {-, -}, f(arg_max) = - (не работает учёт неограниченности) 
+	//
+	//         -2x1 + 6x2 >= 40 
+	//          3x1 + 2x2 >= 28
+	//          2x1 -  x2 >= 14
+	//
+	sm::symplex sym_1({{-2, 6},{ 3, 2},{ 2,-1} }, { 2, 3 }, { sm::MORE_EQUAL, sm::MORE_EQUAL, sm::MORE_EQUAL }, { 40, 28, 14 });
+
+	sym_1.solve(SYMPLEX_MIN);
+
+	std::cout << "/////////////////////////////\n" << std::endl;
+
+	// f(x,c) = 2x1 + 3x2 -> arg_min = {62/5, 54/5}, f(arg_min) = 57 1/5 , arg_max = {-, -}, f(arg_max) = - (не работает учёт неограниченности) 
+	//
+	//         -2x1 + 6x2 = 40 
+	//          3x1 + 2x2 = 28
+	//          2x1 -  x2 = 14
+	//
+	sm::symplex sym_2({ {-2, 6},{ 3, 2},{ 2,-1} }, { 2, 3 }, { sm::EQUAL, sm::EQUAL, sm::EQUAL }, { 40, 28, 14 });
+
+	sym_2.solve();
+
+	std::cout << "/////////////////////////////\n" << std::endl;
 
 }
 

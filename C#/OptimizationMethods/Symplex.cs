@@ -28,44 +28,6 @@ namespace OptimizationMethods
         ////////////////////
         /// Lab. work #5 ///
         ////////////////////
-        private static string ToRationalStr(double value, bool fullRational = true)
-        {
-            int r_part;
-            
-            int num;
-            
-            int denom;
-
-            NumericUtils.DecimalToRational(value,out r_part, out num, out denom);
-            if (num == 0)
-            {
-                return r_part.ToString();
-            }
-            if (r_part == 0)
-            {
-                return num.ToString() + "/" + denom.ToString();
-            }
-
-            if (fullRational)
-            {
-                return ((num + Math.Abs(r_part) * denom) * (r_part >= 0 ? 1 : -1)).ToString() + "/" + denom.ToString();
-            }
-            return r_part.ToString() + " " + num.ToString() + "/" + denom.ToString();
-        }
-        private static string ToRationalStr(Vector value, bool fullRational = true)
-        {
-            string str = "{ ";
-            for (int i = 0; i < value.Size - 1; i++)
-            {
-                str += ToRationalStr(value[i], fullRational);
-                str += ", ";
-            }
-            str += ToRationalStr(value[value.Size - 1], fullRational);
-
-            str += " }";
-            return str;
-        }
-
         public static string SymplexToString(Matrix table, List<int> basis)
         {
             if (table.NRows == 0)
@@ -106,10 +68,10 @@ namespace OptimizationMethods
                 {
                     if (row[col] >= 0)
                     {
-                        sb.AppendFormat("|{0,-12}", " " + ToRationalStr(row[col]));
+                        sb.AppendFormat("|{0,-12}", " " + NumericUtils.ToRationalStr(row[col]));
                         continue;
                     }
-                    sb.AppendFormat("|{0,-12}", ToRationalStr(row[col]));
+                    sb.AppendFormat("|{0,-12}", NumericUtils.ToRationalStr(row[col]));
 
                 }
                 sb.Append("\n");
@@ -468,12 +430,12 @@ namespace OptimizationMethods
                     A[i] = A[i] - A[i][main_col] * A[main_row];
                 }
 #if DEBUG
-                Console.WriteLine($"a_main {{{(main_row + 1)} , {(main_col + 1)}}} = {ToRationalStr(a_ik)} \n");
+                Console.WriteLine($"a_main {{{(main_row + 1)} , {(main_col + 1)}}} = {NumericUtils.ToRationalStr(a_ik)} \n");
                 Console.WriteLine(SymplexToString(A, basis));
-                Console.WriteLine($"current_solution : {ToRationalStr(CurrentSymplexSolution(A, basis, c.Size))}\n");
+                Console.WriteLine($"current_solution : {NumericUtils.ToRationalStr(CurrentSymplexSolution(A, basis, c.Size))}\n");
 #endif
             }
-            Console.WriteLine($"solution : {ToRationalStr(CurrentSymplexSolution(A, basis, c.Size))}\n");
+            Console.WriteLine($"solution : {NumericUtils.ToRationalStr(CurrentSymplexSolution(A, basis, c.Size))}\n");
             /// формирование ответа
             return CurrentSymplexSolution(A, basis, c.Size);
         }

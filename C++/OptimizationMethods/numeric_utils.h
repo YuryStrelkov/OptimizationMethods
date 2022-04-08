@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 #define MAX_DENOMINATOR 1000
 /// <summary>
 ///  онвертирует дес€тичную запись числа в рациональную, например, дл€ числа 1.666 получим 1 2/3
@@ -63,4 +64,45 @@ static void decimal_to_rational(const double value, int& rational_part, int& num
 	numerator = sign * m[0][0];
 
 	denominator = m[1][0];
+}
+
+static std::string str_rational(const double val, const bool full_rational = true)
+{
+	int r_part;
+	int num;
+	int denom;
+
+	decimal_to_rational(val, r_part, num, denom);
+	if (num == 0)
+	{
+		return std::to_string(r_part);
+	}
+	if (r_part == 0)
+	{
+		return std::to_string(num) + "/" + std::to_string(denom);
+	}
+
+	if (full_rational)
+	{
+		return std::to_string((num + abs(r_part) * denom) * (r_part >= 0 ? 1 : -1)) + "/" + std::to_string(denom);
+	}
+	return std::to_string(denom) + " " + std::to_string(num) + "/" + std::to_string(denom);
+}
+
+static std::string str_rational(const vec_n& val, const bool full_rational = true)
+{
+	if (val.size() == 0) 
+	{
+		return "{ empty vector }";
+	}
+	std::string str = "{ ";
+	for (int i = 0; i < val.size() - 1; i++)
+	{
+		str += str_rational(val[i], full_rational);
+		str += ", ";
+	}
+	str += str_rational(val[val.size() - 1], full_rational);
+
+	str += " }";
+	return str;
 }
