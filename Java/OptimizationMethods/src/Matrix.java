@@ -1,8 +1,17 @@
 import java.util.ArrayList;
 import java.util.Objects;
 
+enum SolutionType
+{
+    Single,
+    Infinite,
+    None
+}
+
 public class Matrix
 {
+    public static  boolean showMatrixDebugLog = false;
+
     private ArrayList<Vector>rows;
 
     public Vector row(int rowId)
@@ -23,7 +32,7 @@ public class Matrix
             {
                 return 0;
             }
-            return rows.get(0).size();
+            return row(0).size();
     }
 
     public Matrix addCol(Vector col)throws Exception
@@ -226,6 +235,57 @@ public class Matrix
         return rank;
     }
 
+    /// <summary>
+    /// Проверяет совместность СЛАУ вида Ax = b. Используется теорема Кронекера-Капелли
+    /// </summary>
+    /// <param name="A"></param>
+    /// <param name="b"></param>
+    /// <returns>0 - нет решений, 1 - одно решение, 2 - бесконечное множествое решений</returns>
+    public static SolutionType checkSystem(Matrix A, Vector b)throws Exception
+    {
+        Matrix a = new Matrix(A);
+
+        int rank_a = Matrix.rank(a);
+
+        Matrix ab = new Matrix(A);
+
+        int rank_a_b = Matrix.rank(ab.addCol(b));
+
+        if(showMatrixDebugLog)
+        {
+            System.out.println("rank ( A ) " + rank_a + "\n");
+
+            System.out.println("rank (A|b) " + rank_a_b + "\n");
+            if (rank_a == rank_a_b)
+            {
+                System.out.println("one solution\n");
+            }
+            if (rank_a < rank_a_b)
+            {
+                System.out.println("infinite amount of solutions\n");
+            }
+            if (rank_a > rank_a_b)
+            {
+                System.out.println("no solutions\n");
+            }
+        }
+
+        if (rank_a == rank_a_b)
+        {
+            return SolutionType.Single;
+        }
+        if (rank_a < rank_a_b)
+        {
+            return SolutionType.Infinite;
+        }
+        if (rank_a > rank_a_b)
+        {
+            return SolutionType.None;
+        }
+        throw new Exception("error :: check_system");
+    }
+
+
     public static Matrix zeros(int n_rows, int n_cols)
     {
         return new Matrix(n_rows, n_cols);
@@ -335,6 +395,10 @@ public class Matrix
 
         if (Math.abs(det) < 1e-12)
         {
+            if(showMatrixDebugLog)
+            {
+                System.out.println("Matrix is probably singular :: unable to solve A^-1 b = x");
+            }
             return null;
         }
 
@@ -399,6 +463,22 @@ public class Matrix
         }
 
         Matrix[]lu_ = lu( mat);
+
+        double det = 1.0;
+
+        for (int i = 0; i < lu_[0].rows(); i++)
+        {
+            det *= (lu_[0].get(i,i) * lu_[0].get(i,i));
+        }
+
+        if (Math.abs(det) < 1e-12)
+        {
+            if(showMatrixDebugLog)
+            {
+                System.out.println("Matrix is probably singular :: unable to calculate invert matrix");
+            }
+            return null;
+        }
 
         Vector b, col;
 

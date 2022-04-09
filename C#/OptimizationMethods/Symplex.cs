@@ -10,12 +10,6 @@ namespace OptimizationMethods
         Less = 1,
         More = 2
     }
-    public enum SolutionType
-    {
-        Single = 0,
-        Infinite = 1,
-        None = 2
-    }
 
     public enum SymplexProblemType
     {
@@ -23,249 +17,274 @@ namespace OptimizationMethods
         Max = 1,
     }
 
-    public static class Symplex
+    public class Symplex
     {
         ////////////////////
         /// Lab. work #5 ///
         ////////////////////
-        public static string SymplexToString(Matrix table, List<int> basis)
-        {
-            if (table.NRows == 0)
-            {
-                return "";
-            }
-
-            StringBuilder sb = new StringBuilder();
-
-            int i = 0;
-
-            sb.AppendFormat("{0,-6}", " ");
-
-            for (; i < table.NCols - 1; i++)
-            {
-                sb.AppendFormat("|{0,-12}", " x " + (i + 1).ToString());
-            }
-            sb.AppendFormat("|{0,-12}", " b");
-
-            sb.Append("\n");
-
-            int n_row = -1;
-
-            foreach (Vector row in table.Rows)
-            {
-                n_row++;
-
-                if (n_row == table.NRows - 1)
-                {
-                    sb.AppendFormat("{0,-6}", " d");
-                }
-                else
-                {
-                    sb.AppendFormat("{0,-6}", " x " + (basis[n_row] + 1).ToString());
-                }
-
-                for (int col = 0; col < row.Size; col++)
-                {
-                    if (row[col] >= 0)
-                    {
-                        sb.AppendFormat("|{0,-12}", " " + NumericUtils.ToRationalStr(row[col]));
-                        continue;
-                    }
-                    sb.AppendFormat("|{0,-12}", NumericUtils.ToRationalStr(row[col]));
-
-                }
-                sb.Append("\n");
-            }
-            sb.Append("\n");
-
-            return sb.ToString();
-        }
         /// <summary>
-        /// Проверяет совместность СЛАУ вида Ax = b. Используется теорема Кронекера-Капелли 
+        /// список знаков в неравенств в системе ограничений
         /// </summary>
-        /// <param name="A"></param>
-        /// <param name="b"></param>
-        /// <returns>0 - нет решений, 1 - одно решение, 2 - бесконечное множествое решений</returns>
-        public static SolutionType CheckSystem(Matrix A, Vector b)
-        {
-            Matrix a = new Matrix(A);
+        private List<Sign> ineqs;
 
-            int rank_a = Matrix.Rank(a);
-
-            Matrix ab = new Matrix(A);
-
-            int rank_a_b = Matrix.Rank(ab.AddCol(b));
-
-#if DEBUG
-            Console.WriteLine($"rank ( A ) {rank_a}\n");
-            Console.WriteLine($"rank (A|b) {rank_a_b}\n");
-            if (rank_a == rank_a_b)
-            {
-                Console.WriteLine("one solution\n");
-            }
-            if (rank_a < rank_a_b)
-            {
-                Console.WriteLine("infinite amount of solutions\n");
-            }
-            if (rank_a > rank_a_b)
-            {
-                Console.WriteLine("no solutions\n");
-            }
-#endif
-
-            if (rank_a == rank_a_b)
-            {
-                return SolutionType.Single;
-            }
-            if (rank_a < rank_a_b)
-            {
-                return SolutionType.Infinite;
-            }
-            if (rank_a > rank_a_b)
-            {
-                return SolutionType.None;
-            }
-            throw new Exception("error :: check_system");
-        }
         /// <summary>
-        /// Проверяет оптимальность плана в соответсвии с тем типом экстремума, которыей требуется найти.
-        /// Провеяются элменты от 1:n-1 полсдней строки СМ таблицы 
+        /// список индексов переменных которые войдут в целевую функию, модифицируя ее
+        /// </summary>
+        private List<int> f_mod_args;
+
+        /// <summary>
+        ///индексы естественных переменных
+        /// </summary>
+        private List<int> natural_args_ids;
+
+        /// <summary>
+        ///индексы переменных, не являющихся искусственными
+        /// </summary>
+        private List<int> artificial_args_ids;
+
+        /// <summary>
+        /// список индексов текущих базисных переменных 
+        /// </summary>
+        private List<int> basis_args;
+
+        /// <summary>
+        /// Симплекс таблица
+        /// </summary>
+        private Matrix symplex_t;
+
+        /// <summary>
+        /// матрица ограничений
+        /// </summary>
+        private Matrix bounds_m;
+
+        /// <summary>
+        /// вектор ограничений
+        /// </summary>
+        private Vector bounds_v;
+
+        /// <summary>
+        /// вектор стоимостей
+        /// </summary>
+        private Vector prices_v;
+
+        /// <summary>
+        /// режим поиска решения
+        /// </summary>
+        private SymplexProblemType mode = SymplexProblemType.Max;
+
+        public bool IsTargetFuncModified()
+        {
+            return f_mod_args.Count != 0;
+        }
+
+        /// <summary>
+        /// Проверяет оптимальность текущего опорного плана. Исследуется положительность 
+        /// симплекс-разностей в последней строке СТ в диапазоне от 1:n-1.
+        /// Если целевая функция была модифицирована, то исследует две последних строки.
+        /// Если среди элементов от 1:n-1 в последней строке нет отрицательных, то проверяет 
+        /// на неотрицательность только те элементы предпоследней строки, которые не являются
+        /// искусственными.
         /// </summary>
         /// <param name="A">СМ таблицa</param>
         /// <param name="mode"></param>
         /// <returns></returns>
-        public static bool IsPlanOptimal(Matrix A, SymplexProblemType mode)
+        public bool IsPlanOptimal()
         {
-            Vector deltas = A[A.NRows - 1];
+            /// <summary>
+            /// Проверяем значения последней строки сиплекс-разностей
+            /// на положительность. Если все положительны, то план оптимален.
+            /// </summary>
 
-            if (mode == SymplexProblemType.Max)
+            Vector row = symplex_t[symplex_t.NRows - 1];
+
+            bool opt = true;
+
+            for (int i = 0; i < row.Count - 1; i++)
             {
-                for (int i = 0; i < deltas.Size - 1; i++)
+                if (row[i] < 0)
                 {
-                    if (deltas[i] < 0)
+                    opt = false;
+                    break;
+                }
+            }
+
+            /// <summary>
+            /// если мы модифицировали целевую функцию, то среди списка естественнхых
+            /// агументов проверям на положительнность предпослднюю строку симплекс-разностей 
+            /// </summary>
+
+            if (IsTargetFuncModified())
+            {
+                if (!opt)
+                {
+                    return opt;
+                }
+                Vector row_ = symplex_t[symplex_t.NRows - 2];
+
+                foreach (int id in natural_args_ids)
+                {
+                    if (row_[id] < 0)
                     {
-                        return false;
+                        opt = false;
+                        break;
                     }
                 }
-                return true;
             }
 
-            for (int i = 0; i < deltas.Size - 1; i++)
-            {
-                if (deltas[i] > 0)
-                {
-                    return false;
-                }
-            }
-            return true;
+            return opt;
         }
         /// <summary>
-        /// Определяет ведущий столбец в соответсвии с тем типом экстремума, который требуется найти.
-        /// Исследуются элменты от 1:n-1 полсдней строки СМ таблицы 
+        /// Определяет ведущий столбец. Среди элементов строки симплекс-разностей ищет максимальны по модулю 
+        /// отрицательный элемент. Если целевая функция была модифицирована и среди последней строки нет отрицательных
+        /// элементов, то посик таковых будет продолжен среди только тех элементов предпоследней строки, которые не
+        /// являются искусственными.
         /// </summary>
         /// <param name="A"></param>
         /// <returns></returns>
-        public static int GetMainCol(Matrix A, SymplexProblemType mode)
+        private int GetMainCol()
         {
+
+            Vector row = symplex_t[symplex_t.NRows - 1];
+
             double delta = 0;
 
             int index = -1;
 
-            Vector c = A[A.NRows - 1];
-
-            if (SymplexProblemType.Min == mode)
+            for (int i = 0; i < row.Count - 1; i++)
             {
-                for (int i = 0; i < c.Size - 1; i++)
-                {
-                    if (c[i] <= 0)
-                    {
-                        continue;
-                    }
-                    if (c[i] < delta)
-                    {
-                        continue;
-                    }
-
-                    delta = c[i];
-
-                    index = i;
-                }
-                return index;
-            }
-
-            for (int i = 0; i < c.Size - 1; i++)
-            {
-                if (c[i] >= 0)
+                if (row[i] >= delta)
                 {
                     continue;
                 }
-                if (Math.Abs(c[i]) < delta)
-                {
-                    continue;
-                }
-
-                delta = Math.Abs(c[i]);
-
+                delta = row[i];
                 index = i;
             }
 
+            if (IsTargetFuncModified() && index == -1)
+            {
+                Vector row_add = symplex_t[symplex_t.NRows - 2];
+
+                foreach (int id in natural_args_ids)
+                {
+                    if (row_add[id] >= delta)
+                    {
+                        continue;
+                    }
+                    delta = row_add[id];
+                    index = id;
+                }
+            }
             return index;
         }
+
         /// <summary>
         /// Определяет ведущую строку 
         /// </summary>
         /// <param name="symplex_col">ведущий столбец</param>
         /// <param name="A">СМ таблица</param>
         /// <returns></returns>
-        /// <summary>
-
-        public static int GetMainRow(int symplex_col, Matrix A)
+        int GetMainRow(int symplex_col)
         {
+
             double delta = 1e12;
 
             int index = -1;
 
             double a_ik;
 
-            int b_index = A[0].Size - 1;
+            int b_index = symplex_t[0].Count - 1;
 
-            for (int i = 0; i < A.NRows - 1; i++)
+            int rows_n = IsTargetFuncModified() ? symplex_t.NRows - 2 : symplex_t.NRows - 1;
+
+            for (int i = 0; i < rows_n; i++)
             {
-                a_ik = A[i][symplex_col];
+                a_ik = symplex_t[i][symplex_col];
 
                 if (a_ik < 0)
                 {
                     continue;
                 }
-                if (A[i][b_index] / a_ik > delta)
+                if (symplex_t[i][b_index] / a_ik > delta)
                 {
                     continue;
                 }
-                delta = A[i][b_index] / a_ik;
+                delta = symplex_t[i][b_index] / a_ik;
                 index = i;
             }
+
             return index;
         }
-        /// Выводит текущее решение СМ таблицы для не искусственных переменных
+     
+        /// <summary>
+        /// строит виртуальный базисный вектор
         /// </summary>
-        /// <param name="A">СМ таблица</param>
-        /// <param name="basis">список базисных параметров</param>
-        /// <param name="n_agrs">количество исходных переменных</param>
-        /// <returns></returns>
-        public static Vector CurrentSymplexSolution(Matrix A, List<int> basis, int n_agrs)
+        /// <param name="ineq_id"></param>
+        /// <param name="_ineq"></param>
+        /// <param name="col_index"></param>
+        /// <param name="col_index_aditional"></param>
+        private void BuildVirtualBasisCol(int ineq_id, Sign _ineq, ref int col_index, ref int col_index_aditional)
         {
-
-            Vector solution = new Vector(n_agrs);
-            for (int i = 0; i < basis.Count; i++)
+            if (_ineq == Sign.Equal)
             {
-                if (basis[i] >= n_agrs)
+                for (int row = 0; row < symplex_t.NRows; row++)
                 {
+                    if (row == ineq_id)
+                    {
+                        symplex_t[row].PushBack(1.0);
+                        continue;
+                    }
+                    symplex_t[row].PushBack(0.0);
+                }
+
+                col_index = symplex_t[0].Count - 1;
+
+                col_index_aditional = symplex_t[0].Count - 1;
+
+                return ;
+            }
+
+            if (_ineq == Sign.More)
+            {
+                for (int row = 0; row < symplex_t.NRows; row++)
+                {
+                    if (row == ineq_id)
+                    {
+                        symplex_t[row].PushBack(-1.0);
+
+                        symplex_t[row].PushBack(1.0);
+
+                        continue;
+                    }
+
+                    symplex_t[row].PushBack(0.0);
+
+                    symplex_t[row].PushBack(0.0);
+                }
+
+                col_index = symplex_t[0].Count - 2;
+
+                col_index_aditional = symplex_t[0].Count - 1;
+
+                return ;
+            }
+
+            for (int row = 0; row < symplex_t.NRows; row++)
+            {
+                if (row == ineq_id)
+                {
+                    symplex_t[row].PushBack(1.0);
                     continue;
                 }
-                solution[basis[i]] = A[i][A[0].Size - 1];
+                symplex_t[row].PushBack(0.0);
             }
-            return solution;
+            
+            col_index = symplex_t[0].Count - 1;
+            
+            col_index_aditional = -1;
+
+            return;
         }
+
         /// <summary>
         /// Строит СМ таблицу для задачи вида:
         /// Маирица системы ограниченй:
@@ -290,102 +309,322 @@ namespace OptimizationMethods
         /// <param name="b"></param>
         ///( A|I)  b
         ///(-c|0)  F(x,c)
-        public static List<int> BuildSymplexTable(out Matrix table, Matrix A, Vector c, Vector b, List<Sign> ineq, SymplexProblemType type = SymplexProblemType.Max)
+        private void BuildSymplexTable()
         {
-            if (A.NRows != b.Size)
+            symplex_t = new Matrix(bounds_m);
+            natural_args_ids.Clear();
+            basis_args.Clear();
+            f_mod_args.Clear();
+            artificial_args_ids.Clear();
+            ///
+            /// Если среди вектора b есть отрицательные значения, то соответствующие строки
+            /// матрицы ограничений умножаем на мину один и меняем знак сравнения
+            ///
+            for (int row = 0; row < symplex_t.NRows; row++)
             {
-                throw new Exception("Incorrect symplex problem");
-            }
-            if (A.NCols != c.Size)
-            {
-                throw new Exception("Incorrect symplex problem");
-            }
-
-            table = new Matrix(A);
-
-            List<int> basis = new List<int>();
-
-            int cntr = 0;
-
-            Vector row;
-
-            for (int n_row = 0; n_row < A.Rows.Count; n_row++)
-            {
-                row = table.Rows[n_row];
-
-                basis.Add(-1);
-
-                for (int j = 0; j < b.Size; j++)
+                if (bounds_v[row] >= 0)
                 {
-                    if (ineq[j] == Sign.Equal)
-                    {
-                        basis[basis.Count - 1] = j;
-                        continue;
-                    }
-                    if (ineq[j] == Sign.More)
-                    {
-                        if (cntr == j)
-                        {
-                            basis[basis.Count - 1] = c.Size + j;
-                            row.PushBack(-1.0);
-                            continue;
-                        }
-                        row.PushBack(0.0);
-                        continue;
-                    }
-                    if (ineq[j] == Sign.Less)
-                    {
-
-                        if (cntr == j)
-                        {
-                            basis[basis.Count - 1] = c.Size + j;
-                            row.PushBack(1.0);
-                            continue;
-                        }
-                        row.PushBack(0.0);
-                        continue;
-                    }
+                    continue;
                 }
-                row.PushBack(b[cntr]);
 
-                if (b[cntr] < 0)
-                {
-                    for (int i = 0; i < row.Size; i++)
-                    {
-                        row[i] *= (-1);
-                    }
-                }
-                cntr++;
+                ineqs[row] = ineqs[row] == Sign.Less ? Sign.More : Sign.Less;
+
+                bounds_v[row] *= -1;
+
+                symplex_t[row] = symplex_t[row] * (-1.0);
             }
 
-            Vector C = new Vector(table.NCols);
 
-            for (int j = 0; j < C.Size; j++)
+            for (int i = 0; i < prices_v.Count; i++)
             {
-                C[j] = j < c.Size ? -c[j] : 0.0;
+                natural_args_ids.Add(i);
+            }
+            /// <summary>
+            /// построение искуственного базиса
+            /// </summary>
+            int basis_arg_id = -1;
+            int basis_arg_id_add = -1;
+            for (int ineq_id = 0; ineq_id < ineqs.Count; ineq_id++)
+            {
+                BuildVirtualBasisCol(ineq_id, ineqs[ineq_id], ref basis_arg_id, ref basis_arg_id_add);
+
+                natural_args_ids.Add(basis_arg_id);
+
+                if (basis_arg_id_add != -1)
+                {
+                    basis_args.Add(basis_arg_id_add);
+                    f_mod_args.Add(basis_arg_id_add);
+                    artificial_args_ids.Add(basis_arg_id_add);
+                    continue;
+                }
+
+                basis_args.Add(basis_arg_id);
             }
 
-            table.AddRow(C);
+            /// <summary>
+            /// добавим столбец ограницений
+            /// </summary>
 
-            return basis;
+            for (int row = 0; row < symplex_t.NRows; row++)
+            {
+                symplex_t[row].PushBack(bounds_v[row]);
+            }
 
+            /// <summary>
+            /// Построение симплекс разностей
+            /// </summary>
+
+            Vector s_deltas = new Vector(symplex_t.NCols);
+
+            if (mode == SymplexProblemType.Max)
+            {
+                for (int j = 0; j < s_deltas.Count; j++)
+                {
+                    s_deltas[j] = j < prices_v.Count ? -prices_v[j] : 0.0;
+                }
+            }
+            else
+            {
+                for (int j = 0; j < s_deltas.Count; j++)
+                {
+                    s_deltas[j] = j < prices_v.Count ? prices_v[j] : 0.0;
+                }
+            }
+
+            symplex_t.AddRow(s_deltas);
+
+            /// <summary>
+            /// Если целевая функуция не была модифицирована
+            /// </summary>
+
+            if (!IsTargetFuncModified())
+            {
+                return;
+            }
+
+            /// <summary>
+            /// Если всё же была...
+            /// </summary>
+            Vector s_deltas_add = new Vector(symplex_t.NCols);
+
+            for (int j = 0; j < f_mod_args.Count; j++)
+            {
+                s_deltas_add[f_mod_args[j]] = 1.0;
+            }
+
+            symplex_t.AddRow(s_deltas_add);
         }
 
-        public static Vector SymplexSolve(Matrix a, Vector c, Vector b, List<Sign> ineq, SymplexProblemType mode = SymplexProblemType.Max)
+        private bool ExcludeModArgs()
         {
+            if (!IsTargetFuncModified())
+            {
+                return false;
+            }
+
+            int last_row_id = symplex_t.NRows - 1;
+
+            for (int i = 0; i < f_mod_args.Count; i++)
+            {
+                for (int row = 0; row < symplex_t.NRows; row++)
+                {
+                    if (symplex_t[row][f_mod_args[i]] != 0)
+                    {
+                        double arg = symplex_t[last_row_id][f_mod_args[i]] / symplex_t[row][f_mod_args[i]];
+
+                        symplex_t[last_row_id] = symplex_t[last_row_id] - arg * symplex_t[row];
+
+                        break;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        private bool ValidateSolution()
+        {
+
+            double val = 0;
+
+            int n_rows = IsTargetFuncModified() ? symplex_t.NRows - 2 : symplex_t.NRows - 1;
+
+            int n_cols = symplex_t.NCols - 1;
+
+            for (int i = 0; i < basis_args.Count; i++)
+            {
+                if (basis_args[i] < NaturalArgsN())
+                {
+                    val += symplex_t[i][n_cols] * prices_v[basis_args[i]];
+                }
+            }
+            if (mode == SymplexProblemType.Max)
+            {
+                if (Math.Abs(val - symplex_t[n_rows][n_cols]) < 1e-5)
+                {
+                    if (IsTargetFuncModified())
+                    {
+                        return true & (Math.Abs(symplex_t[symplex_t.NRows - 1][symplex_t.NCols - 1]) < 1e-5);
+                    }
+
+                    return true;
+                }
+            }
+            if (Math.Abs(val + symplex_t[n_rows][n_cols]) < 1e-5)
+            {
+                if (IsTargetFuncModified())
+                {
+                    return true & (Math.Abs(symplex_t[symplex_t.NRows - 1][symplex_t.NCols - 1]) < 1e-5);
+                }
+
+                return true;
+            }
+            return false;
+        }
+
+        public int NaturalArgsN()
+        {
+            return prices_v.Count;
+        }
+
+        public Matrix BoundsMatrix()
+        {
+            return bounds_m;
+        }
+
+        public Vector BoundsCoeffs()
+        {
+            return bounds_v;
+        }
+
+        public Vector PricesCoeffs()
+        {
+            return prices_v;
+        }
+
+        public List<Sign> Inequations()
+        {
+            return ineqs;
+        }
+
+        public List<int> BasisArgsuments()
+        {
+            return basis_args;
+        }
+
+        public Matrix SymplexTable()
+        {
+            return symplex_t;
+        }
+
+        public Vector CurrentSymplexSolution(bool only_natural_args = false)
+        {
+            Vector solution = new Vector(only_natural_args ? NaturalArgsN() : symplex_t.NCols - 1);
+
+            for (int i = 0; i < basis_args.Count; i++)
+            {
+                if (basis_args[i] >= solution.Count)
+                {
+                    continue;
+                }
+
+                solution[basis_args[i]] = symplex_t[i][symplex_t.NCols - 1];
+            }
+            return solution;
+        }
+        public string SymplexToString()//Matrix table, List<int> basis)
+        {
+            if (symplex_t.NRows == 0)
+            {
+                return "";
+            }
+
+            StringBuilder sb = new StringBuilder();
+
+            int i = 0;
+
+            sb.AppendFormat("{0,-6}", " ");
+
+            for (; i < symplex_t.NCols - 1; i++)
+            {
+                sb.AppendFormat("|{0,-12}", " x " + (i + 1).ToString());
+            }
+            sb.AppendFormat("|{0,-12}", " b");
+
+            sb.Append("\n");
+
+            int n_row = -1;
+
+            foreach (Vector row in symplex_t.Rows)
+            {
+                n_row++;
+
+                if (IsTargetFuncModified())
+                {
+                    if (n_row == symplex_t.NRows - 2)
+                    {
+                        sb.AppendFormat("{0,-6}", " d0");
+                    }
+                    else if (n_row == symplex_t.NRows - 1)
+                    {
+                        sb.AppendFormat("{0,-6}", " d1");
+                    }
+                    else 
+                    {
+                        sb.AppendFormat("{0,-6}", " x " + (basis_args[n_row] + 1).ToString());
+                    }
+                }
+                else 
+                {
+                    if (n_row == symplex_t.NRows - 1)
+                    {
+                        sb.AppendFormat("{0,-6}", " d");
+                    }
+                    else
+                    {
+                        sb.AppendFormat("{0,-6}", " x " + (basis_args[n_row] + 1).ToString());
+                    }
+                }
+
+                for (int col = 0; col < row.Count; col++)
+                {
+                    if (row[col] >= 0)
+                    {
+                        sb.AppendFormat("|{0,-12}", " " + NumericUtils.ToRationalStr(row[col]));
+                        continue;
+                    }
+                    sb.AppendFormat("|{0,-12}", NumericUtils.ToRationalStr(row[col]));
+
+                }
+                sb.Append("\n");
+            }
+            sb.Append("\n");
+
+            return sb.ToString();
+        }
+
+        public Vector Solve(SymplexProblemType mode = SymplexProblemType.Max)
+        {
+            this.mode = mode;
+
             Console.WriteLine($"SymplexProblemType : {SymplexProblemType.Max.ToString()}\n");
 
-            var system_condition = CheckSystem(a, b);
+
+            Vector solution = new Vector(NaturalArgsN());
+
+            SolutionType system_condition = Matrix.CheckSystem(bounds_m, bounds_v);
 
             if (system_condition == SolutionType.None)
             {
-                return null;
+                return solution;
             }
 
             if (system_condition == SolutionType.Single)
             {
-                return Matrix.Linsolve(a, b);
+                return Matrix.Linsolve(bounds_m, bounds_v);
             }
+
+            BuildSymplexTable();
 
             double a_ik;
 
@@ -393,52 +632,126 @@ namespace OptimizationMethods
 
             int main_col;
 
-            Matrix A;
+            Console.WriteLine("Start symplex table:");
+            Console.WriteLine(SymplexToString());
 
-            List<int> basis = BuildSymplexTable(out A, a, c, b, ineq, mode);
-       
-            Console.WriteLine($"Start symplex table:\n\n{SymplexToString(A, basis)}");
-
-            while (!IsPlanOptimal(A, mode))
+            if (ExcludeModArgs())
             {
-                main_col = GetMainCol(A, mode);
+                // второй этап, если задача должна решаться двух проходным(двух этапным) алгоритмом
+                Console.WriteLine("Symplex table after args exclude:");
+                Console.WriteLine(SymplexToString());
+            }
+
+            while (!IsPlanOptimal())
+            {
+                main_col = GetMainCol();
 
                 if (main_col == -1)
                 {
                     break;
                 }
 
-                main_row = GetMainRow(main_col, A);
+                main_row = GetMainRow(main_col);
 
                 if (main_row == -1)
                 {
-                    break;
+                    /// Невозможность определить ведущую строку свидейтельствует о том, что обрасть поиска неограничена
+                    Console.WriteLine("Unable to get main row. Symplex is probably boundless...");
+                    return null;
                 }
 
-                basis[main_row] = main_col;
+                basis_args[main_row] = main_col;
 
-                a_ik = A[main_row][main_col];
+                a_ik = symplex_t[main_row][main_col];
 
-                A[main_row] = A[main_row] * (1.0 / a_ik);
+                symplex_t[main_row] = symplex_t[main_row] * (1.0 / a_ik);
 
-                for (int i = 0; i < A.NRows; i++)
+                for (int i = 0; i < symplex_t.NRows; i++)
                 {
                     if (i == main_row)
                     {
                         continue;
                     }
-                    A[i] = A[i] - A[i][main_col] * A[main_row];
+                    symplex_t[i] = symplex_t[i] - symplex_t[i][main_col] * symplex_t[main_row];
                 }
+                solution = CurrentSymplexSolution();
+
 #if DEBUG
-                Console.WriteLine($"a_main {{{(main_row + 1)} , {(main_col + 1)}}} = {NumericUtils.ToRationalStr(a_ik)} \n");
-                Console.WriteLine(SymplexToString(A, basis));
-                Console.WriteLine($"current_solution : {NumericUtils.ToRationalStr(CurrentSymplexSolution(A, basis, c.Size))}\n");
+                Console.WriteLine($"a_main {{{ main_row + 1}, {main_col + 1}}} = {NumericUtils.ToRationalStr(a_ik)}\n");
+                Console.WriteLine(SymplexToString());
+                Console.WriteLine($"current solution: {NumericUtils.ToRationalStr(solution)}\n");
 #endif
             }
-            Console.WriteLine($"solution : {NumericUtils.ToRationalStr(CurrentSymplexSolution(A, basis, c.Size))}\n");
-            /// формирование ответа
-            return CurrentSymplexSolution(A, basis, c.Size);
+            if (ValidateSolution())
+            {
+                solution = CurrentSymplexSolution(true);
+                /// формирование ответа
+                Console.WriteLine($"solution: {NumericUtils.ToRationalStr(solution)}\n");
+                return solution;
+            }
+            Console.WriteLine("Symplex is unresolvable");
+            /// значение целевой функции не равно ее значению от найденного плана
+            return null;
         }
+        public Symplex(Matrix a, Vector c, List<Sign> _ineq, Vector b)
+        {
+            if (b.Count != _ineq.Count)
+            {
+                throw new Exception("Error symplex creation :: b.size() != inequation.size()");
+            }
 
+            if (a.NRows != _ineq.Count)
+            {
+                throw new Exception("Error symplex creation :: A.rows_number() != inequation.size()");
+            }
+
+            if (a.NCols != c.Count)
+            {
+                throw new Exception("Error symplex creation :: A.cols_number() != price_coeffs.size()");
+            }
+
+            natural_args_ids    = new List<int>();
+            basis_args          = new List<int>();
+            f_mod_args          = new List<int>();
+            artificial_args_ids = new List<int>();
+
+            bounds_v = b;
+
+            bounds_m = a;
+
+            prices_v = c;
+
+            ineqs    = _ineq;
+        }
+        public Symplex(Matrix a, Vector c, Vector b)
+        {
+            if (b.Count != b.Count)
+            {
+                throw new Exception("Error symplex creation :: b.size() != bouns_coeffs.size()");
+            }
+
+            if (a.NCols != c.Count)
+            {
+                throw new Exception("Error symplex creation :: A.cols_number() != price_coeffs.size()");
+            }
+
+            ineqs = new List<Sign>();
+
+            for (int i = 0; i < b.Count; i++)
+            {
+                ineqs.Add(Sign.Less);
+            }
+
+            natural_args_ids = new List<int>();
+            basis_args = new List<int>();
+            f_mod_args = new List<int>();
+            artificial_args_ids = new List<int>();
+
+            bounds_v = b;
+
+            bounds_m = a;
+
+            prices_v = c;
+        }
     }
 }

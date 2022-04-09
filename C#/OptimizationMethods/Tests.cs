@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace OptimizationMethods
 {
@@ -96,30 +95,53 @@ namespace OptimizationMethods
             Console.WriteLine("\n/////////////////////////////");
             Console.WriteLine(  "//////// SymplexTest ////////");
             Console.WriteLine(  "/////////////////////////////\n");
-
             Matrix A = new Vector[]
             {
-              new double[]{-2, 6},
-              new double[]{ 3, 2},
-              new double[]{ 2,-1}
+                          new double[]{-2, 6},
+                          new double[]{ 3, 2},
+                          new double[]{ 2,-1}
             };
             Vector b = new double[] { 40, 28, 14 };
             Vector c = new double[] { 2, 3 };
-            ///write_symplex(A, b, c);
-/*           Matrix table = null;
-            List<int> basis = Symplex.BuildSymplexTable(out table, A, c, b, new List<Sign>(){ Sign.Less, Sign.Less, Sign.Less });
-            Console.WriteLine(Symplex.SymplexToString(table, basis));*/
-            
-            Symplex.SymplexSolve(A, c, b, new List<Sign>() { Sign.Less, Sign.Less, Sign.Less });
+
+            Console.WriteLine(" f(x,c) =  2x1 + 3x2;\n arg_max = {4, 8}, f(arg_max) = 32");
+            Console.WriteLine(" |-2x1 + 6x2 <= 40");
+            Console.WriteLine(" | 3x1 + 2x2 <= 28");
+            Console.WriteLine(" | 2x1 -  x2 <= 14\n");
+
+            Symplex sym_0 = new Symplex(A, c, new List<Sign>() { Sign.Less, Sign.Less, Sign.Less }, b);
+            sym_0.Solve(SymplexProblemType.Max);
+
+            Console.WriteLine("\n f(x,c) = -2x1 + 3x2;\n arg_min = {7, 0}, f(arg_min) =-14\n");
+
+            Symplex sym_1 = new Symplex(A, new double[] { -2, 3 }, new List<Sign>() { Sign.Less, Sign.Less, Sign.Less }, b);
+            sym_1.Solve(SymplexProblemType.Min);
+
+
+            Console.WriteLine("/////////////////////////////");
+            Console.WriteLine(" f(x,c) =  2x1 + 3x2;\n arg_min = {62/5, 54/5}, f(arg_max) = 57 1/5");
+            Console.WriteLine(" |-2x1 + 6x2 >= 40");
+            Console.WriteLine(" | 3x1 + 2x2 >= 28");
+            Console.WriteLine(" | 2x1 -  x2 >= 14\n");
+            Symplex sym_2 = new Symplex(A, new double[] { 2, 1 }, new List<Sign>() { Sign.More, Sign.More, Sign.More }, b);
+            sym_2.Solve(SymplexProblemType.Min);
+            Console.WriteLine(" f(x,c) =  -2x1 - x2;\n arg_min = {62/5, 54/5}, f(arg_max) = -35 3/5");
+
+            Symplex sym_3 = new Symplex(A, new double[] { -2, -1 }, new List<Sign>() { Sign.More, Sign.More, Sign.More }, b);
+            sym_3.Solve(SymplexProblemType.Max);
+            Console.WriteLine(" f(x,c) =  2x1 + 3x2;\n arg_min = {none, none}, f(arg_max) = none");
+            Symplex sym_4 = new Symplex(A, c, new List<Sign>() { Sign.Equal, Sign.Equal, Sign.Equal }, b);
+            sym_4.Solve(SymplexProblemType.Max);
+
         }
 
         public static void TestAll() 
         {
-            //OneDimensionalMethodsTest();
+            // OneDimensionalMethodsTest();
             // MultiDimensionalMethodsTest();
-            //MatrixTest();
+            // MatrixTest();
             SympexTest();
-            NumericTests();
+            // NumericTests();
         }
     }
 }

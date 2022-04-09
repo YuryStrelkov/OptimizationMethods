@@ -102,12 +102,12 @@ namespace OptimizationMethods
         public static string ToRationalStr(Vector value, bool fullRational = true)
         {
             string str = "{ ";
-            for (int i = 0; i < value.Size - 1; i++)
+            for (int i = 0; i < value.Count - 1; i++)
             {
                 str += ToRationalStr(value[i], fullRational);
                 str += ", ";
             }
-            str += ToRationalStr(value[value.Size - 1], fullRational);
+            str += ToRationalStr(value[value.Count - 1], fullRational);
 
             str += " }";
             return str;

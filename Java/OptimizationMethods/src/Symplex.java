@@ -16,245 +16,226 @@ enum Sign
     Less,
     More
 };
- enum SolutionType
-{
-    Single,
-    Infinite,
-    None
-}
+
 enum SymplexProblemType
 {
     Min,
     Max,
 }
+
+////////////////////
+/// Lab. work #5 ///
+////////////////////
+
 public class Symplex
 {
-    private static String toRationalStr(double value, boolean fullRational)
-    {
-        int[] number =  NumericUtils.DecimalToRational(value);
-        if (number[1] == 0)
-        {
-            return String.valueOf(number[0]);
-        }
-        if (number[0] == 0)
-        {
-            return String.valueOf(number[1]) + "/" + String.valueOf(number[2]);
-        }
+    public  static  boolean showSymplexDebugLog = false;
 
-        if (fullRational)
-        {
-            return String.valueOf((number[1] + Math.abs(number[0]) * number[2]) * (number[0] >= 0 ? 1 : -1)) + "/" + String.valueOf(number[2]);
-        }
-        return String.valueOf(number[0]) + " " + String.valueOf(number[1]) + "/" + String.valueOf(number[2]);
-    }
-
-    private static String toRationalStr(double value)
-    {
-       return toRationalStr(value, true);
-    }
-
-    private static String toRationalStr(Vector value, boolean fullRational)
-    {
-        String str = "{ ";
-        for (int i = 0; i < value.size() - 1; i++)
-        {
-            str += toRationalStr(value.get(i), fullRational);
-            str += ", ";
-        }
-        str += toRationalStr(value.get(value.size() - 1), fullRational);
-
-        str += " }";
-        return str;
-    }
-    private static String toRationalStr(Vector value)
-    {
-        return toRationalStr( value,  true);
-    }
-
-    public static String symplexToString(Matrix table, ArrayList<Integer> basis)
-    {
-        if (table.rows() == 0)
-        {
-            return "";
-        }
-
-        StringBuilder sb = new StringBuilder();
-
-        int i = 0;
-
-        sb.append(String.format("%-6s", " "));
-
-        for (; i < table.cols() - 1; i++)
-        {
-            sb.append(String.format("|%-12s", " x " + String.valueOf((i + 1))));
-        }
-        sb.append(String.format("|%-12s", " b"));
-
-        sb.append("\n");
-
-        int n_row = -1;
-
-        for(Vector row : table.getRows())
-        {
-            n_row++;
-
-            if (n_row == table.rows() - 1)
-            {
-               ;
-                sb.append(String.format("%-6s"," d"));
-            }
-            else
-            {
-                sb.append (String.format("%-6s", " x " + String.valueOf(basis.get(n_row) + 1)));
-            }
-
-            for (int col = 0; col < row.size(); col++)
-            {
-                if (row.get(col) >= 0)
-                {
-                    sb.append(String.format("|%-12s", " " + toRationalStr(row.get(col))));
-                    continue;
-                }
-                sb.append(String.format("|%-12s", toRationalStr(row.get(col))));
-
-            }
-            sb.append("\n");
-        }
-        sb.append("\n");
-
-        return sb.toString();
-    }
+    private ArrayList<Sign> ineqs;
 
     /// <summary>
-    /// Проверяет совместность СЛАУ вида Ax = b. Используется теорема Кронекера-Капелли
+    /// список индексов переменных которые войдут в целевую функию, модифицируя ее
     /// </summary>
-    /// <param name="A"></param>
-    /// <param name="b"></param>
-    /// <returns>0 - нет решений, 1 - одно решение, 2 - бесконечное множествое решений</returns>
-    public static SolutionType checkSystem(Matrix A, Vector b)throws Exception
-    {
-        Matrix a = new Matrix(A);
-
-        int rank_a = Matrix.rank(a);
-
-        Matrix ab = new Matrix(A);
-
-        int rank_a_b = Matrix.rank(ab.addCol(b));
-
-        System.out.println("rank ( A ) " + rank_a + "\n");
-
-        System.out.println("rank (A|b) " + rank_a_b + "\n");
-        if (rank_a == rank_a_b)
-        {
-            System.out.println("one solution\n");
-        }
-        if (rank_a < rank_a_b)
-        {
-            System.out.println("infinite amount of solutions\n");
-        }
-        if (rank_a > rank_a_b)
-        {
-            System.out.println("no solutions\n");
-        }
-
-        if (rank_a == rank_a_b)
-        {
-            return SolutionType.Single;
-        }
-        if (rank_a < rank_a_b)
-        {
-            return SolutionType.Infinite;
-        }
-        if (rank_a > rank_a_b)
-        {
-            return SolutionType.None;
-        }
-        throw new Exception("error :: check_system");
-    }
+    private ArrayList<Integer> f_mod_args;
 
     /// <summary>
-    /// Проверяет оптимальность плана в соответсвии с тем типом экстремума, которыей требуется найти.
-    /// Провеяются элменты от 1:n-1 полсдней строки СМ таблицы
+    ///индексы естественных переменных
+    /// </summary>
+    private  ArrayList<Integer> natural_args_ids;
+
+    /// <summary>
+    ///индексы переменных, не являющихся искусственными
+    /// </summary>
+    private  ArrayList<Integer> artificial_args_ids;
+
+    /// <summary>
+    /// список индексов текущих базисных переменных
+    /// </summary>
+    private  ArrayList<Integer> basis_args;
+
+    /// <summary>
+    /// Симплекс таблица
+    /// </summary>
+    private  Matrix symplex_t;
+
+    /// <summary>
+    /// матрица ограничений
+    /// </summary>
+    private Matrix bounds_m;
+
+    /// <summary>
+    /// вектор ограничений
+    /// </summary>
+    private Vector bounds_v;
+
+    /// <summary>
+    /// вектор стоимостей
+    /// </summary>
+    private Vector prices_v;
+
+    /// <summary>
+    /// режим поиска решения
+    /// </summary>
+    SymplexProblemType mode = SymplexProblemType.Max;
+
+    public int naturalArgsN()
+    {
+        return prices_v.size();
+    }
+
+    public Matrix boundsMatrix()
+    {
+        return bounds_m;
+    }
+
+    public Vector boundsCoeffs()
+    {
+        return bounds_v;
+    }
+
+    public Vector pricesCoeffs()
+    {
+        return prices_v;
+    }
+
+    public ArrayList<Sign> inequations()
+    {
+        return ineqs;
+    }
+
+    public ArrayList<Integer> basisArgsuments()
+    {
+        return basis_args;
+    }
+
+    public Matrix symplexTable()
+    {
+        return symplex_t;
+    }
+
+    public Vector currentSymplexSolution(boolean only_natural_args)
+    {
+        Vector solution = new Vector(only_natural_args ? naturalArgsN() : symplex_t.cols() - 1);
+
+        for (int i = 0; i < basis_args.size(); i++)
+        {
+            if (basis_args.get(i) >= solution.size())
+            {
+                continue;
+            }
+
+            solution.set(basis_args.get(i), symplex_t.get(i,symplex_t.cols() - 1));
+        }
+        return solution;
+    }
+
+    public Vector currentSymplexSolution()
+    {
+        return  currentSymplexSolution(false);
+    }
+
+
+    public boolean isTargetFuncModified()
+    {
+        return f_mod_args.size() != 0;
+    }
+    /// <summary>
+    /// Проверяет оптимальность текущего опорного плана. Исследуется положительность
+    /// симплекс-разностей в последней строке СТ в диапазоне от 1:n-1.
+    /// Если целевая функция была модифицирована, то исследует две последних строки.
+    /// Если среди элементов от 1:n-1 в последней строке нет отрицательных, то проверяет
+    /// на неотрицательность только те элементы предпоследней строки, которые не являются
+    /// искусственными.
     /// </summary>
     /// <param name="A">СМ таблицa</param>
     /// <param name="mode"></param>
     /// <returns></returns>
-    public static boolean isPlanOptimal(Matrix A, SymplexProblemType mode)
+    public boolean isPlanOptimal()
     {
-        Vector deltas = A.row(A.rows() - 1);
+        /// <summary>
+        /// Проверяем значения последней строки сиплекс-разностей
+        /// на положительность. Если все положительны, то план оптимален.
+        /// </summary>
 
-        if (mode == SymplexProblemType.Max)
+        Vector row = symplex_t.row(symplex_t.rows() - 1);
+
+        boolean opt = true;
+
+        for (int i = 0; i < row.size() - 1; i++)
         {
-            for (int i = 0; i < deltas.size() - 1; i++)
+            if (row.get(i) < 0)
             {
-                if (deltas.get(i) < 0)
+                opt = false;
+                break;
+            }
+        }
+
+        /// <summary>
+        /// если мы модифицировали целевую функцию, то среди списка естественнхых
+        /// агументов проверям на положительнность предпослднюю строку симплекс-разностей
+        /// </summary>
+
+        if (isTargetFuncModified())
+        {
+            if (!opt)
+            {
+                return opt;
+            }
+            Vector row_ = symplex_t.row(symplex_t.rows() - 2);
+
+            for (int id : natural_args_ids)
+            {
+                if (row_.get(id) < 0)
                 {
-                    return false;
+                    opt = false;
+                    break;
                 }
             }
-            return true;
         }
 
-        for (int i = 0; i < deltas.size() - 1; i++)
-        {
-            if (deltas.get(i) > 0)
-            {
-                return false;
-            }
-        }
-        return true;
+        return opt;
     }
 
     /// <summary>
-    /// Определяет ведущий столбец в соответсвии с тем типом экстремума, который требуется найти.
-    /// Исследуются элменты от 1:n-1 полсдней строки СМ таблицы
+    /// Определяет ведущий столбец. Среди элементов строки симплекс-разностей ищет максимальны по модулю
+    /// отрицательный элемент. Если целевая функция была модифицирована и среди последней строки нет отрицательных
+    /// элементов, то посик таковых будет продолжен среди только тех элементов предпоследней строки, которые не
+    /// являются искусственными.
     /// </summary>
     /// <param name="A"></param>
     /// <returns></returns>
-    public static int getMainCol(Matrix A, SymplexProblemType mode)
+    private int getMainCol()
     {
+        Vector row = symplex_t.row(symplex_t.rows() - 1);
+
         double delta = 0;
 
         int index = -1;
 
-        Vector c = A.getRows().get(A.rows() - 1);
-
-        if (SymplexProblemType.Min == mode)
+        for (int i = 0; i < row.size() - 1; i++)
         {
-            for (int i = 0; i < c.size() - 1; i++)
-            {
-                if (c.get(i) <= 0)
-                {
-                    continue;
-                }
-                if (c.get(i) < delta)
-                {
-                    continue;
-                }
-
-                delta = c.get(i);
-
-                index = i;
-            }
-            return index;
-        }
-
-        for (int i = 0; i < c.size() - 1; i++)
-        {
-            if (c.get(i) >= 0)
+            if (row.get(i) >= delta)
             {
                 continue;
             }
-            if (Math.abs(c.get(i)) < delta)
-            {
-                continue;
-            }
-
-            delta = Math.abs(c.get(i));
-
+            delta = row.get(i);
             index = i;
         }
 
+        if (isTargetFuncModified() && index == -1)
+        {
+            Vector row_add = symplex_t.row(symplex_t.rows() - 2);
+
+            for (int id : natural_args_ids)
+            {
+                if (row_add.get(id) >= delta)
+                {
+                    continue;
+                }
+                delta = row_add.get(id);
+                index = id;
+            }
+        }
         return index;
     }
 
@@ -264,9 +245,7 @@ public class Symplex
     /// <param name="symplex_col">ведущий столбец</param>
     /// <param name="A">СМ таблица</param>
     /// <returns></returns>
-    /// <summary>
-
-    public static int getMainRow(int symplex_col, Matrix A)
+    int getMainRow(int symplex_col)
     {
         double delta = 1e12;
 
@@ -274,45 +253,85 @@ public class Symplex
 
         double a_ik;
 
-        int b_index = A.cols() - 1;
+        int b_index = symplex_t.cols() - 1;
 
-        for (int i = 0; i < A.rows() - 1; i++)
+        int rows_n = isTargetFuncModified() ? symplex_t.rows() - 2 : symplex_t.rows() - 1;
+
+        for (int i = 0; i < rows_n; i++)
         {
-            a_ik = A.get(i, symplex_col);// [i][symplex_col];
+            a_ik = symplex_t.get(i, symplex_col);
 
             if (a_ik < 0)
             {
                 continue;
             }
-            if (A.get(i, b_index) / a_ik > delta)
+            if (symplex_t.get(i,b_index) / a_ik > delta)
             {
                 continue;
             }
-            delta = A.get(i, b_index) / a_ik;
+            delta = symplex_t.get(i,b_index) / a_ik;
             index = i;
         }
+
         return index;
     }
 
-    /// Выводит текущее решение СМ таблицы для не искусственных переменных
+    /// <summary>
+    /// строит виртуальный базисный вектор
     /// </summary>
-    /// <param name="A">СМ таблица</param>
-    /// <param name="basis">список базисных параметров</param>
-    /// <param name="n_agrs">количество исходных переменных</param>
-    /// <returns></returns>
-    public static Vector currentSymplexSolution(Matrix A, ArrayList<Integer> basis, int n_agrs)
+    /// <param name="ineq_id"></param>
+    /// <param name="_ineq"></param>
+    /// <param name="col_index"></param>
+    /// <param name="col_index_aditional"></param>
+    private int[] buildVirtualBasisCol(int ineq_id, Sign _ineq)//, ref int col_index, ref int col_index_aditional)
     {
-        Vector solution = new Vector(n_agrs);
-
-        for (int i = 0; i < basis.size(); i++)
+        if (_ineq == Sign.Equal)
         {
-            if (basis.get(i) >= n_agrs)
+            for (int row = 0; row < symplex_t.rows(); row++)
             {
+                if (row == ineq_id)
+                {
+                    symplex_t.row(row).pushBack(1.0);
+                    continue;
+                }
+                symplex_t.row(row).pushBack(0.0);
+            }
+
+            return new int[]{ symplex_t.cols() - 1, symplex_t.cols() - 1};
+        }
+
+        if (_ineq == Sign.More)
+        {
+            for (int row = 0; row < symplex_t.rows(); row++)
+            {
+                if (row == ineq_id)
+                {
+                    symplex_t.row(row).pushBack(-1.0);
+
+                    symplex_t.row(row).pushBack(1.0);
+
+                    continue;
+                }
+
+                symplex_t.row(row).pushBack(0.0);
+
+                symplex_t.row(row).pushBack(0.0);
+            }
+
+            return new int[]{ symplex_t.cols() - 2, symplex_t.cols() - 1};
+        }
+
+        for (int row = 0; row < symplex_t.rows(); row++)
+        {
+            if (row == ineq_id)
+            {
+                symplex_t.row(row).pushBack(1.0);
                 continue;
             }
-            solution.set(basis.get(i),A .get(i,A.cols()-1));//[i][A[0].Size - 1]);
+            symplex_t.row(row).pushBack(0.0);
         }
-        return solution;
+
+        return new int[]{ symplex_t.cols() - 1, - 1};
     }
 
     /// <summary>
@@ -339,101 +358,272 @@ public class Symplex
     /// <param name="b"></param>
     ///( A|I)  b
     ///(-c|0)  F(x,c)
-    public static Pair<ArrayList<Integer>,Matrix> buildSymplexTable(Matrix A, Vector c, Vector b, ArrayList<Sign> ineq)throws Exception
+    private void buildSymplexTable()throws Exception
     {
-        if (A.rows() != b.size())
+        symplex_t = new Matrix(bounds_m);
+        natural_args_ids.clear();
+        basis_args.clear();
+        f_mod_args.clear();
+        artificial_args_ids.clear();
+        ///
+        /// Если среди вектора b есть отрицательные значения, то соответствующие строки
+        /// матрицы ограничений умножаем на мину один и меняем знак сравнения
+        ///
+        for (int row = 0; row < symplex_t.rows(); row++)
         {
-            throw new Exception("Incorrect symplex problem");
-        }
-        if (A.cols() != c.size())
-        {
-            throw new Exception("Incorrect symplex problem");
-        }
-
-        Matrix table = new Matrix(A);
-
-        ArrayList<Integer> basis = new ArrayList<Integer>();
-
-        int cntr = 0;
-
-        Vector row;
-
-        for (int n_row = 0; n_row < A.rows(); n_row++)
-        {
-            row = table.getRows().get(n_row);
-
-            basis.add(-1);
-
-            for (int j = 0; j < b.size(); j++)
+            if (bounds_v.get(row) >= 0)
             {
-                if (ineq.get(j) == Sign.Equal)
-                {
-                    basis.set(basis.size() - 1, j);
-                    continue;
-                }
-                if (ineq.get(j) == Sign.More)
-                {
-                    if (cntr == j)
-                    {
-                        basis.set(basis.size() - 1, c.size() + j) ;
-                        row.pushBack(-1.0);
-                        continue;
-                    }
-                    row.pushBack(0.0);
-                    continue;
-                }
-                if (ineq.get(j) == Sign.Less)
-                {
-                    if (cntr == j)
-                    {
-                        basis.set(basis.size() - 1, c.size() + j);
-                        row.pushBack(1.0);
-                        continue;
-                    }
-                    row.pushBack(0.0);
-                    continue;
-                }
+                continue;
             }
-            row.pushBack(b.get(cntr));
 
-            if (b.get(cntr) < 0)
-            {
-                for (int i = 0; i < row.size(); i++)
-                {
-                    row.set(i, row.get(i) * -1.0);
-                  ///  row[i] *= (-1);
-                }
-            }
-            cntr++;
+            ineqs.set(row, ineqs.get(row) == Sign.Less ? Sign.More : Sign.Less);// = ineqs[row] == Sign.Less ? Sign.More : Sign.Less;
+
+            bounds_v.set(row, bounds_v.get(row) * -1.0);//bounds_v[row] *= -1;
+
+            symplex_t.row(row).mul(-1.0);/// = symplex_t[row] * (-1.0);
         }
 
-        Vector C = new Vector(table.cols());
 
-        for (int j = 0; j < C.size(); j++)
+        for (int i = 0; i < prices_v.size(); i++)
         {
-            C.set(j, j < c.size() ? -c.get(j) : 0.0);
+            natural_args_ids.add(i);
+        }
+        /// <summary>
+        /// построение искуственного базиса
+        /// </summary>
+        //int basis_arg_id = -1;
+        //int basis_arg_id_add = -1;
+        int[] basis_args_info;
+
+        for (int ineq_id = 0; ineq_id < ineqs.size(); ineq_id++)
+        {
+            basis_args_info = buildVirtualBasisCol(ineq_id, ineqs.get(ineq_id));//, ref basis_arg_id, ref basis_arg_id_add);
+
+            natural_args_ids.add(basis_args_info[0]);
+
+            if (basis_args_info[1] != -1)
+            {
+                basis_args.add(basis_args_info[1]);
+                f_mod_args.add(basis_args_info[1]);
+                artificial_args_ids.add(basis_args_info[1]);
+                continue;
+            }
+
+            basis_args.add(basis_args_info[0]);
         }
 
-        table.addRow(C);
+        /// <summary>
+        /// добавим столбец ограницений
+        /// </summary>
 
-        return new Pair<>(basis,table);
+        for (int row = 0; row < symplex_t.rows(); row++)
+        {
+            symplex_t.row(row).pushBack(bounds_v.get(row));
+        }
+
+        /// <summary>
+        /// Построение симплекс разностей
+        /// </summary>
+
+        Vector s_deltas = new Vector(symplex_t.cols());
+
+        if (mode == SymplexProblemType.Max)
+        {
+            for (int j = 0; j < s_deltas.size(); j++)
+            {
+                s_deltas.set(j, j < prices_v.size() ? -prices_v.get(j) : 0.0);
+            }
+        }
+        else
+        {
+            for (int j = 0; j < s_deltas.size(); j++)
+            {
+                s_deltas.set(j,  j < prices_v.size() ? prices_v.get(j) : 0.0);
+            }
+        }
+
+        symplex_t.addRow(s_deltas);
+
+        /// <summary>
+        /// Если целевая функуция не была модифицирована
+        /// </summary>
+
+        if (!isTargetFuncModified())
+        {
+            return;
+        }
+        /// <summary>
+        /// Если всё же была...
+        /// </summary>
+        Vector s_deltas_add = new Vector(symplex_t.cols());
+
+        for (int j = 0; j < f_mod_args.size(); j++)
+        {
+            s_deltas_add.set(f_mod_args.get(j),1.0);// = 1.0;
+        }
+
+        symplex_t.addRow(s_deltas_add);
     }
 
-    public static Vector symplexSolve(Matrix a, Vector c, Vector b, ArrayList<Sign> ineq, SymplexProblemType mode)throws Exception
+    private boolean excludeModArgs()throws Exception
     {
-        System.out.println("SymplexProblemType : " + String.valueOf(mode)+"\n");
+        if (!isTargetFuncModified())
+        {
+            return false;
+        }
 
-        var system_condition = checkSystem(a, b);
+        int last_row_id = symplex_t.rows() - 1;
+
+        for (int i = 0; i < f_mod_args.size(); i++)
+        {
+            for (int row = 0; row < symplex_t.rows(); row++)
+            {
+
+                if (symplex_t.get(row,f_mod_args.get(i))!= 0)
+                {
+                    double arg = symplex_t.get(last_row_id,f_mod_args.get(i)) / symplex_t.get(row,f_mod_args.get(i)) ;// symplex_t[row][f_mod_args[i]];
+
+                    symplex_t.row(last_row_id).sub(Vector.mul(arg,symplex_t.row(row)));/// = symplex_t[last_row_id] - arg * symplex_t[row];
+
+                    break;
+                }
+            }
+        }
+        return true;
+    }
+
+    private boolean validateSolution()
+    {
+
+        double val = 0;
+
+        int n_rows = isTargetFuncModified() ? symplex_t.rows() - 2 : symplex_t.rows() - 1;
+
+        int n_cols = symplex_t.cols() - 1;
+
+        for (int i = 0; i < basis_args.size(); i++)
+        {
+            if (basis_args.get(i) < naturalArgsN())
+            {
+                val += symplex_t.get(i,n_cols) * prices_v.get(basis_args.get(i));//symplex_t[i][n_cols] * prices_v[basis_args[i]];
+            }
+        }
+        if (mode == SymplexProblemType.Max)
+        {
+            if (Math.abs(val - symplex_t.get(n_rows, n_cols)) < 1e-5)
+            {
+                if (isTargetFuncModified())
+                {
+                    return true & (Math.abs(symplex_t.get(symplex_t.rows() - 1,symplex_t.cols() - 1)) < 1e-5);
+                }
+
+                return true;
+            }
+        }
+        if (Math.abs(val + symplex_t.get(n_rows, n_cols)) < 1e-5)
+        {
+            if (isTargetFuncModified())
+            {
+                return true & (Math.abs(symplex_t.get(symplex_t.rows() - 1,symplex_t.cols() - 1)) < 1e-5);
+            }
+
+            return true;
+        }
+        return false;
+    }
+
+    public  String symplexToString()
+    {
+        if (symplex_t.rows() == 0)
+        {
+            return "";
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        int i = 0;
+
+        sb.append(String.format("%-6s", " "));
+
+        for (; i < symplex_t.cols() - 1; i++)
+        {
+            sb.append(String.format("|%-12s", " x " + String.valueOf((i + 1))));
+        }
+        sb.append(String.format("|%-12s", " b"));
+
+        sb.append("\n");
+
+        int n_row = -1;
+
+        for(Vector row : symplex_t.getRows())
+        {
+            n_row++;
+
+            if (isTargetFuncModified())
+            {
+                if (n_row == symplex_t.rows() - 2)
+                {
+                    sb.append(String.format("%-6s"," d0"));
+                }
+                else if (n_row == symplex_t.rows() - 1)
+                {
+                    sb.append(String.format("%-6s"," d1"));
+                }
+                else
+                {
+                    sb.append (String.format("%-6s", " x " + String.valueOf(basis_args.get(n_row) + 1)));
+                }
+            }
+            else
+            {
+                if (n_row == symplex_t.rows() - 1)
+                {
+                    sb.append(String.format("%-6s"," d"));
+                }
+                else
+                {
+                    sb.append (String.format("%-6s", " x " + String.valueOf(basis_args.get(n_row) + 1)));
+                }
+            }
+
+            for (int col = 0; col < row.size(); col++)
+            {
+                if (row.get(col) >= 0)
+                {
+                    sb.append(String.format("|%-12s", " " + NumericUtils.toRationalStr(row.get(col))));
+                    continue;
+                }
+                sb.append(String.format("|%-12s", NumericUtils.toRationalStr(row.get(col))));
+
+            }
+            sb.append("\n");
+        }
+        sb.append("\n");
+
+        return sb.toString();
+    }
+
+    public Vector solve(SymplexProblemType mode) throws Exception/// = SymplexProblemType.Max)
+    {
+        this.mode = mode;
+
+        System.out.println("Symplex problem type : " + mode.toString() + "\n");
+
+        Vector solution = new Vector(naturalArgsN());
+
+        SolutionType system_condition = Matrix.checkSystem(bounds_m, bounds_v);
 
         if (system_condition == SolutionType.None)
         {
-            return null;
+            return solution;
         }
 
         if (system_condition == SolutionType.Single)
         {
-            return Matrix.linsolve(a, b);
+            return Matrix.linsolve(bounds_m, bounds_v);
         }
+
+        buildSymplexTable();
 
         double a_ik;
 
@@ -441,66 +631,133 @@ public class Symplex
 
         int main_col;
 
-        Pair<ArrayList<Integer>,Matrix> sympex = buildSymplexTable( a, c, b, ineq);
+        System.out.println("Start symplex table:");
+        System.out.println(symplexToString());
 
-        Matrix table = sympex.item2;
-
-        ArrayList<Integer> basis = sympex.item1;
-
-        System.out.println("Start symplex table:\n\n" + symplexToString(table, basis));
-
-        while (!isPlanOptimal(table, mode))
+        if (excludeModArgs())
         {
-            main_col = getMainCol(table, mode);
+            // второй этап, если задача должна решаться двух проходным(двух этапным) алгоритмом
+            System.out.println("Symplex table after args exclude:");
+            System.out.println(symplexToString());
+        }
+
+        while (!isPlanOptimal())
+        {
+            main_col = getMainCol();
 
             if (main_col == -1)
             {
                 break;
             }
 
-            main_row = getMainRow(main_col,table);
+            main_row = getMainRow(main_col);
 
             if (main_row == -1)
             {
-                break;
+                /// Невозможность определить ведущую строку свидейтельствует о том, что обрасть поиска неограничена
+                System.out.println("Unable to get main row. Symplex is probably boundless...");
+                return null;
             }
 
-            basis.set(main_row, main_col);
+            basis_args.set(main_row, main_col);
 
-            a_ik = table.get(main_row,main_col);
+            a_ik = symplex_t.get(main_row, main_col);
 
-            table.row(main_row).mul(1.0 / a_ik);
+            symplex_t.row(main_row).mul(1.0 / a_ik);/// = symplex_t[main_row] * (1.0 / a_ik);
 
-            for (int i = 0; i < table.rows(); i++)
+            for (int i = 0; i < symplex_t.rows(); i++)
             {
                 if (i == main_row)
                 {
                     continue;
                 }
-                table.row(i).sub(Vector.mul(table.row(main_row),table.get(i,main_col)));
-                //     A[i] = A[i] - A[i][main_col] * A[main_row];
+                symplex_t.row(i).sub(Vector.mul(symplex_t.get(i,main_col), symplex_t.row(main_row)));//  symplex_t[i][main_col] * symplex_t[main_row];
             }
-            System.out.println("a_main {" + (main_row + 1) + ", " + (main_col + 1) + "} = "+toRationalStr(a_ik)+" \n");
-            System.out.println(symplexToString(table, basis));
-            System.out.println("current_solution : " + toRationalStr(currentSymplexSolution(table, basis, c.size()))+"\n");
+            solution = currentSymplexSolution();
+            if(showSymplexDebugLog)
+            {
+                System.out.println("a_main{"+ String.valueOf((main_row + 1))+", "+ String.valueOf((main_col + 1)) + "} = " + NumericUtils.toRationalStr(a_ik) + "\n");
+                System.out.println(symplexToString());
+                System.out.println("current solution: " + NumericUtils.toRationalStr(currentSymplexSolution()));
+            }
         }
-        /// формирование ответа
-        return currentSymplexSolution(table, basis, c.size());
-    }
-
-    public static Vector symplexSolve(Matrix a, Vector c, Vector b, ArrayList<Sign> ineq)throws Exception
-    {
-        return  symplexSolve( a,  c,  b,  ineq, SymplexProblemType.Max);
-    }
-
-    public static Vector symplexSolve(Matrix a, Vector c, Vector b)throws Exception
-    {
-        ArrayList<Sign> ineq = new ArrayList<>(b.size());
-
-        for(int i = 0;i < b.size(); i++)
+        if (validateSolution())
         {
-            ineq.add(Sign.Less);
+            solution = currentSymplexSolution(true);
+            /// формирование ответа
+            System.out.println("solution: " + NumericUtils.toRationalStr(solution));
+            return solution;
         }
-        return  symplexSolve( a,  c,  b,  ineq, SymplexProblemType.Max);
+        System.out.println("Symplex is unresolvable");
+        /// значение целевой функции не равно ее значению от найденного плана
+        return null;
     }
+
+    public Vector solve() throws Exception/// = SymplexProblemType.Max)
+    {
+        return solve(SymplexProblemType.Max);
+    }
+
+    public Symplex(Matrix a, Vector c, ArrayList<Sign> _ineq, Vector b)throws Exception
+    {
+        if (b.size() != _ineq.size())
+        {
+            throw new Exception("Error symplex creation :: b.size() != inequation.size()");
+        }
+
+        if (a.rows() != _ineq.size())
+        {
+            throw new Exception("Error symplex creation :: A.rows_number() != inequation.size()");
+        }
+
+        if (a.cols() != c.size())
+        {
+            throw new Exception("Error symplex creation :: A.cols_number() != price_coeffs.size()");
+        }
+
+        natural_args_ids    = new ArrayList<Integer>();
+        basis_args          = new ArrayList<Integer>();
+        f_mod_args          = new ArrayList<Integer>();
+        artificial_args_ids = new ArrayList<Integer>();
+
+        bounds_v = b;
+
+        bounds_m = a;
+
+        prices_v = c;
+
+        ineqs    = _ineq;
+    }
+
+    public Symplex(Matrix a, Vector c, Vector b)throws Exception
+    {
+        if (b.size() != b.size())
+        {
+            throw new Exception("Error symplex creation :: b.size() != bouns_coeffs.size()");
+        }
+
+        if (a.cols() != c.size())
+        {
+            throw new Exception("Error symplex creation :: A.cols_number() != price_coeffs.size()");
+        }
+
+        ineqs = new ArrayList<Sign>();
+
+        for (int i = 0; i < b.size(); i++)
+        {
+            ineqs.add(Sign.Less);
+        }
+
+        natural_args_ids    = new ArrayList<Integer>();
+        basis_args          = new ArrayList<Integer>();
+        f_mod_args          = new ArrayList<Integer>();
+        artificial_args_ids = new ArrayList<Integer>();
+
+        bounds_v = b;
+
+        bounds_m = a;
+
+        prices_v = c;
+    }
+
 }

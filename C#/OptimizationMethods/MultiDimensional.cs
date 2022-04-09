@@ -14,7 +14,7 @@ namespace OptimizationMethods
         {
 
             double val = 0.0;
-            for (int i=0; i < x.Size;i++) 
+            for (int i=0; i < x.Count; i++) 
             {
                 val += (x[i] - i) * x[i];
             }
@@ -139,7 +139,7 @@ namespace OptimizationMethods
 
             for (i = 0; i < max_iters; i++)
             {
-                coord_id = i % x_0.Size;
+                coord_id = i % x_0.Count;
 
                 x_1[coord_id] -= eps;
 
@@ -163,7 +163,7 @@ namespace OptimizationMethods
                 {
                     opt_coord_n++;
 
-                    if (opt_coord_n == x_1.Size)
+                    if (opt_coord_n == x_1.Count)
                     {
 #if DEBUG
                         Console.WriteLine($"per coord descend iterations number : {i}");

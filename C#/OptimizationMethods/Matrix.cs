@@ -4,6 +4,12 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace OptimizationMethods
 {
+    public enum SolutionType
+    {
+        Single = 0,
+        Infinite = 1,
+        None = 2
+    }
     public class Matrix : IEquatable<Matrix>
     {
         /// <summary>
@@ -12,7 +18,7 @@ namespace OptimizationMethods
         private List<Vector> rows;
         public Matrix AddCol(Vector col)
         {
-            if (col.Size != NRows)
+            if (col.Count != NRows)
             {
                 throw new Exception("Error::AddCol::col.Size != NRows");
             }
@@ -25,7 +31,7 @@ namespace OptimizationMethods
 
         public Matrix AddRow(Vector row)
         {
-            if (row.Size != NCols)
+            if (row.Count != NCols)
             {
                 throw new Exception("Error::AddRow::row.Size != NCols");
             }
@@ -126,7 +132,7 @@ namespace OptimizationMethods
                 {
                     return 0;
                 }
-                return rows[0].Size;
+                return rows[0].Count;
             }
         }
         
@@ -164,11 +170,11 @@ namespace OptimizationMethods
                 throw new Exception("Data is empty...");
             }
 
-            int row_size = rows[0].Size;
+            int row_size = rows[0].Count;
 
             for (int i = 0; i < rows.Length; i++)
             {
-                if (rows[i].Size != row_size)
+                if (rows[i].Count != row_size)
                 {
                     throw new Exception("Incorrect matrix data");
                 }
@@ -224,7 +230,7 @@ namespace OptimizationMethods
         /// <returns></returns>
         public static Matrix Hessian(func_n f, Vector x, double eps = 1e-6)
         {
-            Matrix res = new Matrix(x.Size, x.Size);
+            Matrix res = new Matrix(x.Count, x.Count);
             int row, col;
             for (row = 0; row < res.NRows; row++)
             {
@@ -419,7 +425,7 @@ namespace OptimizationMethods
 
             double tmp;
 
-            for (int i = 0; i < z.Size; i++)
+            for (int i = 0; i < z.Count; i++)
             {
                 tmp = 0.0;
 
@@ -432,10 +438,10 @@ namespace OptimizationMethods
 
             x = new Vector(up.NRows);
 
-            for (int i = z.Size - 1; i >= 0; i--)
+            for (int i = z.Count - 1; i >= 0; i--)
             {
                 tmp = 0.0;
-                for (int j = i + 1; j < z.Size; j++)
+                for (int j = i + 1; j < z.Count; j++)
                 {
                     tmp += x[j] * up[i][j];
                 }
@@ -483,7 +489,7 @@ namespace OptimizationMethods
 
             b = new Vector(mat.NRows);
 
-            for (int i = 0; i < b.Size; i++)
+            for (int i = 0; i < b.Count; i++)
             {
                 b[i] = 0.0;
             }
@@ -498,7 +504,7 @@ namespace OptimizationMethods
                 {
                     throw new Exception("unable to find matrix inversion");
                 }
-                if (col.Size == 0)
+                if (col.Count == 0)
                 {
                     throw new Exception("unable to find matrix inversion");
                 }
@@ -527,6 +533,55 @@ namespace OptimizationMethods
             }
             return trans;
         }
+
+        /// <summary>
+        /// Проверяет совместность СЛАУ вида Ax = b. Используется теорема Кронекера-Капелли 
+        /// </summary>
+        /// <param name="A"></param>
+        /// <param name="b"></param>
+        /// <returns>0 - нет решений, 1 - одно решение, 2 - бесконечное множествое решений</returns>
+        public static SolutionType CheckSystem(Matrix A, Vector b)
+        {
+            Matrix a = new Matrix(A);
+
+            int rank_a = Matrix.Rank(a);
+
+            Matrix ab = new Matrix(A);
+
+            int rank_a_b = Matrix.Rank(ab.AddCol(b));
+
+#if DEBUG
+            Console.WriteLine($"rank ( A ) {rank_a}\n");
+            Console.WriteLine($"rank (A|b) {rank_a_b}\n");
+            if (rank_a == rank_a_b)
+            {
+                Console.WriteLine("one solution\n");
+            }
+            if (rank_a < rank_a_b)
+            {
+                Console.WriteLine("infinite amount of solutions\n");
+            }
+            if (rank_a > rank_a_b)
+            {
+                Console.WriteLine("no solutions\n");
+            }
+#endif
+
+            if (rank_a == rank_a_b)
+            {
+                return SolutionType.Single;
+            }
+            if (rank_a < rank_a_b)
+            {
+                return SolutionType.Infinite;
+            }
+            if (rank_a > rank_a_b)
+            {
+                return SolutionType.None;
+            }
+            throw new Exception("error :: check_system");
+        }
+
         /// <summary>
         /// Элементарные математические операции над матрицами
         /// </summary>
@@ -552,7 +607,7 @@ namespace OptimizationMethods
         }
         public static Vector operator *(Matrix mat, Vector vec)
         {
-            if (mat.NCols != vec.Size)
+            if (mat.NCols != vec.Count)
             {
                 throw new Exception("unable to matrix and vector myltiply");
             }
@@ -566,7 +621,7 @@ namespace OptimizationMethods
         }
         public static Vector operator *(Vector vec, Matrix mat)
         {
-            if (mat.NRows != vec.Size)
+            if (mat.NRows != vec.Count)
             {
                 throw new Exception("unable to matrix and vector myltiply");
             }

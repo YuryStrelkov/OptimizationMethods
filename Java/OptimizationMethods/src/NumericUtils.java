@@ -72,4 +72,47 @@ public class NumericUtils
     {
         return DecimalToRational(value,1000);
     }
+
+    public static String toRationalStr(double value, boolean fullRational)
+    {
+        int[] number =  NumericUtils.DecimalToRational(value);
+        if (number[1] == 0)
+        {
+            return String.valueOf(number[0]);
+        }
+        if (number[0] == 0)
+        {
+            return String.valueOf(number[1]) + "/" + String.valueOf(number[2]);
+        }
+
+        if (fullRational)
+        {
+            return String.valueOf((number[1] + Math.abs(number[0]) * number[2]) * (number[0] >= 0 ? 1 : -1)) + "/" + String.valueOf(number[2]);
+        }
+        return String.valueOf(number[0]) + " " + String.valueOf(number[1]) + "/" + String.valueOf(number[2]);
+    }
+
+    public static String toRationalStr(double value)
+    {
+        return toRationalStr(value, true);
+    }
+
+    public static String toRationalStr(Vector value, boolean fullRational)
+    {
+        String str = "{ ";
+        for (int i = 0; i < value.size() - 1; i++)
+        {
+            str += toRationalStr(value.get(i), fullRational);
+            str += ", ";
+        }
+        str += toRationalStr(value.get(value.size() - 1), fullRational);
+
+        str += " }";
+        return str;
+    }
+    public static String toRationalStr(Vector value)
+    {
+        return toRationalStr( value,  true);
+    }
+
 }

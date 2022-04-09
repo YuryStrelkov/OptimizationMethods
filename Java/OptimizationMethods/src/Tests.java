@@ -108,9 +108,51 @@ public class Tests {
               new Vector(new double[]{ 2,-1})
         });
 
-        Vector b = new Vector( new double[] { 40, 28, 14 });
-        Vector c = new Vector( new double[] { 2, 3 });
+        Vector b  = new Vector( new double[] { 40, 28, 14 });
+        Vector c  = new Vector( new double[] {  2,  3 });
+        Vector c1 = new Vector( new double[] { -2,  3 });
+        Vector c2 = new Vector( new double[] {  2,  1 });
+        Vector c3 = new Vector( new double[] { -2, -1 });
 
-        Symplex.symplexSolve(A, c, b);
+        System.out.println(" f(x,c) =  2x1 + 3x2;\n arg_max = {4, 8}, f(arg_max) = 32");
+        System.out.println(" |-2x1 + 6x2 <= 40");
+        System.out.println(" | 3x1 + 2x2 <= 28");
+        System.out.println(" | 2x1 -  x2 <= 14\n");
+
+        ArrayList<Sign> signs_less = new ArrayList<Sign>(3);
+        signs_less.add(Sign.Less);
+        signs_less.add(Sign.Less);
+        signs_less.add(Sign.Less);
+        ArrayList<Sign> signs_more = new ArrayList<Sign>(3);
+        signs_more.add(Sign.More);
+        signs_more.add(Sign.More);
+        signs_more.add(Sign.More);
+        ArrayList<Sign> signs_equal = new ArrayList<Sign>(3);
+        signs_equal.add(Sign.Equal);
+        signs_equal.add(Sign.Equal);
+        signs_equal.add(Sign.Equal);
+        Symplex.showSymplexDebugLog = true;
+
+        Symplex sym_0 = new Symplex(A,new Vector( new double[] {  2,  3 }), signs_less, b);
+        sym_0.solve(SymplexProblemType.Max);
+
+        System.out.println("\n f(x,c) = -2x1 + 3x2;\n arg_min = {7, 0}, f(arg_min) =-14\n");
+        Symplex sym_1 = new Symplex(A, new Vector( new double[] { -2,  3 }), signs_less, b);
+        sym_1.solve(SymplexProblemType.Min);
+
+
+        System.out.println("/////////////////////////////");
+        System.out.println(" f(x,c) =  2x1 + 3x2;\n arg_min = {62/5, 54/5}, f(arg_max) = 57 1/5");
+        System.out.println(" |-2x1 + 6x2 >= 40");
+        System.out.println(" | 3x1 + 2x2 >= 28");
+        System.out.println(" | 2x1 -  x2 >= 14\n");
+        Symplex sym_2 = new Symplex(A, new Vector(new double[] { 2, 1 }), signs_more, b);
+        sym_2.solve(SymplexProblemType.Min);
+        System.out.println(" f(x,c) =  -2x1 - x2;\n arg_min = {62/5, 54/5}, f(arg_max) = -35 3/5");
+        Symplex sym_3 = new Symplex(A, new Vector(new double[] { -2, -1 }), signs_more, b);
+        sym_3.solve(SymplexProblemType.Max);
+        System.out.println(" f(x,c) =  2x1 + 3x2;\n arg_min = {none, none}, f(arg_max) = none");
+        Symplex sym_4 = new Symplex(A, c,signs_equal, b);
+        sym_4.solve(SymplexProblemType.Max);
     }
 }

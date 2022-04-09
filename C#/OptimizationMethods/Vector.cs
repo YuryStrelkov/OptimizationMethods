@@ -9,15 +9,19 @@ namespace OptimizationMethods
     public class Vector : IEquatable<Vector>
     {
         /// <summary>
+        /// заполнение массива
+        /// </summary>
+        private int fillness = 0;
+        /// <summary>
         /// Массив элементов
         /// </summary>
-        private List<double> data;
+        private double[] data;
         /// <summary>
         /// Размерность вектора
         /// </summary>
-        public int Size
+        public int Count
         {
-            get { return data.Count; }
+            get { return fillness; }
         }
         /// <summary>
         /// Длина вектра
@@ -43,7 +47,7 @@ namespace OptimizationMethods
             {
                 Vector v = new Vector(this);
                 double inv_mag = 1.0 / v.Magnitude;
-                for (int i = 0; i < v.Size; i++)
+                for (int i = 0; i < v.Count; i++)
                 {
                     v[i] *= inv_mag;
                 }
@@ -57,7 +61,7 @@ namespace OptimizationMethods
         public Vector Normalize()
         {
             double inv_mag = 1.0 / Magnitude;
-            for (int i = 0; i < Size; i++)
+            for (int i = 0; i < Count; i++)
             {
                 this[i] *= inv_mag;
             }
@@ -70,46 +74,38 @@ namespace OptimizationMethods
         /// <returns>(this;other)</returns>
         public double Dot(Vector other)
         {
-            if (Size != other.Size)
+            if (Count != other.Count)
             {
                 throw new Exception("Unable vector dot multiply");
             }
 
             double dot = 0.0;
 
-            for (int i = 0; i < other.Size; i++)
+            for (int i = 0; i < other.Count; i++)
             {
                 dot += this[i] * other[i];
             }
             return dot;
         }
 
-        /// <summary>
-        /// Изменение размера вектора
-        /// </summary>
-        /// <param name="size"></param>
-        public void Resize(int size)
-        {
-            if (size == Size)
-            {
-                return;
-            }
-
-            if (size > Size)
-            {
-                for (int i = 0; i < size - Size; i++)
-                {
-                    data.Add(0.0);
-                }
-                return;
-            }
-
-            data.RemoveRange(size, Size);
-        }
-
         public void PushBack(double val)
         {
-            data.Add(val);
+            if (fillness != data.Length)
+            {
+                data[fillness] = val;
+                fillness++;
+                return;
+            }
+
+            double[] new_data = new double[(int)(data.Length * 1.5)];
+
+            for (int i = 0; i < Count; i++)
+            {
+                new_data[i] = data[i];
+            }
+            new_data[fillness] = val;
+            fillness++;
+            data = new_data;
         }
         /// <summary>
         /// Строковое представление вектора
@@ -118,11 +114,11 @@ namespace OptimizationMethods
         public override string ToString()
         {
             string s = "{ ";
-            for (int i = 0; i < data.Count - 1; i++)
+            for (int i = 0; i < Count - 1; i++)
             {
                 s += string.Format("{0,0}, ", String.Format("{0:0.000}", data[i]));
             }
-            s += string.Format("{0,0}", String.Format("{0:0.000}", data[data.Count - 1]));
+            s += string.Format("{0,0}", String.Format("{0:0.000}", data[Count - 1]));
             s += " }";
             return s;
         }
@@ -146,11 +142,11 @@ namespace OptimizationMethods
         /// <returns></returns>
         public bool Equals([AllowNull] Vector other)
         {
-            if (other.Size != Size)
+            if (other.Count != Count)
             {
                 return false;
             }
-            for (int i = 0; i < other.Size; i++)
+            for (int i = 0; i < other.Count; i++)
             {
                 if (other[i] != this[i])
                 {
@@ -189,7 +185,14 @@ namespace OptimizationMethods
         /// <param name="_data"></param>
         public Vector(double[] _data)
         {
-            data = new List<double>(_data);
+            fillness = _data.Length;
+
+            data = new double[(int)(fillness * 1.5)];
+
+            for (int i = 0; i < fillness; i++)
+            {
+                data[i] = _data[i];
+            }
         }
         /// <summary>
         /// Конструктор вектора по размеру и элементу по умолчанию
@@ -198,10 +201,13 @@ namespace OptimizationMethods
         /// <param name="defaultValue"></param>
         public Vector(int size, double defaultValue = 0.0)
         {
-            data = new List<double>(size);
+            fillness = size;
+
+            data = new double[(int)(size * 1.5)];
+
             for (int i = 0; i < size; i++)
             {
-                data.Add(defaultValue);
+                data[i] = (defaultValue);
             }
         }
         /// <summary>
@@ -210,7 +216,14 @@ namespace OptimizationMethods
         /// <param name="vect"></param>
         public Vector(Vector vect)
         {
-            data = new List<double>(vect.data);
+            fillness = vect.fillness;
+
+            data = new double[vect.data.Length];
+
+            for (int i = 0; i < vect.fillness; i++)
+            {
+                data[i] = vect.data[i];
+            }
         }
 
         /// <summary>
@@ -218,13 +231,13 @@ namespace OptimizationMethods
         /// </summary>
         public static Vector operator +(Vector a, Vector b)
         {
-            if (a.Size != b.Size)
+            if (a.Count != b.Count)
             {
                 throw new Exception("error:: operator+:: vectors of different dimensions");
             }
 
             Vector res = new Vector(a);
-            for (int i = 0; i < a.Size; i++)
+            for (int i = 0; i < a.Count; i++)
             {
                 res[i] = a[i] + b[i];
             }
@@ -233,7 +246,7 @@ namespace OptimizationMethods
         public static Vector operator +(Vector a, double b)
         {
             Vector res = new Vector(a);
-            for (int i = 0; i < a.Size; i++)
+            for (int i = 0; i < a.Count; i++)
             {
                 res[i] = a[i] + b;
             }
@@ -245,13 +258,13 @@ namespace OptimizationMethods
         }
         public static Vector operator -(Vector a, Vector b)
         {
-            if (a.Size != b.Size)
+            if (a.Count != b.Count)
             {
                 throw new Exception("error:: operator-:: vectors of different dimensions");
             }
 
             Vector res = new Vector(a);
-            for (int i = 0; i < a.Size; i++)
+            for (int i = 0; i < a.Count; i++)
             {
                 res[i] = a[i] - b[i];
             }
@@ -260,7 +273,7 @@ namespace OptimizationMethods
         public static Vector operator -(Vector a, double b)
         {
             Vector res = new Vector(a);
-            for (int i = 0; i < a.Size; i++)
+            for (int i = 0; i < a.Count; i++)
             {
                 res[i] = a[i] - b;
             }
@@ -269,7 +282,7 @@ namespace OptimizationMethods
         public static Vector operator -(double b, Vector a)
         {
             Vector res = new Vector(a);
-            for (int i = 0; i < a.Size; i++)
+            for (int i = 0; i < a.Count; i++)
             {
                 res[i] = b - a[i];
             }
@@ -278,7 +291,7 @@ namespace OptimizationMethods
         public static Vector operator *(Vector a, double val)
         {
             Vector res = new Vector(a);
-            for (int i = 0; i < a.Size; i++)
+            for (int i = 0; i < a.Count; i++)
             {
                 res[i] = a[i] * val;
             }
@@ -308,7 +321,7 @@ namespace OptimizationMethods
         /// <returns></returns>
         public static Vector Direction(Vector a, Vector b)
         {
-            if (a.Size != b.Size)
+            if (a.Count != b.Count)
             {
                 return a;
             }
@@ -325,8 +338,8 @@ namespace OptimizationMethods
         {
             Vector x_l = new Vector(x);
             Vector x_r = new Vector(x);
-            Vector df = new Vector(x.Size);
-            for (int i = 0; i < x.Size; i++)
+            Vector df = new Vector(x.Count);
+            for (int i = 0; i < x.Count; i++)
             {
                 x_l[i] -= eps;
                 x_r[i] += eps;
@@ -348,7 +361,7 @@ namespace OptimizationMethods
         /// <returns></returns>
         public static double  Partial (func_n func, Vector x, int coord_index, double eps = 1e-6)
         {
-            if (x.Size <= coord_index)
+            if (x.Count <= coord_index)
             {
                 throw new Exception("Partial derivative index out of bounds!");
             }
@@ -362,7 +375,7 @@ namespace OptimizationMethods
 
         public static double Partial2(func_n func, Vector x, int coord_index_1, int coord_index_2, double eps = 1e-6)
         {
-            if (x.Size <= coord_index_2)
+            if (x.Count <= coord_index_2)
             {
                 throw new Exception("Partial derivative index out of bounds!");
             }
