@@ -541,22 +541,12 @@ namespace sm
 		vec_n solve(const int mode = SYMPLEX_MAX)
 		{
 			this->mode = mode;
+			
+			std::cout << "Symplex problem type: " << ((mode == SYMPLEX_MAX) ? "max\n" : "min\n");
 
 			build_symplex_table();
 
 			vec_n solution;
-
-			int system_condition = check_system(bounds_m, bounds_v);
-
-			if (system_condition == 0)
-			{
-				return solution;
-			}
-
-			if (system_condition == 1)
-			{
-				return linsolve(bounds_m, bounds_v);
-			}
 
 			double a_ik;
 

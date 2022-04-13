@@ -611,18 +611,6 @@ public class Symplex
 
         Vector solution = new Vector(naturalArgsN());
 
-        SolutionType system_condition = Matrix.checkSystem(bounds_m, bounds_v);
-
-        if (system_condition == SolutionType.None)
-        {
-            return solution;
-        }
-
-        if (system_condition == SolutionType.Single)
-        {
-            return Matrix.linsolve(bounds_m, bounds_v);
-        }
-
         buildSymplexTable();
 
         double a_ik;

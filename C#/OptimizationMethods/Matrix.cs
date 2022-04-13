@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 
 namespace OptimizationMethods
 {
@@ -596,13 +597,14 @@ namespace OptimizationMethods
 
             Matrix res = new Matrix(a.NRows, b.NCols);
 
-            for (int i = 0; i < a.NRows; i++)
+            Parallel.For(0, a.NRows, (i) => 
             {
                 for (int j = 0; j < b.NCols; j++)
                 {
                     res[i][j] = Vector.Dot(a[i], b_t[j]);
                 }
-            }
+            });
+
             return res;
         }
         public static Vector operator *(Matrix mat, Vector vec)

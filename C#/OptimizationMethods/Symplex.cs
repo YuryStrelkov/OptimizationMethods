@@ -609,20 +609,7 @@ namespace OptimizationMethods
 
             Console.WriteLine($"SymplexProblemType : {SymplexProblemType.Max.ToString()}\n");
 
-
             Vector solution = new Vector(NaturalArgsN());
-
-            SolutionType system_condition = Matrix.CheckSystem(bounds_m, bounds_v);
-
-            if (system_condition == SolutionType.None)
-            {
-                return solution;
-            }
-
-            if (system_condition == SolutionType.Single)
-            {
-                return Matrix.Linsolve(bounds_m, bounds_v);
-            }
 
             BuildSymplexTable();
 

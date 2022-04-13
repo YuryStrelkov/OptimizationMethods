@@ -101,7 +101,8 @@ namespace OptimizationMethods
 
         static void Main(string[] args)
         {
-           Tests.TestAll();
+
+                Tests.TestAll();
         }
     }
 }

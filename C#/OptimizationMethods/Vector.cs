@@ -83,7 +83,7 @@ namespace OptimizationMethods
 
             for (int i = 0; i < other.Count; i++)
             {
-                dot += this[i] * other[i];
+                dot += data[i] * other[i];
             }
             return dot;
         }
