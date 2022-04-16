@@ -358,7 +358,7 @@ public class Symplex
     /// <param name="b"></param>
     ///( A|I)  b
     ///(-c|0)  F(x,c)
-    private void buildSymplexTable()throws Exception
+    private void buildSymplexTable()
     {
         symplex_t = new Matrix(bounds_m);
         natural_args_ids.clear();
@@ -465,7 +465,7 @@ public class Symplex
         symplex_t.addRow(s_deltas_add);
     }
 
-    private boolean excludeModArgs()throws Exception
+    private boolean excludeModArgs()
     {
         if (!isTargetFuncModified())
         {
@@ -494,7 +494,6 @@ public class Symplex
 
     private boolean validateSolution()
     {
-
         double val = 0;
 
         int n_rows = isTargetFuncModified() ? symplex_t.rows() - 2 : symplex_t.rows() - 1;
@@ -603,7 +602,7 @@ public class Symplex
         return sb.toString();
     }
 
-    public Vector solve(SymplexProblemType mode) throws Exception/// = SymplexProblemType.Max)
+    public Vector solve(SymplexProblemType mode) /// = SymplexProblemType.Max)
     {
         this.mode = mode;
 
@@ -686,21 +685,21 @@ public class Symplex
         return solve(SymplexProblemType.Max);
     }
 
-    public Symplex(Matrix a, Vector c, ArrayList<Sign> _ineq, Vector b)throws Exception
+    public Symplex(Matrix a, Vector c, ArrayList<Sign> _ineq, Vector b)
     {
         if (b.size() != _ineq.size())
         {
-            throw new Exception("Error symplex creation :: b.size() != inequation.size()");
+            throw new RuntimeException("Error symplex creation :: b.size() != inequation.size()");
         }
 
         if (a.rows() != _ineq.size())
         {
-            throw new Exception("Error symplex creation :: A.rows_number() != inequation.size()");
+            throw new RuntimeException("Error symplex creation :: A.rows_number() != inequation.size()");
         }
 
         if (a.cols() != c.size())
         {
-            throw new Exception("Error symplex creation :: A.cols_number() != price_coeffs.size()");
+            throw new RuntimeException("Error symplex creation :: A.cols_number() != price_coeffs.size()");
         }
 
         natural_args_ids    = new ArrayList<Integer>();
@@ -717,16 +716,16 @@ public class Symplex
         ineqs    = _ineq;
     }
 
-    public Symplex(Matrix a, Vector c, Vector b)throws Exception
+    public Symplex(Matrix a, Vector c, Vector b)
     {
         if (b.size() != b.size())
         {
-            throw new Exception("Error symplex creation :: b.size() != bouns_coeffs.size()");
+            throw new RuntimeException("Error symplex creation :: b.size() != bouns_coeffs.size()");
         }
 
         if (a.cols() != c.size())
         {
-            throw new Exception("Error symplex creation :: A.cols_number() != price_coeffs.size()");
+            throw new RuntimeException("Error symplex creation :: A.cols_number() != price_coeffs.size()");
         }
 
         ineqs = new ArrayList<Sign>();

@@ -35,11 +35,11 @@ public class Matrix
             return row(0).size();
     }
 
-    public Matrix addCol(Vector col)throws Exception
+    public Matrix addCol(Vector col)
     {
         if (col.size() != rows())
         {
-            throw new Exception("Error::AddCol::col.Size != NRows");
+            throw new RuntimeException("Error::AddCol::col.Size != NRows");
         }
         for (int i = 0; i < rows.size(); i++)
         {
@@ -48,11 +48,11 @@ public class Matrix
         return this;
     }
 
-    public Matrix addRow(Vector row)throws Exception
+    public Matrix addRow(Vector row)
     {
         if (row.size() != cols())
         {
-            throw new Exception("Error::AddRow::row.Size != NCols");
+            throw new RuntimeException("Error::AddRow::row.Size != NCols");
         }
         rows.add(row);
         return this;
@@ -60,15 +60,16 @@ public class Matrix
 
     @Override
     public String toString() {
-        String s = "{\n";
+        StringBuilder sb =new StringBuilder();
+        sb.append("{\n");
         for (int i = 0; i < rows.size() - 1; i++)
         {
-            s += " " + rows.get(i).toString();
-            s += ",\n";
+            sb.append(" " + rows.get(i).toString());
+            sb.append(",\n");
         }
-        s += " " + rows.get(rows.size() - 1).toString();
-        s += "\n}";
-        return s;
+        sb.append(" " + rows.get(rows.size() - 1).toString());
+        sb.append("\n}");
+        return sb.toString();
     }
 
     @Override
@@ -103,32 +104,33 @@ public class Matrix
         row(i).set(j,value);
     }
 
-    public Matrix(Vector[] rows)throws Exception
+    public Matrix(Vector...  rows)
     {
         if (rows == null)
         {
-            throw new Exception("Data is null...");
+            throw new RuntimeException("Data is null...");
         }
 
         if (rows.length == 0)
         {
-            throw new Exception("Data is empty...");
+            throw new RuntimeException("Data is empty...");
         }
+        int rowSizeMax = Integer.MIN_VALUE;
 
-        int row_size = rows[0].size();
+        int rowSizeMin = Integer.MAX_VALUE;
 
-        for (int i = 0; i < rows.length; i++)
+        for(Vector row:rows)
         {
-            if (rows[i].size() != row_size)
-            {
-                throw new Exception("Incorrect matrix data");
-            }
+            if(row.size() > rowSizeMax)rowSizeMax = row.size();
+            if(row.size() < rowSizeMin)rowSizeMin = row.size();
         }
+        if(rowSizeMax!=rowSizeMin)throw new RuntimeException("Incorrect matrix data");
+
         this.rows = new ArrayList<>(rows.length);
 
-        for (int i = 0; i < rows.length; i++)
+        for(Vector row:rows)
         {
-            this.rows.add(rows[i]);
+            this.rows.add(row);
         }
     }
 
@@ -161,7 +163,7 @@ public class Matrix
         }
     }
 
-    public static Matrix hessian(IFunctionND f, Vector x, double eps)throws Exception
+    public static Matrix hessian(IFunctionND f, Vector x, double eps)
     {
         Matrix res = new Matrix(x.size(), x.size());
         int row, col;
@@ -178,7 +180,7 @@ public class Matrix
         return res;
     }
 
-    public static Matrix hessian(IFunctionND f, Vector x)throws Exception
+    public static Matrix hessian(IFunctionND f, Vector x)
     {
         return hessian( f,  x, 1e-5);
     }
@@ -241,7 +243,7 @@ public class Matrix
     /// <param name="A"></param>
     /// <param name="b"></param>
     /// <returns>0 - нет решений, 1 - одно решение, 2 - бесконечное множествое решений</returns>
-    public static SolutionType checkSystem(Matrix A, Vector b)throws Exception
+    public static SolutionType checkSystem(Matrix A, Vector b)
     {
         Matrix a = new Matrix(A);
 
@@ -282,7 +284,7 @@ public class Matrix
         {
             return SolutionType.None;
         }
-        throw new Exception("error :: check_system");
+        throw new RuntimeException("error :: check_system");
     }
 
 
@@ -322,13 +324,13 @@ public class Matrix
     /// <param name="src">Матрица разложение которой нужно провести</param>
     /// <param name="low">Нижняя треугольная матрица</param>
     /// <param name="up">Верхняя треугольная матрица</param>
-    public static Matrix[] lu( Matrix src)throws Exception
+    public static Matrix[] lu( Matrix src)
     {
         Matrix low,  up;
 
         if (src.cols() != src.rows())
         {
-            throw new Exception("LU decomposition error::non square matrix");
+            throw new RuntimeException("LU decomposition error::non square matrix");
         }
 
         low = new Matrix(src.cols(), src.cols());
@@ -436,11 +438,11 @@ public class Matrix
     /// <param name="mat">A</param>
     /// <param name="b">b</param>
     /// <returns>x</returns>
-    public static Vector linsolve(Matrix mat, Vector b)throws Exception
+    public static Vector linsolve(Matrix mat, Vector b)
     {
         if (mat.rows() != mat.cols())
         {
-            throw new Exception("non square matrix");
+            throw new RuntimeException("non square matrix");
         }
 
         Matrix low = null, up = null;
@@ -455,11 +457,11 @@ public class Matrix
     /// </summary>
     /// <param name="mat">матрица для которой ищем обратную</param>
     /// <returns>обратная матрица</returns>
-    public static Matrix invert(Matrix mat)throws Exception
+    public static Matrix invert(Matrix mat)
     {
         if (mat.rows() != mat.cols())
         {
-            throw new Exception("non square matrix");
+            throw new RuntimeException("non square matrix");
         }
 
         Matrix[]lu_ = lu( mat);
@@ -492,11 +494,11 @@ public class Matrix
             col = linsolve( lu_[0], lu_[1], b);
             if (col == null)
             {
-                throw new Exception("unable to find matrix inversion");
+                throw new RuntimeException("unable to find matrix inversion");
             }
             if (col.size() == 0)
             {
-                throw new Exception("unable to find matrix inversion");
+                throw new RuntimeException("unable to find matrix inversion");
             }
             b.set(i,0.0);
             for (int j = 0; j < mat.rows(); j++)
@@ -526,15 +528,15 @@ public class Matrix
         return trans;
     }
 
-    public Matrix add(Matrix other)throws Exception
+    public Matrix add(Matrix other)
     {
         if(rows()!= other.rows())
         {
-            throw new Exception("Dot product :: this.Size()!= other.Size()");
+            throw new RuntimeException("Dot product :: this.Size()!= other.Size()");
         }
         if(cols()!= other.rows())
         {
-            throw new Exception("Dot product :: this.Size()!= other.Size()");
+            throw new RuntimeException("Dot product :: this.Size()!= other.Size()");
         }
         for (int i = 0; i < rows(); i++)
         {
@@ -552,15 +554,15 @@ public class Matrix
         return  this;
     }
 
-    public Matrix sub(Matrix other)throws Exception
+    public Matrix sub(Matrix other)
     {
         if(rows()!= other.rows())
         {
-            throw new Exception("Dot product :: this.Size()!= other.Size()");
+            throw new RuntimeException("Dot product :: this.Size()!= other.Size()");
         }
         if(cols()!= other.rows())
         {
-            throw new Exception("Dot product :: this.Size()!= other.Size()");
+            throw new RuntimeException("Dot product :: this.Size()!= other.Size()");
         }
         for (int i = 0; i < rows(); i++)
         {
@@ -587,16 +589,16 @@ public class Matrix
         return  this;
     }
 
-    public Matrix div(double other)throws Exception
+    public Matrix div(double other)
     {
         return  this.mul(1.0 / other);
     }
 
-    public static Matrix mul(Matrix a, Matrix b)throws Exception
+    public static Matrix mul(Matrix a, Matrix b)
     {
         if (a.cols() != b.rows())
         {
-            throw new Exception("Error matrix multiplication::a.NCols != b.NRows");
+            throw new RuntimeException("Error matrix multiplication::a.NCols != b.NRows");
         }
 
         Matrix b_t = transpose(b);
@@ -613,11 +615,11 @@ public class Matrix
         return res;
     }
 
-    public static Vector mul(Matrix mat, Vector vec)throws Exception
+    public static Vector mul(Matrix mat, Vector vec)
     {
         if (mat.cols() != vec.size())
         {
-            throw new Exception("unable to matrix and vector myltiply");
+            throw new RuntimeException("unable to matrix and vector myltiply");
         }
         Vector result = new Vector(mat.rows());
         int cntr = 0;
@@ -628,11 +630,11 @@ public class Matrix
         return result;
     }
 
-    public static Vector mul(Vector vec, Matrix mat)throws Exception
+    public static Vector mul(Vector vec, Matrix mat)
     {
         if (mat.rows() != vec.size())
         {
-            throw new Exception("unable to matrix and vector myltiply");
+            throw new RuntimeException("unable to matrix and vector myltiply");
         }
         Vector result = new Vector(mat.cols());
 
@@ -658,15 +660,15 @@ public class Matrix
         return mul(mat , a);
     }
 
-    public static Matrix add(Matrix a, Matrix b)throws Exception
+    public static Matrix add(Matrix a, Matrix b)
     {
         if (a.cols() != b.cols())
         {
-            throw new Exception("unable to add matrix a to matrix b");
+            throw new RuntimeException("unable to add matrix a to matrix b");
         }
         if (a.rows() != b.rows())
         {
-            throw new Exception("unable to add matrix a to matrix b");
+            throw new RuntimeException("unable to add matrix a to matrix b");
         }
 
         Matrix result = new Matrix(a);
@@ -686,15 +688,15 @@ public class Matrix
         return add(a , b);
     }
 
-    public static Matrix sub(Matrix a, Matrix b)throws Exception
+    public static Matrix sub(Matrix a, Matrix b)
     {
         if (a.cols() != b.cols())
         {
-            throw new Exception("unable to add matrix a to matrix b");
+            throw new RuntimeException("unable to add matrix a to matrix b");
         }
         if (a.rows() != b.rows())
         {
-            throw new Exception("unable to add matrix a to matrix b");
+            throw new RuntimeException("unable to add matrix a to matrix b");
         }
 
         Matrix result = new Matrix(a);

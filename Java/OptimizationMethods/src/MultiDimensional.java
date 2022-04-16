@@ -35,7 +35,7 @@ public class MultiDimensional {
     ////////////////////
     /// Lab. work #2 ///
     ////////////////////
-    public static Vector dihotomia      (IFunctionND f, Vector x0, Vector x1, double eps, int max_iters)throws Exception
+    public static Vector dihotomia      (IFunctionND f, Vector x0, Vector x1, double eps, int max_iters)
     {
         Vector x_0  = new Vector(x0), x_1 = new Vector(x1), x_c, dir;
 
@@ -63,15 +63,15 @@ public class MultiDimensional {
 
         return  Vector.add(x_1 , x_0).mul(0.5);
     }
-    public static Vector dihotomia      (IFunctionND f, Vector x_0, Vector x_1, double eps)throws Exception
+    public static Vector dihotomia      (IFunctionND f, Vector x_0, Vector x_1, double eps)
     {
       return  dihotomia(f,  x_0,  x_1,  eps,1000);
     }
-    public static Vector dihotomia      (IFunctionND f, Vector x_0, Vector x_1)throws Exception
+    public static Vector dihotomia      (IFunctionND f, Vector x_0, Vector x_1)
     {
         return  dihotomia(f,  x_0,  x_1,  1e-5,1000);
     }
-    public static Vector goldenRatio    (IFunctionND f, Vector x_0, Vector x_1, double eps, int max_iters)throws Exception
+    public static Vector goldenRatio    (IFunctionND f, Vector x_0, Vector x_1, double eps, int max_iters)
     {
         Vector a = new Vector(x_0);
 
@@ -106,15 +106,15 @@ public class MultiDimensional {
 
         return  Vector.add(x_1 , x_0).mul(0.5);
     }
-    public static Vector goldenRatio    (IFunctionND f, Vector x_0, Vector x_1, double eps)throws Exception
+    public static Vector goldenRatio    (IFunctionND f, Vector x_0, Vector x_1, double eps)
     {
       return goldenRatio(f, x_0,  x_1, eps, 1000);
     }
-    public static Vector goldenRatio    (IFunctionND f, Vector x_0, Vector x_1)throws Exception
+    public static Vector goldenRatio    (IFunctionND f, Vector x_0, Vector x_1)
     {
         return goldenRatio(f, x_0,  x_1, 1e-5, 1000);
     }
-    public static Vector fibonacci      (IFunctionND f, Vector x_0, Vector x_1, double eps)throws Exception
+    public static Vector fibonacci      (IFunctionND f, Vector x_0, Vector x_1, double eps)
     {
         int max_iters = OneDimensional.closestFibonacci(Vector.sub(x_1, x_0).magnitude() / eps);
 
@@ -150,11 +150,11 @@ public class MultiDimensional {
 
         return  Vector.add(x_1 , x_0).mul(0.5);
     }
-    public static Vector fibonacci      (IFunctionND f, Vector x_0, Vector x_1)throws Exception
+    public static Vector fibonacci      (IFunctionND f, Vector x_0, Vector x_1)
     {
         return  fibonacci( f,  x_0,  x_1, 1e-5);
     }
-    public static Vector perCoordDescend(IFunctionND f, Vector x_start, double eps, int max_iters)throws Exception
+    public static Vector perCoordDescend(IFunctionND f, Vector x_start, double eps, int max_iters)
     {
         Vector x_0 = new Vector(x_start);
 
@@ -209,18 +209,18 @@ public class MultiDimensional {
 
         return x_0;
     }
-    public static Vector perCoordDescend(IFunctionND f, Vector x_start, double eps)throws Exception
+    public static Vector perCoordDescend(IFunctionND f, Vector x_start, double eps)
     {
         return     perCoordDescend( f,  x_start,  eps,1000);
     }
-    public static Vector perCoordDescend(IFunctionND f, Vector x_start)throws Exception
+    public static Vector perCoordDescend(IFunctionND f, Vector x_start)
     {
         return     perCoordDescend( f,  x_start,  1e-5,1000);
     }
     ////////////////////
     /// Lab. work #3 ///
     ////////////////////
-    public static Vector gradientDescend(IFunctionND f, Vector x_start, double eps, int max_iters)throws Exception
+    public static Vector gradientDescend(IFunctionND f, Vector x_start, double eps, int max_iters)
     {
         Vector x_i = new Vector(x_start);
 
@@ -253,15 +253,15 @@ public class MultiDimensional {
 
         return Vector.add(x_i_1, x_i).mul(0.5);
     }
-    public static Vector gradientDescend(IFunctionND f, Vector x_start, double eps)throws Exception
+    public static Vector gradientDescend(IFunctionND f, Vector x_start, double eps)
     {
         return gradientDescend( f,  x_start,  eps, 1000);
     }
-    public static Vector gradientDescend(IFunctionND f, Vector x_start)throws Exception
+    public static Vector gradientDescend(IFunctionND f, Vector x_start)
     {
         return gradientDescend( f,  x_start,  1e-5, 1000);
     }
-    public static Vector conjGradientDescend(IFunctionND f, Vector x_start, double eps , int max_iters)throws Exception
+    public static Vector conjGradientDescend(IFunctionND f, Vector x_start, double eps , int max_iters)
     {
         Vector x_i = new Vector(x_start);
 
@@ -304,11 +304,11 @@ public class MultiDimensional {
 
         return Vector.add(x_i_1, x_i).mul(0.5);
     }
-    public static Vector conjGradientDescend(IFunctionND f, Vector x_start, double eps )throws Exception
+    public static Vector conjGradientDescend(IFunctionND f, Vector x_start, double eps )
     {
          return conjGradientDescend( f,  x_start,  eps, 1000);
     }
-    public static Vector conjGradientDescend(IFunctionND f, Vector x_start)throws Exception
+    public static Vector conjGradientDescend(IFunctionND f, Vector x_start)
     {
         return conjGradientDescend( f,  x_start,  1e-5, 1000);
     }
@@ -316,7 +316,7 @@ public class MultiDimensional {
     ////////////////////
     /// Lab. work #4 ///
     ////////////////////
-    public static Vector newtoneRaphson(IFunctionND f, Vector x_start, double eps, int max_iters)throws Exception
+    public static Vector newtoneRaphson(IFunctionND f, Vector x_start, double eps, int max_iters)
     {
         Vector x_i = new Vector(x_start);
 
@@ -347,11 +347,11 @@ public class MultiDimensional {
 
         return Vector.add(x_i_1 ,x_i).mul(0.5);
     }
-    public static Vector newtoneRaphson(IFunctionND f, Vector x_start, double eps)throws Exception
+    public static Vector newtoneRaphson(IFunctionND f, Vector x_start, double eps)
     {
         return newtoneRaphson(f, x_start,  eps, 100);
     }
-    public static Vector newtoneRaphson(IFunctionND f, Vector x_start)throws Exception
+    public static Vector newtoneRaphson(IFunctionND f, Vector x_start)
     {
         return newtoneRaphson(f, x_start,  1e-6, 100);
     }

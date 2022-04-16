@@ -31,6 +31,13 @@ public class Vector
         data = new ArrayList(other.data);
     }
 
+    public Vector(Double... args) {
+        data = new ArrayList<>();
+        for(double x: args){
+            data.add(x);
+        }
+    }
+
     public Vector(double[] other)
     {
         data = new ArrayList<>(other.length);
@@ -89,11 +96,11 @@ public class Vector
         return copy.normalize();
     }
 
-    public double dot(Vector other) throws Exception
+    public double dot(Vector other)
     {
         if(size()!= other.size())
         {
-            throw new Exception("Dot product :: this.Size()!= other.Size()");
+            throw new RuntimeException("Dot product :: this.Size()!= other.Size()");
         }
         double dot = 0.0;
 
@@ -107,25 +114,26 @@ public class Vector
     @Override
     public String toString()
     {
-        String s = "{ ";
+        StringBuilder sb = new StringBuilder();
+        sb.append("{ ");
         for (int i = 0; i < data.size() - 1; i++)
         {
            if(get(i) >= 0)
            {
-               s += String.format("%-8s; ",  String.format("%.4f",get(i)));
+               sb.append(String.format("%-8s; ",  String.format("%.4f",get(i))));
                continue;
            }
-            s += String.format("%-8s; ", String.format("%.4f",get(i)));
+            sb.append(String.format("%-8s; ", String.format("%.4f",get(i))));
         }
         if(get(data.size() - 1) >= 0)
         {
-            s += String.format("%-8s ", String.format("%.4f",get(data.size() - 1)));
-            s += " }";
-            return s;
+            sb.append( String.format("%-8s ", String.format("%.4f",get(data.size() - 1))));
+            sb.append(" }");
+            return sb.toString();
         }
-        s += String.format("%-8s ",String.format("%.4f",get(data.size() - 1)));
-        s += " }";
-        return s;
+        sb.append(String.format("%-8s ",String.format("%.4f",get(data.size() - 1))));
+        sb.append(" }");
+        return sb.toString();
     }
 
     @Override
@@ -142,11 +150,11 @@ public class Vector
         return Objects.hash(data);
     }
 
-    public  Vector add(Vector other)throws Exception
+    public  Vector add(Vector other)
     {
         if(size()!= other.size())
         {
-            throw new Exception("Vectors add :: this.Size()!= other.Size()");
+            throw new RuntimeException("Vectors add :: this.Size()!= other.Size()");
         }
         for (int i = 0; i < other.size(); i++)
         {
@@ -164,11 +172,11 @@ public class Vector
         return this;
     }
 
-    public  Vector sub(Vector other)throws Exception
+    public  Vector sub(Vector other)
     {
         if(size()!= other.size())
         {
-            throw new Exception("Vectors sub :: this.Size()!= other.Size()");
+            throw new RuntimeException("Vectors sub :: this.Size()!= other.Size()");
         }
         for (int i = 0; i < other.size(); i++)
         {
@@ -204,11 +212,11 @@ public class Vector
         return this;
     }
 
-    public static Vector add(Vector a, Vector b)throws Exception
+    public static Vector add(Vector a, Vector b)
     {
         if(a.size()!= b.size())
         {
-            throw new Exception("Vectors sum :: this.Size()!= other.Size()");
+            throw new RuntimeException("Vectors sum :: this.Size()!= other.Size()");
         }
         Vector  res = new Vector(a);
         return  res.add(b);
@@ -225,11 +233,11 @@ public class Vector
         return  add(a,b);
     }
 
-    public static Vector sub(Vector a, Vector b)throws Exception
+    public static Vector sub(Vector a, Vector b)
     {
         if(a.size()!= b.size())
         {
-            throw new Exception("Vectors sub :: this.Size()!= other.Size()");
+            throw new RuntimeException("Vectors sub :: this.Size()!= other.Size()");
         }
         Vector res = new Vector(a);
         return res.sub(b);
@@ -280,16 +288,16 @@ public class Vector
         return  res;
     }
 
-    public static Vector direction(Vector a, Vector b)throws Exception
+    public static Vector direction(Vector a, Vector b)
     {
         if (a.size() != b.size())
         {
-            throw new Exception("Vectors direction :: a.Size()!= b.Size()");
+            throw new RuntimeException("Vectors direction :: a.Size()!= b.Size()");
         }
         return sub(b , a).normalize();
     }
 
-    public static double dot(Vector a, Vector b)throws Exception
+    public static double dot(Vector a, Vector b)
     {
         return a.dot(b);
     }
@@ -312,11 +320,11 @@ public class Vector
         return df;
     }
 
-    public static double partial (IFunctionND func, Vector x, int index, double eps )throws Exception
+    public static double partial (IFunctionND func, Vector x, int index, double eps )
     {
         if (!x.isInRange(index))
         {
-            throw new Exception("Partial derivative index out of bounds!");
+            throw new RuntimeException("Partial derivative index out of bounds!");
         }
         x.set(index,  x.get(index) + eps);//[index] += eps;
         double f_r = func.execute(x);
@@ -326,11 +334,11 @@ public class Vector
         return (f_r - f_l) / eps * 0.5;
     }
 
-    public static double partial2(IFunctionND func, Vector x, int index_1, int index_2, double eps)throws Exception
+    public static double partial2(IFunctionND func, Vector x, int index_1, int index_2, double eps)
     {
         if (!x.isInRange(index_2))
         {
-            throw new Exception("Partial derivative index out of bounds!");
+            throw new RuntimeException("Partial derivative index out of bounds!");
         }
         x.set(index_2,  x.get(index_2) - eps);
         double f_l = partial(func, x, index_1, eps);

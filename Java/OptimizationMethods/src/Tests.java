@@ -47,7 +47,7 @@ public class Tests {
         System.out.print(number[0]!=0? number[0] + " ":"");
         System.out.print(number[1]!=0? number[1]+"/"+number[2] + "\n":"\n");
     }
-    public static void matrixTest()throws Exception
+    public static void matrixTest()
     {
         System.out.println("\n////////////////////////////");
         System.out.println(  "//////// MatrixTest ////////");
@@ -74,7 +74,7 @@ public class Tests {
         Matrix m = Matrix.hessian(MultiDimensional.testFuncNd, new Vector(new double[] { 0, 0, 0 }));
         System.out.println("\nHessian(MultiDimensional.TestFuncND):\n"+m);
     }
-    public static void multiDimensionalMethodsTest()throws Exception
+    public static void multiDimensionalMethodsTest()
     {
         System.out.println("\n/////////////////////////////////////////////");
         System.out.println(  "//////// MultiDimensionalMethodsTest ////////");
@@ -95,24 +95,23 @@ public class Tests {
         MultiDimensional.ShowDebugLog = false;
     }
 
-    public static void symplexTest()throws Exception
+    public static void symplexTest()
     {
         System.out.println("\n/////////////////////////////");
         System.out.println(  "//////// SymplexTest ////////");
         System.out.println(  "/////////////////////////////\n");
 
-        Matrix A = new Matrix(new Vector[]
-        {
+        Matrix A = new Matrix(
               new Vector(new double[]{-2, 6}),
               new Vector(new double[]{ 3, 2}),
               new Vector(new double[]{ 2,-1})
-        });
+        );
 
-        Vector b  = new Vector( new double[] { 40, 28, 14 });
-        Vector c  = new Vector( new double[] {  2,  3 });
-        Vector c1 = new Vector( new double[] { -2,  3 });
-        Vector c2 = new Vector( new double[] {  2,  1 });
-        Vector c3 = new Vector( new double[] { -2, -1 });
+        Vector b  = new Vector(  40.0, 28.0, 14.0);
+        Vector c  = new Vector(   2.0,  3.0);
+        Vector c1 = new Vector(  -2.0,  3.0);
+        Vector c2 = new Vector(  2.0,  1.0);
+        Vector c3 = new Vector(  -2.0, -1.0);
 
         System.out.println(" f(x,c) =  2x1 + 3x2;\n arg_max = {4, 8}, f(arg_max) = 32");
         System.out.println(" |-2x1 + 6x2 <= 40");
@@ -133,11 +132,11 @@ public class Tests {
         signs_equal.add(Sign.Equal);
         Symplex.showSymplexDebugLog = true;
 
-        Symplex sym_0 = new Symplex(A,new Vector( new double[] {  2,  3 }), signs_less, b);
+        Symplex sym_0 = new Symplex(A,new Vector(  2.0,  3.0 ), signs_less, b);
         sym_0.solve(SymplexProblemType.Max);
 
         System.out.println("\n f(x,c) = -2x1 + 3x2;\n arg_min = {7, 0}, f(arg_min) =-14\n");
-        Symplex sym_1 = new Symplex(A, new Vector( new double[] { -2,  3 }), signs_less, b);
+        Symplex sym_1 = new Symplex(A, new Vector(-2.0,  3.0), signs_less, b);
         sym_1.solve(SymplexProblemType.Min);
 
 
