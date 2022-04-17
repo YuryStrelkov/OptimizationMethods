@@ -159,7 +159,7 @@ namespace OptimizationMethods
         /// Конструктор матрицы из массива строк
         /// </summary>
         /// <param name="rows"></param>
-        public Matrix(Vector[] rows)
+        public Matrix(params Vector[] rows)
         {
             if (rows == null)
             {
@@ -171,16 +171,24 @@ namespace OptimizationMethods
                 throw new Exception("Data is empty...");
             }
 
-            int row_size = rows[0].Count;
+            int maxSize = int.MinValue;
+            
+            int minSize = int.MaxValue;
 
-            for (int i = 0; i < rows.Length; i++)
+            foreach (Vector v in rows)
             {
-                if (rows[i].Count != row_size)
-                {
-                    throw new Exception("Incorrect matrix data");
-                }
+                if (v.Count > maxSize) maxSize = v.Count;
+                if (v.Count < minSize) minSize = v.Count;
             }
-            this.rows = new List<Vector>(rows);
+            
+            if (maxSize != minSize)
+            {
+                throw new Exception("Incorrect matrix data");
+            }
+
+            this.rows = new List<Vector>();
+
+            foreach (Vector r in rows) { this.rows.Add(r);}
         }
         /// <summary>
         /// Конструктор матрцы по ее размерам и элементу по умолчанию
@@ -188,13 +196,13 @@ namespace OptimizationMethods
         /// <param name="n_rows">колическтво строк</param>
         /// <param name="n_cols">количество столбцов</param>
         /// <param name="defualtVal">значение элементов матрицы по умолчанию</param>
-        public Matrix(int n_rows, int n_cols, double defualtVal = 0.0)
+        public Matrix(int n_rows, int n_cols)
         {
             rows = new List<Vector>(n_rows);
 
             for (int i = 0; i < n_rows; i++)
             {
-                rows.Add(new Vector(n_cols, defualtVal));
+                rows.Add(new Vector(n_cols));
             }
         }
         /// <summary>
@@ -211,18 +219,6 @@ namespace OptimizationMethods
             }
         }
 
-        /// <summary>
-        /// Позволяет при иницилизации экземпляра класса вместо:
-        /// Vector [] rows = new Vector[] { new double[] { 8, 1}, new double[] { 3, 5}, new double[] { 4, 9} };
-        /// Matrix  m = new Matrix(rows);
-        /// делать так:
-        /// Matrix  m  = rows;
-        /// </summary>
-        /// <param name="rows"></param>
-        public static implicit operator Matrix(Vector[] rows)
-        {
-            return new Matrix(rows);
-        }
         /// <summary>
         /// </summary>
         /// <param name="f"></param>

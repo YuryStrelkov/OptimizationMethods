@@ -24,8 +24,8 @@ namespace OptimizationMethods
             Console.WriteLine(  "//////// MultiDimensionalMethodsTest ////////");
             Console.WriteLine(  "/////////////////////////////////////////////\n");
 
-            Vector x_1 = new double[] { 0, 0 };
-            Vector x_0 = new double[] { 5, 3 };
+            Vector x_1 = new Vector(0, 0);
+            Vector x_0 = new Vector(5, 3);
 
             Console.WriteLine($"x_0 = {x_0},\nx_1 = {x_1}\n") ;
             Console.WriteLine($"Dihotomia              : {MultiDimensional.Dihotomia          (MultiDimensional.TestFunc2D, x_1, x_0)}");
@@ -46,7 +46,7 @@ namespace OptimizationMethods
             Console.WriteLine(  "////////////////////////////\n");
 
             ///У меня всё работает, у вас мой класс тоже заработает
-            Matrix matrix = new Vector[] { new double[] { 8, 1, 6 }, new double[] { 3, 5, 7 }, new double[] { 4, 9, 2 } };
+            Matrix matrix = new Matrix(new Vector(8, 1, 6), new Vector(3, 5, 7), new Vector(4, 9, 2));
             Console.WriteLine(matrix);
             Console.WriteLine($"\nmatrix + matrix:\n{ matrix + matrix }\n");
             Console.WriteLine($"\nmatrix - matrix:\n{ matrix - matrix }\n");
@@ -56,19 +56,18 @@ namespace OptimizationMethods
             Console.WriteLine($"\nL  matrix:\n{l}");
             Console.WriteLine($"\nU  matrix:\n{u}");
             Console.WriteLine($"\nL * U - matrix:\n{l * u - matrix}");
-            Vector b = new double[] { 1, 2, 3 };
+            Vector b = new Vector(1, 2, 3);
             /// x = {0.05,0.3,0.05};
             Vector x = Matrix.Linsolve(matrix, b);
             Console.WriteLine($"\nx vector:\n{x}");
             Console.WriteLine($"\nAx - b:\n{matrix * x - b}");
             Console.WriteLine($"\nA*inv(A):\n{matrix * Matrix.Invert(matrix)}");
-            Matrix matrix_ = new Vector[] { new double[] { 8, 1, 6 }, new double[] { 3, 5, 7 } };
+            Matrix matrix_ = new Matrix(new Vector(8, 1, 6), new Vector(3, 5, 7));
             Console.WriteLine($"\nnon rect mat:\n{matrix_}");
             Console.WriteLine($"\nnon rect mat mul by transposed it self :\n{matrix_ * Matrix.Transpose(matrix_)}");
-            Matrix m = Matrix.Hessian(MultiDimensional.TestFuncND, new double[] { 0, 0, 0 });
+            Matrix m = Matrix.Hessian(MultiDimensional.TestFuncND, new Vector(0, 0, 0));
             Console.WriteLine($"\nHessian(MultiDimensional.TestFuncND):\n{m}");
         }
-
         public static void NumericTests()
         {
             Console.WriteLine("\n//////////////////////////////");
@@ -95,14 +94,17 @@ namespace OptimizationMethods
             Console.WriteLine("\n/////////////////////////////");
             Console.WriteLine(  "//////// SymplexTest ////////");
             Console.WriteLine(  "/////////////////////////////\n");
-            Matrix A = new Vector[]
-            {
-                          new double[]{-2, 6},
-                          new double[]{ 3, 2},
-                          new double[]{ 2,-1}
-            };
-            Vector b = new double[] { 40, 28, 14 };
-            Vector c = new double[] { 2, 3 };
+
+            Vector b = new Vector(40, 28, 14);
+            Vector c = new Vector(2.0, 3.0);
+
+            Matrix A = new Matrix
+            (
+                          new Vector(-2.0, 6.0),
+                          new Vector( 3.0, 2.0),
+                          new Vector( 2.0,-1.0)
+            );
+
 
             Console.WriteLine(" f(x,c) =  2x1 + 3x2;\n arg_max = {4, 8}, f(arg_max) = 32");
             Console.WriteLine(" |-2x1 + 6x2 <= 40");
@@ -114,7 +116,7 @@ namespace OptimizationMethods
 
             Console.WriteLine("\n f(x,c) = -2x1 + 3x2;\n arg_min = {7, 0}, f(arg_min) =-14\n");
 
-            Symplex sym_1 = new Symplex(A, new double[] { -2, 3 }, new List<Sign>() { Sign.Less, Sign.Less, Sign.Less }, b);
+            Symplex sym_1 = new Symplex(A, new Vector(-2.0, 3.0), new List<Sign>() { Sign.Less, Sign.Less, Sign.Less }, b);
             sym_1.Solve(SymplexProblemType.Min);
 
 
@@ -123,11 +125,11 @@ namespace OptimizationMethods
             Console.WriteLine(" |-2x1 + 6x2 >= 40");
             Console.WriteLine(" | 3x1 + 2x2 >= 28");
             Console.WriteLine(" | 2x1 -  x2 >= 14\n");
-            Symplex sym_2 = new Symplex(A, new double[] { 2, 1 }, new List<Sign>() { Sign.More, Sign.More, Sign.More }, b);
+            Symplex sym_2 = new Symplex(A, new Vector(2,1), new List<Sign>() { Sign.More, Sign.More, Sign.More }, b);
             sym_2.Solve(SymplexProblemType.Min);
             Console.WriteLine(" f(x,c) =  -2x1 - x2;\n arg_min = {62/5, 54/5}, f(arg_max) = -35 3/5");
 
-            Symplex sym_3 = new Symplex(A, new double[] { -2, -1 }, new List<Sign>() { Sign.More, Sign.More, Sign.More }, b);
+            Symplex sym_3 = new Symplex(A, new Vector(-2, -1), new List<Sign>() { Sign.More, Sign.More, Sign.More }, b);
             sym_3.Solve(SymplexProblemType.Max);
             Console.WriteLine(" f(x,c) =  2x1 + 3x2;\n arg_min = {none, none}, f(arg_max) = none");
             Symplex sym_4 = new Symplex(A, c, new List<Sign>() { Sign.Equal, Sign.Equal, Sign.Equal }, b);
@@ -139,8 +141,8 @@ namespace OptimizationMethods
         {
             // OneDimensionalMethodsTest();
             // MultiDimensionalMethodsTest();
-            // MatrixTest();
-            SympexTest();
+            MatrixTest();
+            // SympexTest();
             // NumericTests();
         }
     }

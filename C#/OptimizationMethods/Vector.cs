@@ -183,7 +183,7 @@ namespace OptimizationMethods
         /// Конструктор вектора из массива
         /// </summary>
         /// <param name="_data"></param>
-        public Vector(double[] _data)
+        public Vector(params double[] _data)
         {
             fillness = _data.Length;
 
@@ -199,7 +199,7 @@ namespace OptimizationMethods
         /// </summary>
         /// <param name="size"></param>
         /// <param name="defaultValue"></param>
-        public Vector(int size, double defaultValue = 0.0)
+        public Vector(int size)// double defaultValue = 0.0)
         {
             fillness = size;
 
@@ -207,7 +207,7 @@ namespace OptimizationMethods
 
             for (int i = 0; i < size; i++)
             {
-                data[i] = (defaultValue);
+                data[i] = (0.0);
             }
         }
         /// <summary>
