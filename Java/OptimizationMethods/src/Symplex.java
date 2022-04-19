@@ -33,49 +33,31 @@ public class Symplex
 
     private ArrayList<Sign> ineqs;
 
-    /// <summary>
-    /// список индексов переменных которые войдут в целевую функию, модифицируя ее
-    /// </summary>
+    // список индексов переменных которые войдут в целевую функию, модифицируя ее
     private ArrayList<Integer> f_mod_args;
 
-    /// <summary>
-    ///индексы естественных переменных
-    /// </summary>
+    // индексы естественных переменных
     private  ArrayList<Integer> natural_args_ids;
 
-    /// <summary>
-    ///индексы переменных, не являющихся искусственными
-    /// </summary>
+    //индексы переменных, не являющихся искусственными
     private  ArrayList<Integer> artificial_args_ids;
 
-    /// <summary>
-    /// список индексов текущих базисных переменных
-    /// </summary>
+    // список индексов текущих базисных переменных
     private  ArrayList<Integer> basis_args;
 
-    /// <summary>
-    /// Симплекс таблица
-    /// </summary>
+    // Симплекс таблица
     private  Matrix symplex_t;
 
-    /// <summary>
-    /// матрица ограничений
-    /// </summary>
+    // матрица ограничений
     private Matrix bounds_m;
 
-    /// <summary>
-    /// вектор ограничений
-    /// </summary>
+    // вектор ограничений
     private Vector bounds_v;
 
-    /// <summary>
-    /// вектор стоимостей
-    /// </summary>
+    // вектор стоимостей
     private Vector prices_v;
 
-    /// <summary>
     /// режим поиска решения
-    /// </summary>
     SymplexProblemType mode = SymplexProblemType.Max;
 
     public int naturalArgsN()
@@ -139,23 +121,19 @@ public class Symplex
     {
         return f_mod_args.size() != 0;
     }
-    /// <summary>
-    /// Проверяет оптимальность текущего опорного плана. Исследуется положительность
-    /// симплекс-разностей в последней строке СТ в диапазоне от 1:n-1.
-    /// Если целевая функция была модифицирована, то исследует две последних строки.
-    /// Если среди элементов от 1:n-1 в последней строке нет отрицательных, то проверяет
-    /// на неотрицательность только те элементы предпоследней строки, которые не являются
-    /// искусственными.
-    /// </summary>
-    /// <param name="A">СМ таблицa</param>
-    /// <param name="mode"></param>
-    /// <returns></returns>
+
+    /**
+     * Проверяет оптимальность текущего опорного плана.
+     * Исследуется положительность симплекс-разностей в последней строке СТ в диапазоне от 1:n-1.
+     * Если целевая функция была модифицирована, то исследует две последних строки.
+     * Если среди элементов от 1:n-1 в последней строке нет отрицательных, то проверяет
+     * на неотрицательность только те элементы предпоследней строки, которые не являются искусственными.
+     * @return
+     */
     public boolean isPlanOptimal()
     {
-        /// <summary>
-        /// Проверяем значения последней строки сиплекс-разностей
-        /// на положительность. Если все положительны, то план оптимален.
-        /// </summary>
+        // Проверяем значения последней строки сиплекс-разностей
+        // на положительность. Если все положительны, то план оптимален
 
         Vector row = symplex_t.row(symplex_t.rows() - 1);
 
@@ -170,10 +148,8 @@ public class Symplex
             }
         }
 
-        /// <summary>
-        /// если мы модифицировали целевую функцию, то среди списка естественнхых
-        /// агументов проверям на положительнность предпослднюю строку симплекс-разностей
-        /// </summary>
+        // если мы модифицировали целевую функцию, то среди списка естественнхых
+        // агументов проверям на положительнность предпослднюю строку симплекс-разностей
 
         if (isTargetFuncModified())
         {
@@ -196,14 +172,13 @@ public class Symplex
         return opt;
     }
 
-    /// <summary>
-    /// Определяет ведущий столбец. Среди элементов строки симплекс-разностей ищет максимальны по модулю
-    /// отрицательный элемент. Если целевая функция была модифицирована и среди последней строки нет отрицательных
-    /// элементов, то посик таковых будет продолжен среди только тех элементов предпоследней строки, которые не
-    /// являются искусственными.
-    /// </summary>
-    /// <param name="A"></param>
-    /// <returns></returns>
+    /**
+     * Определяет ведущий столбец. Среди элементов строки симплекс-разностей ищет максимальны по модулю
+     * отрицательный элемент. Если целевая функция была модифицирована и среди последней строки нет отрицательных
+     * элементов, то посик таковых будет продолжен среди только тех элементов предпоследней строки, которые не
+     * являются искусственными.
+     * @return
+     */
     private int getMainCol()
     {
         Vector row = symplex_t.row(symplex_t.rows() - 1);
@@ -239,12 +214,11 @@ public class Symplex
         return index;
     }
 
-    /// <summary>
-    /// Определяет ведущую строку
-    /// </summary>
-    /// <param name="symplex_col">ведущий столбец</param>
-    /// <param name="A">СМ таблица</param>
-    /// <returns></returns>
+    /**
+     * Определяет ведущую строку
+     * @param symplex_col ведущий столбец
+     * @return
+     */
     int getMainRow(int symplex_col)
     {
         double delta = 1e12;
@@ -276,13 +250,12 @@ public class Symplex
         return index;
     }
 
-    /// <summary>
-    /// строит виртуальный базисный вектор
-    /// </summary>
-    /// <param name="ineq_id"></param>
-    /// <param name="_ineq"></param>
-    /// <param name="col_index"></param>
-    /// <param name="col_index_aditional"></param>
+    /**
+     * строит виртуальный базисный вектор
+     * @param ineq_id
+     * @param _ineq
+     * @return
+     */
     private int[] buildVirtualBasisCol(int ineq_id, Sign _ineq)//, ref int col_index, ref int col_index_aditional)
     {
         if (_ineq == Sign.Equal)
@@ -334,30 +307,24 @@ public class Symplex
         return new int[]{ symplex_t.cols() - 1, - 1};
     }
 
-    /// <summary>
-    /// Строит СМ таблицу для задачи вида:
-    /// Маирица системы ограниченй:
-    ///		|u 0 0|
-    /// A = |0 v 0|
-    ///		|0 0 w|
-    /// Вектор ограничений
-    ///		|a|
-    /// b = |d|
-    ///		|f|
-    /// с -коэффициенты целевой функции
-    /// f = (x,c)->extr
-    ///	|u 0 0|   |x| <= |b|
-    /// |0 v 0| * |x| >= |f|
-    ///	|0 0 w|   |x| =  |d|
-    ///
-    ///  СМ таблицу из A,b,c параметров
-    /// </summary>
-    /// <param name="A"> Ax <= b   -> (A|I)(x|w) = b </param>
-    /// <param name="c"> (c,x) ->((-c|0),(x|w)) </param>
-    /// <param name="ineq"> знак неравентсва =, >=, <= </param>
-    /// <param name="b"></param>
-    ///( A|I)  b
-    ///(-c|0)  F(x,c)
+    /**
+     *  Строит СМ таблицу для задачи вида:
+     *  Маирица системы ограниченй:
+     *  		|u 0 0|
+     *      A = |0 v 0|
+     *    		|0 0 w|
+     *  Вектор ограничений
+     *      |a|
+     *  b = |d|
+     *   	|f|
+     *  с -коэффициенты целевой функции
+     *  f = (x,c)->extr
+     *
+     *  |u 0 0|   |x| <= |b|
+     *  |0 v 0| * |x| >= |f|
+     *  |0 0 w|   |x| =  |d|
+     *
+     */
     private void buildSymplexTable()
     {
         symplex_t = new Matrix(bounds_m);
@@ -365,10 +332,10 @@ public class Symplex
         basis_args.clear();
         f_mod_args.clear();
         artificial_args_ids.clear();
-        ///
-        /// Если среди вектора b есть отрицательные значения, то соответствующие строки
-        /// матрицы ограничений умножаем на мину один и меняем знак сравнения
-        ///
+
+        // Если среди вектора b есть отрицательные значения, то соответствующие строки
+        // матрицы ограничений умножаем на мину один и меняем знак сравнения
+
         for (int row = 0; row < symplex_t.rows(); row++)
         {
             if (bounds_v.get(row) >= 0)
@@ -388,11 +355,8 @@ public class Symplex
         {
             natural_args_ids.add(i);
         }
-        /// <summary>
-        /// построение искуственного базиса
-        /// </summary>
-        //int basis_arg_id = -1;
-        //int basis_arg_id_add = -1;
+
+        // построение искуственного базиса
         int[] basis_args_info;
 
         for (int ineq_id = 0; ineq_id < ineqs.size(); ineq_id++)
@@ -412,18 +376,14 @@ public class Symplex
             basis_args.add(basis_args_info[0]);
         }
 
-        /// <summary>
-        /// добавим столбец ограницений
-        /// </summary>
+        // добавим столбец ограницений
 
         for (int row = 0; row < symplex_t.rows(); row++)
         {
             symplex_t.row(row).pushBack(bounds_v.get(row));
         }
 
-        /// <summary>
-        /// Построение симплекс разностей
-        /// </summary>
+        // Построение симплекс разностей
 
         Vector s_deltas = new Vector(symplex_t.cols());
 
@@ -444,17 +404,15 @@ public class Symplex
 
         symplex_t.addRow(s_deltas);
 
-        /// <summary>
-        /// Если целевая функуция не была модифицирована
-        /// </summary>
+        // Если целевая функуция не была модифицирована
 
         if (!isTargetFuncModified())
         {
             return;
         }
-        /// <summary>
-        /// Если всё же была...
-        /// </summary>
+
+        // Если всё же была...
+
         Vector s_deltas_add = new Vector(symplex_t.cols());
 
         for (int j = 0; j < f_mod_args.size(); j++)
@@ -513,7 +471,7 @@ public class Symplex
             {
                 if (isTargetFuncModified())
                 {
-                    return true & (Math.abs(symplex_t.get(symplex_t.rows() - 1,symplex_t.cols() - 1)) < 1e-5);
+                    return (Math.abs(symplex_t.get(symplex_t.rows() - 1, symplex_t.cols() - 1)) < 1e-5);
                 }
 
                 return true;
@@ -523,7 +481,7 @@ public class Symplex
         {
             if (isTargetFuncModified())
             {
-                return true & (Math.abs(symplex_t.get(symplex_t.rows() - 1,symplex_t.cols() - 1)) < 1e-5);
+                return (Math.abs(symplex_t.get(symplex_t.rows() - 1, symplex_t.cols() - 1)) < 1e-5);
             }
 
             return true;
@@ -641,7 +599,7 @@ public class Symplex
 
             if (main_row == -1)
             {
-                /// Невозможность определить ведущую строку свидейтельствует о том, что обрасть поиска неограничена
+                // Невозможность определить ведущую строку свидейтельствует о том, что обрасть поиска неограничена
                 System.out.println("Unable to get main row. Symplex is probably boundless...");
                 return null;
             }
@@ -671,16 +629,16 @@ public class Symplex
         if (validateSolution())
         {
             solution = currentSymplexSolution(true);
-            /// формирование ответа
+            // формирование ответа
             System.out.println("solution: " + NumericUtils.toRationalStr(solution));
             return solution;
         }
         System.out.println("Symplex is unresolvable");
-        /// значение целевой функции не равно ее значению от найденного плана
+        // значение целевой функции не равно ее значению от найденного плана
         return null;
     }
 
-    public Vector solve() throws Exception/// = SymplexProblemType.Max)
+    public Vector solve()
     {
         return solve(SymplexProblemType.Max);
     }

@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Objects;
 
 enum SolutionType
@@ -19,13 +20,19 @@ public class Matrix
         return rows.get(rowId);
     }
 
+    /**
+     * Количество строк
+     * @return
+     */
     public int rows()
     {
             return rows.size();
     }
-    /// <summary>
-    /// Количество столбцов
-    /// </summary>
+
+    /**
+     * Количество столбцов
+     * @return
+     */
     public int cols()
     {
             if (rows() == 0)
@@ -64,10 +71,10 @@ public class Matrix
         sb.append("{\n");
         for (int i = 0; i < rows.size() - 1; i++)
         {
-            sb.append(" " + rows.get(i).toString());
+            sb.append(" ").append(rows.get(i).toString());
             sb.append(",\n");
         }
-        sb.append(" " + rows.get(rows.size() - 1).toString());
+        sb.append(" ").append(rows.get(rows.size() - 1).toString());
         sb.append("\n}");
         return sb.toString();
     }
@@ -128,18 +135,14 @@ public class Matrix
 
         this.rows = new ArrayList<>(rows.length);
 
-        for(Vector row:rows)
-        {
-            this.rows.add(row);
-        }
+        Collections.addAll(this.rows, rows);
     }
 
-    /// <summary>
-    /// Конструктор матрцы по ее размерам и элементу по умолчанию
-    /// </summary>
-    /// <param name="n_rows">колическтво строк</param>
-    /// <param name="n_cols">количество столбцов</param>
-    /// <param name="defualtVal">значение элементов матрицы по умолчанию</param>
+    /**
+     * Конструктор матрцы по ее размерам и элементу по умолчанию
+     * @param n_rows колическтво строк
+     * @param n_cols количество столбцов
+     */
     public Matrix(int n_rows, int n_cols)
     {
         rows = new ArrayList(n_rows);
@@ -149,10 +152,11 @@ public class Matrix
             rows.add(new Vector(n_cols));
         }
     }
-    /// <summary>
-    /// Конструктор копирования
-    /// </summary>
-    /// <param name="original"></param>
+
+    /**
+     * Конструктор копирования
+     * @param original
+     */
     public Matrix(Matrix original)
     {
         rows = new ArrayList<>(original.rows.size());
@@ -237,12 +241,12 @@ public class Matrix
         return rank;
     }
 
-    /// <summary>
-    /// Проверяет совместность СЛАУ вида Ax = b. Используется теорема Кронекера-Капелли
-    /// </summary>
-    /// <param name="A"></param>
-    /// <param name="b"></param>
-    /// <returns>0 - нет решений, 1 - одно решение, 2 - бесконечное множествое решений</returns>
+    /**
+     * Проверяет совместность СЛАУ вида Ax = b. Используется теорема Кронекера-Капелли
+     * @param A matrix
+     * @param b vector
+     * @return 0 - нет решений, 1 - одно решение, 2 - бесконечное множествое решений
+     */
     public static SolutionType checkSystem(Matrix A, Vector b)
     {
         Matrix a = new Matrix(A);
@@ -292,21 +296,23 @@ public class Matrix
     {
         return new Matrix(n_rows, n_cols);
     }
-    /// <summary>
-    /// Создаёт квадратную матрицу нулей
-    /// </summary>
-    /// <param name="size">сторона матрицы</param>
-    /// <returns>квадратная матрицы нулей</returns>
+
+    /**
+     * Создаёт квадратную матрицу нулей
+     * @param size сторона матрицы
+     * @return
+     */
     public static Matrix zeros(int size)
     {
         return zeros(size, size);
     }
-    /// <summary>
-    /// Создаёт единичную матрицу
-    /// </summary>
-    /// <param name="n_rows">число строк</param>
-    /// <param name="n_cols">число столбцов</param>
-    /// <returns>единичная матрица</returns>
+
+    /**
+     * Создаёт единичную матрицу
+     * @param n_rows число строк
+     * @param n_cols число столбцов
+     * @return
+     */
     public static Matrix identity(int n_rows, int n_cols)
     {
         Matrix I = new Matrix(n_rows, n_cols);
@@ -318,12 +324,13 @@ public class Matrix
         return I;
     }
 
-    /// <summary>
-    /// LU hазложение матрицы на нижнюю и верхнюю треугольные матрицы
-    /// </summary>
-    /// <param name="src">Матрица разложение которой нужно провести</param>
-    /// <param name="low">Нижняя треугольная матрица</param>
-    /// <param name="up">Верхняя треугольная матрица</param>
+    /**
+     * LU разложение матрицы на нижнюю и верхнюю треугольные матрицы
+     * low - Нижняя треугольная матрица
+     * up - Верхняя треугольная матрица
+     * @param src Матрица разложение которой нужно провести
+     * @return
+     */
     public static Matrix[] lu( Matrix src)
     {
         Matrix low,  up;
@@ -377,13 +384,13 @@ public class Matrix
         return  new Matrix[]{low,up};
     }
 
-    /// <summary>
-    /// Вспомогательный метод рещения системы уравнений вида Ax = b при условии, что найдено разложение A = LU
-    /// </summary>
-    /// <param name="low">L</param>
-    /// <param name="up">U</param>
-    /// <param name="b">b</param>
-    /// <returns>x</returns>
+    /**
+     * Вспомогательный метод рещения системы уравнений вида Ax = b при условии, что найдено разложение A = LU
+     * @param low
+     * @param up
+     * @param b
+     * @return
+     */
     private static Vector linsolve( Matrix low,  Matrix up,  Vector b)
     {
         double det = 1.0;
@@ -432,12 +439,12 @@ public class Matrix
         return x;
     }
 
-    /// <summary>
-    /// Решение системы уравнений вида Ax = b
-    /// </summary>
-    /// <param name="mat">A</param>
-    /// <param name="b">b</param>
-    /// <returns>x</returns>
+    /**
+     * Решение системы уравнений вида Ax = b
+     * @param mat
+     * @param b
+     * @return
+     */
     public static Vector linsolve(Matrix mat, Vector b)
     {
         if (mat.rows() != mat.cols())
@@ -452,11 +459,11 @@ public class Matrix
         return linsolve( lu_[0],  lu_[1], b);
     }
 
-    /// <summary>
-    /// Рассчитывает обратную матрицу
-    /// </summary>
-    /// <param name="mat">матрица для которой ищем обратную</param>
-    /// <returns>обратная матрица</returns>
+    /**
+     * Рассчитывает обратную матрицу
+     * @param mat
+     * @return
+     */
     public static Matrix invert(Matrix mat)
     {
         if (mat.rows() != mat.cols())
@@ -509,11 +516,11 @@ public class Matrix
         return inv;
     }
 
-    /// <summary>
-    /// Транспонирование матрицы
-    /// </summary>
-    /// <param name="mat"></param>
-    /// <returns></returns>
+    /**
+     * Транспонирование матрицы
+     * @param mat
+     * @return
+     */
     public static Matrix transpose(Matrix mat)
     {
         Matrix trans = new Matrix(mat.cols(), mat.rows());

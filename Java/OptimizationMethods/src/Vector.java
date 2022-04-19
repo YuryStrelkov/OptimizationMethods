@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Objects;
 
 public class Vector
@@ -9,7 +10,7 @@ public class Vector
 
     public Vector(int cap)
     {
-        data = new ArrayList(cap);
+        data = new ArrayList<>(cap);
 
         for(int i = 0; i < cap; i++)
         {
@@ -19,23 +20,17 @@ public class Vector
 
     private boolean isInRange(int index)
     {
-        if (index < 0 || index >= data.size())
-        {
-            return  false;
-        }
-        return  true;
+        return index >= 0 && index < data.size();
     }
 
     public Vector(Vector other)
     {
-        data = new ArrayList(other.data);
+        data = new ArrayList<>(other.data);
     }
 
     public Vector(Double... args) {
         data = new ArrayList<>();
-        for(double x: args){
-            data.add(x);
-        }
+        data.addAll(Arrays.asList(args));
     }
 
     public Vector(double[] other)

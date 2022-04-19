@@ -1,13 +1,11 @@
 public class NumericUtils
 {
-    /// <summary>
-    /// Конвертирует десятичную запись числа в рациональную, например, для числа 1.666 получим 1 2/3
-    /// </summary>
-    /// <param name="value">исходное число</param>
-    /// <param name="rational_part">целые части</param>
-    /// <param name="nominator">числитель</param>
-    /// <param name="denominator">знаменатель</param>
-    /// <param name="max_den">максимально допустимый знаменатель</param>
+    /**
+     * Конвертирует десятичную запись числа в рациональную, например, для числа 1.666 получим 1 2/3
+     * @param value исходное число
+     * @param max_den максимально допустимый знаменатель
+     * @return
+     */
     public static int[] DecimalToRational(double value, int max_den)
     {
          long m00 = 1;
@@ -99,16 +97,16 @@ public class NumericUtils
 
     public static String toRationalStr(Vector value, boolean fullRational)
     {
-        String str = "{ ";
+        StringBuilder str = new StringBuilder("{ ");
         for (int i = 0; i < value.size() - 1; i++)
         {
-            str += toRationalStr(value.get(i), fullRational);
-            str += ", ";
+            str.append(toRationalStr(value.get(i), fullRational));
+            str.append(", ");
         }
-        str += toRationalStr(value.get(value.size() - 1), fullRational);
+        str.append(toRationalStr(value.get(value.size() - 1), fullRational));
 
-        str += " }";
-        return str;
+        str.append(" }");
+        return str.toString();
     }
     public static String toRationalStr(Vector value)
     {
