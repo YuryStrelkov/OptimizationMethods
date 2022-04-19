@@ -1,11 +1,6 @@
 public final class OneDimensional
 {
-    public static  final IFunction1D testFunc = new IFunction1D() {
-        @Override
-        public double execute(double arg) {
-            return OneDimensional.testFunc(arg);
-        }
-    };
+    public static  final IFunction1D testFunc = OneDimensional::testFunc;
     ////////////////////
     /// Lab. work #1 ///
     ////////////////////

@@ -1,4 +1,5 @@
+@FunctionalInterface
 public interface IFunctionND
 {
-    public double execute(Vector arg);
+    double execute(Vector arg);
 }

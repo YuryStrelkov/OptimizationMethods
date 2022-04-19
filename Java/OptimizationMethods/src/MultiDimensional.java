@@ -1,17 +1,7 @@
 public class MultiDimensional {
 
-    public static final IFunctionND testFunc2d = new IFunctionND() {
-        @Override
-        public double execute(Vector arg) {
-            return _testFunc2D(arg);
-        }
-    };
-    public static final IFunctionND testFuncNd = new IFunctionND() {
-        @Override
-        public double execute(Vector arg) {
-            return _testFuncND(arg);
-        }
-    };
+    public static final IFunctionND testFunc2d = MultiDimensional::_testFunc2D;
+    public static final IFunctionND testFuncNd = MultiDimensional::_testFuncND;
 
     public static  boolean ShowDebugLog = false;
 

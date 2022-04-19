@@ -1,4 +1,5 @@
+@FunctionalInterface
 public interface IFunction1D
 {
-    public double execute(double arg);
+    double execute(double arg);
 }
