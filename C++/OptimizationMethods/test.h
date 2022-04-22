@@ -2,7 +2,7 @@
 #include "one_dimensional.h";
 #include "multi_dimensional.h";
 #include "matrix_utils.h"
-#include "symplex.h"
+#include "simplex.h"
 #include "numeric_utils.h"
 // тестовая унимодальная одномерная функция с минимумом в точке {2} 
 static double test_function_1d(const double x)
@@ -115,14 +115,14 @@ static void symplex_method_test()
 	std::cout << " | 3x1 + 2x2 <= 28\n";
 	std::cout << " | 2x1 -  x2 <= 14\n\n";
 	
-	sm::symplex sym_0({{-2, 6}, { 3, 2}, { 2,-1} }, { 2, 3 }, { sm::LESS_EQUAL, sm::LESS_EQUAL, sm::LESS_EQUAL }, { 40, 28, 14 });
-	sym_0.solve(SYMPLEX_MAX); 
+	sm::simplex sym_0({{-2, 6}, { 3, 2}, { 2,-1} }, { 2, 3 }, { sm::LESS_EQUAL, sm::LESS_EQUAL, sm::LESS_EQUAL }, { 40, 28, 14 });
+	sym_0.solve(SIMPLEX_MAX); 
 	std::cout << "\n";
 
 	std::cout << " f(x,c) = -2x1 + 3x2;\n arg_min = {7, 0}, f(arg_min) =-14\n\n";
 
-	sm::symplex sym_1({ {-2, 6}, { 3, 2}, { 2,-1} }, { -2, 3 }, { sm::LESS_EQUAL, sm::LESS_EQUAL, sm::LESS_EQUAL }, { 40, 28, 14 });
-	sym_1.solve(SYMPLEX_MIN);
+	sm::simplex sym_1({ {-2, 6}, { 3, 2}, { 2,-1} }, { -2, 3 }, { sm::LESS_EQUAL, sm::LESS_EQUAL, sm::LESS_EQUAL }, { 40, 28, 14 });
+	sym_1.solve(SIMPLEX_MIN);
 	std::cout << "\n";
 
 	std::cout << "/////////////////////////////\n" << std::endl;
@@ -130,16 +130,16 @@ static void symplex_method_test()
 	std::cout << " |-2x1 + 6x2 >= 40\n";
 	std::cout << " | 3x1 + 2x2 >= 28\n";
 	std::cout << " | 2x1 -  x2 >= 14\n\n";
-	sm::symplex sym_2({{-2, 6},{ 3, 2},{ 2,-1} }, { 2, 1 }, { sm::MORE_EQUAL, sm::MORE_EQUAL, sm::MORE_EQUAL }, { 40, 28, 14 });
-	sym_2.solve(SYMPLEX_MIN);
+	sm::simplex sym_2({{-2, 6},{ 3, 2},{ 2,-1} }, { 2, 1 }, { sm::MORE_EQUAL, sm::MORE_EQUAL, sm::MORE_EQUAL }, { 40, 28, 14 });
+	sym_2.solve(SIMPLEX_MIN);
 	std::cout << " f(x,c) =  -2x1 - x2;\n arg_min = {62/5, 54/5}, f(arg_max) = -35 3/5\n";
 	std::cout << "\n";
-	sm::symplex sym_3({{-2, 6},{ 3, 2},{ 2,-1} }, { -2, -1 }, { sm::MORE_EQUAL, sm::MORE_EQUAL, sm::MORE_EQUAL }, { 40, 28, 14 });
-	sym_3.solve(SYMPLEX_MAX);
+	sm::simplex sym_3({{-2, 6},{ 3, 2},{ 2,-1} }, { -2, -1 }, { sm::MORE_EQUAL, sm::MORE_EQUAL, sm::MORE_EQUAL }, { 40, 28, 14 });
+	sym_3.solve(SIMPLEX_MAX);
 	std::cout << " f(x,c) =  2x1 + 3x2;\n arg_min = {none, none}, f(arg_max) = none\n";
 	std::cout << "\n"; 
-	sm::symplex sym_4({{-2, 6},{ 3, 2},{ 2,-1} }, { 2, 3 }, { sm::MORE_EQUAL, sm::MORE_EQUAL, sm::MORE_EQUAL }, { 40, 28, 14 });
-	sym_4.solve(SYMPLEX_MAX);
+	sm::simplex sym_4({{-2, 6},{ 3, 2},{ 2,-1} }, { 2, 3 }, { sm::MORE_EQUAL, sm::MORE_EQUAL, sm::MORE_EQUAL }, { 40, 28, 14 });
+	sym_4.solve(SIMPLEX_MAX);
 	std::cout << "/////////////////////////////\n" << std::endl;
 
 	// f(x,c) = 2x1 + 3x2 -> arg_min = {62/5, 54/5}, f(arg_min) = 57 1/5 , arg_max = {-, -}, f(arg_max) = - (не работает учёт неограниченности) 
@@ -148,7 +148,7 @@ static void symplex_method_test()
 	//          3x1 + 2x2 = 28
 	//          2x1 -  x2 = 14
 	//
-	sm::symplex sym_5({ {-2, 6},{ 3, 2},{ 2,-1} }, { 2, 3 }, { sm::EQUAL, sm::EQUAL, sm::EQUAL }, { 40, 28, 14 });
+	sm::simplex sym_5({ {-2, 6},{ 3, 2},{ 2,-1} }, { 2, 3 }, { sm::EQUAL, sm::EQUAL, sm::EQUAL }, { 40, 28, 14 });
 
 	sym_5.solve();
 

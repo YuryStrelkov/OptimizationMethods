@@ -146,7 +146,7 @@
     <ClInclude Include="multi_dimensional.h" />
     <ClInclude Include="numeric_utils.h" />
     <ClInclude Include="one_dimensional.h" />
-    <ClInclude Include="symplex.h" />
+    <ClInclude Include="simplex.h" />
     <ClInclude Include="test.h" />
     <ClInclude Include="vector_utils.h" />
   </ItemGroup>

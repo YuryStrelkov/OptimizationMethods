@@ -13,10 +13,10 @@ namespace sm
 	constexpr auto LESS_EQUAL = -1;
 	constexpr auto MORE_EQUAL = 1;
 
-#define SYMPLEX_MAX  0
-#define SYMPLEX_MIN  1
+#define SIMPLEX_MAX  0
+#define SIMPLEX_MIN  1
 
-	class symplex
+	class simplex
 	{
 	private:
 		/// <summary>
@@ -67,7 +67,7 @@ namespace sm
 		/// <summary>
 		/// режим поиска решения
 		/// </summary>
-		int mode = SYMPLEX_MAX;
+		int mode = SIMPLEX_MAX;
 
 		/// <summary>
 		/// Проверяет оптимальность текущего опорного плана. Исследуется положительность 
@@ -367,7 +367,7 @@ namespace sm
 
 			vec_n s_deltas(symplex_t[0].size());
 
-			if (mode == SYMPLEX_MAX)
+			if (mode == SIMPLEX_MAX)
 			{
 				for (int j = 0; j < s_deltas.size(); j++)
 				{
@@ -448,7 +448,7 @@ namespace sm
 					val += symplex_t[i][n_cols] * prices_v[basis_args[i]];
 				}
 			}
-			if (mode == SYMPLEX_MAX)
+			if (mode == SIMPLEX_MAX)
 			{
 				if (abs(val - symplex_t[n_rows][n_cols]) < 1e-5)
 				{
@@ -514,7 +514,7 @@ namespace sm
 			return f_mod_args.size() != 0;
 		}
 
-		friend std::ostream& operator<<(std::ostream& stream, const symplex s);
+		friend std::ostream& operator<<(std::ostream& stream, const simplex& s);
 		/// <summary>
 		/// Выводит текущее решение СМ таблицы для не искусственных переменных
 		/// </summary>
@@ -538,11 +538,11 @@ namespace sm
 			return solution;
 		}
 
-		vec_n solve(const int mode = SYMPLEX_MAX)
+		vec_n solve(const int mode = SIMPLEX_MAX)
 		{
 			this->mode = mode;
 			
-			std::cout << "Symplex problem type: " << ((mode == SYMPLEX_MAX) ? "max\n" : "min\n");
+			std::cout << "Symplex problem type: " << ((mode == SIMPLEX_MAX) ? "max\n" : "min\n");
 
 			build_symplex_table();
 
@@ -621,7 +621,7 @@ namespace sm
 			return solution;
 		}
 
-		symplex(const mat_mn& a, const vec_n& c, const std::vector<int>& _ineq, const vec_n& b)
+		simplex(const mat_mn& a, const vec_n& c, const std::vector<int>& _ineq, const vec_n& b)
 		{
 			if (b.size() != _ineq.size())
 			{
@@ -646,7 +646,7 @@ namespace sm
 			ineqs = std::vector<int>(_ineq);
 		}
 
-		symplex(const mat_mn& a, const vec_n& c, const vec_n& b)
+		simplex(const mat_mn& a, const vec_n& c, const vec_n& b)
 		{
 			if (a.size() != b.size())
 			{
@@ -674,7 +674,7 @@ namespace sm
 			ineqs = std::vector<int>(_ineq);
 		}
 	};
-	std::ostream& operator<<(std::ostream& stream, const symplex s)
+	std::ostream& operator<<(std::ostream& stream, const simplex& s)
 	{
 		/// <summary>
 		///	  (x,w)	

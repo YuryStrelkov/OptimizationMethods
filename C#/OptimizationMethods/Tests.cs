@@ -111,13 +111,13 @@ namespace OptimizationMethods
             Console.WriteLine(" | 3x1 + 2x2 <= 28");
             Console.WriteLine(" | 2x1 -  x2 <= 14\n");
 
-            Symplex sym_0 = new Symplex(A, c, new List<Sign>() { Sign.Less, Sign.Less, Sign.Less }, b);
-            sym_0.Solve(SymplexProblemType.Max);
+            Simplex sym_0 = new Simplex(A, c, new List<Sign>() { Sign.Less, Sign.Less, Sign.Less }, b);
+            sym_0.Solve(SimplexProblemType.Max);
 
             Console.WriteLine("\n f(x,c) = -2x1 + 3x2;\n arg_min = {7, 0}, f(arg_min) =-14\n");
 
-            Symplex sym_1 = new Symplex(A, new Vector(-2.0, 3.0), new List<Sign>() { Sign.Less, Sign.Less, Sign.Less }, b);
-            sym_1.Solve(SymplexProblemType.Min);
+            Simplex sym_1 = new Simplex(A, new Vector(-2.0, 3.0), new List<Sign>() { Sign.Less, Sign.Less, Sign.Less }, b);
+            sym_1.Solve(SimplexProblemType.Min);
 
 
             Console.WriteLine("/////////////////////////////");
@@ -125,15 +125,15 @@ namespace OptimizationMethods
             Console.WriteLine(" |-2x1 + 6x2 >= 40");
             Console.WriteLine(" | 3x1 + 2x2 >= 28");
             Console.WriteLine(" | 2x1 -  x2 >= 14\n");
-            Symplex sym_2 = new Symplex(A, new Vector(2,1), new List<Sign>() { Sign.More, Sign.More, Sign.More }, b);
-            sym_2.Solve(SymplexProblemType.Min);
+            Simplex sym_2 = new Simplex(A, new Vector(2,1), new List<Sign>() { Sign.More, Sign.More, Sign.More }, b);
+            sym_2.Solve(SimplexProblemType.Min);
             Console.WriteLine(" f(x,c) =  -2x1 - x2;\n arg_min = {62/5, 54/5}, f(arg_max) = -35 3/5");
 
-            Symplex sym_3 = new Symplex(A, new Vector(-2, -1), new List<Sign>() { Sign.More, Sign.More, Sign.More }, b);
-            sym_3.Solve(SymplexProblemType.Max);
+            Simplex sym_3 = new Simplex(A, new Vector(-2, -1), new List<Sign>() { Sign.More, Sign.More, Sign.More }, b);
+            sym_3.Solve(SimplexProblemType.Max);
             Console.WriteLine(" f(x,c) =  2x1 + 3x2;\n arg_min = {none, none}, f(arg_max) = none");
-            Symplex sym_4 = new Symplex(A, c, new List<Sign>() { Sign.Equal, Sign.Equal, Sign.Equal }, b);
-            sym_4.Solve(SymplexProblemType.Max);
+            Simplex sym_4 = new Simplex(A, c, new List<Sign>() { Sign.Equal, Sign.Equal, Sign.Equal }, b);
+            sym_4.Solve(SimplexProblemType.Max);
 
         }
 
@@ -141,8 +141,8 @@ namespace OptimizationMethods
         {
             // OneDimensionalMethodsTest();
             // MultiDimensionalMethodsTest();
-            MatrixTest();
-            // SympexTest();
+            //MatrixTest();
+            SympexTest();
             // NumericTests();
         }
     }

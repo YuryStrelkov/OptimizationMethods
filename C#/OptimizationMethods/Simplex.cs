@@ -11,13 +11,13 @@ namespace OptimizationMethods
         More = 2
     }
 
-    public enum SymplexProblemType
+    public enum SimplexProblemType
     {
         Min = 0,
         Max = 1,
     }
 
-    public class Symplex
+    public class Simplex
     {
         ////////////////////
         /// Lab. work #5 ///
@@ -70,7 +70,7 @@ namespace OptimizationMethods
         /// <summary>
         /// режим поиска решения
         /// </summary>
-        private SymplexProblemType mode = SymplexProblemType.Max;
+        private SimplexProblemType mode = SimplexProblemType.Max;
 
         public bool IsTargetFuncModified()
         {
@@ -376,7 +376,7 @@ namespace OptimizationMethods
 
             Vector s_deltas = new Vector(symplex_t.NCols);
 
-            if (mode == SymplexProblemType.Max)
+            if (mode == SimplexProblemType.Max)
             {
                 for (int j = 0; j < s_deltas.Count; j++)
                 {
@@ -458,7 +458,7 @@ namespace OptimizationMethods
                     val += symplex_t[i][n_cols] * prices_v[basis_args[i]];
                 }
             }
-            if (mode == SymplexProblemType.Max)
+            if (mode == SimplexProblemType.Max)
             {
                 if (Math.Abs(val - symplex_t[n_rows][n_cols]) < 1e-5)
                 {
@@ -603,11 +603,11 @@ namespace OptimizationMethods
             return sb.ToString();
         }
 
-        public Vector Solve(SymplexProblemType mode = SymplexProblemType.Max)
+        public Vector Solve(SimplexProblemType mode = SimplexProblemType.Max)
         {
             this.mode = mode;
 
-            Console.WriteLine($"SymplexProblemType : {SymplexProblemType.Max.ToString()}\n");
+            Console.WriteLine($"SymplexProblemType : {SimplexProblemType.Max.ToString()}\n");
 
             Vector solution = new Vector(NaturalArgsN());
 
@@ -680,7 +680,7 @@ namespace OptimizationMethods
             /// значение целевой функции не равно ее значению от найденного плана
             return null;
         }
-        public Symplex(Matrix a, Vector c, List<Sign> _ineq, Vector b)
+        public Simplex(Matrix a, Vector c, List<Sign> _ineq, Vector b)
         {
             if (b.Count != _ineq.Count)
             {
@@ -710,7 +710,7 @@ namespace OptimizationMethods
 
             ineqs    = _ineq;
         }
-        public Symplex(Matrix a, Vector c, Vector b)
+        public Simplex(Matrix a, Vector c, Vector b)
         {
             if (b.Count != b.Count)
             {
