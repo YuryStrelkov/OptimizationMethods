@@ -1,10 +1,10 @@
 import java.util.ArrayList;
 
-final class Pair <FisrtItemType,SecondItemType>
+final class Pair <FirstItemType,SecondItemType>
 {
-   public FisrtItemType  item1;
+   public FirstItemType item1;
    public SecondItemType item2;
-   public Pair(FisrtItemType i1,SecondItemType i2)
+   public Pair(FirstItemType i1, SecondItemType i2)
    {
        item1 = i1;
        item2 = i2;
@@ -17,7 +17,7 @@ enum Sign
     More
 };
 
-enum SymplexProblemType
+enum SimplexProblemType
 {
     Min,
     Max,
@@ -27,9 +27,9 @@ enum SymplexProblemType
 /// Lab. work #5 ///
 ////////////////////
 
-public class Symplex
+public class Simplex
 {
-    public  static  boolean showSymplexDebugLog = false;
+    public  static  boolean showSimplexDebugLog = false;
 
     private ArrayList<Sign> ineqs;
 
@@ -58,7 +58,7 @@ public class Symplex
     private Vector prices_v;
 
     /// режим поиска решения
-    SymplexProblemType mode = SymplexProblemType.Max;
+    SimplexProblemType mode = SimplexProblemType.Max;
 
     public int naturalArgsN()
     {
@@ -387,7 +387,7 @@ public class Symplex
 
         Vector s_deltas = new Vector(symplex_t.cols());
 
-        if (mode == SymplexProblemType.Max)
+        if (mode == SimplexProblemType.Max)
         {
             for (int j = 0; j < s_deltas.size(); j++)
             {
@@ -465,7 +465,7 @@ public class Symplex
                 val += symplex_t.get(i,n_cols) * prices_v.get(basis_args.get(i));//symplex_t[i][n_cols] * prices_v[basis_args[i]];
             }
         }
-        if (mode == SymplexProblemType.Max)
+        if (mode == SimplexProblemType.Max)
         {
             if (Math.abs(val - symplex_t.get(n_rows, n_cols)) < 1e-5)
             {
@@ -560,7 +560,7 @@ public class Symplex
         return sb.toString();
     }
 
-    public Vector solve(SymplexProblemType mode) /// = SymplexProblemType.Max)
+    public Vector solve(SimplexProblemType mode) /// = SymplexProblemType.Max)
     {
         this.mode = mode;
 
@@ -619,7 +619,7 @@ public class Symplex
                 symplex_t.row(i).sub(Vector.mul(symplex_t.get(i,main_col), symplex_t.row(main_row)));//  symplex_t[i][main_col] * symplex_t[main_row];
             }
             solution = currentSymplexSolution();
-            if(showSymplexDebugLog)
+            if(showSimplexDebugLog)
             {
                 System.out.println("a_main{"+ String.valueOf((main_row + 1))+", "+ String.valueOf((main_col + 1)) + "} = " + NumericUtils.toRationalStr(a_ik) + "\n");
                 System.out.println(symplexToString());
@@ -640,10 +640,10 @@ public class Symplex
 
     public Vector solve()
     {
-        return solve(SymplexProblemType.Max);
+        return solve(SimplexProblemType.Max);
     }
 
-    public Symplex(Matrix a, Vector c, ArrayList<Sign> _ineq, Vector b)
+    public Simplex(Matrix a, Vector c, ArrayList<Sign> _ineq, Vector b)
     {
         if (b.size() != _ineq.size())
         {
@@ -674,7 +674,7 @@ public class Symplex
         ineqs    = _ineq;
     }
 
-    public Symplex(Matrix a, Vector c, Vector b)
+    public Simplex(Matrix a, Vector c, Vector b)
     {
         if (b.size() != b.size())
         {

@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Tests {
     public static void oneDimensionalMethodsTest()
@@ -27,23 +26,23 @@ public class Tests {
 
         int[] number;
 
-        number = NumericUtils.DecimalToRational(1.6666);
+        number = NumericUtils.decimalToRational(1.6666);
         System.out.print(number[0]!=0? number[0] + " ":"");
         System.out.print(number[1]!=0? number[1]+"/"+number[2] + "\n":"\n");
 
-        number = NumericUtils.DecimalToRational(0.6666);
+        number = NumericUtils.decimalToRational(0.6666);
         System.out.print(number[0]!=0? number[0] + " ":"");
         System.out.print(number[1]!=0? number[1]+"/"+number[2] + "\n":"\n");
 
-        number = NumericUtils.DecimalToRational(-3);
+        number = NumericUtils.decimalToRational(-3);
         System.out.print(number[0]!=0? number[0] + " ":"");
         System.out.print(number[1]!=0? number[1]+"/"+number[2] + "\n":"\n");
 
-        number = NumericUtils.DecimalToRational(-0.125);
+        number = NumericUtils.decimalToRational(-0.125);
         System.out.print(number[0]!=0? number[0] + " ":"");
         System.out.print(number[1]!=0? number[1]+"/"+number[2] + "\n":"\n");
 
-        number = NumericUtils.DecimalToRational(3.769230769230769230769);
+        number = NumericUtils.decimalToRational(3.769230769230769230769);
         System.out.print(number[0]!=0? number[0] + " ":"");
         System.out.print(number[1]!=0? number[1]+"/"+number[2] + "\n":"\n");
     }
@@ -130,14 +129,14 @@ public class Tests {
         signs_equal.add(Sign.Equal);
         signs_equal.add(Sign.Equal);
         signs_equal.add(Sign.Equal);
-        Symplex.showSymplexDebugLog = true;
+        Simplex.showSimplexDebugLog = true;
 
-        Symplex sym_0 = new Symplex(A,new Vector(  2.0,  3.0 ), signs_less, b);
-        sym_0.solve(SymplexProblemType.Max);
+        Simplex sym_0 = new Simplex(A,new Vector(  2.0,  3.0 ), signs_less, b);
+        sym_0.solve(SimplexProblemType.Max);
 
         System.out.println("\n f(x,c) = -2x1 + 3x2;\n arg_min = {7, 0}, f(arg_min) =-14\n");
-        Symplex sym_1 = new Symplex(A, new Vector(-2.0,  3.0), signs_less, b);
-        sym_1.solve(SymplexProblemType.Min);
+        Simplex sym_1 = new Simplex(A, new Vector(-2.0,  3.0), signs_less, b);
+        sym_1.solve(SimplexProblemType.Min);
 
 
         System.out.println("/////////////////////////////");
@@ -145,13 +144,13 @@ public class Tests {
         System.out.println(" |-2x1 + 6x2 >= 40");
         System.out.println(" | 3x1 + 2x2 >= 28");
         System.out.println(" | 2x1 -  x2 >= 14\n");
-        Symplex sym_2 = new Symplex(A, new Vector(new double[] { 2, 1 }), signs_more, b);
-        sym_2.solve(SymplexProblemType.Min);
+        Simplex sym_2 = new Simplex(A, new Vector(new double[] { 2, 1 }), signs_more, b);
+        sym_2.solve(SimplexProblemType.Min);
         System.out.println(" f(x,c) =  -2x1 - x2;\n arg_min = {62/5, 54/5}, f(arg_max) = -35 3/5");
-        Symplex sym_3 = new Symplex(A, new Vector(new double[] { -2, -1 }), signs_more, b);
-        sym_3.solve(SymplexProblemType.Max);
+        Simplex sym_3 = new Simplex(A, new Vector(new double[] { -2, -1 }), signs_more, b);
+        sym_3.solve(SimplexProblemType.Max);
         System.out.println(" f(x,c) =  2x1 + 3x2;\n arg_min = {none, none}, f(arg_max) = none");
-        Symplex sym_4 = new Symplex(A, c,signs_equal, b);
-        sym_4.solve(SymplexProblemType.Max);
+        Simplex sym_4 = new Simplex(A, c,signs_equal, b);
+        sym_4.solve(SimplexProblemType.Max);
     }
 }

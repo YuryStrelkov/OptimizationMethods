@@ -6,7 +6,7 @@ public class NumericUtils
      * @param max_den максимально допустимый знаменатель
      * @return
      */
-    public static int[] DecimalToRational(double value, int max_den)
+    public static int[] decimalToRational(double value, int max_den)
     {
          long m00 = 1;
          long m01 = 0;
@@ -66,14 +66,14 @@ public class NumericUtils
         return number;
     }
 
-    public static int[] DecimalToRational(double value)
+    public static int[] decimalToRational(double value)
     {
-        return DecimalToRational(value,1000);
+        return decimalToRational(value,1000);
     }
 
     public static String toRationalStr(double value, boolean fullRational)
     {
-        int[] number =  NumericUtils.DecimalToRational(value);
+        int[] number =  NumericUtils.decimalToRational(value);
         if (number[1] == 0)
         {
             return String.valueOf(number[0]);
