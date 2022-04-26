@@ -47,7 +47,7 @@ namespace sm
 		/// <summary>
 		/// Симплекс таблица
 		/// </summary>
-		mat_mn symplex_t;
+		mat_mn simplex_t;
 
 		/// <summary>
 		/// матрица ограничений
@@ -87,7 +87,7 @@ namespace sm
 			/// на положительность. Если все положительны, то план оптимален.
 			/// </summary>
 
-			const vec_n& row = symplex_t[symplex_t.size() - 1];
+			const vec_n& row = simplex_t[simplex_t.size() - 1];
 
 			bool opt = true;
 
@@ -111,7 +111,7 @@ namespace sm
 				{
 					return opt;
 				}
-				const vec_n& row_ = symplex_t[symplex_t.size() - 2];
+				const vec_n& row_ = simplex_t[simplex_t.size() - 2];
 
 				for (const auto& id : natural_args_ids)
 				{
@@ -136,7 +136,7 @@ namespace sm
 		/// <returns></returns>
 		int get_main_col()const
 		{
-			const vec_n& row = symplex_t[symplex_t.size() - 1];
+			const vec_n& row = simplex_t[simplex_t.size() - 1];
 
 			double delta = 0;
 
@@ -154,7 +154,7 @@ namespace sm
 
 			if (is_target_f_modified() && index == -1)
 			{
-				const vec_n& row_add = symplex_t[symplex_t.size() - 2];
+				const vec_n& row_add = simplex_t[simplex_t.size() - 2];
 
 				for (const auto& id : natural_args_ids)
 				{
@@ -172,10 +172,10 @@ namespace sm
 		/// <summary>
 		/// Определяет ведущую строку 
 		/// </summary>
-		/// <param name="symplex_col">ведущий столбец</param>
+		/// <param name="simplex_col">ведущий столбец</param>
 		/// <param name="A">СМ таблица</param>
 		/// <returns></returns>
-		int get_main_row(const int symplex_col)const
+		int get_main_row(const int simplex_col)const
 		{
 			double delta = 1e12;
 
@@ -183,26 +183,26 @@ namespace sm
 
 			double a_ik;
 
-			int b_index = symplex_t[0].size() - 1;
+			int b_index = simplex_t[0].size() - 1;
 
 			int cntr = 0;
 
-			int rows_n = is_target_f_modified() ? symplex_t.size() - 2 : symplex_t.size() - 1;
+			int rows_n = is_target_f_modified() ? simplex_t.size() - 2 : simplex_t.size() - 1;
 
 			for (int i = 0; i < rows_n; i++)
 			{
-				a_ik = symplex_t[i][symplex_col];
+				a_ik = simplex_t[i][simplex_col];
 
 				if (a_ik < 0)
 				{
 					cntr++;
 					continue;
 				}
-				if (symplex_t[i][b_index] / a_ik > delta)
+				if (simplex_t[i][b_index] / a_ik > delta)
 				{
 					continue;
 				}
-				delta = symplex_t[i][b_index] / a_ik;
+				delta = simplex_t[i][b_index] / a_ik;
 				index = i;
 			}
 
@@ -220,61 +220,61 @@ namespace sm
 		{
 			if (_ineq == EQUAL)
 			{
-				for (int row = 0; row < symplex_t.size(); row++)
+				for (int row = 0; row < simplex_t.size(); row++)
 				{
 					if (row == ineq_id)
 					{
-						symplex_t[row].push_back(1.0);
+						simplex_t[row].push_back(1.0);
 						continue;
 					}
-					symplex_t[row].push_back(0.0);
+					simplex_t[row].push_back(0.0);
 				}
 
-				col_index = symplex_t[0].size() - 1;
+				col_index = simplex_t[0].size() - 1;
 
-				col_index_aditional = symplex_t[0].size() - 1;
+				col_index_aditional = simplex_t[0].size() - 1;
 
 				return true;
 			}
 
 			if (_ineq == MORE_EQUAL)
 			{
-				for (int row = 0; row < symplex_t.size(); row++)
+				for (int row = 0; row < simplex_t.size(); row++)
 				{
 					if (row == ineq_id)
 					{
-						symplex_t[row].push_back(-1.0);
+						simplex_t[row].push_back(-1.0);
 
-						symplex_t[row].push_back(1.0);
+						simplex_t[row].push_back(1.0);
 
 						continue;
 					}
 
-					symplex_t[row].push_back(0.0);
+					simplex_t[row].push_back(0.0);
 
-					symplex_t[row].push_back(0.0);
+					simplex_t[row].push_back(0.0);
 				}
 
-				col_index_aditional = symplex_t[0].size() - 1;
+				col_index_aditional = simplex_t[0].size() - 1;
 
-				col_index = symplex_t[0].size() - 2;
+				col_index = simplex_t[0].size() - 2;
 
 				return false;
 			}
 
-			for (int row = 0; row < symplex_t.size(); row++)
+			for (int row = 0; row < simplex_t.size(); row++)
 			{
 				if (row == ineq_id)
 				{
-					symplex_t[row].push_back(1.0);
+					simplex_t[row].push_back(1.0);
 					continue;
 				}
-				symplex_t[row].push_back(0.0);
+				simplex_t[row].push_back(0.0);
 			}
 
 			col_index_aditional = -1;
 
-			col_index = symplex_t[0].size() - 1;
+			col_index = simplex_t[0].size() - 1;
 
 			return true;
 		}
@@ -303,15 +303,15 @@ namespace sm
 		/// <param name="b"></param>
 		///( A|I)  b
 		///(-c|0)  F(x,c)
-		void build_symplex_table()
+		void build_simplex_table()
 		{
-			symplex_t = bounds_m;
+			simplex_t = bounds_m;
 
 			///
 			/// Если среди вектора b есть отрицательные значения, то соответствующие строки
 			/// матрицы ограничений умножаем на мину один и меняем знак сравнения
 			///
-			for (int row = 0; row < symplex_t.size(); row++)
+			for (int row = 0; row < simplex_t.size(); row++)
 			{
 				if (bounds_v[row] >= 0)
 				{
@@ -322,7 +322,7 @@ namespace sm
 
 				bounds_v[row] *= -1;
 
-				symplex_t[row] = symplex_t[row] * (-1.0);
+				simplex_t[row] = simplex_t[row] * (-1.0);
 			}
 
 
@@ -356,16 +356,16 @@ namespace sm
 			/// добавим столбец ограницений
 			/// </summary>
 
-			for (int row = 0; row < symplex_t.size(); row++)
+			for (int row = 0; row < simplex_t.size(); row++)
 			{
-				symplex_t[row].push_back(bounds_v[row]);
+				simplex_t[row].push_back(bounds_v[row]);
 			}
 
 			/// <summary>
 			/// Построение симплекс разностей
 			/// </summary>
 
-			vec_n s_deltas(symplex_t[0].size());
+			vec_n s_deltas(simplex_t[0].size());
 
 			if (mode == SIMPLEX_MAX)
 			{
@@ -382,7 +382,7 @@ namespace sm
 				}
 			}
 
-			symplex_t.push_back(s_deltas);
+			simplex_t.push_back(s_deltas);
 
 			/// <summary>
 			/// Если целевая функуция не была модифицирована
@@ -396,14 +396,14 @@ namespace sm
 			/// <summary>
 			/// Если всё же была...
 			/// </summary>
-			vec_n s_deltas_add(symplex_t[0].size());
+			vec_n s_deltas_add(simplex_t[0].size());
 
 			for (int j = 0; j < f_mod_args.size(); j++)
 			{
 				s_deltas_add[f_mod_args[j]] = 1.0;
 			}
 
-			symplex_t.push_back(s_deltas_add);
+			simplex_t.push_back(s_deltas_add);
 		}
 
 		bool exclude_mod_args()
@@ -413,17 +413,17 @@ namespace sm
 				return false;
 			}
 
-			int last_row_id = symplex_t.size() - 1;
+			int last_row_id = simplex_t.size() - 1;
 
 			for (int i = 0; i < f_mod_args.size(); i++)
 			{
-				for (int row = 0; row < symplex_t.size(); row++)
+				for (int row = 0; row < simplex_t.size(); row++)
 				{
-					if (symplex_t[row][f_mod_args[i]] != 0)
+					if (simplex_t[row][f_mod_args[i]] != 0)
 					{
-						double arg = symplex_t[last_row_id][f_mod_args[i]] / symplex_t[row][f_mod_args[i]];
+						double arg = simplex_t[last_row_id][f_mod_args[i]] / simplex_t[row][f_mod_args[i]];
 
-						symplex_t[last_row_id] = symplex_t[last_row_id] - arg * symplex_t[row];
+						simplex_t[last_row_id] = simplex_t[last_row_id] - arg * simplex_t[row];
 
 						break;
 					}
@@ -437,34 +437,34 @@ namespace sm
 		{
 			double val = 0;
 
-			int n_rows = is_target_f_modified() ? symplex_t.size() - 2 : symplex_t.size() - 1;
+			int n_rows = is_target_f_modified() ? simplex_t.size() - 2 : simplex_t.size() - 1;
 
-			int n_cols = symplex_t[0].size() - 1;
+			int n_cols = simplex_t[0].size() - 1;
 
 			for (int i = 0; i < basis_args.size(); i++)
 			{
 				if (basis_args[i] < natural_args_n())
 				{
-					val += symplex_t[i][n_cols] * prices_v[basis_args[i]];
+					val += simplex_t[i][n_cols] * prices_v[basis_args[i]];
 				}
 			}
 			if (mode == SIMPLEX_MAX)
 			{
-				if (abs(val - symplex_t[n_rows][n_cols]) < 1e-5)
+				if (abs(val - simplex_t[n_rows][n_cols]) < 1e-5)
 				{
 					if (is_target_f_modified())
 					{
-						return true & (abs(symplex_t[symplex_t.size() - 1][symplex_t[0].size() - 1]) < 1e-5);
+						return true & (abs(simplex_t[simplex_t.size() - 1][simplex_t[0].size() - 1]) < 1e-5);
 					}
 
 					return true;
 				}
 			}
-			if (abs(val + symplex_t[n_rows][n_cols]) < 1e-5)
+			if (abs(val + simplex_t[n_rows][n_cols]) < 1e-5)
 			{
 				if (is_target_f_modified())
 				{
-					return true & (abs(symplex_t[symplex_t.size() - 1][symplex_t[0].size() - 1]) < 1e-5);
+					return true & (abs(simplex_t[simplex_t.size() - 1][simplex_t[0].size() - 1]) < 1e-5);
 				}
 
 				return true;
@@ -507,7 +507,7 @@ namespace sm
 			return basis_args;
 		};
 
-		inline const mat_mn& table() const { return symplex_t; };
+		inline const mat_mn& table() const { return simplex_t; };
 
 		inline bool is_target_f_modified()const
 		{
@@ -522,9 +522,9 @@ namespace sm
 		/// <param name="basis">список базисных параметров</param>
 		/// <param name="n_agrs">количество исходных переменных</param>
 		/// <returns></returns>
-		vec_n current_symplex_solution(const bool only_natural_args = false)const
+		vec_n current_simplex_solution(const bool only_natural_args = false)const
 		{
-			vec_n solution(only_natural_args ? natural_args_n() : symplex_t[0].size() - 1);
+			vec_n solution(only_natural_args ? natural_args_n() : simplex_t[0].size() - 1);
 
 			for (int i = 0; i < basis_args.size(); i++)
 			{
@@ -533,7 +533,7 @@ namespace sm
 					continue;
 				}
 
-				solution[basis_args[i]] = symplex_t[i][symplex_t[0].size() - 1];
+				solution[basis_args[i]] = simplex_t[i][simplex_t[0].size() - 1];
 			}
 			return solution;
 		}
@@ -542,9 +542,9 @@ namespace sm
 		{
 			this->mode = mode;
 			
-			std::cout << "Symplex problem type: " << ((mode == SIMPLEX_MAX) ? "max\n" : "min\n");
+			std::cout << "Simplex problem type: " << ((mode == SIMPLEX_MAX) ? "max\n" : "min\n");
 
-			build_symplex_table();
+			build_simplex_table();
 
 			vec_n solution;
 
@@ -554,14 +554,14 @@ namespace sm
 
 			int main_col;
 
-			std::cout << "Start symplex table:" << std::endl;
+			std::cout << "Start simplex table:" << std::endl;
 
 			std::cout << *this;
 
 			if (exclude_mod_args())
 			{
 				// второй этап, если задача должна решаться двух проходным(двух этапным) алгоритмом
-				std::cout << "Symplex table after args exclude:" << std::endl;
+				std::cout << "Simplex table after args exclude:" << std::endl;
 
 				std::cout << *this;
 			}
@@ -580,26 +580,26 @@ namespace sm
 				if (main_row == -1)
 				{
 					/// Невозможность определить ведущую строку свидейтельствует о том, что обрасть поиска неограничена
-					std::cout << "Unable to get main row. Symplex is probably boundless...\n";
+					std::cout << "Unable to get main row. Simplex is probably boundless...\n";
 					solution.clear();
 					return solution;
 				}
 
 				basis_args[main_row] = main_col;
 
-				a_ik = symplex_t[main_row][main_col];
+				a_ik = simplex_t[main_row][main_col];
 
-				symplex_t[main_row] = symplex_t[main_row] * (1.0 / a_ik);
+				simplex_t[main_row] = simplex_t[main_row] * (1.0 / a_ik);
 
-				for (int i = 0; i < symplex_t.size(); i++)
+				for (int i = 0; i < simplex_t.size(); i++)
 				{
 					if (i == main_row)
 					{
 						continue;
 					}
-					symplex_t[i] = symplex_t[i] - symplex_t[i][main_col] * symplex_t[main_row];
+					simplex_t[i] = simplex_t[i] - simplex_t[i][main_col] * simplex_t[main_row];
 				}
-				solution = current_symplex_solution();
+				solution = current_simplex_solution();
 
 #if _DEBUG
 				std::cout << "a_main { " << main_row + 1 << ", " << main_col + 1 << " } = " << str_rational(a_ik) << std::endl;
@@ -610,12 +610,12 @@ namespace sm
 			}
 			if (validate_solution())
 			{
-				solution = current_symplex_solution(true);
+				solution = current_simplex_solution(true);
 				/// формирование ответа
 				std::cout << "solution : " << str_rational(solution) << "\n";
 				return solution;
 			}
-			std::cout << "Symplex is unresolvable\n";
+			std::cout << "Simplex is unresolvable\n";
 			/// значение целевой функции не равно ее значению от найденного плана
 			solution.clear();
 			return solution;
@@ -625,16 +625,16 @@ namespace sm
 		{
 			if (b.size() != _ineq.size())
 			{
-				throw std::runtime_error("Error symplex creation :: b.size() != inequation.size()");
+				throw std::runtime_error("Error simplex creation :: b.size() != inequalities.size()");
 			}
 			if (a.size() != _ineq.size())
 			{
-				throw std::runtime_error("Error symplex creation :: A.rows_number() != inequation.size()");
+				throw std::runtime_error("Error simplex creation :: A.rows_number() != inequalities.size()");
 			}
 
 			if (a[0].size() != c.size())
 			{
-				throw std::runtime_error("Error symplex creation :: A.cols_number() != price_coeffs.size()");
+				throw std::runtime_error("Error simplex creation :: A.cols_number() != price_coeffs.size()");
 			}
 
 			bounds_v = b;
@@ -650,12 +650,12 @@ namespace sm
 		{
 			if (a.size() != b.size())
 			{
-				throw std::runtime_error("Error symplex creation :: A.rows_number() != bouns_coeffs.size()");
+				throw std::runtime_error("Error simplex creation :: A.rows_number() != bouns_coeffs.size()");
 			}
 
 			if (a[0].size() != c.size())
 			{
-				throw std::runtime_error("Error symplex creation :: A.cols_number() != price_coeffs.size()");
+				throw std::runtime_error("Error simplex creation :: A.cols_number() != price_coeffs.size()");
 			}
 
 			std::vector<int> _ineq;

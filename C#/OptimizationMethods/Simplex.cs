@@ -25,47 +25,47 @@ namespace OptimizationMethods
         /// <summary>
         /// список знаков в неравенств в системе ограничений
         /// </summary>
-        private List<Sign> ineqs;
+        private List<Sign> inequalities;
 
         /// <summary>
         /// список индексов переменных которые войдут в целевую функию, модифицируя ее
         /// </summary>
-        private List<int> f_mod_args;
+        private List<int> fModArgs;
 
         /// <summary>
         ///индексы естественных переменных
         /// </summary>
-        private List<int> natural_args_ids;
+        private List<int> naturalArgsIds;
 
         /// <summary>
         ///индексы переменных, не являющихся искусственными
         /// </summary>
-        private List<int> artificial_args_ids;
+        private List<int> artificialArgsIds;
 
         /// <summary>
         /// список индексов текущих базисных переменных 
         /// </summary>
-        private List<int> basis_args;
+        private List<int> basisArgs;
 
         /// <summary>
         /// Симплекс таблица
         /// </summary>
-        private Matrix symplex_t;
+        private Matrix simplexTable;
 
         /// <summary>
         /// матрица ограничений
         /// </summary>
-        private Matrix bounds_m;
+        private Matrix boundsMatrix;
 
         /// <summary>
         /// вектор ограничений
         /// </summary>
-        private Vector bounds_v;
+        private Vector boundsVector;
 
         /// <summary>
         /// вектор стоимостей
         /// </summary>
-        private Vector prices_v;
+        private Vector pricesVector;
 
         /// <summary>
         /// режим поиска решения
@@ -74,7 +74,7 @@ namespace OptimizationMethods
 
         public bool IsTargetFuncModified()
         {
-            return f_mod_args.Count != 0;
+            return fModArgs.Count != 0;
         }
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace OptimizationMethods
             /// на положительность. Если все положительны, то план оптимален.
             /// </summary>
 
-            Vector row = symplex_t[symplex_t.NRows - 1];
+            Vector row = simplexTable[simplexTable.NRows - 1];
 
             bool opt = true;
 
@@ -119,9 +119,9 @@ namespace OptimizationMethods
                 {
                     return opt;
                 }
-                Vector row_ = symplex_t[symplex_t.NRows - 2];
+                Vector row_ = simplexTable[simplexTable.NRows - 2];
 
-                foreach (int id in natural_args_ids)
+                foreach (int id in naturalArgsIds)
                 {
                     if (row_[id] < 0)
                     {
@@ -144,7 +144,7 @@ namespace OptimizationMethods
         private int GetMainCol()
         {
 
-            Vector row = symplex_t[symplex_t.NRows - 1];
+            Vector row = simplexTable[simplexTable.NRows - 1];
 
             double delta = 0;
 
@@ -162,9 +162,9 @@ namespace OptimizationMethods
 
             if (IsTargetFuncModified() && index == -1)
             {
-                Vector row_add = symplex_t[symplex_t.NRows - 2];
+                Vector row_add = simplexTable[simplexTable.NRows - 2];
 
-                foreach (int id in natural_args_ids)
+                foreach (int id in naturalArgsIds)
                 {
                     if (row_add[id] >= delta)
                     {
@@ -180,10 +180,10 @@ namespace OptimizationMethods
         /// <summary>
         /// Определяет ведущую строку 
         /// </summary>
-        /// <param name="symplex_col">ведущий столбец</param>
+        /// <param name="simplex_col">ведущий столбец</param>
         /// <param name="A">СМ таблица</param>
         /// <returns></returns>
-        int GetMainRow(int symplex_col)
+        int GetMainRow(int simplex_col)
         {
 
             double delta = 1e12;
@@ -192,23 +192,23 @@ namespace OptimizationMethods
 
             double a_ik;
 
-            int b_index = symplex_t[0].Count - 1;
+            int b_index = simplexTable[0].Count - 1;
 
-            int rows_n = IsTargetFuncModified() ? symplex_t.NRows - 2 : symplex_t.NRows - 1;
+            int rows_n = IsTargetFuncModified() ? simplexTable.NRows - 2 : simplexTable.NRows - 1;
 
             for (int i = 0; i < rows_n; i++)
             {
-                a_ik = symplex_t[i][symplex_col];
+                a_ik = simplexTable[i][simplex_col];
 
                 if (a_ik < 0)
                 {
                     continue;
                 }
-                if (symplex_t[i][b_index] / a_ik > delta)
+                if (simplexTable[i][b_index] / a_ik > delta)
                 {
                     continue;
                 }
-                delta = symplex_t[i][b_index] / a_ik;
+                delta = simplexTable[i][b_index] / a_ik;
                 index = i;
             }
 
@@ -226,59 +226,59 @@ namespace OptimizationMethods
         {
             if (_ineq == Sign.Equal)
             {
-                for (int row = 0; row < symplex_t.NRows; row++)
+                for (int row = 0; row < simplexTable.NRows; row++)
                 {
                     if (row == ineq_id)
                     {
-                        symplex_t[row].PushBack(1.0);
+                        simplexTable[row].PushBack(1.0);
                         continue;
                     }
-                    symplex_t[row].PushBack(0.0);
+                    simplexTable[row].PushBack(0.0);
                 }
 
-                col_index = symplex_t[0].Count - 1;
+                col_index = simplexTable[0].Count - 1;
 
-                col_index_aditional = symplex_t[0].Count - 1;
+                col_index_aditional = simplexTable[0].Count - 1;
 
                 return ;
             }
 
             if (_ineq == Sign.More)
             {
-                for (int row = 0; row < symplex_t.NRows; row++)
+                for (int row = 0; row < simplexTable.NRows; row++)
                 {
                     if (row == ineq_id)
                     {
-                        symplex_t[row].PushBack(-1.0);
+                        simplexTable[row].PushBack(-1.0);
 
-                        symplex_t[row].PushBack(1.0);
+                        simplexTable[row].PushBack(1.0);
 
                         continue;
                     }
 
-                    symplex_t[row].PushBack(0.0);
+                    simplexTable[row].PushBack(0.0);
 
-                    symplex_t[row].PushBack(0.0);
+                    simplexTable[row].PushBack(0.0);
                 }
 
-                col_index = symplex_t[0].Count - 2;
+                col_index = simplexTable[0].Count - 2;
 
-                col_index_aditional = symplex_t[0].Count - 1;
+                col_index_aditional = simplexTable[0].Count - 1;
 
                 return ;
             }
 
-            for (int row = 0; row < symplex_t.NRows; row++)
+            for (int row = 0; row < simplexTable.NRows; row++)
             {
                 if (row == ineq_id)
                 {
-                    symplex_t[row].PushBack(1.0);
+                    simplexTable[row].PushBack(1.0);
                     continue;
                 }
-                symplex_t[row].PushBack(0.0);
+                simplexTable[row].PushBack(0.0);
             }
             
-            col_index = symplex_t[0].Count - 1;
+            col_index = simplexTable[0].Count - 1;
             
             col_index_aditional = -1;
 
@@ -309,89 +309,89 @@ namespace OptimizationMethods
         /// <param name="b"></param>
         ///( A|I)  b
         ///(-c|0)  F(x,c)
-        private void BuildSymplexTable()
+        private void BuildSimplexTable()
         {
-            symplex_t = new Matrix(bounds_m);
-            natural_args_ids.Clear();
-            basis_args.Clear();
-            f_mod_args.Clear();
-            artificial_args_ids.Clear();
+            simplexTable = new Matrix(boundsMatrix);
+            naturalArgsIds.Clear();
+            basisArgs.Clear();
+            fModArgs.Clear();
+            artificialArgsIds.Clear();
             ///
             /// Если среди вектора b есть отрицательные значения, то соответствующие строки
             /// матрицы ограничений умножаем на мину один и меняем знак сравнения
             ///
-            for (int row = 0; row < symplex_t.NRows; row++)
+            for (int row = 0; row < simplexTable.NRows; row++)
             {
-                if (bounds_v[row] >= 0)
+                if (boundsVector[row] >= 0)
                 {
                     continue;
                 }
 
-                ineqs[row] = ineqs[row] == Sign.Less ? Sign.More : Sign.Less;
+                inequalities[row] = inequalities[row] == Sign.Less ? Sign.More : Sign.Less;
 
-                bounds_v[row] *= -1;
+                boundsVector[row] *= -1;
 
-                symplex_t[row] = symplex_t[row] * (-1.0);
+                simplexTable[row] = simplexTable[row] * (-1.0);
             }
 
 
-            for (int i = 0; i < prices_v.Count; i++)
+            for (int i = 0; i < pricesVector.Count; i++)
             {
-                natural_args_ids.Add(i);
+                naturalArgsIds.Add(i);
             }
             /// <summary>
             /// построение искуственного базиса
             /// </summary>
             int basis_arg_id = -1;
             int basis_arg_id_add = -1;
-            for (int ineq_id = 0; ineq_id < ineqs.Count; ineq_id++)
+            for (int ineq_id = 0; ineq_id < inequalities.Count; ineq_id++)
             {
-                BuildVirtualBasisCol(ineq_id, ineqs[ineq_id], ref basis_arg_id, ref basis_arg_id_add);
+                BuildVirtualBasisCol(ineq_id, inequalities[ineq_id], ref basis_arg_id, ref basis_arg_id_add);
 
-                natural_args_ids.Add(basis_arg_id);
+                naturalArgsIds.Add(basis_arg_id);
 
                 if (basis_arg_id_add != -1)
                 {
-                    basis_args.Add(basis_arg_id_add);
-                    f_mod_args.Add(basis_arg_id_add);
-                    artificial_args_ids.Add(basis_arg_id_add);
+                    basisArgs.Add(basis_arg_id_add);
+                    fModArgs.Add(basis_arg_id_add);
+                    artificialArgsIds.Add(basis_arg_id_add);
                     continue;
                 }
 
-                basis_args.Add(basis_arg_id);
+                basisArgs.Add(basis_arg_id);
             }
 
             /// <summary>
             /// добавим столбец ограницений
             /// </summary>
 
-            for (int row = 0; row < symplex_t.NRows; row++)
+            for (int row = 0; row < simplexTable.NRows; row++)
             {
-                symplex_t[row].PushBack(bounds_v[row]);
+                simplexTable[row].PushBack(boundsVector[row]);
             }
 
             /// <summary>
             /// Построение симплекс разностей
             /// </summary>
 
-            Vector s_deltas = new Vector(symplex_t.NCols);
+            Vector s_deltas = new Vector(simplexTable.NCols);
 
             if (mode == SimplexProblemType.Max)
             {
                 for (int j = 0; j < s_deltas.Count; j++)
                 {
-                    s_deltas[j] = j < prices_v.Count ? -prices_v[j] : 0.0;
+                    s_deltas[j] = j < pricesVector.Count ? -pricesVector[j] : 0.0;
                 }
             }
             else
             {
                 for (int j = 0; j < s_deltas.Count; j++)
                 {
-                    s_deltas[j] = j < prices_v.Count ? prices_v[j] : 0.0;
+                    s_deltas[j] = j < pricesVector.Count ? pricesVector[j] : 0.0;
                 }
             }
 
-            symplex_t.AddRow(s_deltas);
+            simplexTable.AddRow(s_deltas);
 
             /// <summary>
             /// Если целевая функуция не была модифицирована
@@ -405,14 +405,14 @@ namespace OptimizationMethods
             /// <summary>
             /// Если всё же была...
             /// </summary>
-            Vector s_deltas_add = new Vector(symplex_t.NCols);
+            Vector s_deltas_add = new Vector(simplexTable.NCols);
 
-            for (int j = 0; j < f_mod_args.Count; j++)
+            for (int j = 0; j < fModArgs.Count; j++)
             {
-                s_deltas_add[f_mod_args[j]] = 1.0;
+                s_deltas_add[fModArgs[j]] = 1.0;
             }
 
-            symplex_t.AddRow(s_deltas_add);
+            simplexTable.AddRow(s_deltas_add);
         }
 
         private bool ExcludeModArgs()
@@ -422,17 +422,17 @@ namespace OptimizationMethods
                 return false;
             }
 
-            int last_row_id = symplex_t.NRows - 1;
+            int last_row_id = simplexTable.NRows - 1;
 
-            for (int i = 0; i < f_mod_args.Count; i++)
+            for (int i = 0; i < fModArgs.Count; i++)
             {
-                for (int row = 0; row < symplex_t.NRows; row++)
+                for (int row = 0; row < simplexTable.NRows; row++)
                 {
-                    if (symplex_t[row][f_mod_args[i]] != 0)
+                    if (simplexTable[row][fModArgs[i]] != 0)
                     {
-                        double arg = symplex_t[last_row_id][f_mod_args[i]] / symplex_t[row][f_mod_args[i]];
+                        double arg = simplexTable[last_row_id][fModArgs[i]] / simplexTable[row][fModArgs[i]];
 
-                        symplex_t[last_row_id] = symplex_t[last_row_id] - arg * symplex_t[row];
+                        simplexTable[last_row_id] = simplexTable[last_row_id] - arg * simplexTable[row];
 
                         break;
                     }
@@ -447,34 +447,34 @@ namespace OptimizationMethods
 
             double val = 0;
 
-            int n_rows = IsTargetFuncModified() ? symplex_t.NRows - 2 : symplex_t.NRows - 1;
+            int n_rows = IsTargetFuncModified() ? simplexTable.NRows - 2 : simplexTable.NRows - 1;
 
-            int n_cols = symplex_t.NCols - 1;
+            int n_cols = simplexTable.NCols - 1;
 
-            for (int i = 0; i < basis_args.Count; i++)
+            for (int i = 0; i < basisArgs.Count; i++)
             {
-                if (basis_args[i] < NaturalArgsN())
+                if (basisArgs[i] < NaturalArgsN())
                 {
-                    val += symplex_t[i][n_cols] * prices_v[basis_args[i]];
+                    val += simplexTable[i][n_cols] * pricesVector[basisArgs[i]];
                 }
             }
             if (mode == SimplexProblemType.Max)
             {
-                if (Math.Abs(val - symplex_t[n_rows][n_cols]) < 1e-5)
+                if (Math.Abs(val - simplexTable[n_rows][n_cols]) < 1e-5)
                 {
                     if (IsTargetFuncModified())
                     {
-                        return true & (Math.Abs(symplex_t[symplex_t.NRows - 1][symplex_t.NCols - 1]) < 1e-5);
+                        return true & (Math.Abs(simplexTable[simplexTable.NRows - 1][simplexTable.NCols - 1]) < 1e-5);
                     }
 
                     return true;
                 }
             }
-            if (Math.Abs(val + symplex_t[n_rows][n_cols]) < 1e-5)
+            if (Math.Abs(val + simplexTable[n_rows][n_cols]) < 1e-5)
             {
                 if (IsTargetFuncModified())
                 {
-                    return true & (Math.Abs(symplex_t[symplex_t.NRows - 1][symplex_t.NCols - 1]) < 1e-5);
+                    return true & (Math.Abs(simplexTable[simplexTable.NRows - 1][simplexTable.NCols - 1]) < 1e-5);
                 }
 
                 return true;
@@ -484,57 +484,57 @@ namespace OptimizationMethods
 
         public int NaturalArgsN()
         {
-            return prices_v.Count;
+            return pricesVector.Count;
         }
 
         public Matrix BoundsMatrix()
         {
-            return bounds_m;
+            return boundsMatrix;
         }
 
         public Vector BoundsCoeffs()
         {
-            return bounds_v;
+            return boundsVector;
         }
 
         public Vector PricesCoeffs()
         {
-            return prices_v;
+            return pricesVector;
         }
 
         public List<Sign> Inequations()
         {
-            return ineqs;
+            return inequalities;
         }
 
         public List<int> BasisArgsuments()
         {
-            return basis_args;
+            return basisArgs;
         }
 
-        public Matrix SymplexTable()
+        public Matrix SimplexTable()
         {
-            return symplex_t;
+            return simplexTable;
         }
 
-        public Vector CurrentSymplexSolution(bool only_natural_args = false)
+        public Vector CurrentSimplexSolution(bool only_natural_args = false)
         {
-            Vector solution = new Vector(only_natural_args ? NaturalArgsN() : symplex_t.NCols - 1);
+            Vector solution = new Vector(only_natural_args ? NaturalArgsN() : simplexTable.NCols - 1);
 
-            for (int i = 0; i < basis_args.Count; i++)
+            for (int i = 0; i < basisArgs.Count; i++)
             {
-                if (basis_args[i] >= solution.Count)
+                if (basisArgs[i] >= solution.Count)
                 {
                     continue;
                 }
 
-                solution[basis_args[i]] = symplex_t[i][symplex_t.NCols - 1];
+                solution[basisArgs[i]] = simplexTable[i][simplexTable.NCols - 1];
             }
             return solution;
         }
-        public string SymplexToString()//Matrix table, List<int> basis)
+        public string SimplexToString()//Matrix table, List<int> basis)
         {
-            if (symplex_t.NRows == 0)
+            if (simplexTable.NRows == 0)
             {
                 return "";
             }
@@ -545,7 +545,7 @@ namespace OptimizationMethods
 
             sb.AppendFormat("{0,-6}", " ");
 
-            for (; i < symplex_t.NCols - 1; i++)
+            for (; i < simplexTable.NCols - 1; i++)
             {
                 sb.AppendFormat("|{0,-12}", " x " + (i + 1).ToString());
             }
@@ -555,34 +555,34 @@ namespace OptimizationMethods
 
             int n_row = -1;
 
-            foreach (Vector row in symplex_t.Rows)
+            foreach (Vector row in simplexTable.Rows)
             {
                 n_row++;
 
                 if (IsTargetFuncModified())
                 {
-                    if (n_row == symplex_t.NRows - 2)
+                    if (n_row == simplexTable.NRows - 2)
                     {
                         sb.AppendFormat("{0,-6}", " d0");
                     }
-                    else if (n_row == symplex_t.NRows - 1)
+                    else if (n_row == simplexTable.NRows - 1)
                     {
                         sb.AppendFormat("{0,-6}", " d1");
                     }
                     else 
                     {
-                        sb.AppendFormat("{0,-6}", " x " + (basis_args[n_row] + 1).ToString());
+                        sb.AppendFormat("{0,-6}", " x " + (basisArgs[n_row] + 1).ToString());
                     }
                 }
                 else 
                 {
-                    if (n_row == symplex_t.NRows - 1)
+                    if (n_row == simplexTable.NRows - 1)
                     {
                         sb.AppendFormat("{0,-6}", " d");
                     }
                     else
                     {
-                        sb.AppendFormat("{0,-6}", " x " + (basis_args[n_row] + 1).ToString());
+                        sb.AppendFormat("{0,-6}", " x " + (basisArgs[n_row] + 1).ToString());
                     }
                 }
 
@@ -607,11 +607,11 @@ namespace OptimizationMethods
         {
             this.mode = mode;
 
-            Console.WriteLine($"SymplexProblemType : {SimplexProblemType.Max.ToString()}\n");
+            Console.WriteLine($"SimplexProblemType : {SimplexProblemType.Max.ToString()}\n");
 
             Vector solution = new Vector(NaturalArgsN());
 
-            BuildSymplexTable();
+            BuildSimplexTable();
 
             double a_ik;
 
@@ -619,14 +619,14 @@ namespace OptimizationMethods
 
             int main_col;
 
-            Console.WriteLine("Start symplex table:");
-            Console.WriteLine(SymplexToString());
+            Console.WriteLine("Start simplex table:");
+            Console.WriteLine(SimplexToString());
 
             if (ExcludeModArgs())
             {
                 // второй этап, если задача должна решаться двух проходным(двух этапным) алгоритмом
-                Console.WriteLine("Symplex table after args exclude:");
-                Console.WriteLine(SymplexToString());
+                Console.WriteLine("Simplex table after args exclude:");
+                Console.WriteLine(SimplexToString());
             }
 
             while (!IsPlanOptimal())
@@ -643,40 +643,40 @@ namespace OptimizationMethods
                 if (main_row == -1)
                 {
                     /// Невозможность определить ведущую строку свидейтельствует о том, что обрасть поиска неограничена
-                    Console.WriteLine("Unable to get main row. Symplex is probably boundless...");
+                    Console.WriteLine("Unable to get main row. Simplex is probably boundless...");
                     return null;
                 }
 
-                basis_args[main_row] = main_col;
+                basisArgs[main_row] = main_col;
 
-                a_ik = symplex_t[main_row][main_col];
+                a_ik = simplexTable[main_row][main_col];
 
-                symplex_t[main_row] = symplex_t[main_row] * (1.0 / a_ik);
+                simplexTable[main_row] = simplexTable[main_row] * (1.0 / a_ik);
 
-                for (int i = 0; i < symplex_t.NRows; i++)
+                for (int i = 0; i < simplexTable.NRows; i++)
                 {
                     if (i == main_row)
                     {
                         continue;
                     }
-                    symplex_t[i] = symplex_t[i] - symplex_t[i][main_col] * symplex_t[main_row];
+                    simplexTable[i] = simplexTable[i] - simplexTable[i][main_col] * simplexTable[main_row];
                 }
-                solution = CurrentSymplexSolution();
+                solution = CurrentSimplexSolution();
 
 #if DEBUG
                 Console.WriteLine($"a_main {{{ main_row + 1}, {main_col + 1}}} = {NumericUtils.ToRationalStr(a_ik)}\n");
-                Console.WriteLine(SymplexToString());
+                Console.WriteLine(SimplexToString());
                 Console.WriteLine($"current solution: {NumericUtils.ToRationalStr(solution)}\n");
 #endif
             }
             if (ValidateSolution())
             {
-                solution = CurrentSymplexSolution(true);
+                solution = CurrentSimplexSolution(true);
                 /// формирование ответа
                 Console.WriteLine($"solution: {NumericUtils.ToRationalStr(solution)}\n");
                 return solution;
             }
-            Console.WriteLine("Symplex is unresolvable");
+            Console.WriteLine("Simplex is unresolvable");
             /// значение целевой функции не равно ее значению от найденного плана
             return null;
         }
@@ -684,61 +684,61 @@ namespace OptimizationMethods
         {
             if (b.Count != _ineq.Count)
             {
-                throw new Exception("Error symplex creation :: b.size() != inequation.size()");
+                throw new Exception("Error simplex creation :: b.size() != inequation.size()");
             }
 
             if (a.NRows != _ineq.Count)
             {
-                throw new Exception("Error symplex creation :: A.rows_number() != inequation.size()");
+                throw new Exception("Error simplex creation :: A.rows_number() != inequation.size()");
             }
 
             if (a.NCols != c.Count)
             {
-                throw new Exception("Error symplex creation :: A.cols_number() != price_coeffs.size()");
+                throw new Exception("Error simplex creation :: A.cols_number() != price_coeffs.size()");
             }
 
-            natural_args_ids    = new List<int>();
-            basis_args          = new List<int>();
-            f_mod_args          = new List<int>();
-            artificial_args_ids = new List<int>();
+            naturalArgsIds    = new List<int>();
+            basisArgs          = new List<int>();
+            fModArgs          = new List<int>();
+            artificialArgsIds = new List<int>();
 
-            bounds_v = b;
+            boundsVector = b;
 
-            bounds_m = a;
+            boundsMatrix = a;
 
-            prices_v = c;
+            pricesVector = c;
 
-            ineqs    = _ineq;
+            inequalities    = _ineq;
         }
         public Simplex(Matrix a, Vector c, Vector b)
         {
             if (b.Count != b.Count)
             {
-                throw new Exception("Error symplex creation :: b.size() != bouns_coeffs.size()");
+                throw new Exception("Error simplex creation :: b.size() != bouns_coeffs.size()");
             }
 
             if (a.NCols != c.Count)
             {
-                throw new Exception("Error symplex creation :: A.cols_number() != price_coeffs.size()");
+                throw new Exception("Error simplex creation :: A.cols_number() != price_coeffs.size()");
             }
 
-            ineqs = new List<Sign>();
+            inequalities = new List<Sign>();
 
             for (int i = 0; i < b.Count; i++)
             {
-                ineqs.Add(Sign.Less);
+                inequalities.Add(Sign.Less);
             }
 
-            natural_args_ids = new List<int>();
-            basis_args = new List<int>();
-            f_mod_args = new List<int>();
-            artificial_args_ids = new List<int>();
+            naturalArgsIds = new List<int>();
+            basisArgs = new List<int>();
+            fModArgs = new List<int>();
+            artificialArgsIds = new List<int>();
 
-            bounds_v = b;
+            boundsVector = b;
 
-            bounds_m = a;
+            boundsMatrix = a;
 
-            prices_v = c;
+            pricesVector = c;
         }
     }
 }

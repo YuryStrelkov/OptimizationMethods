@@ -1,10 +1,15 @@
 public class NumericUtils
 {
     /**
-     * Конвертирует десятичную запись числа в рациональную, например, для числа 1.666 получим 1 2/3
-     * @param value исходное число
-     * @param max_den максимально допустимый знаменатель
-     * @return
+     * Конвертирует десятичную запись числа в рациональную,
+     * например, 1.666 -> [1, 2, 3]
+     *
+     * Converts decimal representation of number into rational,
+     * ex. 1.666 -> [1, 2, 3]
+     *
+     * @param value исходное число | original number
+     * @param max_den максимально допустимый знаменатель | max denominator of number
+     * @return int[]{integer_part, numerator, denominator}
      */
     public static int[] decimalToRational(double value, int max_den)
     {
