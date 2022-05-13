@@ -89,10 +89,10 @@ namespace OptimizationMethods
             Console.WriteLine($"{rational} {numerator} / {denominator}\n");
         }
 
-        public static void SympexTest() 
+        public static void SimpexTest() 
         {
             Console.WriteLine("\n/////////////////////////////");
-            Console.WriteLine(  "//////// SymplexTest ////////");
+            Console.WriteLine(  "//////// SimplexTest ////////");
             Console.WriteLine(  "/////////////////////////////\n");
 
             Vector b = new Vector(40, 28, 14);
@@ -142,7 +142,7 @@ namespace OptimizationMethods
             // OneDimensionalMethodsTest();
             // MultiDimensionalMethodsTest();
             //MatrixTest();
-            SympexTest();
+            SimpexTest();
             // NumericTests();
         }
     }

@@ -105,10 +105,10 @@ static void matrix_test()
 	std::cout << hessian(test_function_nd, x_) << "\n";
 }
 
-static void symplex_method_test()
+static void simplex_method_test()
 {
 	std::cout << "\n/////////////////////////////"  << std::endl;
-	std::cout <<   "//////// SymplexTest ////////"  << std::endl;
+	std::cout <<   "//////// SimplexTest ////////"  << std::endl;
 	std::cout <<   "/////////////////////////////\n"<< std::endl;
 	std::cout << " f(x,c) =  2x1 + 3x2;\n arg_max = {4, 8}, f(arg_max) = 32\n";
 	std::cout << " |-2x1 + 6x2 <= 40\n";
@@ -159,9 +159,9 @@ static void symplex_method_test()
 
 static void numeric_tests()
 {
-	std::cout << "\n//////////////////////////////" << std::endl;
-	std::cout <<   "//////// NumericTests ////////" << std::endl;
-	std::cout <<   "//////////////////////////////\n" << std::endl;
+	std::cout << "\n//////////////////////////////"  << std::endl;
+	std::cout <<   "//////// NumericTests ////////"  << std::endl;
+	std::cout <<   "//////////////////////////////\n"<< std::endl;
 
 	int rational;
 	int numerator;
@@ -183,7 +183,7 @@ static int test_all()
 	//one_dimensional_methods_test();
 	//multi_dimensional_methods_test();
 	//matrix_test();
-	symplex_method_test();
+	simplex_method_test();
 	//numeric_tests();
 	return 0;
 }

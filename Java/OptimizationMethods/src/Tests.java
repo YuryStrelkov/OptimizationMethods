@@ -87,17 +87,17 @@ public class Tests {
         System.out.println("Dihotomia                : "+ MultiDimensional.dihotomia          (MultiDimensional.testFunc2d, x_1, x_0));
         System.out.println("Golden ratio             : "+ MultiDimensional.goldenRatio        (MultiDimensional.testFunc2d, x_1, x_0));
         System.out.println("Fibonacci                : "+ MultiDimensional.fibonacci          (MultiDimensional.testFunc2d, x_1, x_0));
-        System.out.println("Per coord descend        : "+ MultiDimensional.perCoordDescend    (MultiDimensional.testFunc2d, x));
+        System.out.println("Per coordinate descend   : "+ MultiDimensional.perCoordDescend    (MultiDimensional.testFunc2d, x));
         System.out.println("Gradient descend         : "+ MultiDimensional.gradientDescend    (MultiDimensional.testFunc2d, x));
         System.out.println("Conj gradient descend    : "+ MultiDimensional.conjGradientDescend(MultiDimensional.testFunc2d, x));
         System.out.println("Newtone - Raphson        : "+ MultiDimensional.newtoneRaphson     (MultiDimensional.testFunc2d, x_1));
         MultiDimensional.ShowDebugLog = false;
     }
 
-    public static void symplexTest()
+    public static void simplexTest()
     {
         System.out.println("\n/////////////////////////////");
-        System.out.println(  "//////// SymplexTest ////////");
+        System.out.println(  "//////// SimplexTest ////////");
         System.out.println(  "/////////////////////////////\n");
 
         Matrix A = new Matrix(
