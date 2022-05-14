@@ -19,7 +19,7 @@ static void  lab_1(func f)
 	double x_1 = -1;
 	std::cout << "x_0 = " << x_0 << ", x_1 = " << x_1 << "\n";
 	std::cout << "dihotomia   : " << dihotomia   (f, x_0, x_1, 1e-4) << "\n";
-	std::cout << "golden_ratio: " << golden_ratio(f, x_0, x_1, 1e-4) << "\n";
+	std::cout << "golden_ratio: " << goldenRatio(f, x_0, x_1, 1e-4) << "\n";
 	std::cout << "fibonacci   : " << fibonacci   (f, x_0, x_1, 1e-4) << "\n";
 }
 
@@ -44,14 +44,14 @@ static void  lab_2(func_n f)
 	std::cout << "{ x, y } = agrmin((x - 2) * (x - 2) + (y - 2) * (y - 2))\n";
 	std::cout << "x_0 = " << x_0 << ", x_1 = " << x_1 << "\n";
 	///  Для реализации по-координтаного спуска необходимо реализовать один из следующих трех методов для работы с vec_n
-	std::cout << "dihotomia             : " << dihotomia   (f, x_1, x_0, 1e-4) << "\n";
-	std::cout << "golden_ratio          : " << golden_ratio(f, x_1, x_0, 1e-4) << "\n";
-	std::cout << "fibonacci             : " << fibonacci   (f, x_1, x_0, 1e-4) << "\n";
+	std::cout << "dihotomia             : " << dihotomia  (f, x_1, x_0, 1e-4) << "\n";
+	std::cout << "golden_ratio          : " << goldenRatio(f, x_1, x_0, 1e-4) << "\n";
+	std::cout << "fibonacci             : " << fibonacci  (f, x_1, x_0, 1e-4) << "\n";
 	std::cout << "\n";
 
 	vec_n x_start = { -14, -33.98 };
 	std::cout << "x_start = " << x_start << "\n";
-	std::cout << "per_coord_descend     : " << per_coord_descend    (f, x_start, 1e-4) << "\n";
+	std::cout << "per_coord_descend     : " << perCoordDescend(f, x_start, 1e-4) << "\n";
 }
 
 ////////////////////
@@ -65,8 +65,8 @@ static void  lab_3(func_n f)
 	std::cout <<   "////////////////////\n\n";
 	vec_n x_start = { -14, -33.98 };
 	std::cout << "x_start = " << x_start << "\n";
-	std::cout << "gradient_descend      : " << gradient_descend     (f, x_start, 1e-4) << "\n";
-	std::cout << "conj_gradient_descend : " << conj_gradient_descend(f, x_start, 1e-4) << "\n";
+	std::cout << "gradient_descend      : " << gradientDescend     (f, x_start, 1e-4) << "\n";
+	std::cout << "conj_gradient_descend : " << conjGradientDescend(f, x_start, 1e-4) << "\n";
 }
 
 ////////////////////
@@ -95,9 +95,9 @@ static void  lab_4(func_n f)
 	std::cout <<   "/// Lab. work #4 ///\n";
 	std::cout <<   "////////////////////\n\n";
 	vec_n x_start = { -14, -33.98 };
-	std::cout << "newtone_raphson       : " << newtone_raphson(f, x_start, 1e-5) << "\n";
+	std::cout << "newtone_raphson       : " << newtoneRaphson(f, x_start, 1e-5) << "\n";
 	//Поиск минимума функции при наличии функций штрафа
-	std::cout << "newtone_raphson       : " << newtone_raphson(bouded_func, x_start, 1e-5) << "\n";
+	std::cout << "newtone_raphson       : " << newtoneRaphson(bouded_func, x_start, 1e-5) << "\n";
 }
 
 int main()
@@ -106,6 +106,6 @@ int main()
 	//lab_2(test_func_2);
 	/*lab_3(test_func_2);
 	lab_4(test_func_2);*/
-	test_all();
+	testAll();
 	return 0;
 }

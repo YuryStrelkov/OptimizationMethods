@@ -12,7 +12,7 @@
 // Методы n-мерной дихотомии, золотого сечения и Фибоначчи определяют минимум строго вдоль направления из  x_0 в x_1
 // т.е., если истинный минимум функции на этом направлении не лежит, метод всё равно найдёт минимальное значение, но оно 
 // будет отличаться от истинного минимума
-static vec_n dihotomia(func_n f, const vec_n& x_0, const vec_n& x_1, const double eps = N_DIM_ACCURACY, const int max_iters = N_DIM_ITERS_MAX)
+static vec_n dihotomia          (func_n f, const vec_n& x_0, const vec_n& x_1, const double eps = N_DIM_ACCURACY, const int max_iters = N_DIM_ITERS_MAX)
 {
 	vec_n x_0_ = x_0, x_1_ = x_1, x_c, dir;
 
@@ -41,7 +41,7 @@ static vec_n dihotomia(func_n f, const vec_n& x_0, const vec_n& x_1, const doubl
 	return x_c;
 }
 
-static vec_n golden_ratio(func_n f, const vec_n& x_0, const vec_n& x_1, const double eps = N_DIM_ACCURACY, const int max_iters = N_DIM_ITERS_MAX)
+static vec_n goldenRatio        (func_n f, const vec_n& x_0, const vec_n& x_1, const double eps = N_DIM_ACCURACY, const int max_iters = N_DIM_ITERS_MAX)
 {
 	vec_n  a = x_0, b = x_1;
 
@@ -75,17 +75,17 @@ static vec_n golden_ratio(func_n f, const vec_n& x_0, const vec_n& x_1, const do
 	return (a + b) * 0.5;
 }
 
-static vec_n fibonacci(func_n f, const vec_n& x_0, const vec_n& x_1, const double eps = N_DIM_ACCURACY)
+static vec_n fibonacci          (func_n f, const vec_n& x_0, const vec_n& x_1, const double eps = N_DIM_ACCURACY)
 {
 	vec_n a(x_0), b(x_1);
 	
 	vec_n x_0_(x_0), x_1_(x_1), dx;
 	
-	int max_iters = closest_fibonacci(magnitude(x_1 - x_0) / eps);
+	int max_iters = closestFibonacci(magnitude(x_1 - x_0) / eps);
 	
 	int cntr = max_iters - 1;
 
-	std::vector<double> f_n_s = fibonacci_numbers<double>(max_iters);
+	std::vector<double> f_n_s = fibonacciNumbers<double>(max_iters);
 
 	for (; cntr >= 2; cntr--)
 	{
@@ -112,8 +112,7 @@ static vec_n fibonacci(func_n f, const vec_n& x_0, const vec_n& x_1, const doubl
 // Покоординатный спуск, градиентный спуск и спуск с помощью сопряжённых градиентов, определяют
 // минимальное значение функции только по одной начальной точке x_start.
 // Поэтому не зависят от выбора направления.
-
-static vec_n per_coord_descend(func_n f, const vec_n& x_start, const double eps = N_DIM_ACCURACY, const int max_iters = N_DIM_ITERS_MAX)
+static vec_n perCoordDescend    (func_n f, const vec_n& x_start, const double eps = N_DIM_ACCURACY, const int max_iters = N_DIM_ITERS_MAX)
 {
 	vec_n x_0(x_start);
 	
@@ -168,7 +167,7 @@ static vec_n per_coord_descend(func_n f, const vec_n& x_start, const double eps 
 	return x_0;
 }
 //
-static vec_n gradient_descend(func_n f, const vec_n& x_start, const double eps = N_DIM_ACCURACY, const int max_iters = N_DIM_ITERS_MAX)
+static vec_n gradientDescend    (func_n f, const vec_n& x_start, const double eps = N_DIM_ACCURACY, const int max_iters = N_DIM_ITERS_MAX)
 {
 	vec_n x_i(x_start);
 	vec_n x_i_1; 
@@ -198,7 +197,7 @@ static vec_n gradient_descend(func_n f, const vec_n& x_start, const double eps =
 	return (x_i_1 + x_i) * 0.5;
 }
 
-static vec_n conj_gradient_descend(func_n f, const vec_n& x_start, const double eps = N_DIM_ACCURACY, const int max_iters = N_DIM_ITERS_MAX)
+static vec_n conjGradientDescend(func_n f, const vec_n& x_start, const double eps = N_DIM_ACCURACY, const int max_iters = N_DIM_ITERS_MAX)
 {
 	vec_n x_i(x_start);
 	vec_n x_i_1;
@@ -237,7 +236,7 @@ static vec_n conj_gradient_descend(func_n f, const vec_n& x_start, const double 
 	return (x_i_1 + x_i) * 0.5;
 }
 
-static vec_n newtone_raphson(func_n f, const vec_n& x_start, const double eps = N_DIM_ACCURACY, const int max_iters = N_DIM_ITERS_MAX)
+static vec_n newtoneRaphson     (func_n f, const vec_n& x_start, const double eps = N_DIM_ACCURACY, const int max_iters = N_DIM_ITERS_MAX)
 {
 	vec_n x_i(x_start);
 	vec_n x_i_1;

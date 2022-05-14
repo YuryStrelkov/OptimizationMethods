@@ -4,10 +4,11 @@
 #include <iostream>
 
 typedef  std::vector<double> vec_n;
+
 typedef double(*func_n)(const vec_n&);
 
 template<typename T>
-static bool operator == (const std::vector<T> & a, const std::vector<T> & b)
+static bool operator==(const std::vector<T> & a, const std::vector<T> & b)
 {
 	if (a.size() != b.size())
 	{
@@ -101,7 +102,7 @@ static vec_n operator*(const double  b, const vec_n& a)
 	return a * b;
 }
 
-static double dot(const vec_n& a, const vec_n& b) 
+static double dot     (const vec_n& a, const vec_n& b) 
 {
 	if (a.size()!=b.size())
 	{
@@ -176,13 +177,13 @@ static vec_n& normalize(vec_n& vec)
 	return vec;
 }
 // определение единичного вектора направления из точки a в точку b
-static vec_n direction(const vec_n& a, const vec_n& b)
+static vec_n direction (const vec_n& a, const vec_n& b)
 {
 	vec_n res = b - a;
 	return normalize(res);
 }
 // производная (центральный разностный аналог) n-мерной функции в точке x с шагом eps
-static vec_n gradient(func_n fun, const vec_n& x, const double eps = 1e-6)
+static vec_n gradient  (func_n fun, const vec_n& x, const double eps = 1e-6)
 {
 	vec_n df, x_l(x), x_r(x);
 
@@ -200,7 +201,7 @@ static vec_n gradient(func_n fun, const vec_n& x, const double eps = 1e-6)
 	return df;
 }
 // частная производная по i-ой координате
-static double partial(func_n func, vec_n& x, const int coord_index, const double eps = 1e-6)
+static double partial  (func_n func, vec_n& x, const int coord_index, const double eps = 1e-6)
 {
 	if (x.size() <= coord_index)
 	{
@@ -214,7 +215,7 @@ static double partial(func_n func, vec_n& x, const int coord_index, const double
 	return (f_r - f_l) / eps * 0.5;
 }
 //вторая частная производная по i-ой j-ой координатам
-static double partial2(func_n func, vec_n& x, const int coord_index_1, const int coord_index_2, const double eps = 1e-6)
+static double partial2 (func_n func, vec_n& x, const int coord_index_1, const int coord_index_2, const double eps = 1e-6)
 {
 	if (x.size() <= coord_index_2)
 	{
@@ -228,7 +229,7 @@ static double partial2(func_n func, vec_n& x, const int coord_index_1, const int
 	return (f_r - f_l) / eps * 0.5;
 }
 
-static double max(const vec_n& x, int& index, const int range = 0)
+static double max      (const vec_n& x, int& index, const int range = 0)
 {
 	double max_ = -1e32;
 	int index_max = range == 0 ? x.size() : range;
@@ -243,7 +244,7 @@ static double max(const vec_n& x, int& index, const int range = 0)
 	return max_;
 }
 
-static double min(const vec_n& x, int& index, const int range = 0)
+static double min      (const vec_n& x, int& index, const int range = 0)
 {
 	double min_ = 1e32;
 
@@ -260,7 +261,7 @@ static double min(const vec_n& x, int& index, const int range = 0)
 	return min_;
 }
 
-static double abs_max(const vec_n& x, int& index, const int range = 0)
+static double absMax   (const vec_n& x, int& index, const int range = 0)
 {
 	double max_ =  -1e32;
 	int i = 0;
@@ -276,7 +277,7 @@ static double abs_max(const vec_n& x, int& index, const int range = 0)
 	return max_;
 }
 
-static double abs_min(const vec_n& x, int& index)
+static double absMin   (const vec_n& x, int& index)
 {
 	double min_ = 1e32;
 	int i = 0;

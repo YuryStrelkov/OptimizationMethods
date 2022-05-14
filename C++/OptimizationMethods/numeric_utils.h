@@ -9,7 +9,7 @@
 /// <param name="numerator">числитель</param>
 /// <param name="denominator">знаменатель</param>
 /// <param name="max_den">максимально допустимый знаменатель</param>
-static void decimal_to_rational(const double value, int& rational_part, int& numerator, int& denominator, const int max_den = MAX_DENOMINATOR)
+static void decimalToRational (const double value, int& rational_part, int& numerator, int& denominator, const int max_den = MAX_DENOMINATOR)
 {
 	long m[2][2];
 	
@@ -66,13 +66,13 @@ static void decimal_to_rational(const double value, int& rational_part, int& num
 	denominator = m[1][0];
 }
 
-static std::string str_rational(const double val, const bool full_rational = true)
+static std::string strRational(const double val, const bool full_rational = true)
 {
 	int r_part;
 	int num;
 	int denom;
 
-	decimal_to_rational(val, r_part, num, denom);
+	decimalToRational(val, r_part, num, denom);
 	if (num == 0)
 	{
 		return std::to_string(r_part);
@@ -89,7 +89,7 @@ static std::string str_rational(const double val, const bool full_rational = tru
 	return std::to_string(denom) + " " + std::to_string(num) + "/" + std::to_string(denom);
 }
 
-static std::string str_rational(const vec_n& val, const bool full_rational = true)
+static std::string strRational(const vec_n& val, const bool full_rational = true)
 {
 	if (val.size() == 0) 
 	{
@@ -98,10 +98,10 @@ static std::string str_rational(const vec_n& val, const bool full_rational = tru
 	std::string str = "{ ";
 	for (int i = 0; i < val.size() - 1; i++)
 	{
-		str += str_rational(val[i], full_rational);
+		str += strRational(val[i], full_rational);
 		str += ", ";
 	}
-	str += str_rational(val[val.size() - 1], full_rational);
+	str += strRational(val[val.size() - 1], full_rational);
 
 	str += " }";
 	return str;

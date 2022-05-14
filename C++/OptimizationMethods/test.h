@@ -5,29 +5,29 @@
 #include "simplex.h"
 #include "numeric_utils.h"
 // тестовая унимодальная одномерная функция с минимумом в точке {2} 
-static double test_function_1d(const double x)
+static double testFunction1d(const double x)
 {
 	return  (x - 2) * (x - 5);
 }
 
 // тестовая унимодальная двумерная функция с минимумом в точке {2,2} 
-static double test_function_2d(const vec_n& args)
+static double testFunction2d(const vec_n& args)
 {
 	return (args[0] - 5) * args[0] + (args[1] - 3) * args[1];
 }
 
 // тестовая унимодальная n - мерная функция с минимумом в точке {2,...,2} 
-static double test_function_nd(const vec_n& args)
+static double testFunctionNd(const vec_n& args)
 {
 	double  val = 0;
 	for (auto const& x : args) 
 	{
-		val += test_function_1d(x);
+		val += testFunction1d(x);
 	}
 	return val;
 }
 
-static void  one_dimensional_methods_test()
+static void  oneDimensionalMethodsTest()
 {
 	std::cout << "\n///////////////////////////////////////////" << std::endl;
 	std::cout <<   "//////// OneDimensionalMethodsTest ////////" << std::endl;
@@ -37,38 +37,38 @@ static void  one_dimensional_methods_test()
 	std::cout << "\n";
 	std::cout << "x = agrmin(x * (x - 5))\n";
 	std::cout << "x_0 = " << x_0 << ",\nx_1 = " << x_1 << "\n";
-	std::cout << "dihotomia   : " << dihotomia   (test_function_1d, x_0, x_1, 1e-4) << "\n";
-	std::cout << "golden_ratio: " << golden_ratio(test_function_1d, x_0, x_1, 1e-4) << "\n";
-	std::cout << "fibonacci   : " << fibonacci   (test_function_1d, x_0, x_1, 1e-4) << "\n";
+	std::cout << "dihotomia   : " << dihotomia  (testFunction1d, x_0, x_1, 1e-4) << "\n";
+	std::cout << "golden_ratio: " << goldenRatio(testFunction1d, x_0, x_1, 1e-4) << "\n";
+	std::cout << "fibonacci   : " << fibonacci  (testFunction1d, x_0, x_1, 1e-4) << "\n";
 }
 
-static void multi_dimensional_methods_test()
+static void multiDimensionalMethodsTest()
 {
-	std::cout << "\n/////////////////////////////////////////////" << std::endl;
-	std::cout <<   "//////// MultiDimensionalMethodsTest ////////" << std::endl;
-	std::cout <<   "/////////////////////////////////////////////\n" << std::endl;
+	std::cout << "\n/////////////////////////////////////////////"  << std::endl;
+	std::cout <<   "//////// MultiDimensionalMethodsTest ////////"  << std::endl;
+	std::cout <<   "/////////////////////////////////////////////\n"<< std::endl;
 
 	vec_n x_0 = { 0,0 };
 	vec_n x_1 = { 5,3 };
 
 	std::cout << "\n";
 	std::cout << "x_0 = " << x_0 << ",\nx_1 = " << x_1 << "\n";
-	std::cout << "dihotomia             : " << dihotomia   (test_function_2d, x_1, x_0, 1e-5) << "\n";
-	std::cout << "golden_ratio          : " << golden_ratio(test_function_2d, x_1, x_0, 1e-5) << "\n";
-	std::cout << "fibonacci             : " << fibonacci   (test_function_2d, x_1, x_0, 1e-5) << "\n";
+	std::cout << "dihotomia             : " << dihotomia  (testFunction2d, x_1, x_0, 1e-5) << "\n";
+	std::cout << "golden_ratio          : " << goldenRatio(testFunction2d, x_1, x_0, 1e-5) << "\n";
+	std::cout << "fibonacci             : " << fibonacci  (testFunction2d, x_1, x_0, 1e-5) << "\n";
 	std::cout << "\n";
 	vec_n x_start = { -0,0 };
-	std::cout << "per_coord_descend     : " << per_coord_descend    (test_function_2d, x_start, 1e-5) << "\n";
-	std::cout << "gradient_descend      : " << gradient_descend     (test_function_2d, x_start, 1e-5) << "\n";
-	std::cout << "conj_gradient_descend : " << conj_gradient_descend(test_function_2d, x_start, 1e-5) << "\n";
-	std::cout << "newtone_raphson       : " << newtone_raphson      (test_function_2d, x_start, 1e-5) << "\n";
+	std::cout << "per_coord_descend     : " << perCoordDescend    (testFunction2d, x_start, 1e-5) << "\n";
+	std::cout << "gradient_descend      : " << gradientDescend    (testFunction2d, x_start, 1e-5) << "\n";
+	std::cout << "conj_gradient_descend : " << conjGradientDescend(testFunction2d, x_start, 1e-5) << "\n";
+	std::cout << "newtone_raphson       : " << newtoneRaphson     (testFunction2d, x_start, 1e-5) << "\n";
 }
 
-static void matrix_test()
+static void matrixTest()
 {
-	std::cout << "\n////////////////////////////" << std::endl;
-	std::cout <<   "//////// MatrixTest ////////" << std::endl;
-	std::cout <<   "////////////////////////////\n" << std::endl;
+	std::cout << "\n////////////////////////////"  << std::endl;
+	std::cout <<   "//////// MatrixTest ////////"  << std::endl;
+	std::cout <<   "////////////////////////////\n"<< std::endl;
 
 	vec_n b{ 1,2,3 };
 	/*
@@ -76,7 +76,9 @@ static void matrix_test()
 	0.3
 	0.05
 	*/
-	mat_mn matrix{ {8,1,6}, {3,5,7}, {4,9,2} };
+	mat_mn matrix{{8, 1, 6},
+				  {3, 5, 7},
+				  {4, 9, 2}};
 	std::cout << matrix << "\n";
 	std::cout << "matrix summ \n";
 	std::cout << matrix + matrix << "\n";
@@ -102,10 +104,10 @@ static void matrix_test()
 	std::cout << matrix * invert(matrix) << "\n";
 	std::cout << "Hessian: \n";
 	vec_n x_ = { 1,2,3 };
-	std::cout << hessian(test_function_nd, x_) << "\n";
+	std::cout << hessian(testFunctionNd, x_) << "\n";
 }
 
-static void simplex_method_test()
+static void simplexMethodTest()
 {
 	std::cout << "\n/////////////////////////////"  << std::endl;
 	std::cout <<   "//////// SimplexTest ////////"  << std::endl;
@@ -153,11 +155,10 @@ static void simplex_method_test()
 	sym_5.solve();
 
 	std::cout << "/////////////////////////////\n" << std::endl;
-
 }
 
 
-static void numeric_tests()
+static void numericTests()
 {
 	std::cout << "\n//////////////////////////////"  << std::endl;
 	std::cout <<   "//////// NumericTests ////////"  << std::endl;
@@ -166,24 +167,24 @@ static void numeric_tests()
 	int rational;
 	int numerator;
 	int denominator;
-	decimal_to_rational(1.6666, rational, numerator, denominator);
+	decimalToRational(1.6666, rational, numerator, denominator);
 	std::cout << rational << " " << numerator << "/" << denominator << std::endl;
-	decimal_to_rational(0.6666, rational, numerator, denominator);
+	decimalToRational(0.6666, rational, numerator, denominator);
 	std::cout << rational << " " << numerator << "/" << denominator << std::endl;
-	decimal_to_rational(-3, rational, numerator, denominator);
+	decimalToRational(-3, rational, numerator, denominator);
 	std::cout << rational << " " << numerator << "/" << denominator << std::endl;
-	decimal_to_rational(-0.125, rational, numerator, denominator);
+	decimalToRational(-0.125, rational, numerator, denominator);
 	std::cout << rational << " " << numerator << "/" << denominator << std::endl;
-	decimal_to_rational(3.769230769230769230769, rational, numerator, denominator);
-	std::cout << rational << " " << numerator	 << "/" << denominator << std::endl;
+	decimalToRational(3.769230769230769230769, rational, numerator, denominator);
+	std::cout << rational << " " << numerator << "/" << denominator << std::endl;
 }
 
-static int test_all()
+static int testAll()
 {
-	//one_dimensional_methods_test();
-	//multi_dimensional_methods_test();
-	//matrix_test();
-	simplex_method_test();
-	//numeric_tests();
+	//oneDimensionalMethodsTest();
+	//multiDimensionalMethodsTest();
+	//matrixTest();
+	simplexMethodTest();
+	//numericTests();
 	return 0;
 }

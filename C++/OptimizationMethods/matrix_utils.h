@@ -360,7 +360,7 @@ static mat_mn invert(const mat_mn& mat)
 }
 const double mat_eps = 1e-9;
 
-mat_mn& add_row(mat_mn& mat, const vec_n& row)
+mat_mn& addRow(mat_mn& mat, const vec_n& row)
 {
 	if (mat.size() == 0)
 	{
@@ -375,7 +375,7 @@ mat_mn& add_row(mat_mn& mat, const vec_n& row)
 	return mat;
 }
 
-mat_mn& add_col(mat_mn& mat, const vec_n& col)
+mat_mn& addCol(mat_mn& mat, const vec_n& col)
 {
 	if (mat.size() == 0)
 	{
@@ -444,7 +444,6 @@ int rank(mat_mn& A)
 	return rank;
 }
 
-
 int rank(const mat_mn& a)
 {
 	mat_mn A(a);
@@ -457,13 +456,13 @@ int rank(const mat_mn& a)
 /// <param name="A"></param>
 /// <param name="b"></param>
 /// <returns>0 - нет решений, 1 - одно решение, 2 - бесконечное множествое решений</returns>
-int check_system(const  mat_mn& A, const vec_n& b)
+int checkSystem(const  mat_mn& A, const vec_n& b)
 {
 	int rank_a = rank(A);
 
 	mat_mn ab = A;
 
-	int rank_a_b = rank(add_col(ab, b));
+	int rank_a_b = rank(addCol(ab, b));
 
 #if _DEBUG
 	std::cout << "rank ( A ) " << rank_a << std::endl;
