@@ -181,10 +181,10 @@ static void numericTests()
 
 static int testAll()
 {
-	//oneDimensionalMethodsTest();
-	//multiDimensionalMethodsTest();
-	//matrixTest();
+	oneDimensionalMethodsTest();
+	multiDimensionalMethodsTest();
+	matrixTest();
 	simplexMethodTest();
-	//numericTests();
+	numericTests();
 	return 0;
 }

@@ -5,7 +5,7 @@ public class Main {
     public static  void main(String[] args)
     {
         //Tests.oneDimensionalMethodsTest();//Pass
-        //Tests.multiDimensionalMethodsTest();//Pass
+        Tests.multiDimensionalMethodsTest();//Pass
         //Tests.numericTests();//Pass
         //Tests.matrixTest();//Pass
         //Tests.simplexTest();//Pass

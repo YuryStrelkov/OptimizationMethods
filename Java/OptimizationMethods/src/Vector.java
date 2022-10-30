@@ -299,18 +299,10 @@ public class Vector
 
     public static Vector gradient(IFunctionND func, Vector x, double eps)
     {
-        Vector x_l = new Vector(x);
-        Vector x_r = new Vector(x);
         Vector df = new Vector(x.size());
         for (int i = 0; i < x.size(); i++)
         {
-            x_l.set(i, x_l.get(i) - eps);//   [i] -= eps;
-            x_r.set(i, x_r.get(i) + eps);
-
-            df.set(i,(func.execute(x_r) - func.execute(x_l)) * (0.5 / eps));
-
-            x_l.set(i, x_l.get(i) + eps);//   [i] -= eps;
-            x_r.set(i, x_r.get(i) - eps);
+            df.set(i, partial(func, x, i, eps));
         }
         return df;
     }

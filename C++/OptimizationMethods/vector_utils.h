@@ -182,24 +182,6 @@ static vec_n direction (const vec_n& a, const vec_n& b)
 	vec_n res = b - a;
 	return normalize(res);
 }
-// производная (центральный разностный аналог) n-мерной функции в точке x с шагом eps
-static vec_n gradient  (func_n fun, const vec_n& x, const double eps = 1e-6)
-{
-	vec_n df, x_l(x), x_r(x);
-
-	df.resize(x.size());
-	for (int i = 0; i < x.size(); i++)
-	{
-		x_l[i] -= eps;
-		x_r[i] += eps;
-
-		df[i] = (fun(x_r) - fun(x_l)) * (0.5 / eps);
-
-		x_l[i] += eps;
-		x_r[i] -= eps;
-	}
-	return df;
-}
 // частная производная по i-ой координате
 static double partial  (func_n func, vec_n& x, const int coord_index, const double eps = 1e-6)
 {
@@ -227,6 +209,18 @@ static double partial2 (func_n func, vec_n& x, const int coord_index_1, const in
 	double f_r = partial(func, x, coord_index_1, eps);
 	x[coord_index_2] -= eps;
 	return (f_r - f_l) / eps * 0.5;
+}
+// производная (центральный разностный аналог) n-мерной функции в точке x с шагом eps
+static vec_n gradient(func_n fun, const vec_n& x, const double eps = 1e-6)
+{
+	vec_n  x_copy(x), df;
+
+	df.resize(x.size());
+	for (int i = 0; i < x.size(); i++)
+	{
+		df[i] = partial(fun, x_copy, i, eps);
+	}
+	return df;
 }
 
 static double max      (const vec_n& x, int& index, const int range = 0)

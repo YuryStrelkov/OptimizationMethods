@@ -336,19 +336,13 @@ namespace OptimizationMethods
         /// <returns></returns>
         public static Vector Gradient(func_n func, Vector x, double eps = 1e-6)
         {
-            Vector x_l = new Vector(x);
-            Vector x_r = new Vector(x);
             Vector df = new Vector(x.Count);
+
             for (int i = 0; i < x.Count; i++)
             {
-                x_l[i] -= eps;
-                x_r[i] += eps;
-
-                df[i] = (func(x_r) - func(x_l)) * (0.5 / eps);
-
-                x_l[i] += eps;
-                x_r[i] -= eps;
+                df[i] = Partial(func, x, i, eps);
             }
+            
             return df;
         }
         /// <summary>
