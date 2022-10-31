@@ -142,6 +142,7 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="common.h" />
     <ClInclude Include="matrix_utils.h" />
     <ClInclude Include="multi_dimensional.h" />
     <ClInclude Include="numeric_utils.h" />

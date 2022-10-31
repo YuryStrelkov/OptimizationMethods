@@ -1,6 +1,5 @@
 #pragma once
 #include "vector_utils.h"
-typedef  std::vector<vec_n> mat_mn;
 
 static mat_mn zeros(const int rows, const int cols)
 {
@@ -67,7 +66,7 @@ static std::ostream& operator<<(std::ostream& steram, const mat_mn& v)
 	return steram;
 }
 
-static mat_mn hessian(func_n func, vec_n& x, const double eps = 1e-6)
+static mat_mn hessian(func_n func, vec_n& x, const double eps = N_DIM_ACCURACY)
 {
 	mat_mn res = zeros(x.size(), x.size());
 	int row, col;
@@ -263,7 +262,7 @@ static vec_n linsolve(const mat_mn& low, const mat_mn& up, const vec_n& b)
 		det *= (up[i][i] * up[i][i]);
 	}
 
-	if (fabs(det) < 1e-12)
+	if (fabs(det) < N_DIM_ACCURACY)
 	{
 		return x;
 	}
@@ -358,7 +357,6 @@ static mat_mn invert(const mat_mn& mat)
 	}
 	return inv;
 }
-const double mat_eps = 1e-9;
 
 mat_mn& addRow(mat_mn& mat, const vec_n& row)
 {
@@ -412,7 +410,7 @@ int rank(mat_mn& A)
 		int j;
 		for (j = 0; j < n; j++)
 		{
-			if (!row_selected[j] && abs(A[j][i]) > mat_eps)
+			if (!row_selected[j] && abs(A[j][i]) > N_DIM_ACCURACY)
 			{
 				break;
 			}
@@ -431,7 +429,7 @@ int rank(mat_mn& A)
 
 			for (int k = 0; k < n; k++)
 			{
-				if (k != j && abs(A[k][i]) > mat_eps)
+				if (k != j && abs(A[k][i]) > N_DIM_ACCURACY)
 				{
 					for (int p = i + 1; p < m; p++)
 					{
@@ -465,19 +463,19 @@ int checkSystem(const  mat_mn& A, const vec_n& b)
 	int rank_a_b = rank(addCol(ab, b));
 
 #if _DEBUG
-	std::cout << "rank ( A ) " << rank_a << std::endl;
-	std::cout << "rank (A|b) " << rank_a_b << std::endl;
+	std::cout << "rank ( A ) " << rank_a << "\n";
+	std::cout << "rank (A|b) " << rank_a_b << "\n";
 	if (rank_a == rank_a_b)
 	{
-		std::cout << "one solution" << std::endl;
+		std::cout << "one solution" << "\n";
 	}
 	if (rank_a < rank_a_b)
 	{
-		std::cout << "infinite amount of solutions" << std::endl;
+		std::cout << "infinite amount of solutions" << "\n";
 	}
 	if (rank_a > rank_a_b)
 	{
-		std::cout << "no solutions" << std::endl;
+		std::cout << "no solutions" << "\n";
 	}
 #endif
 

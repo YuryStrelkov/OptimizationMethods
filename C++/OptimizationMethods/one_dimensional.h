@@ -2,11 +2,10 @@
 #include <cmath>
 #include <iostream>
 #include <vector>
-#define phi 1.61803398874989484820
+#include "common.h"
 
-typedef double(*func)(const double);
 
-static double         dihotomia       (func f, const double x_0, const double x_1, const double eps = 1e-6, const int max_iters = 1000)
+static double         dihotomia       (func f, const double x_0, const double x_1, const double eps = ACCURACY, const int max_iters = ITERS_MAX)
 {
 	double x_0_ = x_0 , x_1_ = x_1, x_c = 0.0;
 	
@@ -38,7 +37,7 @@ static double         dihotomia       (func f, const double x_0, const double x_
 	return x_c;
 }
 
-static double         goldenRatio     (func f, const double x_0, const double x_1, const double eps = 1e-6, const int max_iters = 1000)
+static double         goldenRatio     (func f, const double x_0, const double x_1, const double eps = ACCURACY, const int max_iters = ITERS_MAX)
 {
 	double a = x_0, b = x_1;
 	
@@ -106,8 +105,7 @@ static int            closestFibonacci(double value)
 	}
 }
 
-template<typename T>
-static std::vector<T> fibonacciNumbers(int index)
+template<typename T> static std::vector<T> fibonacciNumbers(int index)
 {
 	if (index < 0)
 	{
@@ -132,7 +130,7 @@ static std::vector<T> fibonacciNumbers(int index)
 	return res;
 }
 
-static double         fibonacci       (func f, const double x_0, const double x_1, const double eps = 1e-6)
+static double         fibonacci       (func f, const double x_0, const double x_1, const double eps = ACCURACY)
 {
 	double a = x_0, b = x_1;
 
@@ -171,5 +169,3 @@ static double         fibonacci       (func f, const double x_0, const double x_
 #endif
 	return (x_1_ + x_0_) * 0.5;
 }
-
-

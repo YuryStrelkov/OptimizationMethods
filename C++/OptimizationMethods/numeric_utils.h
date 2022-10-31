@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
-#define MAX_DENOMINATOR 1000
+#include "common.h"
+
 /// <summary>
 ///  онвертирует дес€тичную запись числа в рациональную, например, дл€ числа 1.666 получим 1 2/3
 /// </summary>

@@ -1,9 +1,10 @@
 #pragma once
-#include "one_dimensional.h";
 #include "multi_dimensional.h";
+#include "one_dimensional.h";
+#include "numeric_utils.h"
 #include "matrix_utils.h"
 #include "simplex.h"
-#include "numeric_utils.h"
+
 // тестовая унимодальная одномерная функция с минимумом в точке {2} 
 static double testFunction1d(const double x)
 {

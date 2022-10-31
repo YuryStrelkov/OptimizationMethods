@@ -9,9 +9,9 @@
 ////////////////////
 namespace sm
 {
-	constexpr auto EQUAL = 0;
-	constexpr auto LESS_EQUAL = -1;
-	constexpr auto MORE_EQUAL = 1;
+	constexpr int EQUAL = 0;
+	constexpr int LESS_EQUAL = -1;
+	constexpr int MORE_EQUAL = 1;
 
 #define SIMPLEX_MAX  0
 #define SIMPLEX_MIN  1
@@ -208,7 +208,7 @@ namespace sm
 
 		stream << std::left << std::setw(colom_w) << std::setfill(separator) << "| b";
 
-		stream << std::endl;
+		stream << "\n";
 
 		int n_row = -1;
 
@@ -253,9 +253,9 @@ namespace sm
 				stream << std::left << std::setw(colom_w) << std::setfill(separator) << "|" + strRational(row[col]);
 			}
 
-			stream << std::endl;
+			stream << "\n";
 		}
-		stream << std::endl;
+		stream << "\n";
 
 		return stream;
 	}
@@ -583,21 +583,21 @@ namespace sm
 		}
 		if (mode == SIMPLEX_MAX)
 		{
-			if (abs(val - simplex_t[n_rows][n_cols]) < 1e-5)
+			if (abs(val - simplex_t[n_rows][n_cols]) < N_DIM_ACCURACY)
 			{
 				if (isTargetFunctionModified())
 				{
-					return true & (abs(simplex_t[simplex_t.size() - 1][simplex_t[0].size() - 1]) < 1e-5);
+					return true & (abs(simplex_t[simplex_t.size() - 1][simplex_t[0].size() - 1]) < N_DIM_ACCURACY);
 				}
 
 				return true;
 			}
 		}
-		if (abs(val + simplex_t[n_rows][n_cols]) < 1e-5)
+		if (abs(val + simplex_t[n_rows][n_cols]) < N_DIM_ACCURACY)
 		{
 			if (isTargetFunctionModified())
 			{
-				return true & (abs(simplex_t[simplex_t.size() - 1][simplex_t[0].size() - 1]) < 1e-5);
+				return true & (abs(simplex_t[simplex_t.size() - 1][simplex_t[0].size() - 1]) < N_DIM_ACCURACY);
 			}
 
 			return true;
@@ -674,14 +674,14 @@ namespace sm
 
 		int main_col;
 
-		std::cout << "Start simplex table:" << std::endl;
+		std::cout << "Start simplex table:" << "\n";
 
 		std::cout << *this;
 
 		if (excludeVirtualArgs())
 		{
 			// второй этап, если задача должна решаться двух проходным(двух этапным) алгоритмом
-			std::cout << "Simplex table after args exclude:" << std::endl;
+			std::cout << "Simplex table after args exclude:" << "\n";
 
 			std::cout << *this;
 		}
@@ -722,10 +722,10 @@ namespace sm
 			solution = currentSimplexSolution();
 
 #if _DEBUG
-			std::cout << "a_main { " << main_row + 1 << ", " << main_col + 1 << " } = " << strRational(a_ik) << std::endl;
+			std::cout << "a_main { " << main_row + 1 << ", " << main_col + 1 << " } = " << strRational(a_ik) << "\n";
 			std::cout << *this;
-			std::cout << "current_solution" << strRational(solution) << std::endl;
-			std::cout << std::endl;
+			std::cout << "current_solution" << strRational(solution) << "\n";
+			std::cout << "\n";
 #endif
 		}
 		if (validateSolution())

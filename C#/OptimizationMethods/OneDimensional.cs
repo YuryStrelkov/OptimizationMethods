@@ -172,7 +172,7 @@ namespace OptimizationMethods
                 a = x_0;
             }
 #if DEBUG
-            Console.WriteLine($"fibonacchi iterations number : {max_iters}");
+            Console.WriteLine($"fibonacci iterations number : {max_iters}");
 #endif
             return (x_1 + x_0) * 0.5;
         }

@@ -2,10 +2,7 @@
 #include <vector>
 #include <cassert>
 #include <iostream>
-
-typedef  std::vector<double> vec_n;
-
-typedef double(*func_n)(const vec_n&);
+#include "common.h"
 
 template<typename T>
 static bool operator==(const std::vector<T> & a, const std::vector<T> & b)
@@ -183,7 +180,8 @@ static vec_n direction (const vec_n& a, const vec_n& b)
 	return normalize(res);
 }
 // частная производная по i-ой координате
-static double partial  (func_n func, vec_n& x, const int coord_index, const double eps = 1e-6)
+static double partial  (func_n func, vec_n& x, const int coord_index, 
+						const double eps = N_DIM_DERIVATIVE_STEP)
 {
 	if (x.size() <= coord_index)
 	{
@@ -197,7 +195,8 @@ static double partial  (func_n func, vec_n& x, const int coord_index, const doub
 	return (f_r - f_l) / eps * 0.5;
 }
 //вторая частная производная по i-ой j-ой координатам
-static double partial2 (func_n func, vec_n& x, const int coord_index_1, const int coord_index_2, const double eps = 1e-6)
+static double partial2 (func_n func, vec_n& x, const int coord_index_1,
+						const int coord_index_2, const double eps = N_DIM_DERIVATIVE_STEP)
 {
 	if (x.size() <= coord_index_2)
 	{
@@ -211,7 +210,7 @@ static double partial2 (func_n func, vec_n& x, const int coord_index_1, const in
 	return (f_r - f_l) / eps * 0.5;
 }
 // производная (центральный разностный аналог) n-мерной функции в точке x с шагом eps
-static vec_n gradient(func_n fun, const vec_n& x, const double eps = 1e-6)
+static vec_n gradient(func_n fun, const vec_n& x, const double eps = N_DIM_DERIVATIVE_STEP)
 {
 	vec_n  x_copy(x), df;
 

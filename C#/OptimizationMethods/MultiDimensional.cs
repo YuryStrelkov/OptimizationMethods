@@ -2,7 +2,6 @@
 
 namespace OptimizationMethods
 {
-
     public static class MultiDimensional
     {
         public static double TestFunc2D(Vector x)
