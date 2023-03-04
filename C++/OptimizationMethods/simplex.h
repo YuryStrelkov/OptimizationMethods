@@ -287,10 +287,8 @@ namespace sm
 
 		if (isTargetFunctionModified())
 		{
-			if (!opt)
-			{
-				return opt;
-			}
+			if (!opt) return opt;
+			
 			const vec_n& row_ = simplex_t[simplex_t.size() - 2];
 
 			for (const auto& id : naturalArgsIds)
@@ -316,10 +314,7 @@ namespace sm
 
 		for (int i = 0; i < row.size() - 1; i++)
 		{
-			if (row[i] >= delta)
-			{
-				continue;
-			}
+			if (row[i] >= delta)continue;
 			delta = row[i];
 			index = i;
 		}
@@ -330,10 +325,7 @@ namespace sm
 
 			for (const auto& id : naturalArgsIds)
 			{
-				if (row_add[id] >= delta)
-				{
-					continue;
-				}
+				if (row_add[id] >= delta)continue;
 				delta = row_add[id];
 				index = id;
 			}
@@ -364,10 +356,7 @@ namespace sm
 				cntr++;
 				continue;
 			}
-			if (simplex_t[i][b_index] / a_ik > delta)
-			{
-				continue;
-			}
+			if (simplex_t[i][b_index] / a_ik > delta)continue;
 			delta = simplex_t[i][b_index] / a_ik;
 			index = i;
 		}
@@ -447,10 +436,7 @@ namespace sm
 		///
 		for (int row = 0; row < simplex_t.size(); row++)
 		{
-			if (bounds_v[row] >= 0)
-			{
-				continue;
-			}
+			if (bounds_v[row] >= 0)continue;
 
 			_inequations[row] *= -1;
 
@@ -502,17 +488,11 @@ namespace sm
 
 		if (mode == SIMPLEX_MAX)
 		{
-			for (int j = 0; j < s_deltas.size(); j++)
-			{
-				s_deltas[j] = j < prices_v.size() ? -prices_v[j] : 0.0;
-			}
+			for (int j = 0; j < s_deltas.size(); j++) s_deltas[j] = j < prices_v.size() ? -prices_v[j] : 0.0;
 		}
 		else
 		{
-			for (int j = 0; j < s_deltas.size(); j++)
-			{
-				s_deltas[j] = j < prices_v.size() ? prices_v[j] : 0.0;
-			}
+			for (int j = 0; j < s_deltas.size(); j++) s_deltas[j] = j < prices_v.size() ? prices_v[j] : 0.0;
 		}
 
 		simplex_t.push_back(s_deltas);
@@ -521,30 +501,21 @@ namespace sm
 		/// Если целевая функуция не была модифицирована
 		/// </summary>
 
-		if (!isTargetFunctionModified())
-		{
-			return;
-		}
+		if (!isTargetFunctionModified()) return;
 
 		/// <summary>
 		/// Если всё же была...
 		/// </summary>
 		vec_n s_deltas_add(simplex_t[0].size());
 
-		for (int j = 0; j < virtualArgsIds.size(); j++)
-		{
-			s_deltas_add[virtualArgsIds[j]] = 1.0;
-		}
+		for (int j = 0; j < virtualArgsIds.size(); j++) s_deltas_add[virtualArgsIds[j]] = 1.0;
 
 		simplex_t.push_back(s_deltas_add);
 	}
 
 	bool simplex::                         excludeVirtualArgs()
 	{
-		if (!isTargetFunctionModified())
-		{
-			return false;
-		}
+		if (!isTargetFunctionModified()) return false;
 
 		int last_row_id = simplex_t.size() - 1;
 
@@ -648,10 +619,7 @@ namespace sm
 
 		for (int i = 0; i < basisArgsIds.size(); i++)
 		{
-			if (basisArgsIds[i] >= solution.size())
-			{
-				continue;
-			}
+			if (basisArgsIds[i] >= solution.size()) continue;
 
 			solution[basisArgsIds[i]] = simplex_t[i][simplex_t[0].size() - 1];
 		}
@@ -690,10 +658,7 @@ namespace sm
 		{
 			main_col = getMainCol();
 
-			if (main_col == -1)
-			{
-				break;
-			}
+			if (main_col == -1) break;
 
 			main_row = getMainRow(main_col);
 
@@ -713,10 +678,8 @@ namespace sm
 
 			for (int i = 0; i < simplex_t.size(); i++)
 			{
-				if (i == main_row)
-				{
-					continue;
-				}
+				if (i == main_row)continue;
+
 				simplex_t[i] = simplex_t[i] - simplex_t[i][main_col] * simplex_t[main_row];
 			}
 			solution = currentSimplexSolution();

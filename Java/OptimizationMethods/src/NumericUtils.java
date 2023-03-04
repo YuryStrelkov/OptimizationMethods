@@ -62,8 +62,6 @@ public class NumericUtils
 
             return number;
         }
-        number[0]  = 0;
-
         number[1]  = (int)(sign * m00);
 
         number[2]  = (int)m10;

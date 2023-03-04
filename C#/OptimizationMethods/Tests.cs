@@ -14,7 +14,7 @@ namespace OptimizationMethods
             const double x_0 = 10;
             const double x_1 = -1;
             Console.WriteLine($"x_0 = {x_0},\nx_1 = {x_1}\n");
-            Console.WriteLine($"Dihotomia   : {OneDimensional.Dihotomia  (OneDimensional.TestFunc, x_0, x_1, 1e-4)}");
+            Console.WriteLine($"BiSect      : {OneDimensional.BiSect     (OneDimensional.TestFunc, x_0, x_1, 1e-4)}");
             Console.WriteLine($"GoldenRatio : {OneDimensional.GoldenRatio(OneDimensional.TestFunc, x_0, x_1, 1e-4)}");
             Console.WriteLine($"Fibonacchi  : {OneDimensional.Fibonacci  (OneDimensional.TestFunc, x_0, x_1, 1e-4)}\n");
         }
@@ -28,7 +28,7 @@ namespace OptimizationMethods
             Vector x_0 = new Vector(5, 3);
 
             Console.WriteLine($"x_0 = {x_0},\nx_1 = {x_1}\n") ;
-            Console.WriteLine($"Dihotomia              : {MultiDimensional.Dihotomia          (MultiDimensional.TestFunc2D, x_1, x_0)}");
+            Console.WriteLine($"BiSect                 : {MultiDimensional.BiSect             (MultiDimensional.TestFunc2D, x_1, x_0)}");
             Console.WriteLine($"GoldenRatio            : {MultiDimensional.GoldenRatio        (MultiDimensional.TestFunc2D, x_1, x_0)}");
             Console.WriteLine($"Fibonacci              : {MultiDimensional.Fibonacci          (MultiDimensional.TestFunc2D, x_1, x_0)}");
             Console.WriteLine($"PerCoordDescend        : {MultiDimensional.PerCoordDescend    (MultiDimensional.TestFunc2D, x_1)}");
@@ -139,10 +139,10 @@ namespace OptimizationMethods
 
         public static void TestAll() 
         {
-            // OneDimensionalMethodsTest();
-            // MultiDimensionalMethodsTest();
-            //MatrixTest();
-            SimpexTest();
+            OneDimensionalMethodsTest();
+            MultiDimensionalMethodsTest();
+            // MatrixTest();
+            // SimpexTest();
             // NumericTests();
         }
     }

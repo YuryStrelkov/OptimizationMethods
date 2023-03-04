@@ -1,6 +1,7 @@
 public class MultiDimensional {
 
     public static final IFunctionND testFunc2d = MultiDimensional::_testFunc2D;
+
     public static final IFunctionND testFuncNd = MultiDimensional::_testFuncND;
 
     public static  boolean ShowDebugLog = false;
@@ -11,6 +12,7 @@ public class MultiDimensional {
     {
         return (x.get(0) - 5) * x.get(0) + (x.get(1) - 3) * x.get(1); // min at point x = 2.5, y = 1.5
     }
+
     private static double _testFuncND(Vector x)
     {
         double val = 0.0;
@@ -19,13 +21,12 @@ public class MultiDimensional {
         {
             val += (x.get(i) - i) * x.get(i);
         }
-
         return val; // min at point x_i = i/2, i from 0 to x.Size-1
     }
     ////////////////////
     /// Lab. work #2 ///
     ////////////////////
-    public static Vector dihotomia      (IFunctionND f, Vector x0, Vector x1, double eps, int max_iters)
+    public static Vector biSect      (IFunctionND f, Vector x0, Vector x1, double eps, int max_iters)
     {
         Vector x_0  = new Vector(x0), x_1 = new Vector(x1), x_c, dir;
 
@@ -35,13 +36,11 @@ public class MultiDimensional {
 
         for (; cntr != max_iters; cntr++)
         {
-            if (Vector.sub(x_1 , x_0).magnitude() < eps)
-            {
-                break;
-            }
+            if (Vector.sub(x_1 , x_0).magnitude() < eps) break;
+
             x_c = Vector.add(x_1 , x_0).mul(0.5);
 
-            if (f.execute(Vector.add(x_c, dir)) > f.execute(Vector.sub(x_c, dir)))
+            if (f.call(Vector.add(x_c, dir)) > f.call(Vector.sub(x_c, dir)))
             {
                 x_1 = x_c;
                 continue;
@@ -49,17 +48,17 @@ public class MultiDimensional {
             x_0 =  x_c;
         }
 
-        if(ShowZeroOrderMethodsDebugLog)System.out.println("Dihotomia iterations number : " + cntr);
+        if(ShowZeroOrderMethodsDebugLog)System.out.println("BiSect iterations number : " + cntr);
 
         return  Vector.add(x_1 , x_0).mul(0.5);
     }
-    public static Vector dihotomia      (IFunctionND f, Vector x_0, Vector x_1, double eps)
+    public static Vector biSect      (IFunctionND f, Vector x_0, Vector x_1, double eps)
     {
-      return  dihotomia(f,  x_0,  x_1,  eps,1000);
+      return  biSect(f,  x_0,  x_1,  eps,1000);
     }
-    public static Vector dihotomia      (IFunctionND f, Vector x_0, Vector x_1)
+    public static Vector biSect      (IFunctionND f, Vector x_0, Vector x_1)
     {
-        return  dihotomia(f,  x_0,  x_1,  1e-5,1000);
+        return  biSect(f,  x_0,  x_1,  1e-5,1000);
     }
     public static Vector goldenRatio    (IFunctionND f, Vector x_0, Vector x_1, double eps, int max_iters)
     {
@@ -75,16 +74,13 @@ public class MultiDimensional {
 
         for (; cntr != max_iters; cntr++)
         {
-            if (Vector.sub(x_1 , x_0).magnitude() < eps)
-            {
-                break;
-            }
+            if (Vector.sub(x_1 , x_0).magnitude() < eps) break;
 
             dx  = Vector.sub(b, a).mul(one_div_phi);
             x_0 = Vector.sub(b, dx);
             x_1 = Vector.add(a, dx);
 
-            if (f.execute(x_0) >= f.execute(x_1))
+            if (f.call(x_0) >= f.call(x_1))
             {
                 a = x_0;
                 continue;
@@ -106,29 +102,27 @@ public class MultiDimensional {
     }
     public static Vector fibonacci      (IFunctionND f, Vector x_0, Vector x_1, double eps)
     {
-        int max_iters = OneDimensional.closestFibonacci(Vector.sub(x_1, x_0).magnitude() / eps);
-
-        int cntr = max_iters - 1;
-
-        int[] f_n_s = OneDimensional.fibonacchiNumbers(max_iters);
-
         Vector a = new Vector(x_0);
 
         Vector b = new Vector(x_1);
 
         Vector dx;
 
-        for (; cntr >= 2; cntr--)
-        {
-            if (Vector.sub(x_1 , x_0).magnitude() < eps)
-            {
-                break;
-            }
-            dx  = Vector.sub(b , a);
-            x_0 = Vector.add(a, Vector.mul(dx,((double)f_n_s[cntr - 2] / f_n_s[cntr])));
-            x_1 = Vector.add(a, Vector.mul(dx,((double)f_n_s[cntr -1]  / f_n_s[cntr])));
+        int[] fib_pair = OneDimensional.closestFibonacciPair(Vector.sub(b, a).magnitude() / eps);
 
-            if (f.execute(x_0) < f.execute(x_1))
+        int f_n = fib_pair[0], f_n_1 = fib_pair[1], f_tmp, cntr = 0;
+
+        while(f_n != f_n_1)
+        {
+            if (Vector.sub(x_1 , x_0).magnitude() < eps)  break;
+            cntr++;
+            f_tmp = f_n_1 - f_n;
+            dx  = Vector.sub(b , a);
+            x_0 = Vector.add(a, Vector.mul(dx,(double)f_tmp / f_n_1));
+            x_1 = Vector.add(a, Vector.mul(dx,(double)f_n   / f_n_1));
+            f_n_1 = f_n;
+            f_n   = f_tmp;
+            if (f.call(x_0) < f.call(x_1))
             {
                 b = x_1;
                 continue;
@@ -136,7 +130,7 @@ public class MultiDimensional {
             a = x_0;
         }
 
-        if(ShowZeroOrderMethodsDebugLog)System.out.println("fibonacci iterations number : "+max_iters);
+        if(ShowZeroOrderMethodsDebugLog)System.out.println("fibonacci iterations number : " + cntr);
 
         return  Vector.add(x_1 , x_0).mul(0.5);
     }
@@ -144,7 +138,7 @@ public class MultiDimensional {
     {
         return  fibonacci( f,  x_0,  x_1, 1e-5);
     }
-    public static Vector perCoordDescend(IFunctionND f, Vector x_start, double eps, int max_iters)
+    public static Vector perCordDescend(IFunctionND f, Vector x_start, double eps, int max_iters)
     {
         Vector x_0 = new Vector(x_start);
 
@@ -156,19 +150,17 @@ public class MultiDimensional {
 
         int opt_coord_n = 0, coord_id;
 
-        int i = 0;
-
-        for (i = 0; i < max_iters; i++)
+        for (int i = 0; i < max_iters; i++)
         {
             coord_id = i % x_0.size();
 
             x_1.set(coord_id, x_1.get(coord_id) - eps);
 
-            y_0 = f.execute(x_1);
+            y_0 = f.call(x_1);
 
             x_1.set(coord_id, x_1.get(coord_id) + 2 * eps);
 
-            y_1 = f.execute(x_1);
+            y_1 = f.call(x_1);
 
             x_1.set(coord_id, x_1.get(coord_id) - eps);
 
@@ -176,7 +168,7 @@ public class MultiDimensional {
 
             x_i = x_0.get(coord_id);
 
-            x_1 = dihotomia(f, x_0, x_1, eps, max_iters);
+            x_1 = biSect(f, x_0, x_1, eps, max_iters);
 
             x_0 = new Vector(x_1);
 
@@ -186,7 +178,7 @@ public class MultiDimensional {
 
                 if (opt_coord_n == x_1.size())
                 {
-                    if(ShowDebugLog)System.out.println("per coord descend iterations number : "+i);
+                    if(ShowDebugLog)System.out.println("per cord descend iterations number : "+i);
 
                     return x_0;
                 }
@@ -195,17 +187,17 @@ public class MultiDimensional {
             opt_coord_n = 0;
         }
 
-        if(ShowDebugLog)System.out.println("per coord descend iterations number : "+max_iters);
+        if(ShowDebugLog)System.out.println("per cord descend iterations number : "+max_iters);
 
         return x_0;
     }
-    public static Vector perCoordDescend(IFunctionND f, Vector x_start, double eps)
+    public static Vector perCordDescend(IFunctionND f, Vector x_start, double eps)
     {
-        return     perCoordDescend( f,  x_start,  eps,1000);
+        return     perCordDescend( f,  x_start,  eps,1000);
     }
-    public static Vector perCoordDescend(IFunctionND f, Vector x_start)
+    public static Vector perCordDescend(IFunctionND f, Vector x_start)
     {
-        return     perCoordDescend( f,  x_start,  1e-5,1000);
+        return     perCordDescend( f,  x_start,  1e-5,1000);
     }
     ////////////////////
     /// Lab. work #3 ///
@@ -218,23 +210,13 @@ public class MultiDimensional {
 
         int cntr = 0;
 
-        while (true)
+        for (; cntr != max_iters; cntr++)
         {
-            cntr++;
-
-            if (cntr == max_iters)
-            {
-                break;
-            }
-
             x_i_1 = Vector.sub(x_i , Vector.gradient(f, x_i, eps));
 
-            x_i_1 = dihotomia(f, x_i, x_i_1, eps, max_iters);
+            x_i_1 = biSect(f, x_i, x_i_1, eps, max_iters);
 
-            if (Vector.sub(x_i_1, x_i).magnitude() < eps)
-            {
-                break;
-            }
+            if (Vector.sub(x_i_1, x_i).magnitude() < eps)  break;
 
             x_i = x_i_1;
         }
@@ -263,23 +245,13 @@ public class MultiDimensional {
 
         int cntr = 0;
 
-        while (true)
+        for (; cntr != max_iters; cntr++)
         {
-            cntr++;
-
-            if (cntr == max_iters)
-            {
-                break;
-            }
-
             x_i_1 = Vector.add(x_i, s_i);
 
-            x_i_1 = dihotomia(f, x_i, x_i_1, eps, max_iters);
+            x_i_1 = biSect(f, x_i, x_i_1, eps, max_iters);
 
-            if (Vector.sub(x_i_1, x_i).magnitude() < eps)
-            {
-                break;
-            }
+            if (Vector.sub(x_i_1, x_i).magnitude() < eps) break;
 
             s_i_1 = Vector.gradient(f, x_i_1, eps);
 
@@ -290,7 +262,7 @@ public class MultiDimensional {
             x_i = x_i_1;
         }
 
-        if(ShowDebugLog)System.out.println("Conj gradient descend iterations number : "+cntr);
+        if(ShowDebugLog)System.out.println("Conj gradient descend iterations number : " + cntr);
 
         return Vector.add(x_i_1, x_i).mul(0.5);
     }
@@ -314,22 +286,13 @@ public class MultiDimensional {
 
         int cntr = -1;
 
-        while (true)
+        for (; cntr != max_iters; cntr++)
         {
-            cntr++;
-
-            if (cntr == max_iters)
-            {
-                break;
-            }
-
             x_i_1 = Vector.sub(x_i, Matrix.mul(Matrix.invert(Matrix.hessian(f, x_i, eps)),Vector.gradient(f, x_i, eps))) ;
 
             ///Метод работает, но условие снизу не отрабатывает
-            if (Vector.sub(x_i_1, x_i).magnitude() < eps)
-            {
-                break;
-            }
+            if (Vector.sub(x_i_1, x_i).magnitude() < eps) break;
+
             x_i = x_i_1;
         }
 

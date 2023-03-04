@@ -5,31 +5,26 @@
 #include "common.h"
 
 
-static double         dihotomia       (func f, const double x_0, const double x_1, const double eps = ACCURACY, const int max_iters = ITERS_MAX)
+static double         bisect       (func_1d f, const double& x_0, const double& x_1, const double& eps = ACCURACY, const int& max_iters = ITERS_MAX)
 {
-	double x_0_ = x_0 , x_1_ = x_1, x_c = 0.0;
+	double x_l = x_0 , x_r = x_1, x_c = 0.0;
 	
-	if (x_0_ > x_1_)
-	{
-		std::swap(x_0_ , x_1_);
-	}
+	if (x_l > x_r) std::swap(x_l, x_r);
 
 	int cntr = 0;
 
 	for (;cntr != max_iters; cntr++)
 	{
-		if (fabs(x_1_ - x_0_) < eps)
-		{
-			break;
-		}
-		x_c = (x_1_ + x_0_) * 0.5;
+		if (x_r - x_l < eps) break;
+
+		x_c = (x_r + x_l) * 0.5;
 
 		if (f(x_c + eps) > f(x_c - eps))
 		{
-			x_1_ = x_c;
+			x_r = x_c;
 			continue;
 		}
-		x_0_ = x_c;
+		x_l = x_c;
 	}
 #if _DEBUG
 	std::cout << "dihotomia iterations number : " << cntr << "\n";
@@ -37,44 +32,39 @@ static double         dihotomia       (func f, const double x_0, const double x_
 	return x_c;
 }
 
-static double         goldenRatio     (func f, const double x_0, const double x_1, const double eps = ACCURACY, const int max_iters = ITERS_MAX)
+static double         goldenRatio     (func_1d f, const double& x_0, const double& x_1, const double& eps = ACCURACY, const int& max_iters = ITERS_MAX)
 {
 	double a = x_0, b = x_1;
 	
-	if (a > b)
-	{
-		std::swap(a, b);
-	}
+	if (a > b) std::swap(a, b);
 
-	double x_0_ = a, x_1_ = b, dx;
+	double x_l = a, x_r = b, dx;
 
 	int cntr = 0;
 
 	for (; cntr != max_iters; cntr++)
 	{
-		if (fabs(x_1_ - x_0_) < eps)
-		{
-			break;
-		}
+		if (x_r - x_l < eps) break;
+		
 		dx = b - a;
 
-		x_0_ = b - dx / phi;
-		x_1_ = a + dx / phi;
+		x_l = b - dx / phi;
+		x_r = a + dx / phi;
 
-		if (f(x_0_) >= f(x_1_))
+		if (f(x_l) >= f(x_r))
 		{
-			a = x_0_;
+			a = x_l;
 			continue;
 		}
-		b = x_1_;
+		b = x_r;
 	}
 #if _DEBUG
 	std::cout << "golden ratio iterations number : " << cntr << "\n";
 #endif
-	return (x_1_ + x_0_) * 0.5;
+	return (x_r + x_l) * 0.5;
 }
 
-static int            closestFibonacci(double value)
+static int            closestFibonacci(const double& value)
 {
 	int f_1 = 1;
 	if (value <= 1) 
@@ -105,67 +95,75 @@ static int            closestFibonacci(double value)
 	}
 }
 
-template<typename T> static std::vector<T> fibonacciNumbers(int index)
+template<typename T> static std::vector<T> fibonacciNumbers(const int& index)
 {
-	if (index < 0)
-	{
-		return {(T)0};
-	}
-	if (index == 0 || index == 1)
-	{
-		return {(T)1};
-	}
-	
+	if (index < 1)
+		return { (T)0 };
+	if (index < 2)
+		return { (T)1 };
+
 	std::vector<T> res(index);
 	
-	res.at(0) = (T)1;
+	res.at(0) = (T)0;
 	
 	res.at(1) = (T)1;
 
-	for (int i = 2; i < index; i++)
-	{
-		res.at(i) = res.at(i - 2) + res.at(i - 1);
-	}
+	for (int i = 2; i < index; i++)res.at(i) = res.at(i - 2) + res.at(i - 1);
 
 	return res;
 }
 
-static double         fibonacci       (func f, const double x_0, const double x_1, const double eps = ACCURACY)
+template<typename T> static void get_closeset_fibonacci_pair(const T& value, int& f_n, int& f_n_1)
+{
+	f_n = 0;
+	f_n_1 = 0;
+	
+	if (value < 1) return;
+	
+	f_n_1 = 1;	   
+
+	if (value < 2) return;
+	int f_tmp;
+
+	while (f_n < value)
+	{
+		f_tmp = f_n;
+		f_n = f_n_1;
+		f_n_1 += f_tmp;
+	}
+}
+
+static double         fibonacci       (func_1d f, const double& x_0, const double& x_1, const double& eps = ACCURACY)
 {
 	double a = x_0, b = x_1;
 
-	if (a > b)
+	if (a > b) std::swap(a, b);
+
+	double x_l = a, x_r = b,  dx;
+
+	int f_n, f_n_1, f_tmp, cntr = 0;
+
+	get_closeset_fibonacci_pair((b - a) / eps, f_n, f_n_1);
+
+	while(f_n != f_n_1)
 	{
-		std::swap(a, b);
-	}
-
-	double x_0_ = a, x_1_ = b, dx;
-	
-	int max_iters = closestFibonacci((b - a) / eps);
-
-	int cntr = max_iters - 1;
-
-	std::vector<double> f_n_s = fibonacciNumbers<double>(max_iters);
-
-	for (; cntr >= 2; cntr--)
-	{
-		if (fabs(x_1_ - x_0_) < eps)
+		if (x_r - x_l < eps)break;
+		cntr++;
+		dx    = (b - a);
+		f_tmp = f_n_1 - f_n;
+		x_l   = a + dx * ((double)f_tmp / f_n_1);
+		x_r   = a + dx * ((double)f_n   / f_n_1);
+		f_n_1 = f_n;
+		f_n   = f_tmp;
+		if(f(x_l) < f(x_r))
 		{
-			break;
-		}
-		dx = (b - a);
-		x_0_ = a + dx * f_n_s[cntr - 2] / f_n_s[cntr];
-		x_1_ = a + dx * f_n_s[cntr - 1] / f_n_s[cntr];
-
-		if (f(x_0_) < f(x_1_))
-		{
-			b = x_1_;
+			b = x_r;
 			continue;
 		}
-		a = x_0_;
+		a = x_l;
 	}
 #if _DEBUG
-	std::cout << "fibonacchi iterations number : " << max_iters << "\n";
+	std::cout << "fibonacchi iterations number : " << cntr << "\n";
 #endif
-	return (x_1_ + x_0_) * 0.5;
+	return (x_l + x_r) * 0.5;
 }

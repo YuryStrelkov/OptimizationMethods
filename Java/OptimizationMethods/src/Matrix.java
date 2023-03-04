@@ -13,7 +13,7 @@ public class Matrix
 {
     public static  boolean showMatrixDebugLog = false;
 
-    private ArrayList<Vector>rows;
+    private final ArrayList<Vector>rows;
 
     public Vector row(int rowId)
     {
@@ -35,32 +35,22 @@ public class Matrix
      */
     public int cols()
     {
-            if (rows() == 0)
-            {
-                return 0;
-            }
+            if (rows() == 0) return 0;
             return row(0).size();
     }
 
     public Matrix addCol(Vector col)
     {
-        if (col.size() != rows())
-        {
-            throw new RuntimeException("Error::AddCol::col.Size != NRows");
-        }
-        for (int i = 0; i < rows.size(); i++)
-        {
-            row(i).pushBack(col.get(i));
-        }
+        if (col == null) return this;
+        if (col.size() != rows()) throw new RuntimeException("Error::AddCol::col.Size != NRows");
+        for (int i = 0; i < rows.size(); i++) row(i).pushBack(col.get(i));
         return this;
     }
 
     public Matrix addRow(Vector row)
     {
-        if (row.size() != cols())
-        {
-            throw new RuntimeException("Error::AddRow::row.Size != NCols");
-        }
+        if(row == null) return this;
+        if (row.size() != cols()) throw new RuntimeException("Error::AddRow::row.Size != NCols");
         rows.add(row);
         return this;
     }
@@ -113,15 +103,10 @@ public class Matrix
 
     public Matrix(Vector...  rows)
     {
-        if (rows == null)
-        {
-            throw new RuntimeException("Data is null...");
-        }
+        if (rows == null) throw new RuntimeException("Data is null...");
 
-        if (rows.length == 0)
-        {
-            throw new RuntimeException("Data is empty...");
-        }
+        if (rows.length == 0) throw new RuntimeException("Data is empty...");
+
         int rowSizeMax = Integer.MIN_VALUE;
 
         int rowSizeMin = Integer.MAX_VALUE;
@@ -131,6 +116,7 @@ public class Matrix
             if(row.size() > rowSizeMax)rowSizeMax = row.size();
             if(row.size() < rowSizeMin)rowSizeMin = row.size();
         }
+
         if(rowSizeMax!=rowSizeMin)throw new RuntimeException("Incorrect matrix data");
 
         this.rows = new ArrayList<>(rows.length);
@@ -145,12 +131,8 @@ public class Matrix
      */
     public Matrix(int n_rows, int n_cols)
     {
-        rows = new ArrayList(n_rows);
-
-        for (int i = 0; i < n_rows; i++)
-        {
-            rows.add(new Vector(n_cols));
-        }
+        rows = new ArrayList<>(n_rows);
+        for (int i = 0; i < n_rows; i++) rows.add(new Vector(n_cols));
     }
 
     /**
@@ -161,10 +143,7 @@ public class Matrix
     {
         rows = new ArrayList<>(original.rows.size());
 
-        for (int i = 0; i < original.rows.size(); i++)
-        {
-            rows.add(new Vector(original.rows.get(i)));
-        }
+        for (int i = 0; i < original.rows.size(); i++)rows.add(new Vector(original.rows.get(i)));
     }
 
     public static Matrix hessian(IFunctionND f, Vector x, double eps)
@@ -199,21 +178,13 @@ public class Matrix
 
         boolean[] row_selected = new boolean[n];
 
-        for (int i = 0; i < row_selected.length; i++)
-        {
-            row_selected[i] = false;
-        }
+        for (int i = 0; i < row_selected.length; i++) row_selected[i] = false;
 
         for (int i = 0; i < m; i++)
         {
             int j;
-            for (j = 0; j < n; j++)
-            {
-                if (!row_selected[j] && Math.abs(A.get(i,j)) > 1e-12)
-                {
-                    break;
-                }
-            }
+
+            for (j = 0; j < n; j++) if (!row_selected[j] && Math.abs(A.get(i,j)) > 1e-12) break;
 
             if (j != n)
             {
@@ -221,19 +192,13 @@ public class Matrix
 
                 row_selected[j] = true;
 
-                for (int p = i + 1; p < m; p++)
-                {
-                    A.set(j, p, A.get(j,p) / A.get(j, i));
-                }
+                for (int p = i + 1; p < m; p++) A.set(j, p, A.get(j,p) / A.get(j, i));
 
                 for (int k = 0; k < n; k++)
                 {
                     if (k != j && Math.abs(A.get(k,i)) > 1e-12)
                     {
-                        for (int p = i + 1; p < m; p++)
-                        {
-                            A.set(k,p,A.get(k,p) - A.get(j,p) * A.get(k,i));
-                        }
+                        for (int p = i + 1; p < m; p++) A.set(k,p,A.get(k,p) - A.get(j,p) * A.get(k,i));
                     }
                 }
             }
@@ -262,32 +227,19 @@ public class Matrix
             System.out.println("rank ( A ) " + rank_a + "\n");
 
             System.out.println("rank (A|b) " + rank_a_b + "\n");
-            if (rank_a == rank_a_b)
-            {
-                System.out.println("one solution\n");
-            }
-            if (rank_a < rank_a_b)
-            {
-                System.out.println("infinite amount of solutions\n");
-            }
-            if (rank_a > rank_a_b)
-            {
-                System.out.println("no solutions\n");
-            }
+            if (rank_a == rank_a_b) System.out.println("one solution\n");
+
+            if (rank_a < rank_a_b) System.out.println("infinite amount of solutions\n");
+
+            if (rank_a > rank_a_b) System.out.println("no solutions\n");
         }
 
-        if (rank_a == rank_a_b)
-        {
-            return SolutionType.Single;
-        }
-        if (rank_a < rank_a_b)
-        {
-            return SolutionType.Infinite;
-        }
-        if (rank_a > rank_a_b)
-        {
-            return SolutionType.None;
-        }
+        if (rank_a == rank_a_b)  return SolutionType.Single;
+
+        if (rank_a < rank_a_b) return SolutionType.Infinite;
+
+        if (rank_a > rank_a_b) return SolutionType.None;
+
         throw new RuntimeException("error :: check_system");
     }
 
@@ -316,11 +268,7 @@ public class Matrix
     public static Matrix identity(int n_rows, int n_cols)
     {
         Matrix I = new Matrix(n_rows, n_cols);
-
-        for (int i = 0; i < Math.min(n_rows, n_cols); i++)
-        {
-            I.set(i,i,1.0);
-        }
+        for (int i = 0; i < Math.min(n_rows, n_cols); i++) I.set(i,i,1.0);
         return I;
     }
 
@@ -335,10 +283,7 @@ public class Matrix
     {
         Matrix low,  up;
 
-        if (src.cols() != src.rows())
-        {
-            throw new RuntimeException("LU decomposition error::non square matrix");
-        }
+        if (src.cols() != src.rows()) throw new RuntimeException("LU decomposition error::non square matrix");
 
         low = new Matrix(src.cols(), src.cols());
 
@@ -354,19 +299,14 @@ public class Matrix
                 {
                     low.set(j,i,src.get(j,i));
 
-                    for (k = 0; k < i; k++)
-                    {
-                        low.set(j,i,low.get(j,i) - low.get(j,k) * up.get(k,i));
-                    }
+                    for (k = 0; k < i; k++)  low.set(j,i,low.get(j,i) - low.get(j,k) * up.get(k,i));
                 }
             }
 
             for (j = 0; j < src.cols(); j++)
             {
-                if (j < i)
-                {
-                    continue;
-                }
+                if (j < i) continue;
+
                 if (j == i)
                 {
                     up.set(i,j,1.0);
@@ -375,10 +315,7 @@ public class Matrix
 
                 up.set(i,j,src.get(i,j) / low.get(i,i));
 
-                for (k = 0; k < i; k++)
-                {
-                    up.set(i,j,up.get(i,j) - low.get(i,k) * up.get(k,j) / low.get(i,i));
-                }
+                for (k = 0; k < i; k++)  up.set(i,j,up.get(i,j) - low.get(i,k) * up.get(k,j) / low.get(i,i));
             }
         }
         return  new Matrix[]{low,up};
@@ -397,17 +334,11 @@ public class Matrix
 
         Vector x, z;
 
-        for (int i = 0; i < up.rows(); i++)
-        {
-            det *= (up.get(i,i) * up.get(i,i));
-        }
+        for (int i = 0; i < up.rows(); i++) det *= (up.get(i,i) * up.get(i,i));
 
         if (Math.abs(det) < 1e-12)
         {
-            if(showMatrixDebugLog)
-            {
-                System.out.println("Matrix is probably singular :: unable to solve A^-1 b = x");
-            }
+            if(showMatrixDebugLog)  System.out.println("Matrix is probably singular :: unable to solve A^-1 b = x");
             return null;
         }
 
@@ -418,10 +349,7 @@ public class Matrix
         for (int i = 0; i < z.size(); i++)
         {
             tmp = 0.0;
-            for (int j = 0; j < i; j++)
-            {
-                tmp += z.get(j) * low.get(i,j);
-            }
+            for (int j = 0; j < i; j++) tmp += z.get(j) * low.get(i,j);
             z.set(i, (b.get(i) - tmp )/ low.get(i,i));
         }
 
@@ -430,10 +358,7 @@ public class Matrix
         for (int i = z.size() - 1; i >= 0; i--)
         {
             tmp = 0.0;
-            for (int j = i + 1; j < z.size(); j++)
-            {
-                tmp += x.get(j) * up.get(i,j);
-            }
+            for (int j = i + 1; j < z.size(); j++) tmp += x.get(j) * up.get(i,j);
             x.set(i, z.get(i) - tmp);
         }
         return x;
@@ -447,10 +372,7 @@ public class Matrix
      */
     public static Vector linsolve(Matrix mat, Vector b)
     {
-        if (mat.rows() != mat.cols())
-        {
-            throw new RuntimeException("non square matrix");
-        }
+        if (mat.rows() != mat.cols()) throw new RuntimeException("non square matrix");
 
         Matrix low = null, up = null;
 
@@ -466,26 +388,17 @@ public class Matrix
      */
     public static Matrix invert(Matrix mat)
     {
-        if (mat.rows() != mat.cols())
-        {
-            throw new RuntimeException("non square matrix");
-        }
+        if (mat.rows() != mat.cols()) throw new RuntimeException("non square matrix");
 
         Matrix[]lu_ = lu( mat);
 
         double det = 1.0;
 
-        for (int i = 0; i < lu_[0].rows(); i++)
-        {
-            det *= (lu_[0].get(i,i) * lu_[0].get(i,i));
-        }
+        for (int i = 0; i < lu_[0].rows(); i++) det *= (lu_[0].get(i,i) * lu_[0].get(i,i));
 
         if (Math.abs(det) < 1e-12)
         {
-            if(showMatrixDebugLog)
-            {
-                System.out.println("Matrix is probably singular :: unable to calculate invert matrix");
-            }
+            if(showMatrixDebugLog) System.out.println("Matrix is probably singular :: unable to calculate invert matrix");
             return null;
         }
 
@@ -499,19 +412,14 @@ public class Matrix
         {
             b.set(i,1.0);
             col = linsolve( lu_[0], lu_[1], b);
-            if (col == null)
-            {
-                throw new RuntimeException("unable to find matrix inversion");
-            }
-            if (col.size() == 0)
-            {
-                throw new RuntimeException("unable to find matrix inversion");
-            }
-            b.set(i,0.0);
-            for (int j = 0; j < mat.rows(); j++)
-            {
-                inv.set(j,i,col.get(j));
-            }
+
+            if (col == null) throw new RuntimeException("unable to find matrix inversion");
+
+            if (col.size() == 0) throw new RuntimeException("unable to find matrix inversion");
+
+            b.set(i, 0.0);
+
+            for (int j = 0; j < mat.rows(); j++) inv.set(j,i,col.get(j));
         }
         return inv;
     }
@@ -527,72 +435,51 @@ public class Matrix
 
         for (int i = 0; i < mat.rows(); i++)
         {
-            for (int j = 0; j < mat.cols(); j++)
-            {
-                trans.set(j, i, mat.get(i,j));
-            }
+            for (int j = 0; j < mat.cols(); j++)  trans.set(j, i, mat.get(i,j));
         }
         return trans;
     }
 
     public Matrix add(Matrix other)
     {
-        if(rows()!= other.rows())
-        {
-            throw new RuntimeException("Dot product :: this.Size()!= other.Size()");
-        }
-        if(cols()!= other.rows())
-        {
-            throw new RuntimeException("Dot product :: this.Size()!= other.Size()");
-        }
-        for (int i = 0; i < rows(); i++)
-        {
-             rows.get(i).add(other.rows.get(i));
-        }
+        if(rows()!= other.rows())  throw new RuntimeException("Dot product :: this.Size()!= other.Size()");
+
+        if(cols()!= other.rows()) throw new RuntimeException("Dot product :: this.Size()!= other.Size()");
+
+        for (int i = 0; i < rows(); i++) rows.get(i).add(other.rows.get(i));
+
         return  this;
     }
 
     public Matrix add(double other)
     {
-        for (int i = 0; i < rows(); i++)
-        {
-            rows.get(i).add(other);
-        }
+        for (int i = 0; i < rows(); i++) rows.get(i).add(other);
+
         return  this;
     }
 
     public Matrix sub(Matrix other)
     {
-        if(rows()!= other.rows())
-        {
-            throw new RuntimeException("Dot product :: this.Size()!= other.Size()");
-        }
-        if(cols()!= other.rows())
-        {
-            throw new RuntimeException("Dot product :: this.Size()!= other.Size()");
-        }
-        for (int i = 0; i < rows(); i++)
-        {
-            rows.get(i).sub(other.rows.get(i));
-        }
+        if(rows()!= other.rows()) throw new RuntimeException("Dot product :: this.Size()!= other.Size()");
+
+        if(cols()!= other.rows()) throw new RuntimeException("Dot product :: this.Size()!= other.Size()");
+
+        for (int i = 0; i < rows(); i++)  rows.get(i).sub(other.rows.get(i));
+
         return  this;
     }
 
     public Matrix sub(double other)
     {
-        for (int i = 0; i < rows(); i++)
-        {
-            rows.get(i).sub(other);
-        }
+        for (int i = 0; i < rows(); i++) rows.get(i).sub(other);
+
         return  this;
     }
 
     public Matrix mul(double other)
     {
-        for (int i = 0; i < rows(); i++)
-        {
-            rows.get(i).mul(other);
-        }
+        for (int i = 0; i < rows(); i++)  rows.get(i).mul(other);
+
         return  this;
     }
 
@@ -603,10 +490,7 @@ public class Matrix
 
     public static Matrix mul(Matrix a, Matrix b)
     {
-        if (a.cols() != b.rows())
-        {
-            throw new RuntimeException("Error matrix multiplication::a.NCols != b.NRows");
-        }
+        if (a.cols() != b.rows())  throw new RuntimeException("Error matrix multiplication::a.NCols != b.NRows");
 
         Matrix b_t = transpose(b);
 
@@ -614,20 +498,15 @@ public class Matrix
 
         for (int i = 0; i < a.rows(); i++)
         {
-            for (int j = 0; j < b.cols(); j++)
-            {
-                res.set(i,j,Vector.dot(a.rows.get(i), b_t.rows.get(j)));
-            }
+            for (int j = 0; j < b.cols(); j++) res.set(i,j,Vector.dot(a.rows.get(i), b_t.rows.get(j)));
         }
         return res;
     }
 
     public static Vector mul(Matrix mat, Vector vec)
     {
-        if (mat.cols() != vec.size())
-        {
-            throw new RuntimeException("unable to matrix and vector myltiply");
-        }
+        if (mat.cols() != vec.size())  throw new RuntimeException("unable to matrix and vector multiply");
+
         Vector result = new Vector(mat.rows());
         int cntr = 0;
         for (Vector row : mat.rows)
@@ -639,18 +518,13 @@ public class Matrix
 
     public static Vector mul(Vector vec, Matrix mat)
     {
-        if (mat.rows() != vec.size())
-        {
-            throw new RuntimeException("unable to matrix and vector myltiply");
-        }
+        if (mat.rows() != vec.size())  throw new RuntimeException("unable to matrix and vector multiply");
+
         Vector result = new Vector(mat.cols());
 
         for (int i = 0; i < mat.cols(); i++)
         {
-            for (int j = 0; j < mat.rows(); j++)
-            {
-                result.set(i, mat.get(j,i) * vec.get(i));
-            }
+            for (int j = 0; j < mat.rows(); j++) result.set(i, mat.get(j,i) * vec.get(i));
         }
 
         return result;
@@ -669,14 +543,9 @@ public class Matrix
 
     public static Matrix add(Matrix a, Matrix b)
     {
-        if (a.cols() != b.cols())
-        {
-            throw new RuntimeException("unable to add matrix a to matrix b");
-        }
-        if (a.rows() != b.rows())
-        {
-            throw new RuntimeException("unable to add matrix a to matrix b");
-        }
+        if (a.cols() != b.cols()) throw new RuntimeException("unable to add matrix a to matrix b");
+
+        if (a.rows() != b.rows()) throw new RuntimeException("unable to add matrix a to matrix b");
 
         Matrix result = new Matrix(a);
 
@@ -697,14 +566,9 @@ public class Matrix
 
     public static Matrix sub(Matrix a, Matrix b)
     {
-        if (a.cols() != b.cols())
-        {
-            throw new RuntimeException("unable to add matrix a to matrix b");
-        }
-        if (a.rows() != b.rows())
-        {
-            throw new RuntimeException("unable to add matrix a to matrix b");
-        }
+        if (a.cols() != b.cols()) throw new RuntimeException("unable to add matrix a to matrix b");
+
+        if (a.rows() != b.rows()) throw new RuntimeException("unable to add matrix a to matrix b");
 
         Matrix result = new Matrix(a);
 

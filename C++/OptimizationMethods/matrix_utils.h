@@ -8,10 +8,7 @@ static mat_mn zeros(const int rows, const int cols)
 	for (auto& row : res)
 	{
 		row.resize(cols);
-		for (int i = 0; i < cols; i++)
-		{
-			row[i] = 0;
-		}
+		for (int i = 0; i < cols; i++)	row[i] = 0;
 	}
 	return res;
 }
@@ -29,10 +26,7 @@ static mat_mn identity(const int rows, const int cols)
 	for (auto& row : res)
 	{
 		row.resize(cols);
-		for (int i = 0; i < cols; i++)
-		{
-			row[i] = row_n == i ? 1.0 : 0.0;
-		}
+		for (int i = 0; i < cols; i++)row[i] = row_n == i ? 1.0 : 0.0;
 		row_n++;
 	}
 	return res;
@@ -55,10 +49,9 @@ static std::vector<size_t> size(const mat_mn& mat)
 static std::ostream& operator<<(std::ostream& steram, const mat_mn& v)
 {
 	steram << "{ \n";
-	for (int i = 0; i < v.size() - 1; i++)
-	{
-		steram << v[i] << ",\n";
-	}
+	
+	for (int i = 0; i < v.size() - 1; i++)steram << v[i] << ",\n";
+	
 	steram << v[v.size() - 1];
 
 	steram << "\n }";
@@ -66,7 +59,7 @@ static std::ostream& operator<<(std::ostream& steram, const mat_mn& v)
 	return steram;
 }
 
-static mat_mn hessian(func_n func, vec_n& x, const double eps = N_DIM_ACCURACY)
+static mat_mn hessian(func_nd func, vec_n& x, const double eps = N_DIM_ACCURACY)
 {
 	mat_mn res = zeros(x.size(), x.size());
 	int row, col;
@@ -84,27 +77,18 @@ static mat_mn hessian(func_n func, vec_n& x, const double eps = N_DIM_ACCURACY)
 static vec_n  operator*(const mat_mn& mat, const vec_n& vec)
 {
 	auto _size = size(mat);
-	if (_size[1] != vec.size())
-	{
-		throw std::runtime_error("error :: matrix by vector multipliction");
-	}
+	if (_size[1] != vec.size())throw std::runtime_error("error :: matrix by vector multipliction");
 	vec_n result;
 	result.resize(_size[0]);
 	int cntr = 0;
-	for (auto const& row : mat)
-	{
-		result[cntr++] = dot(row, vec);
-	}
+	for (auto const& row : mat)result[cntr++] = dot(row, vec);
 	return result;
 }
 
 static vec_n  operator*(const vec_n& vec, const mat_mn& mat)
 {
 	auto _size = size(mat);
-	if (_size[0] != vec.size())
-	{
-		throw std::runtime_error("error :: vector by matrix multipliction");
-	}
+	if (_size[0] != vec.size())throw std::runtime_error("error :: vector by matrix multipliction");
 	vec_n result;
 	result.resize(_size[1]);
 	int cntr = 0;
@@ -112,10 +96,7 @@ static vec_n  operator*(const vec_n& vec, const mat_mn& mat)
 	for (int col = 0; col < _size[1]; col++)
 	{
 		result[0] = 0;
-		for (int row = 0; row < _size[1]; row++)
-		{
-			result[col] += mat[col][row] * vec[row];
-		}
+		for (int row = 0; row < _size[1]; row++)result[col] += mat[col][row] * vec[row];
 	}
 	return result;
 }
@@ -125,11 +106,10 @@ static mat_mn operator*(const mat_mn& a, const mat_mn& b)
 	auto a_size = size(a);
 	auto b_size = size(b);
 
-	if (a_size[1] != b_size[0])
-	{
-		throw std::runtime_error("error :: matrix by matrix multipliction");
-	}
+	if (a_size[1] != b_size[0])throw std::runtime_error("error :: matrix by matrix multipliction");
+	
 	mat_mn result;
+	
 	result.resize(a_size[0]);//, b_size[0]);
 
 	for (int row = 0; row < a_size[0]; row++)
@@ -140,10 +120,7 @@ static mat_mn operator*(const mat_mn& a, const mat_mn& b)
 		{
 			result[row][col] = 0;
 
-			for (int k = 0; k < b_size[0]; k++)
-			{
-				result[row][col] += a[row][k] * b[k][col];
-			}
+			for (int k = 0; k < b_size[0]; k++) result[row][col] += a[row][k] * b[k][col];
 		}
 	}
 	return result;
@@ -163,32 +140,25 @@ static mat_mn operator*(const mat_mn& mat, const double& a)
 static mat_mn operator+(const mat_mn& a, const mat_mn& b)
 {
 	auto _size = size(a);
-	if (_size != size(b))
-	{
-		throw std::runtime_error("error :: matrix + matrix");
-	}
+	
+	if (_size != size(b))throw std::runtime_error("error :: matrix + matrix");
+	
 	mat_mn result;
+	
 	result.resize(_size[0]);
-	for (int i = 0; i < result.size(); i++)
-	{
-		result[i] = a[i] + b[i];
-	}
+	
+	for (int i = 0; i < result.size(); i++)result[i] = a[i] + b[i];
+	
 	return result;
 }
 
 static mat_mn operator-(const mat_mn& a, const mat_mn& b)
 {
 	auto _size = size(a);
-	if (_size != size(b))
-	{
-		throw std::runtime_error("error :: matrix - matrix");
-	}
+	if (_size != size(b)) throw std::runtime_error("error :: matrix - matrix");
 	mat_mn result;
 	result.resize(_size[0]);
-	for (int i = 0; i < result.size(); i++)
-	{
-		result[i] = a[i] - b[i];
-	}
+	for (int i = 0; i < result.size(); i++) result[i] = a[i] - b[i];
 	return result;
 }
 
@@ -198,20 +168,11 @@ static void lu(const mat_mn& mat, mat_mn& low, mat_mn& up)
 
 	int cols = mat[0].size();
 
-	if (rows != cols)
-	{
-		throw std::runtime_error("error :: matrix lu decomposition :: non square matrix");
-	}
+	if (rows != cols) throw std::runtime_error("error :: matrix lu decomposition :: non square matrix");
 
-	if (size(mat) != size(low))
-	{
-		low = zeros(rows, cols);
-	}
+	if (size(mat) != size(low))	low = zeros(rows, cols);
 
-	if (size(mat) != size(up))
-	{
-		up = zeros(rows, cols);
-	}
+	if (size(mat) != size(up)) up = zeros(rows, cols);
 
 	int i = 0, j = 0, k = 0;
 
@@ -223,19 +184,14 @@ static void lu(const mat_mn& mat, mat_mn& low, mat_mn& up)
 			{
 				low[j][i] = mat[j][i];
 
-				for (k = 0; k < i; k++)
-				{
-					low[j][i] = low[j][i] - low[j][k] * up[k][i];
-				}
+				for (k = 0; k < i; k++) low[j][i] = low[j][i] - low[j][k] * up[k][i];
 			}
 		}
 
 		for (j = 0; j < cols; j++)
 		{
-			if (j < i)
-			{
-				continue;
-			}
+			if (j < i)continue;
+			
 			if (j == i)
 			{
 				up[i][j] = 1;
@@ -243,10 +199,7 @@ static void lu(const mat_mn& mat, mat_mn& low, mat_mn& up)
 			}
 			up[i][j] = mat[i][j] / low[i][i];
 
-			for (k = 0; k < i; k++)
-			{
-				up[i][j] = up[i][j] - ((low[i][k] * up[k][j]) / low[i][i]);
-			}
+			for (k = 0; k < i; k++) up[i][j] = up[i][j] - ((low[i][k] * up[k][j]) / low[i][i]);
 		}
 	}
 }
@@ -257,15 +210,9 @@ static vec_n linsolve(const mat_mn& low, const mat_mn& up, const vec_n& b)
 	
 	vec_n x, z;
 
-	for (int i = 0; i < up.size(); i++)
-	{
-		det *= (up[i][i] * up[i][i]);
-	}
+	for (int i = 0; i < up.size(); i++) det *= (up[i][i] * up[i][i]);
 
-	if (fabs(det) < N_DIM_ACCURACY)
-	{
-		return x;
-	}
+	if (fabs(det) < N_DIM_ACCURACY) return x;
 
 	z.resize(low.size());
 
@@ -274,10 +221,9 @@ static vec_n linsolve(const mat_mn& low, const mat_mn& up, const vec_n& b)
 	for (int i = 0; i < z.size(); i++)
 	{
 		tmp = 0.0f;
-		for (int j = 0; j < i; j++)
-		{
-			tmp += z[j] * low[i][j];
-		}
+
+		for (int j = 0; j < i; j++) tmp += z[j] * low[i][j];
+		
 		z[i] = (b[i] - tmp) / low[i][i];
 	}
 
@@ -286,10 +232,7 @@ static vec_n linsolve(const mat_mn& low, const mat_mn& up, const vec_n& b)
 	for (int i = z.size() - 1; i >= 0; i--)
 	{
 		tmp = 0.0;
-		for (int j = i + 1; j < z.size(); j++)
-		{
-			tmp += x[j] * up[i][j];
-		}
+		for (int j = i + 1; j < z.size(); j++) tmp += x[j] * up[i][j];
 		x[i] = (z[i] - tmp);
 	}
 
@@ -302,10 +245,7 @@ static vec_n linsolve(const mat_mn& mat, const vec_n& b)
 
 	int cols = mat[0].size();
 
-	if (rows != cols)
-	{
-		throw std::runtime_error("error :: matrix inversion :: non square matrix");
-	}
+	if (rows != cols) throw std::runtime_error("error :: matrix inversion :: non square matrix");
 
 	mat_mn low, up;
 
@@ -320,10 +260,7 @@ static mat_mn invert(const mat_mn& mat)
 
 	int cols = mat[0].size();
 
-	if (rows != cols)
-	{
-		throw std::runtime_error("error :: matrix inversion :: non square matrix");
-	}
+	if (rows != cols) throw std::runtime_error("error :: matrix inversion :: non square matrix");
 
 	mat_mn low, up, inv;
 
@@ -333,27 +270,17 @@ static mat_mn invert(const mat_mn& mat)
 
 	b.resize(rows);
 
-	for (int i = 0; i < b.size(); i++)
-	{
-		b[i] = 0.0;
-	}
-
+	for (int i = 0; i < b.size(); i++) b[i] = 0.0;
+	
 	inv = zeros(rows);
 
 	for (int i = 0; i < cols; i++)
 	{
 		b[i] = 1.0;
 		col = linsolve(low, up, b);
-		if (col.size() == 0)
-		{
-			throw std::runtime_error("error :: unable to find matrix inversion");
-		}
-
+		if (col.size() == 0) throw std::runtime_error("error :: unable to find matrix inversion");
 		b[i] = 0.0;
-		for (int j = 0; j < rows; j++)
-		{
-			inv[j][i] = col[j];
-		}
+		for (int j = 0; j < rows; j++) inv[j][i] = col[j];
 	}
 	return inv;
 }
@@ -365,10 +292,7 @@ mat_mn& addRow(mat_mn& mat, const vec_n& row)
 		mat.push_back(row);
 		return mat;
 	}
-	if (mat[0].size() != row.size())
-	{
-		throw std::runtime_error("error :: add_row");
-	}
+	if (mat[0].size() != row.size()) throw std::runtime_error("error :: add_row");
 	mat.push_back(row);
 	return mat;
 }
@@ -384,14 +308,10 @@ mat_mn& addCol(mat_mn& mat, const vec_n& col)
 		}
 		return mat;
 	}
-	if (mat.size() != col.size())
-	{
-		throw std::runtime_error("error :: add_col");
-	}
-	for (int i = 0; i < col.size(); i++)
-	{
-		mat[i].push_back(col[i]);
-	}
+	if (mat.size() != col.size()) throw std::runtime_error("error :: add_col");
+	
+	for (int i = 0; i < col.size(); i++) mat[i].push_back(col[i]);
+	
 	return mat;
 }
 
@@ -408,12 +328,10 @@ int rank(mat_mn& A)
 	for (int i = 0; i < m; i++)
 	{
 		int j;
+
 		for (j = 0; j < n; j++)
 		{
-			if (!row_selected[j] && abs(A[j][i]) > N_DIM_ACCURACY)
-			{
-				break;
-			}
+			if (!row_selected[j] && abs(A[j][i]) > N_DIM_ACCURACY) break;
 		}
 
 		if (j != n)
@@ -422,19 +340,13 @@ int rank(mat_mn& A)
 
 			row_selected[j] = true;
 
-			for (int p = i + 1; p < m; p++)
-			{
-				A[j][p] /= A[j][i];
-			}
+			for (int p = i + 1; p < m; p++) A[j][p] /= A[j][i];
 
 			for (int k = 0; k < n; k++)
 			{
 				if (k != j && abs(A[k][i]) > N_DIM_ACCURACY)
 				{
-					for (int p = i + 1; p < m; p++)
-					{
-						A[k][p] -= A[j][p] * A[k][i];
-					}
+					for (int p = i + 1; p < m; p++) A[k][p] -= A[j][p] * A[k][i];
 				}
 			}
 		}
@@ -456,40 +368,19 @@ int rank(const mat_mn& a)
 /// <returns>0 - нет решений, 1 - одно решение, 2 - бесконечное множествое решений</returns>
 int checkSystem(const  mat_mn& A, const vec_n& b)
 {
-	int rank_a = rank(A);
-
-	mat_mn ab = A;
-
+	int rank_a   = rank(A);
+	mat_mn ab    = A;
 	int rank_a_b = rank(addCol(ab, b));
 
 #if _DEBUG
-	std::cout << "rank ( A ) " << rank_a << "\n";
+	std::cout << "rank ( A ) " << rank_a   << "\n";
 	std::cout << "rank (A|b) " << rank_a_b << "\n";
-	if (rank_a == rank_a_b)
-	{
-		std::cout << "one solution" << "\n";
-	}
-	if (rank_a < rank_a_b)
-	{
-		std::cout << "infinite amount of solutions" << "\n";
-	}
-	if (rank_a > rank_a_b)
-	{
-		std::cout << "no solutions" << "\n";
-	}
+	if (rank_a == rank_a_b) std::cout << "one solution" << "\n";
+	if (rank_a  < rank_a_b) std::cout << "infinite amount of solutions" << "\n";
+	if (rank_a  > rank_a_b) std::cout << "no solutions" << "\n";
 #endif
-
-	if (rank_a == rank_a_b)
-	{
-		return 1;
-	}
-	if (rank_a < rank_a_b)
-	{
-		return 2;
-	}
-	if (rank_a > rank_a_b)
-	{
-		return 0;
-	}
+	if (rank_a == rank_a_b) return 1;
+	if (rank_a  < rank_a_b) return 2;
+	if (rank_a  > rank_a_b) return 0;
 	throw std::runtime_error("error :: check_system");
 }

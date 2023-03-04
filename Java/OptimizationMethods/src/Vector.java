@@ -12,10 +12,7 @@ public class Vector
     {
         data = new ArrayList<>(cap);
 
-        for(int i = 0; i < cap; i++)
-        {
-            data.add(0.0);
-        }
+        for(int i = 0; i < cap; i++)  data.add(0.0);
     }
 
     private boolean isInRange(int index)
@@ -37,10 +34,7 @@ public class Vector
     {
         data = new ArrayList<>(other.length);
 
-        for(int i = 0; i < other.length; i++)
-        {
-            data.add(other[i]);
-        }
+        for (double v : other)  data.add(v);
     }
 
     public double get(int index)
@@ -67,10 +61,8 @@ public class Vector
     {
         double mag = 0.0;
 
-        for (double element : data)
-        {
-            mag += (element * element);
-        }
+        for (double element : data) mag += (element * element);
+
         return Math.sqrt(mag);
     }
 
@@ -78,10 +70,8 @@ public class Vector
     {
         double inv_mag = 1.0 / magnitude();
 
-        for (int i = 0; i < size(); i++)
-        {
-            this.set(i,  this.get(i) * inv_mag);
-        }
+        for (int i = 0; i < size(); i++) this.set(i,  this.get(i) * inv_mag);
+
         return this;
     }
 
@@ -93,16 +83,12 @@ public class Vector
 
     public double dot(Vector other)
     {
-        if(size()!= other.size())
-        {
-            throw new RuntimeException("Dot product :: this.Size()!= other.Size()");
-        }
+        if(size()!= other.size()) throw new RuntimeException("Dot product :: this.Size()!= other.Size()");
+
         double dot = 0.0;
 
-        for (int i = 0; i < other.size(); i++)
-        {
-            dot += this.get(i) * other.get(i);
-        }
+        for (int i = 0; i < other.size(); i++) dot += this.get(i) * other.get(i);
+
         return dot;
     }
 
@@ -147,72 +133,53 @@ public class Vector
 
     public  Vector add(Vector other)
     {
-        if(size()!= other.size())
-        {
-            throw new RuntimeException("Vectors add :: this.Size()!= other.Size()");
-        }
-        for (int i = 0; i < other.size(); i++)
-        {
-            set(i, get(i) + other.get(i));
-        }
+        if(size()!= other.size()) throw new RuntimeException("Vectors add :: this.Size()!= other.Size()");
+
+        for (int i = 0; i < other.size(); i++) set(i, get(i) + other.get(i));
+
         return this;
     }
 
     public  Vector add(double other)
     {
-        for (int i = 0; i < size(); i++)
-        {
-            set(i, get(i) + other);
-        }
+        for (int i = 0; i < size(); i++) set(i, get(i) + other);
+
         return this;
     }
 
     public  Vector sub(Vector other)
     {
-        if(size()!= other.size())
-        {
-            throw new RuntimeException("Vectors sub :: this.Size()!= other.Size()");
-        }
-        for (int i = 0; i < other.size(); i++)
-        {
-            set(i, get(i) - other.get(i));
-        }
+        if(size()!= other.size())  throw new RuntimeException("Vectors sub :: this.Size()!= other.Size()");
+
+        for (int i = 0; i < other.size(); i++)  set(i, get(i) - other.get(i));
+
         return this;
     }
 
     public  Vector sub(double other)
     {
-        for (int i = 0; i < size(); i++)
-        {
-            set(i, get(i) - other);
-        }
+        for (int i = 0; i < size(); i++) set(i, get(i) - other);
+
         return this;
     }
 
     public  Vector mul(double other)
     {
-        for (int i = 0; i < size(); i++)
-        {
-            set(i, get(i) * other);
-        }
+        for (int i = 0; i < size(); i++) set(i, get(i) * other);
+
         return this;
     }
 
     public  Vector div(double other)
     {
-        for (int i = 0; i < size(); i++)
-        {
-            set(i, get(i) / other);
-        }
+        for (int i = 0; i < size(); i++)  set(i, get(i) / other);
+
         return this;
     }
 
     public static Vector add(Vector a, Vector b)
     {
-        if(a.size()!= b.size())
-        {
-            throw new RuntimeException("Vectors sum :: this.Size()!= other.Size()");
-        }
+        if(a.size()!= b.size()) throw new RuntimeException("Vectors sum :: this.Size()!= other.Size()");
         Vector  res = new Vector(a);
         return  res.add(b);
     }
@@ -230,10 +197,7 @@ public class Vector
 
     public static Vector sub(Vector a, Vector b)
     {
-        if(a.size()!= b.size())
-        {
-            throw new RuntimeException("Vectors sub :: this.Size()!= other.Size()");
-        }
+        if(a.size()!= b.size()) throw new RuntimeException("Vectors sub :: this.Size()!= other.Size()");
         Vector res = new Vector(a);
         return res.sub(b);
     }
@@ -248,10 +212,8 @@ public class Vector
     {
         Vector res = new Vector(a);
 
-        for(int i = 0; i < a.size(); i++)
-        {
-            res.set(i, b - a.get(i));
-        }
+        for(int i = 0; i < a.size(); i++) res.set(i, b - a.get(i));
+
         return  res;
     }
 
@@ -276,19 +238,15 @@ public class Vector
     {
         Vector res = new Vector(a);
 
-        for(int i = 0; i < a.size(); i++)
-        {
-            res.set(i, b / a.get(i));
-        }
+        for(int i = 0; i < a.size(); i++)  res.set(i, b / a.get(i));
+
         return  res;
     }
 
     public static Vector direction(Vector a, Vector b)
     {
-        if (a.size() != b.size())
-        {
-            throw new RuntimeException("Vectors direction :: a.Size()!= b.Size()");
-        }
+        if (a.size() != b.size()) throw new RuntimeException("Vectors direction :: a.Size()!= b.Size()");
+
         return sub(b , a).normalize();
     }
 
@@ -300,33 +258,26 @@ public class Vector
     public static Vector gradient(IFunctionND func, Vector x, double eps)
     {
         Vector df = new Vector(x.size());
-        for (int i = 0; i < x.size(); i++)
-        {
-            df.set(i, partial(func, x, i, eps));
-        }
+        for (int i = 0; i < x.size(); i++)  df.set(i, partial(func, x, i, eps));
         return df;
     }
 
     public static double partial (IFunctionND func, Vector x, int index, double eps )
     {
-        if (!x.isInRange(index))
-        {
-            throw new RuntimeException("Partial derivative index out of bounds!");
-        }
+        if (!x.isInRange(index))  throw new RuntimeException("Partial derivative index out of bounds!");
+
         x.set(index,  x.get(index) + eps);//[index] += eps;
-        double f_r = func.execute(x);
+        double f_r = func.call(x);
         x.set(index,  x.get(index) - 2.0 * eps);
-        double f_l = func.execute(x);
+        double f_l = func.call(x);
         x.set(index,  x.get(index) +  eps);
         return (f_r - f_l) / eps * 0.5;
     }
 
     public static double partial2(IFunctionND func, Vector x, int index_1, int index_2, double eps)
     {
-        if (!x.isInRange(index_2))
-        {
-            throw new RuntimeException("Partial derivative index out of bounds!");
-        }
+        if (!x.isInRange(index_2)) throw new RuntimeException("Partial derivative index out of bounds!");
+
         x.set(index_2,  x.get(index_2) - eps);
         double f_l = partial(func, x, index_1, eps);
         x.set(index_2,  x.get(index_2) + 2.0 * eps);

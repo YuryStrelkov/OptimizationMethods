@@ -11,9 +11,9 @@
 // Методы n-мерной дихотомии, золотого сечения и Фибоначчи определяют минимум строго вдоль направления из  x_0 в x_1
 // т.е., если истинный минимум функции на этом направлении не лежит, метод всё равно найдёт минимальное значение, но оно 
 // будет отличаться от истинного минимума
-static vec_n dihotomia          (func_n f, const vec_n& x_0, const vec_n& x_1, const double eps = N_DIM_ACCURACY, const int max_iters = N_DIM_ITERS_MAX)
+static vec_n bisect(func_nd f, const vec_n& x_0, const vec_n& x_1, const double& eps = N_DIM_ACCURACY, const int& max_iters = N_DIM_ITERS_MAX)
 {
-	vec_n x_0_ = x_0, x_1_ = x_1, x_c, dir;
+	vec_n x_l = x_0, x_r = x_1, x_c, dir;
 
 	dir = direction(x_0, x_1) * eps;
 
@@ -21,18 +21,16 @@ static vec_n dihotomia          (func_n f, const vec_n& x_0, const vec_n& x_1, c
 
 	for (; cntr != max_iters; cntr++)
 	{
-		if (magnitude(x_1_ - x_0_) < eps)
-		{
-			break;
-		}
-		x_c = (x_1_ + x_0_) * 0.5;
+		if (magnitude(x_r - x_l) < eps) break;
+		
+		x_c = (x_r + x_l) * 0.5;
 
 		if (f(x_c + dir) > f(x_c - dir))
 		{
-			x_1_ = x_c;
+			x_r = x_c;
 			continue;
 		}
-		x_0_ = x_c;
+		x_l = x_c;
 	}
 #ifdef _DEBUG 
 	std::cout << "dihotomia iterations number : " << cntr << "\n";
@@ -40,11 +38,11 @@ static vec_n dihotomia          (func_n f, const vec_n& x_0, const vec_n& x_1, c
 	return x_c;
 }
 
-static vec_n goldenRatio        (func_n f, const vec_n& x_0, const vec_n& x_1, const double eps = N_DIM_ACCURACY, const int max_iters = N_DIM_ITERS_MAX)
+static vec_n goldenRatio        (func_nd f, const vec_n& x_0, const vec_n& x_1, const double& eps = N_DIM_ACCURACY, const int& max_iters = N_DIM_ITERS_MAX)
 {
 	vec_n  a = x_0, b = x_1;
 
-	vec_n x_0_(a), x_1_(b), dx;
+	vec_n x_l(a), x_r(b), dx;
 
 	int cntr = 0;
 
@@ -52,21 +50,19 @@ static vec_n goldenRatio        (func_n f, const vec_n& x_0, const vec_n& x_1, c
 
 	for (; cntr != max_iters; cntr++)
 	{
-		if (magnitude(x_1_ - x_0_) < eps)
-		{
-			break;
-		}
+		if (magnitude(x_r - x_l) < eps) break;
+		
 		dx   = (b - a) * one_div_phi;
 
-		x_0_ =  b - dx;
-		x_1_ =  a + dx;
+		x_l =  b - dx;
+		x_r =  a + dx;
 
-		if (f(x_0_) >= f(x_1_))
+		if (f(x_l) >= f(x_r))
 		{
-			a = x_0_;
+			a = x_l;
 			continue;
 		}
-		b = x_1_;
+		b = x_r;
 	}
 #if _DEBUG
 	std::cout <<"golden ratio iterations number : " << cntr << "\n";
@@ -74,44 +70,43 @@ static vec_n goldenRatio        (func_n f, const vec_n& x_0, const vec_n& x_1, c
 	return (a + b) * 0.5;
 }
 
-static vec_n fibonacci          (func_n f, const vec_n& x_0, const vec_n& x_1, const double eps = N_DIM_ACCURACY)
+static vec_n fibonacci          (func_nd f, const vec_n& x_0, const vec_n& x_1, const double& eps = N_DIM_ACCURACY)
 {
 	vec_n a(x_0), b(x_1);
 	
-	vec_n x_0_(x_0), x_1_(x_1), dx;
+	vec_n x_l(x_0), x_r(x_1), dx;
 	
-	int max_iters = closestFibonacci(magnitude(x_1 - x_0) / eps);
-	
-	int cntr = max_iters - 1;
+	int f_n, f_n_1, f_tmp, cntr = 0;
 
-	std::vector<double> f_n_s = fibonacciNumbers<double>(max_iters);
+	get_closeset_fibonacci_pair(magnitude(b - a) / eps, f_n, f_n_1);
 
-	for (; cntr >= 2; cntr--)
+	while (f_n != f_n_1)
 	{
-		if (magnitude(x_1_ - x_0_) < eps)
+		if (magnitude(x_r - x_l) < eps) break;
+		
+		dx = (b - a);
+		f_tmp = f_n_1 - f_n;
+		x_l = a + dx * ((double)f_tmp / f_n_1);
+		x_r = a + dx * ((double)f_n   / f_n_1);
+		f_n_1 = f_n;
+		f_n = f_tmp;
+		if (f(x_l) < f(x_r))
 		{
-			break;
-		}
-		dx   = b - a;
-		x_0_ = a + dx * ((double)f_n_s[cntr - 2] / f_n_s[cntr]);
-		x_1_ = a + dx * ((double)f_n_s[cntr - 1] / f_n_s[cntr]);
-
-		if (f(x_0_) < f(x_1_))
-		{
-			b = x_1_;
+			b = x_r;
 			continue;
 		}
-		a = x_0_;
+		a = x_l;
 	}
 #if _DEBUG
-	std::cout << "fibonacchi iterations number : " << max_iters << "\n";
+	std::cout << "fibonacchi iterations number : " << cntr << "\n";
 #endif
-	return (x_1_ + x_0_) * 0.5;
+	return (x_r + x_l) * 0.5;
 }
+
 // Покоординатный спуск, градиентный спуск и спуск с помощью сопряжённых градиентов, определяют
 // минимальное значение функции только по одной начальной точке x_start.
 // Поэтому не зависят от выбора направления.
-static vec_n perCoordDescend    (func_n f, const vec_n& x_start, const double eps = N_DIM_ACCURACY, const int max_iters = N_DIM_ITERS_MAX)
+static vec_n perCoordDescend    (func_nd f, const vec_n& x_start, const double& eps = N_DIM_ACCURACY, const int& max_iters = N_DIM_ITERS_MAX)
 {
 	vec_n x_0(x_start);
 	
@@ -131,7 +126,7 @@ static vec_n perCoordDescend    (func_n f, const vec_n& x_start, const double ep
 
 		y_0 = f(x_1);
 
-		x_1[coord_id] += 2 * eps;
+		x_1[coord_id] += 2.0 * eps;
 
 		y_1 = f(x_1);
 
@@ -141,7 +136,7 @@ static vec_n perCoordDescend    (func_n f, const vec_n& x_start, const double ep
 
 		x_i = x_0[coord_id];
 
-		x_1 = dihotomia(f, x_0, x_1, eps, max_iters);
+		x_1 = bisect(f, x_0, x_1, eps, max_iters);
 
 		x_0 = x_1;
 
@@ -166,28 +161,22 @@ static vec_n perCoordDescend    (func_n f, const vec_n& x_start, const double ep
 	return x_0;
 }
 //
-static vec_n gradientDescend    (func_n f, const vec_n& x_start, const double eps = N_DIM_ACCURACY, const int max_iters = N_DIM_ITERS_MAX)
+static vec_n gradientDescend    (func_nd f, const vec_n& x_start, const double& eps = N_DIM_ACCURACY, const int& max_iters = N_DIM_ITERS_MAX)
 {
 	vec_n x_i(x_start);
 	vec_n x_i_1; 
 	vec_n grad;
 	int cntr = 0;
-	while (true)
+	for(; cntr <= max_iters; cntr++)
 	{
-		cntr++;
-		if (cntr == max_iters)
-		{
-			break;
-		}
 		grad  = gradient(f, x_i, eps);
-		x_i_1 = x_i - grad;
-		x_i_1 = dihotomia(f, x_i, x_i_1, eps, max_iters);
-		
-		if (magnitude(x_i_1 - x_i) < eps) 
-		{
-			break;
-		}
 
+		x_i_1 = x_i - grad;
+		
+		x_i_1 = bisect(f, x_i, x_i_1, eps, max_iters);
+		
+		if (magnitude(x_i_1 - x_i) < eps) break;
+	
 		x_i = x_i_1;
 	}
 #if _DEBUG
@@ -196,30 +185,20 @@ static vec_n gradientDescend    (func_n f, const vec_n& x_start, const double ep
 	return (x_i_1 + x_i) * 0.5;
 }
 
-static vec_n conjGradientDescend(func_n f, const vec_n& x_start, const double eps = N_DIM_ACCURACY, const int max_iters = N_DIM_ITERS_MAX)
+static vec_n conjGradientDescend(func_nd f, const vec_n& x_start, const double& eps = N_DIM_ACCURACY, const int& max_iters = N_DIM_ITERS_MAX)
 {
 	vec_n x_i(x_start);
 	vec_n x_i_1;
 	vec_n s_i = gradient(f, x_start, eps)*(-1.0), s_i_1;
 	double omega;
 	int cntr = 0;
-	while (true)
+	for (; cntr <= max_iters; cntr++)
 	{
-		cntr++;
-	
-		if (cntr == max_iters)
-		{
-			break;
-		}
-
 		x_i_1 = x_i + s_i;
-	
-		x_i_1 = dihotomia(f, x_i, x_i_1, eps, max_iters);
 
-		if (magnitude(x_i_1 - x_i) < eps)
-		{
-			break;
-		}
+		if (magnitude(x_i_1 - x_i) < eps) break;
+
+		x_i_1 = bisect(f, x_i, x_i_1, eps, max_iters);
 
 		s_i_1 = gradient(f, x_i_1, eps);
 
@@ -235,31 +214,23 @@ static vec_n conjGradientDescend(func_n f, const vec_n& x_start, const double ep
 	return (x_i_1 + x_i) * 0.5;
 }
 
-static vec_n newtoneRaphson     (func_n f, const vec_n& x_start, const double eps = N_DIM_ACCURACY, const int max_iters = N_DIM_ITERS_MAX)
+static vec_n newtoneRaphson     (func_nd f, const vec_n& x_start, const double& eps = N_DIM_ACCURACY, const int& max_iters = N_DIM_ITERS_MAX)
 {
 	vec_n x_i(x_start);
 	vec_n x_i_1;
 	vec_n grad;
 	mat_mn hess;
 	int cntr = 0;
-	while (true)
+	for (; cntr <= max_iters; cntr++)
 	{
-		cntr++;
-		if (cntr == max_iters)
-		{
-			break;
-		}
-		
 		grad = gradient(f, x_i, eps);
 	
 		hess = invert(hessian(f, x_i, eps));
 		
 		x_i_1 = x_i - hess * grad;
+		
+		if (magnitude(x_i_1 - x_i) < eps) break;
 
-		if (magnitude(x_i_1 - x_i) < eps)
-		{
-			break;
-		}
 		x_i = x_i_1;
 	}
 #if _DEBUG

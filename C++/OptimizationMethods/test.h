@@ -6,7 +6,7 @@
 #include "simplex.h"
 
 // тестовая унимодальная одномерная функция с минимумом в точке {2} 
-static double testFunction1d(const double x)
+static double testFunction1d(const double& x)
 {
 	return  (x - 2) * (x - 5);
 }
@@ -38,7 +38,7 @@ static void  oneDimensionalMethodsTest()
 	std::cout << "\n";
 	std::cout << "x = agrmin(x * (x - 5))\n";
 	std::cout << "x_0 = " << x_0 << ",\nx_1 = " << x_1 << "\n";
-	std::cout << "dihotomia   : " << dihotomia  (testFunction1d, x_0, x_1, 1e-4) << "\n";
+	std::cout << "bisect      : " << bisect     (testFunction1d, x_0, x_1, 1e-4) << "\n";
 	std::cout << "golden_ratio: " << goldenRatio(testFunction1d, x_0, x_1, 1e-4) << "\n";
 	std::cout << "fibonacci   : " << fibonacci  (testFunction1d, x_0, x_1, 1e-4) << "\n";
 }
@@ -54,7 +54,7 @@ static void multiDimensionalMethodsTest()
 
 	std::cout << "\n";
 	std::cout << "x_0 = " << x_0 << ",\nx_1 = " << x_1 << "\n";
-	std::cout << "dihotomia             : " << dihotomia  (testFunction2d, x_1, x_0, 1e-5) << "\n";
+	std::cout << "bisect                : " << bisect	  (testFunction2d, x_1, x_0, 1e-5) << "\n";
 	std::cout << "golden_ratio          : " << goldenRatio(testFunction2d, x_1, x_0, 1e-5) << "\n";
 	std::cout << "fibonacci             : " << fibonacci  (testFunction2d, x_1, x_0, 1e-5) << "\n";
 	std::cout << "\n";

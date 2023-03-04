@@ -417,7 +417,7 @@ public class Simplex
 
         for (int j = 0; j < fModArgs.size(); j++)
         {
-            sDeltasAdd.set(fModArgs.get(j),1.0);
+            sDeltasAdd.set(fModArgs.get(j), 1.0);
         }
 
         simplexTable.addRow(sDeltasAdd);

@@ -20,7 +20,7 @@ namespace OptimizationMethods
             double x_0 = 10;
             double x_1 = -1;
             Console.WriteLine($"x_0 = {x_0}, x_1 = {x_1}\n");
-            Console.WriteLine($"Dihotomia   : {OneDimensional.Dihotomia(Testf1, x_0, x_1, 1e-3)}");
+            Console.WriteLine($"BiSect      : {OneDimensional.BiSect(Testf1, x_0, x_1, 1e-3)}");
             Console.WriteLine($"GoldenRatio : {OneDimensional.GoldenRatio(Testf1, x_0, x_1, 1e-3)}");
             Console.WriteLine($"Fibonacchi  : {OneDimensional.Fibonacci(Testf1, x_0, x_1, 1e-3)}\n");
         }
@@ -40,7 +40,7 @@ namespace OptimizationMethods
             Vector x_1 = new double[] { 0, 0 };
             Vector x_0 = new double[] { 5, 5 };
             Console.WriteLine($"x_0 = {x_0}, x_1 = {x_1}\n");
-            Console.WriteLine($"Dihotomia              : {MultiDimensional.Dihotomia(Testf2, x_1, x_0)}");
+            Console.WriteLine($"BiSect                 : {MultiDimensional.BiSect(Testf2, x_1, x_0)}");
             Console.WriteLine($"GoldenRatio            : {MultiDimensional.GoldenRatio(Testf2, x_1, x_0)}" );
             Console.WriteLine($"Fibonacci              : {MultiDimensional.Fibonacci(Testf2, x_1, x_0)}");
             Console.WriteLine($"PerCoordDescend        : {MultiDimensional.PerCoordDescend(Testf2, x_1)}");
