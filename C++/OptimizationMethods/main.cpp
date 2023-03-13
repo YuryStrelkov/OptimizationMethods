@@ -44,7 +44,7 @@ static void  lab_2(func_nd f)
 	std::cout << "{ x, y } = agrmin((x - 2) * (x - 2) + (y - 2) * (y - 2))\n";
 	std::cout << "x_0 = " << x_0 << ", x_1 = " << x_1 << "\n";
 	///  Для реализации по-координтаного спуска необходимо реализовать один из следующих трех методов для работы с vec_n
-	std::cout << "bisect                : " << bisect      (f, x_1, x_0, 1e-4) << "\n";
+	std::cout << "bisect                : " << bisect     (f, x_1, x_0, 1e-4) << "\n";
 	std::cout << "golden_ratio          : " << goldenRatio(f, x_1, x_0, 1e-4) << "\n";
 	std::cout << "fibonacci             : " << fibonacci  (f, x_1, x_0, 1e-4) << "\n";
 	std::cout << "\n";

@@ -15,6 +15,10 @@ static double         bisect       (func_1d f, const double& x_0, const double& 
 
 	for (;cntr != max_iters; cntr++)
 	{
+#if _DEBUG
+		progresBar((float)cntr / (float)max_iters);
+#endif
+
 		if (x_r - x_l < eps) break;
 
 		x_c = (x_r + x_l) * 0.5;
@@ -27,7 +31,7 @@ static double         bisect       (func_1d f, const double& x_0, const double& 
 		x_l = x_c;
 	}
 #if _DEBUG
-	std::cout << "dihotomia iterations number : " << cntr << "\n";
+	std::cout << "\ndihotomia iterations number : " << cntr << "\n";
 #endif
 	return x_c;
 }
@@ -44,6 +48,10 @@ static double         goldenRatio     (func_1d f, const double& x_0, const doubl
 
 	for (; cntr != max_iters; cntr++)
 	{
+#if _DEBUG
+		progresBar((float)cntr / (float)max_iters);
+#endif
+
 		if (x_r - x_l < eps) break;
 		
 		dx = b - a;
@@ -59,7 +67,7 @@ static double         goldenRatio     (func_1d f, const double& x_0, const doubl
 		b = x_r;
 	}
 #if _DEBUG
-	std::cout << "golden ratio iterations number : " << cntr << "\n";
+	std::cout << "\ngolden ratio iterations number : " << cntr << "\n";
 #endif
 	return (x_r + x_l) * 0.5;
 }
@@ -147,6 +155,9 @@ static double         fibonacci       (func_1d f, const double& x_0, const doubl
 
 	while(f_n != f_n_1)
 	{
+#if _DEBUG
+		progresBar((float)cntr / (float)ITERS_MAX);
+#endif
 		if (x_r - x_l < eps)break;
 		cntr++;
 		dx    = (b - a);
@@ -163,7 +174,7 @@ static double         fibonacci       (func_1d f, const double& x_0, const doubl
 		a = x_l;
 	}
 #if _DEBUG
-	std::cout << "fibonacchi iterations number : " << cntr << "\n";
+	std::cout << "\nfibonacchi iterations number : " << cntr << "\n";
 #endif
 	return (x_l + x_r) * 0.5;
 }

@@ -22,7 +22,9 @@ static vec_n bisect(func_nd f, const vec_n& x_0, const vec_n& x_1, const double&
 	for (; cntr != max_iters; cntr++)
 	{
 		if (magnitude(x_r - x_l) < eps) break;
-		
+// #if DISPLAY_PROGRES
+// 		progresBar((float)cntr / (float)ITERS_MAX);
+// #endif
 		x_c = (x_r + x_l) * 0.5;
 
 		if (f(x_c + dir) > f(x_c - dir))
@@ -32,9 +34,9 @@ static vec_n bisect(func_nd f, const vec_n& x_0, const vec_n& x_1, const double&
 		}
 		x_l = x_c;
 	}
-#ifdef _DEBUG 
-	std::cout << "dihotomia iterations number : " << cntr << "\n";
-#endif
+// #ifdef DISPLAY_PROGRES 
+// 	std::cout << LINE_CLEAR << "dihotomia iterations number : " << cntr << "\n";
+// #endif
 	return x_c;
 }
 
@@ -51,7 +53,9 @@ static vec_n goldenRatio        (func_nd f, const vec_n& x_0, const vec_n& x_1, 
 	for (; cntr != max_iters; cntr++)
 	{
 		if (magnitude(x_r - x_l) < eps) break;
-		
+// #if DISPLAY_PROGRES
+// 		progresBar((float)cntr / (float)ITERS_MAX);
+// #endif
 		dx   = (b - a) * one_div_phi;
 
 		x_l =  b - dx;
@@ -64,9 +68,9 @@ static vec_n goldenRatio        (func_nd f, const vec_n& x_0, const vec_n& x_1, 
 		}
 		b = x_r;
 	}
-#if _DEBUG
-	std::cout <<"golden ratio iterations number : " << cntr << "\n";
-#endif
+// #if DISPLAY_PROGRES
+//	std::cout << LINE_CLEAR << "golden ratio iterations number : " << cntr << "\n";
+// #endif
 	return (a + b) * 0.5;
 }
 
@@ -83,7 +87,9 @@ static vec_n fibonacci          (func_nd f, const vec_n& x_0, const vec_n& x_1, 
 	while (f_n != f_n_1)
 	{
 		if (magnitude(x_r - x_l) < eps) break;
-		
+// #if DISPLAY_PROGRES
+// 		progresBar((float)cntr / (float)ITERS_MAX);
+// #endif
 		dx = (b - a);
 		f_tmp = f_n_1 - f_n;
 		x_l = a + dx * ((double)f_tmp / f_n_1);
@@ -97,9 +103,9 @@ static vec_n fibonacci          (func_nd f, const vec_n& x_0, const vec_n& x_1, 
 		}
 		a = x_l;
 	}
-#if _DEBUG
-	std::cout << "fibonacchi iterations number : " << cntr << "\n";
-#endif
+// #if DISPLAY_PROGRES
+// 	std::cout << LINE_CLEAR << "fibonacchi iterations number : " << cntr << "\n";
+// #endif
 	return (x_r + x_l) * 0.5;
 }
 
@@ -120,6 +126,10 @@ static vec_n perCoordDescend    (func_nd f, const vec_n& x_start, const double& 
 
 	for (int i = 0; i < max_iters; i++)
 	{
+
+#if DISPLAY_PROGRES
+		progresBar((float)i / (float)max_iters);
+#endif
 		coord_id = i % x_0.size();
 
 		x_1[coord_id] -= eps;
@@ -146,8 +156,8 @@ static vec_n perCoordDescend    (func_nd f, const vec_n& x_start, const double& 
 
 			if (opt_coord_n == x_1.size())
 			{
-#if _DEBUG
-				std::cout << "per coord descend iterations number : " << i << "\n";
+#if DISPLAY_PROGRES
+				std::cout << "\nper coord descend iterations number : " << i << "\n";
 #endif
 				return x_0;
 			}
@@ -155,7 +165,7 @@ static vec_n perCoordDescend    (func_nd f, const vec_n& x_start, const double& 
 		}
 		opt_coord_n = 0;
 	}
-#if _DEBUG
+#if DISPLAY_PROGRES
 	std::cout << "per coord descend iterations number : " << max_iters << "\n";
 #endif
 	return x_0;
@@ -169,6 +179,9 @@ static vec_n gradientDescend    (func_nd f, const vec_n& x_start, const double& 
 	int cntr = 0;
 	for(; cntr <= max_iters; cntr++)
 	{
+#if DISPLAY_PROGRES
+		progresBar((float)cntr / (float)max_iters);
+#endif
 		grad  = gradient(f, x_i, eps);
 
 		x_i_1 = x_i - grad;
@@ -179,8 +192,8 @@ static vec_n gradientDescend    (func_nd f, const vec_n& x_start, const double& 
 	
 		x_i = x_i_1;
 	}
-#if _DEBUG
-	std::cout << "gradient descend iterations number : " << cntr << "\n";
+#if DISPLAY_PROGRES
+	std::cout << "\ngradient descend iterations number : " << cntr << "\n";
 #endif
 	return (x_i_1 + x_i) * 0.5;
 }
@@ -194,6 +207,9 @@ static vec_n conjGradientDescend(func_nd f, const vec_n& x_start, const double& 
 	int cntr = 0;
 	for (; cntr <= max_iters; cntr++)
 	{
+#if DISPLAY_PROGRES
+		progresBar((float)cntr / (float)max_iters);
+#endif
 		x_i_1 = x_i + s_i;
 
 		if (magnitude(x_i_1 - x_i) < eps) break;
@@ -208,8 +224,8 @@ static vec_n conjGradientDescend(func_nd f, const vec_n& x_start, const double& 
 
 		x_i = x_i_1;
 	}
-#if _DEBUG
-	std::cout << "conj gradient descend iterations number : " << cntr << "\n";
+#if DISPLAY_PROGRES
+	std::cout << "\nconj gradient descend iterations number : " << cntr << "\n";
 #endif
 	return (x_i_1 + x_i) * 0.5;
 }
@@ -223,6 +239,9 @@ static vec_n newtoneRaphson     (func_nd f, const vec_n& x_start, const double& 
 	int cntr = 0;
 	for (; cntr <= max_iters; cntr++)
 	{
+#if DISPLAY_PROGRES
+		progresBar((float)cntr / (float)max_iters);
+#endif
 		grad = gradient(f, x_i, eps);
 	
 		hess = invert(hessian(f, x_i, eps));
@@ -233,8 +252,8 @@ static vec_n newtoneRaphson     (func_nd f, const vec_n& x_start, const double& 
 
 		x_i = x_i_1;
 	}
-#if _DEBUG
-	std::cout << "Newtone-Raphson method iterations number : " << cntr << "\n";
+#if DISPLAY_PROGRES
+	std::cout << "\nNewtone-Raphson method iterations number : " << cntr << "\n";
 #endif
 	return (x_i_1 + x_i) * 0.5;
 }
