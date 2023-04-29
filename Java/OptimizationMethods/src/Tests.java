@@ -53,9 +53,9 @@ public class Tests {
         System.out.println(  "//////// MatrixTest ////////");
         System.out.println(  "////////////////////////////\n");
 
-        Matrix matrix =  new Matrix(new Vector(8.0, 1.0, 6.0),
-                                    new Vector(3.0, 5.0, 7.0),
-                                    new Vector(4.0, 9.0, 2.0));
+        Matrix matrix =  new Matrix(new DoubleVector(8.0, 1.0, 6.0),
+                                    new DoubleVector(3.0, 5.0, 7.0),
+                                    new DoubleVector(4.0, 9.0, 2.0));
         System.out.println(matrix);
         System.out.println("\nmatrix + matrix:\n"+Matrix.add(matrix,matrix) +"\n");
         System.out.println("\nmatrix - matrix:\n"+Matrix.sub(matrix,matrix) +"\n");
@@ -64,17 +64,17 @@ public class Tests {
         System.out.println("\nL  matrix:\n" + lu[0]);
         System.out.println("\nU  matrix:\n" + lu[1]);
         System.out.println("\nL * U - matrix:\n" + Matrix.mul(lu[0] , lu[1]).sub(matrix));
-        Vector b = new Vector(1.0, 2.0, 3.0);
+        DoubleVector b = new DoubleVector(1.0, 2.0, 3.0);
         /// x = {0.05,0.3,0.05};
-        Vector x = Matrix.linsolve(matrix, b);
+        DoubleVector x = Matrix.linsolve(matrix, b);
         System.out.println("\nx vector:\n" + x);
         System.out.println("\nAx - b:\n" + Matrix.mul(matrix,x).sub(b));
         System.out.println("\n A * inv(A):\n"+Matrix.mul(matrix , Matrix.invert(matrix)));
-        Matrix matrix_ = new Matrix(new Vector(8.0, 1.0, 6.0),
-                                    new Vector(3.0, 5.0, 7.0));
+        Matrix matrix_ = new Matrix(new DoubleVector(8.0, 1.0, 6.0),
+                                    new DoubleVector(3.0, 5.0, 7.0));
         System.out.println("\nnon rect mat:\n" + matrix_);
         System.out.println("\nnon rect mat mul by transposed it self :\n" +Matrix.mul(matrix_ , Matrix.transpose(matrix_)) );
-        Matrix m = Matrix.hessian(MultiDimensional.testFuncNd, new Vector(0.0, 0.0, 0.0));
+        Matrix m = Matrix.hessian(MultiDimensional.testFuncNd, new DoubleVector(0.0, 0.0, 0.0));
         System.out.println("\nHessian(MultiDimensional.TestFuncND):\n"+m);
     }
     public static void multiDimensionalMethodsTest()
@@ -83,9 +83,9 @@ public class Tests {
         System.out.println(  "//////// MultiDimensionalMethodsTest ////////");
         System.out.println(  "/////////////////////////////////////////////\n");
 
-        Vector x_0 = new Vector (5.0, 3.0);
-        Vector x_1 = new Vector (0.0, 0.0);
-        Vector x   = new Vector (-13.0, 22.0 );
+        DoubleVector x_0 = new DoubleVector (5.0, 3.0);
+        DoubleVector x_1 = new DoubleVector (0.0, 0.0);
+        DoubleVector x   = new DoubleVector (-13.0, 22.0 );
         MultiDimensional.ShowDebugLog = true;
         System.out.println("x_0 = "+ x_0 + ",\nx_1 = " + x_1 + "\n") ;
         System.out.println("biSect                   : "+ MultiDimensional.biSect             (MultiDimensional.testFunc2d, x_1, x_0));
@@ -105,41 +105,41 @@ public class Tests {
         System.out.println(  "/////////////////////////////\n");
 
         Matrix A = new Matrix(
-              new Vector(-2.0, 6.0),
-              new Vector(3.0, 2.0),
-              new Vector(2.0,-1.0)
+              new DoubleVector(-2.0, 6.0),
+              new DoubleVector(3.0, 2.0),
+              new DoubleVector(2.0,-1.0)
         );
 
-        Vector b  = new Vector(40.0, 28.0, 14.0);
-        Vector c  = new Vector(2.0, 3.0);
-        Vector c1 = new Vector(-2.0, 3.0);
-        Vector c2 = new Vector(2.0, 1.0);
-        Vector c3 = new Vector(-2.0, -1.0);
+        DoubleVector b  = new DoubleVector(40.0, 28.0, 14.0);
+        DoubleVector c  = new DoubleVector(2.0, 3.0);
+        DoubleVector c1 = new DoubleVector(-2.0, 3.0);
+        DoubleVector c2 = new DoubleVector(2.0, 1.0);
+        DoubleVector c3 = new DoubleVector(-2.0, -1.0);
 
         System.out.println(" f(x,c) =  2x1 + 3x2;\n arg_max = {4, 8}, f(arg_max) = 32");
         System.out.println(" |-2x1 + 6x2 <= 40");
         System.out.println(" | 3x1 + 2x2 <= 28");
         System.out.println(" | 2x1 -  x2 <= 14\n");
 
-        ArrayList<Sign> signs_less = new ArrayList<Sign>(3);
+        ArrayList<Sign> signs_less = new ArrayList<>(3);
         signs_less.add(Sign.Less);
         signs_less.add(Sign.Less);
         signs_less.add(Sign.Less);
-        ArrayList<Sign> signs_more = new ArrayList<Sign>(3);
+        ArrayList<Sign> signs_more = new ArrayList<>(3);
         signs_more.add(Sign.More);
         signs_more.add(Sign.More);
         signs_more.add(Sign.More);
-        ArrayList<Sign> signs_equal = new ArrayList<Sign>(3);
+        ArrayList<Sign> signs_equal = new ArrayList<>(3);
         signs_equal.add(Sign.Equal);
         signs_equal.add(Sign.Equal);
         signs_equal.add(Sign.Equal);
         Simplex.showSimplexDebugLog = true;
 
-        Simplex sym_0 = new Simplex(A,new Vector(  2.0,  3.0 ), signs_less, b);
+        Simplex sym_0 = new Simplex(A,new DoubleVector(2.0,  3.0 ), signs_less, b);
         sym_0.solve(SimplexProblemType.Max);
 
         System.out.println("\n f(x,c) = -2x1 + 3x2;\n arg_min = {7, 0}, f(arg_min) =-14\n");
-        Simplex sym_1 = new Simplex(A, new Vector(-2.0,  3.0), signs_less, b);
+        Simplex sym_1 = new Simplex(A, new DoubleVector(-2.0,  3.0), signs_less, b);
         sym_1.solve(SimplexProblemType.Min);
 
 
@@ -148,10 +148,10 @@ public class Tests {
         System.out.println(" |-2x1 + 6x2 >= 40");
         System.out.println(" | 3x1 + 2x2 >= 28");
         System.out.println(" | 2x1 -  x2 >= 14\n");
-        Simplex sym_2 = new Simplex(A, new Vector(2.0, 1.0), signs_more, b);
+        Simplex sym_2 = new Simplex(A, new DoubleVector(2.0, 1.0), signs_more, b);
         sym_2.solve(SimplexProblemType.Min);
         System.out.println(" f(x,c) =  -2x1 - x2;\n arg_min = {62/5, 54/5}, f(arg_max) = -35 3/5");
-        Simplex sym_3 = new Simplex(A, new Vector(-2.0, -1.0), signs_more, b);
+        Simplex sym_3 = new Simplex(A, new DoubleVector(-2.0, -1.0), signs_more, b);
         sym_3.solve(SimplexProblemType.Max);
         System.out.println(" f(x,c) =  2x1 + 3x2;\n arg_min = {none, none}, f(arg_max) = none");
         Simplex sym_4 = new Simplex(A, c,signs_equal, b);

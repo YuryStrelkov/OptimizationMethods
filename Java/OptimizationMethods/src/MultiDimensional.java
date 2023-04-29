@@ -8,12 +8,12 @@ public class MultiDimensional {
 
     public static  boolean ShowZeroOrderMethodsDebugLog = false;
 
-    private static double _testFunc2D(Vector x)
+    private static double _testFunc2D(DoubleVector x)
     {
         return (x.get(0) - 5) * x.get(0) + (x.get(1) - 3) * x.get(1); // min at point x = 2.5, y = 1.5
     }
 
-    private static double _testFuncND(Vector x)
+    private static double _testFuncND(DoubleVector x)
     {
         double val = 0.0;
 
@@ -26,21 +26,21 @@ public class MultiDimensional {
     ////////////////////
     /// Lab. work #2 ///
     ////////////////////
-    public static Vector biSect      (IFunctionND f, Vector x0, Vector x1, double eps, int max_iters)
+    public static DoubleVector biSect      (IFunctionND f, DoubleVector x0, DoubleVector x1, double eps, int max_iters)
     {
-        Vector x_0  = new Vector(x0), x_1 = new Vector(x1), x_c, dir;
+        DoubleVector x_0  = new DoubleVector(x0), x_1 = new DoubleVector(x1), x_c, dir;
 
-        dir = Vector.direction(x_0, x_1).mul(eps);
+        dir = DoubleVector.direction(x_0, x_1).mul(eps);
 
         int cntr = 0;
 
         for (; cntr != max_iters; cntr++)
         {
-            if (Vector.sub(x_1 , x_0).magnitude() < eps) break;
+            if (DoubleVector.sub(x_1 , x_0).magnitude() < eps) break;
 
-            x_c = Vector.add(x_1 , x_0).mul(0.5);
+            x_c = DoubleVector.add(x_1 , x_0).mul(0.5);
 
-            if (f.call(Vector.add(x_c, dir)) > f.call(Vector.sub(x_c, dir)))
+            if (f.call(DoubleVector.add(x_c, dir)) > f.call(DoubleVector.sub(x_c, dir)))
             {
                 x_1 = x_c;
                 continue;
@@ -50,23 +50,23 @@ public class MultiDimensional {
 
         if(ShowZeroOrderMethodsDebugLog)System.out.println("BiSect iterations number : " + cntr);
 
-        return  Vector.add(x_1 , x_0).mul(0.5);
+        return  DoubleVector.add(x_1 , x_0).mul(0.5);
     }
-    public static Vector biSect      (IFunctionND f, Vector x_0, Vector x_1, double eps)
+    public static DoubleVector biSect      (IFunctionND f, DoubleVector x_0, DoubleVector x_1, double eps)
     {
       return  biSect(f,  x_0,  x_1,  eps,1000);
     }
-    public static Vector biSect      (IFunctionND f, Vector x_0, Vector x_1)
+    public static DoubleVector biSect      (IFunctionND f, DoubleVector x_0, DoubleVector x_1)
     {
         return  biSect(f,  x_0,  x_1,  1e-5,1000);
     }
-    public static Vector goldenRatio    (IFunctionND f, Vector x_0, Vector x_1, double eps, int max_iters)
+    public static DoubleVector goldenRatio    (IFunctionND f, DoubleVector x_0, DoubleVector x_1, double eps, int max_iters)
     {
-        Vector a = new Vector(x_0);
+        DoubleVector a = new DoubleVector(x_0);
 
-        Vector b = new Vector(x_1);
+        DoubleVector b = new DoubleVector(x_1);
 
-        Vector dx;
+        DoubleVector dx;
 
         int cntr = 0;
 
@@ -74,11 +74,11 @@ public class MultiDimensional {
 
         for (; cntr != max_iters; cntr++)
         {
-            if (Vector.sub(x_1 , x_0).magnitude() < eps) break;
+            if (DoubleVector.sub(x_1 , x_0).magnitude() < eps) break;
 
-            dx  = Vector.sub(b, a).mul(one_div_phi);
-            x_0 = Vector.sub(b, dx);
-            x_1 = Vector.add(a, dx);
+            dx  = DoubleVector.sub(b, a).mul(one_div_phi);
+            x_0 = DoubleVector.sub(b, dx);
+            x_1 = DoubleVector.add(a, dx);
 
             if (f.call(x_0) >= f.call(x_1))
             {
@@ -90,36 +90,36 @@ public class MultiDimensional {
 
         if(ShowZeroOrderMethodsDebugLog)System.out.println("golden ratio iterations number : " + cntr);
 
-        return  Vector.add(x_1 , x_0).mul(0.5);
+        return  DoubleVector.add(x_1 , x_0).mul(0.5);
     }
-    public static Vector goldenRatio    (IFunctionND f, Vector x_0, Vector x_1, double eps)
+    public static DoubleVector goldenRatio    (IFunctionND f, DoubleVector x_0, DoubleVector x_1, double eps)
     {
       return goldenRatio(f, x_0,  x_1, eps, 1000);
     }
-    public static Vector goldenRatio    (IFunctionND f, Vector x_0, Vector x_1)
+    public static DoubleVector goldenRatio    (IFunctionND f, DoubleVector x_0, DoubleVector x_1)
     {
         return goldenRatio(f, x_0,  x_1, 1e-5, 1000);
     }
-    public static Vector fibonacci      (IFunctionND f, Vector x_0, Vector x_1, double eps)
+    public static DoubleVector fibonacci      (IFunctionND f, DoubleVector x_0, DoubleVector x_1, double eps)
     {
-        Vector a = new Vector(x_0);
+        DoubleVector a = new DoubleVector(x_0);
 
-        Vector b = new Vector(x_1);
+        DoubleVector b = new DoubleVector(x_1);
 
-        Vector dx;
+        DoubleVector dx;
 
-        int[] fib_pair = OneDimensional.closestFibonacciPair(Vector.sub(b, a).magnitude() / eps);
+        int[] fib_pair = OneDimensional.closestFibonacciPair(DoubleVector.sub(b, a).magnitude() / eps);
 
         int f_n = fib_pair[0], f_n_1 = fib_pair[1], f_tmp, cntr = 0;
 
         while(f_n != f_n_1)
         {
-            if (Vector.sub(x_1 , x_0).magnitude() < eps)  break;
+            if (DoubleVector.sub(x_1 , x_0).magnitude() < eps)  break;
             cntr++;
             f_tmp = f_n_1 - f_n;
-            dx  = Vector.sub(b , a);
-            x_0 = Vector.add(a, Vector.mul(dx,(double)f_tmp / f_n_1));
-            x_1 = Vector.add(a, Vector.mul(dx,(double)f_n   / f_n_1));
+            dx  = DoubleVector.sub(b , a);
+            x_0 = DoubleVector.add(a, DoubleVector.mul(dx,(double)f_tmp / f_n_1));
+            x_1 = DoubleVector.add(a, DoubleVector.mul(dx,(double)f_n   / f_n_1));
             f_n_1 = f_n;
             f_n   = f_tmp;
             if (f.call(x_0) < f.call(x_1))
@@ -132,17 +132,17 @@ public class MultiDimensional {
 
         if(ShowZeroOrderMethodsDebugLog)System.out.println("fibonacci iterations number : " + cntr);
 
-        return  Vector.add(x_1 , x_0).mul(0.5);
+        return  DoubleVector.add(x_1 , x_0).mul(0.5);
     }
-    public static Vector fibonacci      (IFunctionND f, Vector x_0, Vector x_1)
+    public static DoubleVector fibonacci      (IFunctionND f, DoubleVector x_0, DoubleVector x_1)
     {
         return  fibonacci( f,  x_0,  x_1, 1e-5);
     }
-    public static Vector perCordDescend(IFunctionND f, Vector x_start, double eps, int max_iters)
+    public static DoubleVector perCordDescend(IFunctionND f, DoubleVector x_start, double eps, int max_iters)
     {
-        Vector x_0 = new Vector(x_start);
+        DoubleVector x_0 = new DoubleVector(x_start);
 
-        Vector x_1 = new Vector(x_start);
+        DoubleVector x_1 = new DoubleVector(x_start);
 
         double step = 1.0;
 
@@ -170,7 +170,7 @@ public class MultiDimensional {
 
             x_1 = biSect(f, x_0, x_1, eps, max_iters);
 
-            x_0 = new Vector(x_1);
+            x_0 = new DoubleVector(x_1);
 
             if (Math.abs(x_1.get(coord_id) - x_i) < eps)
             {
@@ -178,7 +178,7 @@ public class MultiDimensional {
 
                 if (opt_coord_n == x_1.size())
                 {
-                    if(ShowDebugLog)System.out.println("per cord descend iterations number : "+i);
+                    if(ShowDebugLog)System.out.println("per cord descend iterations number : " + (i + 1));
 
                     return x_0;
                 }
@@ -191,55 +191,55 @@ public class MultiDimensional {
 
         return x_0;
     }
-    public static Vector perCordDescend(IFunctionND f, Vector x_start, double eps)
+    public static DoubleVector perCordDescend(IFunctionND f, DoubleVector x_start, double eps)
     {
         return     perCordDescend( f,  x_start,  eps,1000);
     }
-    public static Vector perCordDescend(IFunctionND f, Vector x_start)
+    public static DoubleVector perCordDescend(IFunctionND f, DoubleVector x_start)
     {
         return     perCordDescend( f,  x_start,  1e-5,1000);
     }
     ////////////////////
     /// Lab. work #3 ///
     ////////////////////
-    public static Vector gradientDescend(IFunctionND f, Vector x_start, double eps, int max_iters)
+    public static DoubleVector gradientDescend(IFunctionND f, DoubleVector x_start, double eps, int max_iters)
     {
-        Vector x_i = new Vector(x_start);
+        DoubleVector x_i = new DoubleVector(x_start);
 
-        Vector x_i_1 = new Vector(x_start); ;
+        DoubleVector x_i_1 = new DoubleVector(x_start); ;
 
         int cntr = 0;
 
         for (; cntr != max_iters; cntr++)
         {
-            x_i_1 = Vector.sub(x_i , Vector.gradient(f, x_i, eps));
+            x_i_1 = DoubleVector.sub(x_i , DoubleVector.gradient(f, x_i, eps));
 
             x_i_1 = biSect(f, x_i, x_i_1, eps, max_iters);
 
-            if (Vector.sub(x_i_1, x_i).magnitude() < eps)  break;
+            if (DoubleVector.sub(x_i_1, x_i).magnitude() < eps)  break;
 
             x_i = x_i_1;
         }
 
-        if(ShowDebugLog)System.out.println("gradient descend iterations number : " + cntr);
+        if(ShowDebugLog)System.out.println("gradient descend iterations number : " + (cntr + 1));
 
-        return Vector.add(x_i_1, x_i).mul(0.5);
+        return DoubleVector.add(x_i_1, x_i).mul(0.5);
     }
-    public static Vector gradientDescend(IFunctionND f, Vector x_start, double eps)
+    public static DoubleVector gradientDescend(IFunctionND f, DoubleVector x_start, double eps)
     {
         return gradientDescend( f,  x_start,  eps, 1000);
     }
-    public static Vector gradientDescend(IFunctionND f, Vector x_start)
+    public static DoubleVector gradientDescend(IFunctionND f, DoubleVector x_start)
     {
         return gradientDescend( f,  x_start,  1e-5, 1000);
     }
-    public static Vector conjGradientDescend(IFunctionND f, Vector x_start, double eps , int max_iters)
+    public static DoubleVector conjGradientDescend(IFunctionND f, DoubleVector x_start, double eps , int max_iters)
     {
-        Vector x_i = new Vector(x_start);
+        DoubleVector x_i = new DoubleVector(x_start);
 
-        Vector x_i_1 = new Vector(x_start);
+        DoubleVector x_i_1 = new DoubleVector(x_start);
 
-        Vector s_i = Vector.gradient(f, x_start, eps).mul(-1.0), s_i_1;
+        DoubleVector s_i = DoubleVector.gradient(f, x_start, eps).mul(-1.0), s_i_1;
 
         double omega;
 
@@ -247,13 +247,13 @@ public class MultiDimensional {
 
         for (; cntr != max_iters; cntr++)
         {
-            x_i_1 = Vector.add(x_i, s_i);
+            x_i_1 = DoubleVector.add(x_i, s_i);
 
             x_i_1 = biSect(f, x_i, x_i_1, eps, max_iters);
 
-            if (Vector.sub(x_i_1, x_i).magnitude() < eps) break;
+            if (DoubleVector.sub(x_i_1, x_i).magnitude() < eps) break;
 
-            s_i_1 = Vector.gradient(f, x_i_1, eps);
+            s_i_1 = DoubleVector.gradient(f, x_i_1, eps);
 
             omega = Math.pow((s_i_1).magnitude(), 2) / Math.pow((s_i).magnitude(), 2);
 
@@ -262,15 +262,15 @@ public class MultiDimensional {
             x_i = x_i_1;
         }
 
-        if(ShowDebugLog)System.out.println("Conj gradient descend iterations number : " + cntr);
+        if(ShowDebugLog)System.out.println("Conj gradient descend iterations number : " + (cntr + 1));
 
-        return Vector.add(x_i_1, x_i).mul(0.5);
+        return DoubleVector.add(x_i_1, x_i).mul(0.5);
     }
-    public static Vector conjGradientDescend(IFunctionND f, Vector x_start, double eps )
+    public static DoubleVector conjGradientDescend(IFunctionND f, DoubleVector x_start, double eps )
     {
          return conjGradientDescend( f,  x_start,  eps, 1000);
     }
-    public static Vector conjGradientDescend(IFunctionND f, Vector x_start)
+    public static DoubleVector conjGradientDescend(IFunctionND f, DoubleVector x_start)
     {
         return conjGradientDescend( f,  x_start,  1e-5, 1000);
     }
@@ -278,33 +278,33 @@ public class MultiDimensional {
     ////////////////////
     /// Lab. work #4 ///
     ////////////////////
-    public static Vector newtoneRaphson(IFunctionND f, Vector x_start, double eps, int max_iters)
+    public static DoubleVector newtoneRaphson(IFunctionND f, DoubleVector x_start, double eps, int max_iters)
     {
-        Vector x_i = new Vector(x_start);
+        DoubleVector x_i = new DoubleVector(x_start);
 
-        Vector x_i_1 = new Vector(x_start);
+        DoubleVector x_i_1 = new DoubleVector(x_start);
 
         int cntr = -1;
 
         for (; cntr != max_iters; cntr++)
         {
-            x_i_1 = Vector.sub(x_i, Matrix.mul(Matrix.invert(Matrix.hessian(f, x_i, eps)),Vector.gradient(f, x_i, eps))) ;
+            x_i_1 = DoubleVector.sub(x_i, Matrix.mul(Matrix.invert(Matrix.hessian(f, x_i, eps)),DoubleVector.gradient(f, x_i, eps)));
 
             ///Метод работает, но условие снизу не отрабатывает
-            if (Vector.sub(x_i_1, x_i).magnitude() < eps) break;
+            if (DoubleVector.sub(x_i_1, x_i).magnitude() < eps) break;
 
             x_i = x_i_1;
         }
 
-        if(ShowDebugLog)System.out.println("Newtone - Raphson iterations number : " + cntr);
+        if(ShowDebugLog)System.out.println("Newtone - Raphson iterations number : " + (cntr + 1));
 
-        return Vector.add(x_i_1 ,x_i).mul(0.5);
+        return DoubleVector.add(x_i_1 ,x_i).mul(0.5);
     }
-    public static Vector newtoneRaphson(IFunctionND f, Vector x_start, double eps)
+    public static DoubleVector newtoneRaphson(IFunctionND f, DoubleVector x_start, double eps)
     {
         return newtoneRaphson(f, x_start,  eps, 100);
     }
-    public static Vector newtoneRaphson(IFunctionND f, Vector x_start)
+    public static DoubleVector newtoneRaphson(IFunctionND f, DoubleVector x_start)
     {
         return newtoneRaphson(f, x_start,  1e-6, 100);
     }

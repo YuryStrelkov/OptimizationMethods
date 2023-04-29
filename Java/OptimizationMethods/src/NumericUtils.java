@@ -98,7 +98,7 @@ public class NumericUtils
         return toRationalStr(value, true);
     }
 
-    public static String toRationalStr(Vector value, boolean fullRational)
+    public static String toRationalStr(DoubleVector value, boolean fullRational)
     {
         StringBuilder str = new StringBuilder("{ ");
         for (int i = 0; i < value.size() - 1; i++)
@@ -111,7 +111,7 @@ public class NumericUtils
         str.append(" }");
         return str.toString();
     }
-    public static String toRationalStr(Vector value)
+    public static String toRationalStr(DoubleVector value)
     {
         return toRationalStr( value,  true);
     }

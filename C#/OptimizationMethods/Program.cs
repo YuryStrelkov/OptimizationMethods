@@ -37,8 +37,8 @@ namespace OptimizationMethods
             Console.WriteLine(  "/// Lab. work #2 ///\n");
             Console.WriteLine(  "////////////////////\n\n");
 
-            Vector x_1 = new double[] { 0, 0 };
-            Vector x_0 = new double[] { 5, 5 };
+            Vector x_1 = new Vector(0, 0);
+            Vector x_0 = new Vector(5, 5);
             Console.WriteLine($"x_0 = {x_0}, x_1 = {x_1}\n");
             Console.WriteLine($"BiSect                 : {MultiDimensional.BiSect(Testf2, x_1, x_0)}");
             Console.WriteLine($"GoldenRatio            : {MultiDimensional.GoldenRatio(Testf2, x_1, x_0)}" );
@@ -58,8 +58,8 @@ namespace OptimizationMethods
             Console.WriteLine(  "/// Lab. work #3 ///\n");
             Console.WriteLine(  "////////////////////\n\n");
 
-            Vector x_1 = new double[] { 0, 0 };
-            Vector x_0 = new double[] { 5, 5 };
+            Vector x_1 = new Vector(0, 0);
+            Vector x_0 = new Vector(5, 5);
             Console.WriteLine($"x_0 = {x_0}, x_1 = {x_1}\n");
             Console.WriteLine($"GradientDescend        : {MultiDimensional.GradientDescend    (Testf2, x_1)}");
             Console.WriteLine($"СonjGradientDescend    : {MultiDimensional.СonjGradientDescend(Testf2, x_1)}");
@@ -91,8 +91,8 @@ namespace OptimizationMethods
             Console.WriteLine(  "/// Lab. work #4 ///\n");
             Console.WriteLine(  "////////////////////\n\n");
 
-            Vector x_1 = new double[] { 0, 0 };
-            Vector x_0 = new double[] { 5, 5 };
+            Vector x_1 = new Vector(0, 0);
+            Vector x_0 = new Vector(5, 5);
             Console.WriteLine($"x_0 = {x_0}, x_1 = {x_1}\n");
             Console.WriteLine($"NewtoneRaphson         : {MultiDimensional.NewtoneRaphson(Testf2, x_1)}");
             Console.WriteLine($"NewtoneRaphson         : {MultiDimensional.NewtoneRaphson(Func, x_1)}\n");

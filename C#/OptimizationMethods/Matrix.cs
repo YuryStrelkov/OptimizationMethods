@@ -1,8 +1,9 @@
-﻿using System;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Text;
 using System.Threading.Tasks;
+using System.Collections;
+using System.Text;
+using System;
 
 namespace OptimizationMethods
 {
@@ -12,99 +13,67 @@ namespace OptimizationMethods
         Infinite = 1,
         None = 2
     }
-    public class Matrix : IEquatable<Matrix>
+    public class Matrix: TemplateVector<Vector>
     {
         /// <summary>
         /// Массив строк матрицы
         /// </summary>
-        private List<Vector> rows;
         public Matrix AddCol(Vector col)
         {
             if (col.Count != NRows) throw new Exception("Error::AddCol::col.Size != NRows");
-            for (int i = 0; i < rows.Count; i++) rows[i].PushBack(col[i]);
+            for (int i = 0; i < Count; i++) this[i].PushBack(col[i]);
             return this;
         }
 
         public Matrix AddRow(Vector row)
         {
             if (row.Count != NCols) throw new Exception("Error::AddRow::row.Size != NCols");
-            rows.Add(row);
+            PushBack(row);
             return this;
         }
-        /// <summary>
-        /// Сравнение матриц
-        /// </summary>
-        /// <param name="other"></param>
-        /// <returns></returns>
-        public bool Equals([AllowNull] Matrix other)
+        public new Matrix PushBack(Vector v) 
         {
-            if (other.rows.Count != rows.Count) return false;
-            for (int i = 0; i < rows.Count; i++) if (!other[i].Equals(this[i])) return false;
-            return true;
+            if (NRows == 0) 
+            {
+                base.PushBack(v);
+                return this;
+            }
+            if (v.Count != NCols) throw new Exception("Error::AddRow::row.Size != NCols");
+            base.PushBack(v);
+            return this;
         }
-        /// <summary>
-        /// Базовое сравнение матриц
-        /// </summary>
-        /// <param name="other"></param>
-        /// <returns></returns>
-        public override bool Equals(object other)
-        {
-            if (!(other is Matrix)) return false;
-            return Equals(other as Matrix);
-        }
-        /// <summary>
-        /// Не поверите, но расчитывает хеш-код, лол...
-        /// </summary>
-        /// <returns></returns>
-        public override int GetHashCode() => HashCode.Combine(rows);
-        /// <summary>
-        /// Строковое предствление матрицы
-        /// </summary>
-        /// <returns></returns>
+
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
             sb.Append("{\n");
-            for (int i = 0; i < rows.Count - 1; i++)
+            foreach (var row in this)
             {
-                sb.Append(" ");
-                sb.Append(rows[i].ToString());
+                sb.Append(row.ToString());
                 sb.Append(",\n");
             }
-            sb.Append(" ");
-            sb.Append(rows[rows.Count - 1].ToString());
+            sb.Remove(sb.Length - 2, 2);
             sb.Append("\n}");
             return sb.ToString();
         }
-        /// <summary>
-        /// Получение строки матрицы
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public Vector this[int id]
-        {
-            get => rows[id];
-            set => rows[id] = value;
-        }
+
         /// <summary>
         ///  Количество строк
         /// </summary>
         public int NRows
         {
-            get => rows.Count;
+            get => Count;
         }
+
         /// <summary>
         /// Количество столбцов
         /// </summary>
         public int NCols
         {
-            get => NRows == 0? 0 : rows[0].Count;
+            get => NRows == 0? 0 : this[0].Count;
         }
         
-        public List<Vector> Rows
-        {
-            get => rows;
-        }
+        public IEnumerable<Vector> Rows => this;
 
         /// <summary>
         /// Рамерность матрицы
@@ -113,11 +82,13 @@ namespace OptimizationMethods
         {
             get => new int[] { NRows, NCols };
         }
+
         /// <summary>
         /// Конструктор матрицы из массива строк
         /// </summary>
         /// <param name="rows"></param>
-        public Matrix(params Vector[] rows)
+        public Matrix() : base() { }
+        public Matrix(params Vector[] rows): base()
         {
             if (rows == null) throw new Exception("Data is null...");
 
@@ -135,31 +106,27 @@ namespace OptimizationMethods
             
             if (maxSize != minSize) throw new Exception("Incorrect matrix data");
 
-            this.rows = new List<Vector>();
-
-            foreach (Vector r in rows) this.rows.Add(r);
+            foreach (Vector r in rows) PushBack(r);
         }
+
         /// <summary>
         /// Конструктор матрцы по ее размерам и элементу по умолчанию
         /// </summary>
         /// <param name="n_rows">колическтво строк</param>
         /// <param name="n_cols">количество столбцов</param>
         /// <param name="defualtVal">значение элементов матрицы по умолчанию</param>
-        public Matrix(int n_rows, int n_cols)
+        public Matrix(int n_rows, int n_cols) : base()
         {
-            rows = new List<Vector>(n_rows);
-
-            for (int i = 0; i < n_rows; i++) rows.Add(new Vector(n_cols));
+            for (int i = 0; i < n_rows; i++) PushBack(new Vector(n_cols));
         }
+        
         /// <summary>
         /// Конструктор копирования
         /// </summary>
         /// <param name="original"></param>
-        public Matrix(Matrix original)
+        public Matrix(Matrix original):base(original.NRows)
         {
-            rows = new List<Vector>(original.rows.Count);
-
-            for (int i = 0; i < original.rows.Count; i++) rows.Add(new Vector(original.rows[i]));
+            foreach (Vector row in original) PushBack(new Vector(row));
         }
 
         /// <summary>
@@ -235,6 +202,7 @@ namespace OptimizationMethods
         {
             return new Matrix(n_rows, n_cols);
         }
+        
         /// <summary>
         /// Создаёт квадратную матрицу нулей
         /// </summary>
@@ -244,6 +212,7 @@ namespace OptimizationMethods
         {
             return Zeros(size, size);
         }
+        
         /// <summary>
         /// Создаёт единичную матрицу
         /// </summary>
@@ -256,6 +225,7 @@ namespace OptimizationMethods
             for (int i = 0; i < Math.Min(n_rows, n_cols); i++) I[i][i] = 1.0;
             return I;
         }
+        
         /// <summary>
         /// Создаёт квадратную единичную матрицу
         /// </summary>
@@ -265,6 +235,7 @@ namespace OptimizationMethods
         {
             return Identity(size, size);
         }
+        
         /// <summary>
         /// LU hазложение матрицы на нижнюю и верхнюю треугольные матрицы
         /// </summary>
@@ -307,6 +278,7 @@ namespace OptimizationMethods
                 }
             }
         }
+        
         /// <summary>
         /// Вспомогательный метод рещения системы уравнений вида Ax = b при условии, что найдено разложение A = LU
         /// </summary>
@@ -350,6 +322,7 @@ namespace OptimizationMethods
 
             return x;
         }
+        
         /// <summary>
         /// Решение системы уравнений вида Ax = b
         /// </summary>
@@ -366,6 +339,7 @@ namespace OptimizationMethods
 
             return Linsolve(ref low, ref up, ref b);
         }
+        
         /// <summary>
         /// Рассчитывает обратную матрицу
         /// </summary>
@@ -383,8 +357,6 @@ namespace OptimizationMethods
 
             b = new Vector(mat.NRows);
 
-            // for (int i = 0; i < b.Count; i++) b[i] = 0.0;
-
             inv = Zeros(mat.NRows);
 
             for (int i = 0; i < mat.NCols; i++)
@@ -398,6 +370,7 @@ namespace OptimizationMethods
             }
             return inv;
         }
+        
         /// <summary>
         /// Транспонирование матрицы
         /// </summary>
@@ -457,19 +430,19 @@ namespace OptimizationMethods
             Parallel.For(0, a.NRows, (i) => 
             {
                 for (int j = 0; j < b.NCols; j++) res[i][j] = Vector.Dot(a[i], b_t[j]);
-            }
-            );
+            });
 
             return res;
         }
+   
         public static Vector operator *(Matrix mat, Vector vec)
         {
             if (mat.NCols != vec.Count) throw new Exception("unable to matrix and vector myltiply");
-            Vector result = new Vector(mat.NRows);
-            int cntr = 0;
-            foreach (Vector row in mat.rows) result[cntr++] = Vector.Dot(row, vec);
+            Vector result = new Vector();
+            foreach (Vector row in mat) result.PushBack(Vector.Dot(row, vec));
             return result;
         }
+        
         public static Vector operator *(Vector vec, Matrix mat)
         {
             if (mat.NRows != vec.Count) throw new Exception("unable to matrix and vector myltiply");
@@ -482,67 +455,60 @@ namespace OptimizationMethods
 
             return result;
         }
+        
         public static Matrix operator *(Matrix mat, double a)
         {
             Matrix result = new Matrix(mat);
-            int cntr = 0;
-            foreach (Vector row in mat.rows) result[cntr++] *= a;
+            foreach (Vector row in mat) result.PushBack(a * row);
             return result;
         }
+        
         public static Matrix operator *(double a, Matrix mat)
         {
             return mat * a;
         }
+        
         public static Matrix operator +(Matrix a, Matrix b)
         {
             if (a.NCols != b.NCols) throw new Exception("unable to add matrix a to matrix b");
-            
             if (a.NRows != b.NRows) throw new Exception("unable to add matrix a to matrix b");
-
-            Matrix result = new Matrix(a.NRows, a.NCols);
-
-            for (int i = 0; i < a.NRows; i++) result[i] = a[i] + b[i];
-            
+            Matrix result = new Matrix();
+            foreach (var pair in Zip(a, b)) result.PushBack(pair.First + pair.Second);
             return result;
         }
+        
         public static Matrix operator +(Matrix a, double b)
         {
-            Matrix result = new Matrix(a.NRows, a.NCols);
-
-            for (int i = 0; i < a.NRows; i++) result[i] = a[i] + b;
-           
+            Matrix result = new Matrix();
+            foreach (Vector row in a) result.PushBack(b + row);
             return result;
         }
+        
         public static Matrix operator +(double b, Matrix a)
         {
             return a + b;
         }
+        
         public static Matrix operator -(Matrix a, Matrix b)
         {
             if (a.NCols != b.NCols) throw new Exception("unable to add matrix a to matrix b");
-            
             if (a.NRows != b.NRows) throw new Exception("unable to add matrix a to matrix b");
-
-            Matrix result = new Matrix(a.NRows, a.NCols);
-
-            for (int i = 0; i < a.NRows; i++) result[i] = a[i] - b[i];
-          
+            Matrix result = new Matrix();
+            foreach (var pair in Zip(a, b)) result.PushBack(pair.First - pair.Second);
             return result;
         }
+        
         public static Matrix operator -(Matrix a, double b)
         {
-            Matrix result = new Matrix(a.NRows, a.NCols);
-
-            for (int i = 0; i < a.NRows; i++) result[i] = a[i] - b;
-            
+            Matrix result = new Matrix();
+            foreach (Vector row in a) result.PushBack(row - b);
             return result;
         }
+        
         public static Matrix operator -(double b, Matrix a)
         {
-            Matrix result = new Matrix(a.NRows, a.NCols);
-
-            for (int i = 0; i < a.NRows; i++) result[i] = b - a[i];
-
+            Matrix result = new Matrix();
+            foreach (Vector row in a) result.PushBack(b - row);
             return result;
         }
     }

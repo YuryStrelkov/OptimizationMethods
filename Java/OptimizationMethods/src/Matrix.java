@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Objects;
 
@@ -9,100 +10,14 @@ enum SolutionType
     None
 }
 
-public class Matrix
+public class Matrix extends VectorBase<DoubleVector>
 {
     public static  boolean showMatrixDebugLog = false;
 
-    private final ArrayList<Vector>rows;
-
-    public Vector row(int rowId)
+    public Matrix(DoubleVector...  rows)
     {
-        return rows.get(rowId);
-    }
+        super();
 
-    /**
-     * Количество строк
-     * @return
-     */
-    public int rows()
-    {
-            return rows.size();
-    }
-
-    /**
-     * Количество столбцов
-     * @return
-     */
-    public int cols()
-    {
-            if (rows() == 0) return 0;
-            return row(0).size();
-    }
-
-    public Matrix addCol(Vector col)
-    {
-        if (col == null) return this;
-        if (col.size() != rows()) throw new RuntimeException("Error::AddCol::col.Size != NRows");
-        for (int i = 0; i < rows.size(); i++) row(i).pushBack(col.get(i));
-        return this;
-    }
-
-    public Matrix addRow(Vector row)
-    {
-        if(row == null) return this;
-        if (row.size() != cols()) throw new RuntimeException("Error::AddRow::row.Size != NCols");
-        rows.add(row);
-        return this;
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder sb =new StringBuilder();
-        sb.append("{\n");
-        for (int i = 0; i < rows.size() - 1; i++)
-        {
-            sb.append(" ").append(rows.get(i).toString());
-            sb.append(",\n");
-        }
-        sb.append(" ").append(rows.get(rows.size() - 1).toString());
-        sb.append("\n}");
-        return sb.toString();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Matrix matrix = (Matrix) o;
-        return rows.equals(matrix.rows);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(rows);
-    }
-
-    public ArrayList<Vector> getRows() {
-        return rows;
-    }
-
-    public int[]size()
-    {
-       return new int[] { rows(), cols() };
-    }
-
-    public double get(int i, int j)
-    {
-        return row(i).get(j);
-    }
-
-    public void set(int i, int j, double value)
-    {
-        row(i).set(j,value);
-    }
-
-    public Matrix(Vector...  rows)
-    {
         if (rows == null) throw new RuntimeException("Data is null...");
 
         if (rows.length == 0) throw new RuntimeException("Data is empty...");
@@ -111,7 +26,7 @@ public class Matrix
 
         int rowSizeMin = Integer.MAX_VALUE;
 
-        for(Vector row:rows)
+        for(DoubleVector row:rows)
         {
             if(row.size() > rowSizeMax)rowSizeMax = row.size();
             if(row.size() < rowSizeMin)rowSizeMin = row.size();
@@ -119,9 +34,7 @@ public class Matrix
 
         if(rowSizeMax!=rowSizeMin)throw new RuntimeException("Incorrect matrix data");
 
-        this.rows = new ArrayList<>(rows.length);
-
-        Collections.addAll(this.rows, rows);
+        for (DoubleVector v: rows) pushBack((DoubleVector) v.clone());
     }
 
     /**
@@ -131,8 +44,8 @@ public class Matrix
      */
     public Matrix(int n_rows, int n_cols)
     {
-        rows = new ArrayList<>(n_rows);
-        for (int i = 0; i < n_rows; i++) rows.add(new Vector(n_cols));
+        super(n_rows);
+        for (int i = 0; i < n_rows; i++) set(i, new DoubleVector(n_cols));
     }
 
     /**
@@ -141,12 +54,90 @@ public class Matrix
      */
     public Matrix(Matrix original)
     {
-        rows = new ArrayList<>(original.rows.size());
-
-        for (int i = 0; i < original.rows.size(); i++)rows.add(new Vector(original.rows.get(i)));
+        super();
+        for (DoubleVector v: original)pushBack((DoubleVector) v.clone());
     }
 
-    public static Matrix hessian(IFunctionND f, Vector x, double eps)
+    @Override
+    public String toString() {
+        StringBuilder sb =new StringBuilder();
+        sb.append("{\n");
+        for (DoubleVector row : getRows())
+        {
+            sb.append(" ").append(row.toString());
+            sb.append(";\n");
+        }
+        sb.delete(sb.length() - 2, sb.length());
+        sb.append("\n}");
+        return sb.toString();
+    }
+
+    public DoubleVector row(int rowId)
+    {
+        return get(rowId);
+    }
+
+    public VectorBase<DoubleVector> getRows()
+    {
+        return this;
+    }
+
+    /**
+     * Количество строк
+     * @return
+     */
+    public int rows()
+    {
+        return super.size();
+    }
+
+    /**
+     * Количество столбцов
+     * @return
+     */
+    public int cols()
+    {
+       if (rows() == 0) return 0;
+       return row(0).size();
+    }
+
+    public Matrix addCol(DoubleVector col)
+    {
+        if (col == null) return this;
+        if (col.size() != rows()) throw new RuntimeException("Error::AddCol::col.Size != NRows");
+        int index = 0;
+        for (DoubleVector row: this)
+        {
+            row.pushBack(col.get(index));
+            index++;
+        }
+        return this;
+    }
+
+    public Matrix addRow(DoubleVector row)
+    {
+        if(row == null) return this;
+        if (row.size() != cols()) throw new RuntimeException("Error::AddRow::row.Size != NCols");
+        pushBack(row);
+        return this;
+    }
+
+    public final int[] shape()
+    {
+       return new int[] { rows(), cols() };
+    }
+
+    public double get(int i, int j)
+    {
+        return get(i).get(j);
+    }
+
+    public void set(int i, int j, double value)
+    {
+        get(i).set(j, value);
+    }
+
+    public static Matrix hessian(IFunctionND f, DoubleVector x, double eps)
     {
         Matrix res = new Matrix(x.size(), x.size());
         int row, col;
@@ -155,7 +146,7 @@ public class Matrix
         {
             for (col = 0; col <= row; col++)
             {
-                val = Vector.partial2(f, x, row, col, eps);
+                val = DoubleVector.partial2(f, x, row, col, eps);
                 res.set(row,col,val);
                 res.set(col,row,val);
             }
@@ -163,7 +154,7 @@ public class Matrix
         return res;
     }
 
-    public static Matrix hessian(IFunctionND f, Vector x)
+    public static Matrix hessian(IFunctionND f, DoubleVector x)
     {
         return hessian( f,  x, 1e-5);
     }
@@ -177,8 +168,6 @@ public class Matrix
         int rank = 0;
 
         boolean[] row_selected = new boolean[n];
-
-        for (int i = 0; i < row_selected.length; i++) row_selected[i] = false;
 
         for (int i = 0; i < m; i++)
         {
@@ -212,7 +201,7 @@ public class Matrix
      * @param b vector
      * @return 0 - нет решений, 1 - одно решение, 2 - бесконечное множествое решений
      */
-    public static SolutionType checkSystem(Matrix A, Vector b)
+    public static SolutionType checkSystem(Matrix A, DoubleVector b)
     {
         Matrix a = new Matrix(A);
 
@@ -238,11 +227,8 @@ public class Matrix
 
         if (rank_a < rank_a_b) return SolutionType.Infinite;
 
-        if (rank_a > rank_a_b) return SolutionType.None;
-
-        throw new RuntimeException("error :: check_system");
+        return SolutionType.None;
     }
-
 
     public static Matrix zeros(int n_rows, int n_cols)
     {
@@ -328,11 +314,11 @@ public class Matrix
      * @param b
      * @return
      */
-    private static Vector linsolve( Matrix low,  Matrix up,  Vector b)
+    private static DoubleVector linsolve( Matrix low,  Matrix up,  DoubleVector b)
     {
         double det = 1.0;
 
-        Vector x, z;
+        DoubleVector x, z;
 
         for (int i = 0; i < up.rows(); i++) det *= (up.get(i,i) * up.get(i,i));
 
@@ -342,7 +328,7 @@ public class Matrix
             return null;
         }
 
-        z = new Vector(up.rows());
+        z = new DoubleVector(up.rows());
 
         double tmp;
 
@@ -353,7 +339,7 @@ public class Matrix
             z.set(i, (b.get(i) - tmp )/ low.get(i,i));
         }
 
-        x = new Vector(up.rows());
+        x = new DoubleVector(up.rows());
 
         for (int i = z.size() - 1; i >= 0; i--)
         {
@@ -370,7 +356,7 @@ public class Matrix
      * @param b
      * @return
      */
-    public static Vector linsolve(Matrix mat, Vector b)
+    public static DoubleVector linsolve(Matrix mat, DoubleVector b)
     {
         if (mat.rows() != mat.cols()) throw new RuntimeException("non square matrix");
 
@@ -390,7 +376,7 @@ public class Matrix
     {
         if (mat.rows() != mat.cols()) throw new RuntimeException("non square matrix");
 
-        Matrix[]lu_ = lu( mat);
+        Matrix[]lu_ = lu(mat);
 
         double det = 1.0;
 
@@ -402,15 +388,15 @@ public class Matrix
             return null;
         }
 
-        Vector b, col;
+        DoubleVector b, col;
 
-        b = new Vector(mat.rows());
+        b = new DoubleVector(mat.rows());
 
         Matrix inv = zeros(mat.rows());
 
         for (int i = 0; i < mat.cols(); i++)
         {
-            b.set(i,1.0);
+            b.set(i, 1.0);
             col = linsolve( lu_[0], lu_[1], b);
 
             if (col == null) throw new RuntimeException("unable to find matrix inversion");
@@ -446,14 +432,14 @@ public class Matrix
 
         if(cols()!= other.rows()) throw new RuntimeException("Dot product :: this.Size()!= other.Size()");
 
-        for (int i = 0; i < rows(); i++) rows.get(i).add(other.rows.get(i));
+        for (int i = 0; i < rows(); i++) row(i).add(other.row(i));
 
         return  this;
     }
 
     public Matrix add(double other)
     {
-        for (int i = 0; i < rows(); i++) rows.get(i).add(other);
+        for (int i = 0; i < rows(); i++) row(i).add(other);
 
         return  this;
     }
@@ -464,21 +450,21 @@ public class Matrix
 
         if(cols()!= other.rows()) throw new RuntimeException("Dot product :: this.Size()!= other.Size()");
 
-        for (int i = 0; i < rows(); i++)  rows.get(i).sub(other.rows.get(i));
+        for (int i = 0; i < rows(); i++)  row(i).sub(other.row(i));
 
         return  this;
     }
 
     public Matrix sub(double other)
     {
-        for (int i = 0; i < rows(); i++) rows.get(i).sub(other);
+        for (int i = 0; i < rows(); i++) row(i).sub(other);
 
         return  this;
     }
 
     public Matrix mul(double other)
     {
-        for (int i = 0; i < rows(); i++)  rows.get(i).mul(other);
+        for (int i = 0; i < rows(); i++)  row(i).mul(other);
 
         return  this;
     }
@@ -498,29 +484,29 @@ public class Matrix
 
         for (int i = 0; i < a.rows(); i++)
         {
-            for (int j = 0; j < b.cols(); j++) res.set(i,j,Vector.dot(a.rows.get(i), b_t.rows.get(j)));
+            for (int j = 0; j < b.cols(); j++) res.set(i,j,DoubleVector.dot(a.row(i), b_t.row(j)));
         }
         return res;
     }
 
-    public static Vector mul(Matrix mat, Vector vec)
+    public static DoubleVector mul(Matrix mat, DoubleVector vec)
     {
         if (mat.cols() != vec.size())  throw new RuntimeException("unable to matrix and vector multiply");
 
-        Vector result = new Vector(mat.rows());
+        DoubleVector result = new DoubleVector(mat.rows());
         int cntr = 0;
-        for (Vector row : mat.rows)
+        for (DoubleVector row : mat)
         {
-            result.set(cntr++, Vector.dot(row, vec));
+            result.set(cntr++, DoubleVector.dot(row, vec));
         }
         return result;
     }
 
-    public static Vector mul(Vector vec, Matrix mat)
+    public static DoubleVector mul(DoubleVector vec, Matrix mat)
     {
         if (mat.rows() != vec.size())  throw new RuntimeException("unable to matrix and vector multiply");
 
-        Vector result = new Vector(mat.cols());
+        DoubleVector result = new DoubleVector(mat.cols());
 
         for (int i = 0; i < mat.cols(); i++)
         {
@@ -588,7 +574,7 @@ public class Matrix
 
         for (int i = 0; i < a.rows(); i++)
         {
-            result.rows.set(i, Vector.sub(b, a.rows.get(i)));
+            result.set(i, DoubleVector.sub(b, a.row(i)));
         }
         return result;
     }

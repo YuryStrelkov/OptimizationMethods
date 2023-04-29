@@ -4,11 +4,18 @@ import java.util.Arrays;
 public class Main {
     public static  void main(String[] args)
     {
+
+        // DoubleVector v  = new DoubleVector(1.3, 2.4, 5.6);
+        // DoubleVector v2 = new DoubleVector(v);
+        // v.set(1, 666.0);
+        // System.out.println(v);
+        // System.out.println(v2);
+
         Tests.oneDimensionalMethodsTest();//Pass
         Tests.multiDimensionalMethodsTest();//Pass
-        // Tests.numericTests();//Pass
-        // Tests.matrixTest();//Pass
-        // Tests.simplexTest();//Pass
+        Tests.numericTests();//Pass
+        Tests.matrixTest();//Pass
+        Tests.simplexTest();//Pass
         // Simplex.showSimplexDebugLog = true;
         // Simplex sym_0 = new Simplex(
         //            /*A*/new Matrix(new Vector( 1.0, -2.0),

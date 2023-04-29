@@ -139,10 +139,10 @@ namespace OptimizationMethods
 
         public static void TestAll() 
         {
-            OneDimensionalMethodsTest();
-            MultiDimensionalMethodsTest();
+            // OneDimensionalMethodsTest();
+            // MultiDimensionalMethodsTest();
             // MatrixTest();
-            // SimpexTest();
+            SimpexTest();
             // NumericTests();
         }
     }
