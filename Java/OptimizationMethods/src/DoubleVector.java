@@ -1,4 +1,4 @@
-public class DoubleVector extends VectorBase<Double>
+public class DoubleVector extends TemplateVector<Double>
 {
     public DoubleVector(int cap)
     {
@@ -55,7 +55,7 @@ public class DoubleVector extends VectorBase<Double>
 
         double dot = 0.0;
 
-        for (int i = 0; i < other.size(); i++) dot += this.get(i) * other.get(i);
+        for(Pair<Double> p : zip(this, other)) dot += p.First * p.Second;
 
         return dot;
     }
@@ -65,10 +65,9 @@ public class DoubleVector extends VectorBase<Double>
     {
         StringBuilder sb = new StringBuilder();
         sb.append("{ ");
-        for (double v: this)sb.append(String.format("%8s; ", String.format("%.4f", v)));
+        for (double v: this) sb.append(String.format("%8s; ", String.format("%.4f", v)));
         sb.delete(sb.length() - 2, sb.length());
         sb.append("}");
-//
         return sb.toString();
     }
 
@@ -156,12 +155,10 @@ public class DoubleVector extends VectorBase<Double>
     }
 
     @SuppressWarnings("all")
-    public static DoubleVector sub(double b, DoubleVector a)
+    public static DoubleVector sub(double b, DoubleVector vector)
     {
-        DoubleVector res = new DoubleVector(a);
-
-        for(int i = 0; i < a.size(); i++) res.set(i, b - a.get(i));
-
+        DoubleVector res = new DoubleVector(vector.size());
+        for(Double v: vector)res.pushBack(b - v);
         return  res;
     }
 
@@ -186,12 +183,10 @@ public class DoubleVector extends VectorBase<Double>
     }
 
     @SuppressWarnings("all")
-    public static DoubleVector div(double b, DoubleVector a)
+    public static DoubleVector div(double b, DoubleVector vector)
     {
-        DoubleVector res = new DoubleVector(a);
-
-        for(int i = 0; i < a.size(); i++)  res.set(i, b / a.get(i));
-
+        DoubleVector res = new DoubleVector(vector.size());
+        for(Double v: vector)res.pushBack(b / v);
         return  res;
     }
 
@@ -199,7 +194,6 @@ public class DoubleVector extends VectorBase<Double>
     public static DoubleVector direction(DoubleVector a, DoubleVector b)
     {
         if (a.size() != b.size()) throw new RuntimeException("Vectors direction :: a.Size()!= b.Size()");
-
         return sub(b , a).normalize();
     }
 

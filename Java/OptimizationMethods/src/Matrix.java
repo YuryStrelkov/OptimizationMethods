@@ -1,8 +1,3 @@
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Objects;
-
 enum SolutionType
 {
     Single,
@@ -10,7 +5,7 @@ enum SolutionType
     None
 }
 
-public class Matrix extends VectorBase<DoubleVector>
+public class Matrix extends TemplateVector<DoubleVector>
 {
     public static  boolean showMatrixDebugLog = false;
 
@@ -50,7 +45,7 @@ public class Matrix extends VectorBase<DoubleVector>
 
     /**
      * Конструктор копирования
-     * @param original
+     * @param original исходная матрица
      */
     public Matrix(Matrix original)
     {
@@ -77,14 +72,14 @@ public class Matrix extends VectorBase<DoubleVector>
         return get(rowId);
     }
 
-    public VectorBase<DoubleVector> getRows()
+    public TemplateVector<DoubleVector> getRows()
     {
         return this;
     }
 
     /**
      * Количество строк
-     * @return
+     * @return Количество строк
      */
     public int rows()
     {
@@ -93,7 +88,7 @@ public class Matrix extends VectorBase<DoubleVector>
 
     /**
      * Количество столбцов
-     * @return
+     * @return  Количество столбцов
      */
     public int cols()
     {

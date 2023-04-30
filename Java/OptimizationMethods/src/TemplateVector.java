@@ -1,11 +1,90 @@
-import java.util.Arrays;
 import java.util.Iterator;
+import java.util.Arrays;
 
-public class VectorBase<TypeName> implements Iterable<TypeName>, Cloneable
+public class TemplateVector<TypeName> implements Iterable<TypeName>, Cloneable
 {
     private Object[] _data; // данные (размер 1.5N, где N исходный размер вектора)
-    private int _capacity;    // текущий размер вектора
-    private int _filling;     // Заполнение данными от левого края
+    private int _filling;   // Заполнение данными от левого края
+
+    @Override
+    public Iterator<TypeName> iterator() {
+        return new TemplateVectorIterator<>(this);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static class TemplateVectorIterator<Type> implements Iterator<Type>
+    {
+        int _index;
+
+        TemplateVector<Type> _iterableVector;
+
+        public TemplateVectorIterator(TemplateVector<Type> vector)
+        {
+            _index = -1;
+            _iterableVector = vector;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return (_index + 1 < _iterableVector._filling);
+        }
+
+        @Override
+        public Type next() {
+            _index++;
+            return (Type)_iterableVector._data[_index];
+        }
+    }
+
+    public static class Pair<TypeName>
+    {
+        public TypeName First;
+        public TypeName Second;
+        public Pair(TypeName f, TypeName s)
+        {
+            First = f;
+            Second = s;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public static class TemplateVectorZipIterator<Type> implements Iterable<Pair<Type>>, Iterator<Pair<Type>>
+    {
+        int _index;
+
+        TemplateVector<Type> _iterableVector1;
+        TemplateVector<Type> _iterableVector2;
+
+        public TemplateVectorZipIterator(TemplateVector<Type> vector1, TemplateVector<Type> vector2)
+        {
+            _index = -1;
+            _iterableVector1 = vector1;
+            _iterableVector2 = vector2;
+        }
+
+        @Override
+        public boolean hasNext()
+        {
+            return (_index + 1 < _iterableVector2._filling) && (_index + 1 < _iterableVector1._filling);
+        }
+
+        @Override
+        public Pair<Type> next()
+        {
+            _index++;
+            return new Pair<>((Type)_iterableVector1._data[_index], (Type)_iterableVector2._data[_index]);
+        }
+
+        @Override
+        public Iterator<Pair<Type>> iterator() {
+            return this;
+        }
+    }
+
+    public static <Type> Iterable<Pair<Type>> zip(TemplateVector<Type> first, TemplateVector<Type> second)
+    {
+        return new TemplateVectorZipIterator<>(first, second);
+    }
 
     private Object[] alloc(int capacity)
     {
@@ -14,48 +93,17 @@ public class VectorBase<TypeName> implements Iterable<TypeName>, Cloneable
 
     protected boolean notInRange(int index)
     {
-        return index < 0 || index >= _capacity;
-    }
-
-    @Override
-    public Iterator<TypeName> iterator() {
-        return new VectorBaseIterator(this);
-    }
-
-    @SuppressWarnings("unchecked")
-    public class VectorBaseIterator implements Iterator<TypeName>
-    {
-        int _index;
-
-        VectorBase<TypeName> _iterableVector;
-
-        public VectorBaseIterator(VectorBase<TypeName> vector)
-        {
-            _index = -1;
-            _iterableVector = vector;
-        }
-
-        @Override
-        public boolean hasNext() {
-            return (_index + 1 < _iterableVector._capacity);
-        }
-
-        @Override
-        public TypeName next() {
-            _index++;
-            return (TypeName)_iterableVector._data[_index];
-        }
+        return index < 0 || index >= _data.length;
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public VectorBase<TypeName> clone()
+    public TemplateVector<TypeName> clone()
     {
         try
         {
-            VectorBase<TypeName> v = (VectorBase<TypeName>)super.clone();
+            TemplateVector<TypeName> v = (TemplateVector<TypeName>)super.clone();
             v._data = Arrays.copyOf(_data, _data.length);
-            v._capacity = _capacity;
             v._filling  = _filling;
             return v;
         }
@@ -65,42 +113,37 @@ public class VectorBase<TypeName> implements Iterable<TypeName>, Cloneable
         }
     }
 
-    public VectorBase()
+    public TemplateVector()
     {
         _data = alloc((int)(6 * 1.5));
-        _capacity = 0;
         _filling = 0;
     }
 
-    public VectorBase(int cap)
+    public TemplateVector(int cap)
     {
         _data = alloc((int)(cap * 1.5));
-        _capacity = cap;
         _filling = 0;
     }
 
-    public VectorBase(VectorBase<TypeName> other)
+    public TemplateVector(TemplateVector<TypeName> other)
     {
         _data = alloc((int)(other.size()* 1.5));
-        _capacity = other.size();
         _filling = other.size();
         if (size() >= 0) System.arraycopy(other._data, 0, _data, 0, size());
     }
 
     @SuppressWarnings("unchecked")
-    public VectorBase(TypeName... other)
+    public TemplateVector(TypeName... other)
     {
         _data = alloc((int)(other.length * 1.5));
-        _capacity = other.length;
         _filling = other.length;
         if (size() >= 0) System.arraycopy(other, 0, _data, 0, size());
     }
 
     @SuppressWarnings("all")
-    public VectorBase(Iterable<TypeName> other)
+    public TemplateVector(Iterable<TypeName> other)
     {
         _data = alloc(9);
-        _capacity = 0;
         _filling = 0;
         for(TypeName v : other) pushBack(v);
     }
@@ -121,7 +164,7 @@ public class VectorBase<TypeName> implements Iterable<TypeName>, Cloneable
     }
 
     @SuppressWarnings("all")
-    public VectorBase<TypeName> pushBack(TypeName value)
+    public TemplateVector<TypeName> pushBack(TypeName value)
     {
         if (_filling == _data.length)
         {
@@ -131,13 +174,12 @@ public class VectorBase<TypeName> implements Iterable<TypeName>, Cloneable
         }
         _data[_filling] = value;
         _filling++;
-        _capacity = Math.max(_filling, _capacity);
         return this;
     }
 
     public int size()
     {
-        return  _capacity;
+        return  _filling;
     }
 
     @Override
@@ -161,7 +203,7 @@ public class VectorBase<TypeName> implements Iterable<TypeName>, Cloneable
     {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        VectorBase<TypeName> vector = (VectorBase<TypeName>) o;
+        TemplateVector<TypeName> vector = (TemplateVector<TypeName>) o;
         return Arrays.equals(vector._data, this._data);
     }
 

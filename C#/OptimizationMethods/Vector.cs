@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Collections;
-using System.Text;
+﻿using System.Text;
 using System;
 
 namespace OptimizationMethods

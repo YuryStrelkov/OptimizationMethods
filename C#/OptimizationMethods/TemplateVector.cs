@@ -93,7 +93,6 @@ namespace OptimizationMethods
                 index = -1;
             }
         }
-
         public static IEnumerable<TemplatePair<T>> Zip(TemplateVector<T> first, TemplateVector<T> second) => new VectorsZipEnumerator(first, second);
         public VectorEnumerator GetEnumerator() => new VectorEnumerator(this);
         IEnumerator<T> IEnumerable<T>.GetEnumerator() => new VectorEnumerator(this);
@@ -134,7 +133,6 @@ namespace OptimizationMethods
             }
             _data[_filling] = value;
             _filling++;
-            // _capacity = Math.Max(_filling, _capacity);
             return this;
         }
         /// <summary>
@@ -208,7 +206,6 @@ namespace OptimizationMethods
         public TemplateVector()
         {
             _data = new T[9];
-            // _capacity = 0;
             _filling = 0;
         }
 
@@ -231,7 +228,6 @@ namespace OptimizationMethods
         {
             _data = new T[(int)(cap * 1.5f)];
             _filling = 0;
-            // _filling = 0;
         }
         /// <summary>
         /// Конструктор копирования
@@ -240,7 +236,6 @@ namespace OptimizationMethods
         public TemplateVector(TemplateVector<T> other)
         {
             _data = new T[(int)(other.Count * 1.5)];
-            // _capacity = other.Count;
             _filling = other.Count;
             if (Count >= 0) Array.Copy(other._data, 0, _data, 0, Count);
         }
