@@ -1,21 +1,110 @@
 {
-  "solve_type": 0,
-  "weights":
-  {
-    "shape" : [2],
-    "data" : [2.0, 3.0]
-  },
-  "bounds":
-  {
-    "shape" : [3],
-    "data" : [40.0, 28.0, 14.0]
-  },
-  "bounds_matrix":
-  {
-    "shape" : [3, 2],
-    "data" : [-2.0, 6.0,
-               3.0, 2.0,
-               2.0,-1.0]
-  },
-  "inequalities": [0, 0, 0]
+  "problems":
+  [
+    {
+      "solve_type": 0,
+      "weights":
+      {
+        "shape" : [2],
+        "data" : [2.0, 3.0]
+      },
+      "bounds":
+      {
+        "shape" : [3],
+        "data" : [40.0, 28.0, 14.0]
+      },
+      "bounds_matrix":
+      {
+        "shape" : [3, 2],
+        "data" : [-2.0, 6.0,
+                   3.0, 2.0,
+                   2.0,-1.0]
+      },
+      "inequalities": [0, 0, 0]
+    },
+    {
+      "solve_type": 1,
+      "weights":
+      {
+        "shape" : [2],
+        "data" : [-2.0, 3.0]
+      },
+      "bounds":
+      {
+        "shape" : [3],
+        "data" : [40.0, 28.0, 14.0]
+      },
+      "bounds_matrix":
+      {
+        "shape" : [3, 2],
+        "data" : [-2.0, 6.0,
+                   3.0, 2.0,
+                   2.0,-1.0]
+      },
+      "inequalities": [0, 0, 0]
+    },
+    {
+      "solve_type": 0,
+      "weights":
+      {
+        "shape" : [2],
+        "data" : [2.0, 1.0]
+      },
+      "bounds":
+      {
+        "shape" : [3],
+        "data" : [40.0, 28.0, 14.0]
+      },
+      "bounds_matrix":
+      {
+        "shape" : [3, 2],
+        "data" : [-2.0, 6.0,
+                   3.0, 2.0,
+                   2.0,-1.0]
+      },
+      "inequalities": [2, 2, 2]
+    },
+    {
+      "solve_type": 1,
+      "weights":
+      {
+        "shape" : [2],
+        "data" : [-2.0, -1.0]
+      },
+      "bounds":
+      {
+        "shape" : [3],
+        "data" : [40.0, 28.0, 14.0]
+      },
+      "bounds_matrix":
+      {
+        "shape" : [3, 2],
+        "data" : [-2.0, 6.0,
+                   3.0, 2.0,
+                   2.0,-1.0]
+      },
+      "inequalities": [2, 2, 2]
+    },
+    {
+      "solve_type": 1,
+      "weights":
+      {
+        "shape" : [2],
+        "data" : [2.0, 3.0]
+      },
+      "bounds":
+      {
+        "shape" : [3],
+        "data" : [40.0, 28.0, 14.0]
+      },
+      "bounds_matrix":
+      {
+        "shape" : [3, 2],
+        "data" : [-2.0, 6.0,
+                   3.0, 2.0,
+                   2.0,-1.0]
+      },
+      "inequalities": [1, 1, 1]
+    }
+  ]
 }
