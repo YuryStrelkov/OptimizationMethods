@@ -7,7 +7,8 @@ public class TemplateVector<TypeName> implements Iterable<TypeName>, Cloneable
     private int _filling;   // Заполнение данными от левого края
 
     @Override
-    public Iterator<TypeName> iterator() {
+    public Iterator<TypeName> iterator()
+    {
         return new TemplateVectorIterator<>(this);
     }
 
@@ -25,12 +26,14 @@ public class TemplateVector<TypeName> implements Iterable<TypeName>, Cloneable
         }
 
         @Override
-        public boolean hasNext() {
+        public boolean hasNext()
+        {
             return (_index + 1 < _iterableVector._filling);
         }
 
         @Override
-        public Type next() {
+        public Type next()
+        {
             _index++;
             return (Type)_iterableVector._data[_index];
         }
@@ -40,6 +43,7 @@ public class TemplateVector<TypeName> implements Iterable<TypeName>, Cloneable
     {
         public TypeName First;
         public TypeName Second;
+
         public Pair(TypeName f, TypeName s)
         {
             First = f;
@@ -76,7 +80,8 @@ public class TemplateVector<TypeName> implements Iterable<TypeName>, Cloneable
         }
 
         @Override
-        public Iterator<Pair<Type>> iterator() {
+        public Iterator<Pair<Type>> iterator()
+        {
             return this;
         }
     }
@@ -140,7 +145,6 @@ public class TemplateVector<TypeName> implements Iterable<TypeName>, Cloneable
         if (size() >= 0) System.arraycopy(other, 0, _data, 0, size());
     }
 
-    @SuppressWarnings("all")
     public TemplateVector(Iterable<TypeName> other)
     {
         _data = alloc(9);

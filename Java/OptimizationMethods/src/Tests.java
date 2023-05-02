@@ -112,9 +112,9 @@ public class Tests {
 
         DoubleVector b  = new DoubleVector(40.0, 28.0, 14.0);
         DoubleVector c  = new DoubleVector(2.0, 3.0);
-        DoubleVector c1 = new DoubleVector(-2.0, 3.0);
-        DoubleVector c2 = new DoubleVector(2.0, 1.0);
-        DoubleVector c3 = new DoubleVector(-2.0, -1.0);
+        // DoubleVector c1 = new DoubleVector(-2.0, 3.0);
+        // DoubleVector c2 = new DoubleVector(2.0, 1.0);
+        // DoubleVector c3 = new DoubleVector(-2.0, -1.0);
 
         System.out.println(" f(x,c) =  2x1 + 3x2;\n arg_max = {4, 8}, f(arg_max) = 32");
         System.out.println(" |-2x1 + 6x2 <= 40");
@@ -125,10 +125,12 @@ public class Tests {
         signs_less.add(Sign.Less);
         signs_less.add(Sign.Less);
         signs_less.add(Sign.Less);
+
         ArrayList<Sign> signs_more = new ArrayList<>(3);
         signs_more.add(Sign.More);
         signs_more.add(Sign.More);
         signs_more.add(Sign.More);
+
         ArrayList<Sign> signs_equal = new ArrayList<>(3);
         signs_equal.add(Sign.Equal);
         signs_equal.add(Sign.Equal);
@@ -154,7 +156,7 @@ public class Tests {
         Simplex sym_3 = new Simplex(A, new DoubleVector(-2.0, -1.0), signs_more, b);
         sym_3.solve(SimplexProblemType.Max);
         System.out.println(" f(x,c) =  2x1 + 3x2;\n arg_min = {none, none}, f(arg_max) = none");
-        Simplex sym_4 = new Simplex(A, c,signs_equal, b);
+        Simplex sym_4 = new Simplex(A, c, signs_equal, b);
         sym_4.solve(SimplexProblemType.Max);
     }
 }

@@ -23,19 +23,19 @@ public class Matrix extends TemplateVector<DoubleVector>
 
         for(DoubleVector row:rows)
         {
-            if(row.size() > rowSizeMax)rowSizeMax = row.size();
-            if(row.size() < rowSizeMin)rowSizeMin = row.size();
+            if(row.size() > rowSizeMax) rowSizeMax = row.size();
+            if(row.size() < rowSizeMin) rowSizeMin = row.size();
         }
 
-        if(rowSizeMax!=rowSizeMin)throw new RuntimeException("Incorrect matrix data");
+        if(rowSizeMax!=rowSizeMin) throw new RuntimeException("Incorrect matrix data");
 
         for (DoubleVector v: rows) pushBack((DoubleVector) v.clone());
     }
 
     /**
-     * Конструктор матрцы по ее размерам и элементу по умолчанию
-     * @param n_rows колическтво строк
-     * @param n_cols количество столбцов
+     * Конструктор матрцы по ее размерам и элементу по умолчанию.
+     * @param n_rows колическтво строк.
+     * @param n_cols количество столбцов.
      */
     public Matrix(int n_rows, int n_cols)
     {
@@ -44,8 +44,8 @@ public class Matrix extends TemplateVector<DoubleVector>
     }
 
     /**
-     * Конструктор копирования
-     * @param original исходная матрица
+     * Конструктор копирования.
+     * @param original исходная матрица.
      */
     public Matrix(Matrix original)
     {
@@ -67,19 +67,28 @@ public class Matrix extends TemplateVector<DoubleVector>
         return sb.toString();
     }
 
+    /**
+     * Строка матрицы.
+     * @param rowId номер строки.
+     * @return строка матрицы.
+     */
     public DoubleVector row(int rowId)
     {
         return get(rowId);
     }
 
+    /**
+     * Вектор строк матрицы.
+     * @return вектор строк матрицы.
+     */
     public TemplateVector<DoubleVector> getRows()
     {
         return this;
     }
 
     /**
-     * Количество строк
-     * @return Количество строк
+     * Количество строк.
+     * @return Количество строк.
      */
     public int rows()
     {
@@ -87,8 +96,8 @@ public class Matrix extends TemplateVector<DoubleVector>
     }
 
     /**
-     * Количество столбцов
-     * @return  Количество столбцов
+     * Количество столбцов.
+     * @return  Количество столбцов.
      */
     public int cols()
     {
@@ -96,6 +105,11 @@ public class Matrix extends TemplateVector<DoubleVector>
        return row(0).size();
     }
 
+    /**
+     * Добавляет новый столбец к матрице.
+     * @param col новый стобец.
+     * @return обновлённая матрица.
+     */
     public Matrix addCol(DoubleVector col)
     {
         if (col == null) return this;
@@ -109,6 +123,11 @@ public class Matrix extends TemplateVector<DoubleVector>
         return this;
     }
 
+    /**
+     * Добавляет новую строку к матрице.
+     * @param row новая строка.
+     * @return обновлённая матрица.
+     */
     public Matrix addRow(DoubleVector row)
     {
         if(row == null) return this;
@@ -117,19 +136,38 @@ public class Matrix extends TemplateVector<DoubleVector>
         return this;
     }
 
+    /**
+     *  Размерность матрицы.
+     * @return массив из целых чисел (количество строк, количество столбцов).
+     */
     public final int[] shape()
     {
        return new int[] { rows(), cols() };
     }
 
-    public double get(int i, int j)
+    /**
+     * Элемент матрицы
+     * @param row номер строки
+     * @param col номер столбца
+     * @return элемент матрицы[row, col]
+     */
+    public double get(int row, int col)
     {
-        return get(i).get(j);
+        return get(row).get(col);
     }
 
-    public void set(int i, int j, double value)
+    /**
+     * Устанавливает новое значение элемента матрицы
+     * элемент матрицы[row, col] = value
+     * @param row номер строки
+     * @param col номер столбца
+     * @param value новое значение элемента матрицы
+     * @return обновлённая матрица.
+     */
+    public Matrix set(int row, int col, double value)
     {
-        get(i).set(j, value);
+        get(row).set(col, value);
+        return this;
     }
 
     public static Matrix hessian(IFunctionND f, DoubleVector x, double eps)
@@ -231,9 +269,9 @@ public class Matrix extends TemplateVector<DoubleVector>
     }
 
     /**
-     * Создаёт квадратную матрицу нулей
-     * @param size сторона матрицы
-     * @return
+     * Создаёт квадратную матрицу нулей.
+     * @param size сторона матрицы.
+     * @return матрица из нулей.
      */
     public static Matrix zeros(int size)
     {
@@ -241,15 +279,15 @@ public class Matrix extends TemplateVector<DoubleVector>
     }
 
     /**
-     * Создаёт единичную матрицу
-     * @param n_rows число строк
-     * @param n_cols число столбцов
-     * @return
+     * Создаёт единичную матрицу.
+     * @param n_rows число строк.
+     * @param n_cols число столбцов.
+     * @return единичная матрица.
      */
     public static Matrix identity(int n_rows, int n_cols)
     {
         Matrix I = new Matrix(n_rows, n_cols);
-        for (int i = 0; i < Math.min(n_rows, n_cols); i++) I.set(i,i,1.0);
+        for (int i = 0; i < Math.min(n_rows, n_cols); i++) I.set(i, i,1.0);
         return I;
     }
 
@@ -258,7 +296,7 @@ public class Matrix extends TemplateVector<DoubleVector>
      * low - Нижняя треугольная матрица
      * up - Верхняя треугольная матрица
      * @param src Матрица разложение которой нужно провести
-     * @return
+     * @return массив из двух матриц, как рещультат LU разложения.
      */
     public static Matrix[] lu( Matrix src)
     {
@@ -303,11 +341,11 @@ public class Matrix extends TemplateVector<DoubleVector>
     }
 
     /**
-     * Вспомогательный метод рещения системы уравнений вида Ax = b при условии, что найдено разложение A = LU
-     * @param low
-     * @param up
-     * @param b
-     * @return
+     * Вспомогательный метод рещения системы уравнений вида Ax = b при условии, что найдено разложение A = LU.
+     * @param low нижняя треугольная матрица.
+     * @param up верхняя треугольняая матрица.
+     * @param b вектор свободных членов.
+     * @return x = A^-1 * b = (L * U)^-1 * b.
      */
     private static DoubleVector linsolve( Matrix low,  Matrix up,  DoubleVector b)
     {
@@ -346,26 +384,22 @@ public class Matrix extends TemplateVector<DoubleVector>
     }
 
     /**
-     * Решение системы уравнений вида Ax = b
-     * @param mat
-     * @param b
-     * @return
+     * Решение системы уравнений вида Ax = b.
+     * @param mat матрица СЛАУ.
+     * @param b вектор свободных членов.
+     * @return x = A^-1 * b.
      */
     public static DoubleVector linsolve(Matrix mat, DoubleVector b)
     {
         if (mat.rows() != mat.cols()) throw new RuntimeException("non square matrix");
-
-        Matrix low = null, up = null;
-
         Matrix[]lu_ = lu(mat);
-
         return linsolve( lu_[0],  lu_[1], b);
     }
 
     /**
-     * Рассчитывает обратную матрицу
-     * @param mat
-     * @return
+     * Рассчитывает обратную матрицу A^-1.
+     * @param mat исходная квадратная матрица.
+     * @return A^-1.
      */
     public static Matrix invert(Matrix mat)
     {
@@ -407,80 +441,79 @@ public class Matrix extends TemplateVector<DoubleVector>
 
     /**
      * Транспонирование матрицы
-     * @param mat
-     * @return
+     * @param mat исходная матрица.
+     * @return A^T.
      */
     public static Matrix transpose(Matrix mat)
     {
         Matrix trans = new Matrix(mat.cols(), mat.rows());
-
-        for (int i = 0; i < mat.rows(); i++)
-        {
-            for (int j = 0; j < mat.cols(); j++)  trans.set(j, i, mat.get(i,j));
-        }
+        for (int i = 0; i < mat.rows(); i++) for (int j = 0; j < mat.cols(); j++)  trans.set(j, i, mat.get(i,j));
         return trans;
     }
 
+    ///////////////////////////////
+    //      ADDITION INTERNAL    //
+    ///////////////////////////////
     public Matrix add(Matrix other)
     {
         if(rows()!= other.rows())  throw new RuntimeException("Dot product :: this.Size()!= other.Size()");
-
         if(cols()!= other.rows()) throw new RuntimeException("Dot product :: this.Size()!= other.Size()");
-
         for (int i = 0; i < rows(); i++) row(i).add(other.row(i));
-
         return  this;
     }
 
     public Matrix add(double other)
     {
         for (int i = 0; i < rows(); i++) row(i).add(other);
-
         return  this;
     }
 
+    ///////////////////////////////
+    //    SUBTRACTION INTERNAL   //
+    ///////////////////////////////
     public Matrix sub(Matrix other)
     {
         if(rows()!= other.rows()) throw new RuntimeException("Dot product :: this.Size()!= other.Size()");
-
         if(cols()!= other.rows()) throw new RuntimeException("Dot product :: this.Size()!= other.Size()");
-
         for (int i = 0; i < rows(); i++)  row(i).sub(other.row(i));
-
         return  this;
     }
 
     public Matrix sub(double other)
     {
         for (int i = 0; i < rows(); i++) row(i).sub(other);
-
         return  this;
     }
 
+    ///////////////////////////////
+    //  MULTIPLICATION INTERNAL  //
+    ///////////////////////////////
     public Matrix mul(double other)
     {
         for (int i = 0; i < rows(); i++)  row(i).mul(other);
-
         return  this;
     }
+    // public Matrix mul(Matrix other) ...
 
+    ///////////////////////////////
+    //     DIVISION INTERNAL     //
+    ///////////////////////////////
     public Matrix div(double other)
     {
         return  this.mul(1.0 / other);
     }
 
+    // public Matrix div(Matrix other) ...
+
+    ///////////////////////////////////
+    ////  MULTIPLICATION EXTERNAL  ////
+    ///////////////////////////////////
     public static Matrix mul(Matrix a, Matrix b)
     {
         if (a.cols() != b.rows())  throw new RuntimeException("Error matrix multiplication::a.NCols != b.NRows");
-
         Matrix b_t = transpose(b);
-
         Matrix res = new Matrix(a.rows(), b.cols());
-
-        for (int i = 0; i < a.rows(); i++)
-        {
-            for (int j = 0; j < b.cols(); j++) res.set(i,j,DoubleVector.dot(a.row(i), b_t.row(j)));
-        }
+        for (int i = 0; i < a.rows(); i++)for (int j = 0; j < b.cols(); j++) res.set(i, j, DoubleVector.dot(a.row(i), b_t.row(j)));
         return res;
     }
 
@@ -517,11 +550,14 @@ public class Matrix extends TemplateVector<DoubleVector>
         return result.mul(a);
     }
 
-    public static Matrix operator(double a, Matrix mat)
+    public static Matrix mul(double a, Matrix mat)
     {
         return mul(mat , a);
     }
 
+    ///////////////////////////////////
+    ////     ADDITION EXTERNAL     ////
+    ///////////////////////////////////
     public static Matrix add(Matrix a, Matrix b)
     {
         if (a.cols() != b.cols()) throw new RuntimeException("unable to add matrix a to matrix b");
@@ -545,6 +581,9 @@ public class Matrix extends TemplateVector<DoubleVector>
         return add(a , b);
     }
 
+    ///////////////////////////////////
+    ////    SUBTRACTION EXTERNAL   ////
+    ///////////////////////////////////
     public static Matrix sub(Matrix a, Matrix b)
     {
         if (a.cols() != b.cols()) throw new RuntimeException("unable to add matrix a to matrix b");

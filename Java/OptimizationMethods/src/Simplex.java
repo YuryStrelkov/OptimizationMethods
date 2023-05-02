@@ -172,7 +172,7 @@ public class Simplex
             index = i;
         }
 
-        if (!(isTargetFuncModified() && index == -1))return index;
+        if (!(isTargetFuncModified() && index == -1)) return index;
 
         row = simplexTable.row(simplexTable.rows() - 2);
 
@@ -207,8 +207,8 @@ public class Simplex
         {
             aik = simplexTable.get(i, simplexCol);
             if (aik < 0) continue;
-            if (simplexTable.get(i,bIndex) / aik > delta) continue;
-            delta = simplexTable.get(i,bIndex) / aik;
+            if (simplexTable.get(i, bIndex) / aik > delta) continue;
+            delta = simplexTable.get(i, bIndex) / aik;
             index = i;
         }
 
