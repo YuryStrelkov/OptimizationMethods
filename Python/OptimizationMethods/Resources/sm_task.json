@@ -20,7 +20,7 @@
                    3.0, 2.0,
                    2.0,-1.0]
       },
-      "inequalities": [0, 0, 0]
+      "inequalities": [-1, -1, -1]
     },
     {
       "solve_type": 1,
@@ -41,7 +41,7 @@
                    3.0, 2.0,
                    2.0,-1.0]
       },
-      "inequalities": [0, 0, 0]
+      "inequalities": [-1, -1, -1]
     },
     {
       "solve_type": 0,
@@ -62,7 +62,7 @@
                    3.0, 2.0,
                    2.0,-1.0]
       },
-      "inequalities": [2, 2, 2]
+      "inequalities": [1, 1, 1]
     },
     {
       "solve_type": 1,
@@ -83,7 +83,7 @@
                    3.0, 2.0,
                    2.0,-1.0]
       },
-      "inequalities": [2, 2, 2]
+      "inequalities": [1, 1, 1]
     },
     {
       "solve_type": 1,
@@ -104,7 +104,7 @@
                    3.0, 2.0,
                    2.0,-1.0]
       },
-      "inequalities": [1, 1, 1]
+      "inequalities": [0, 0, 0]
     }
   ]
 }
