@@ -9,7 +9,7 @@ namespace OptimizationMethods
         ////////////////////
         static double Testf1(double arg)
         {
-            return arg * (arg - 5);
+            return arg * (arg - 5.0);
         }
         static void Lab1()
         {
@@ -17,19 +17,19 @@ namespace OptimizationMethods
             Console.WriteLine(  "/// Lab. work #1 ///\n");
             Console.WriteLine(  "////////////////////\n\n");
 
-            double x_0 = 10;
-            double x_1 = -1;
+            double x_0 = 10.0;
+            double x_1 = -1.0;
             Console.WriteLine($"x_0 = {x_0}, x_1 = {x_1}\n");
-            Console.WriteLine($"BiSect      : {OneDimensional.BiSect(Testf1, x_0, x_1, 1e-3)}");
+            Console.WriteLine($"BiSect      : {OneDimensional.BiSect     (Testf1, x_0, x_1, 1e-3)}");
             Console.WriteLine($"GoldenRatio : {OneDimensional.GoldenRatio(Testf1, x_0, x_1, 1e-3)}");
-            Console.WriteLine($"Fibonacchi  : {OneDimensional.Fibonacci(Testf1, x_0, x_1, 1e-3)}\n");
+            Console.WriteLine($"Fibonacchi  : {OneDimensional.Fibonacci  (Testf1, x_0, x_1, 1e-3)}\n");
         }
         ////////////////////
         /// Lab. work #2 ///
         ////////////////////
         static double Testf2(Vector args)
         {
-            return (args[0] - 2) *(args[0] - 2) + (args[1] - 2) * (args[1] - 2);
+            return (args[0] - 2.0) *(args[0] - 2.0) + (args[1] - 2.0) * (args[1] - 2.0);
         }
         static void Lab2()
         {
@@ -37,16 +37,16 @@ namespace OptimizationMethods
             Console.WriteLine(  "/// Lab. work #2 ///\n");
             Console.WriteLine(  "////////////////////\n\n");
 
-            Vector x_1 = new Vector(0, 0);
-            Vector x_0 = new Vector(5, 5);
+            Vector x_1 = new Vector(0.0, 0.0);
+            Vector x_0 = new Vector(5.0, 5.0);
             Console.WriteLine($"x_0 = {x_0}, x_1 = {x_1}\n");
-            Console.WriteLine($"BiSect                 : {MultiDimensional.BiSect(Testf2, x_1, x_0)}");
-            Console.WriteLine($"GoldenRatio            : {MultiDimensional.GoldenRatio(Testf2, x_1, x_0)}" );
-            Console.WriteLine($"Fibonacci              : {MultiDimensional.Fibonacci(Testf2, x_1, x_0)}");
-            Console.WriteLine($"PerCoordDescend        : {MultiDimensional.PerCoordDescend(Testf2, x_1)}");
-            Console.WriteLine($"GradientDescend        : {MultiDimensional.GradientDescend(Testf2, x_1)}" );
+            Console.WriteLine($"BiSect                 : {MultiDimensional.BiSect             (Testf2, x_1, x_0)}");
+            Console.WriteLine($"GoldenRatio            : {MultiDimensional.GoldenRatio        (Testf2, x_1, x_0)}" );
+            Console.WriteLine($"Fibonacci              : {MultiDimensional.Fibonacci          (Testf2, x_1, x_0)}");
+            Console.WriteLine($"PerCoordDescend        : {MultiDimensional.PerCoordDescend    (Testf2, x_1)}");
+            Console.WriteLine($"GradientDescend        : {MultiDimensional.GradientDescend    (Testf2, x_1)}" );
             Console.WriteLine($"СonjGradientDescend    : {MultiDimensional.СonjGradientDescend(Testf2, x_1)}" );
-            Console.WriteLine($"NewtoneRaphson         : {MultiDimensional.NewtoneRaphson(Testf2, x_1)}\n");
+            Console.WriteLine($"NewtoneRaphson         : {MultiDimensional.NewtoneRaphson     (Testf2, x_1)}\n");
         }
 
         ////////////////////
@@ -58,8 +58,8 @@ namespace OptimizationMethods
             Console.WriteLine(  "/// Lab. work #3 ///\n");
             Console.WriteLine(  "////////////////////\n\n");
 
-            Vector x_1 = new Vector(0, 0);
-            Vector x_0 = new Vector(5, 5);
+            Vector x_1 = new Vector(0.0, 0.0);
+            Vector x_0 = new Vector(5.0, 5.0);
             Console.WriteLine($"x_0 = {x_0}, x_1 = {x_1}\n");
             Console.WriteLine($"GradientDescend        : {MultiDimensional.GradientDescend    (Testf2, x_1)}");
             Console.WriteLine($"СonjGradientDescend    : {MultiDimensional.СonjGradientDescend(Testf2, x_1)}");
@@ -73,12 +73,12 @@ namespace OptimizationMethods
         /// Уловие 1
         static double Psi1(Vector args)
         {
-            return 1 / (5 - args[0] * 2 + args[1] * 3 );
+            return 1.0 / (5.0 - args[0] * 2.0 + args[1] * 3.0);
         }
         /// Уловие 1
         static double Psi2(Vector args)
         {
-            return 1 / (6 + args[0] * 3 - args[1]);
+            return 1.0 / (6.0 + args[0] * 3.0 - args[1]);
         }
         ///Ишем минимум функции  Testf2 при условии Psi1 и Psi2(Это внутренний штраф)
         static double Func(Vector args)
@@ -90,9 +90,8 @@ namespace OptimizationMethods
             Console.WriteLine("\n////////////////////\n");
             Console.WriteLine(  "/// Lab. work #4 ///\n");
             Console.WriteLine(  "////////////////////\n\n");
-
-            Vector x_1 = new Vector(0, 0);
-            Vector x_0 = new Vector(5, 5);
+            Vector x_1 = new Vector(0.0, 0.0);
+            Vector x_0 = new Vector(5.0, 5.0);
             Console.WriteLine($"x_0 = {x_0}, x_1 = {x_1}\n");
             Console.WriteLine($"NewtoneRaphson         : {MultiDimensional.NewtoneRaphson(Testf2, x_1)}");
             Console.WriteLine($"NewtoneRaphson         : {MultiDimensional.NewtoneRaphson(Func, x_1)}\n");
@@ -101,7 +100,6 @@ namespace OptimizationMethods
 
         static void Main(string[] args)
         {
-
                 Tests.TestAll();
         }
     }

@@ -4,13 +4,15 @@ namespace OptimizationMethods
 {
     public static class NumericUtils
     {
-        private struct mat2
+        private struct Mat2
         {
             public long m00;
             public long m01;
             public long m10;
             public long m11;
+            public static Mat2 Identity() => new Mat2() { m00 = 1, m01 = 0, m10 = 0, m11 = 1 };
         }
+
         /// <summary>
         /// Конвертирует десятичную запись числа в рациональную, например, для числа 1.666 получим 1 2/3
         /// </summary>
@@ -21,10 +23,7 @@ namespace OptimizationMethods
         /// <param name="max_den">максимально допустимый знаменатель</param>
         public static void DecimalToRational(double value, out int rational_part, out int numerator, out int denominator, int max_den = 1000)
         {
-            mat2 m;
-
-            m.m00 = m.m11 = 1;
-            m.m01 = m.m10 = 0;
+            Mat2 m = Mat2.Identity();
 
             long ai;
 
@@ -47,15 +46,12 @@ namespace OptimizationMethods
                 
                 m.m11 = m.m10;
                 m.m10 = t;
-                if (x == (double)ai)
-                {
-                    break;
-                }   // AF: division by zero
+
+                if (x == (double)ai) break; // AF: division by zero
+                
                 x = 1 / (x - (double)ai);
-                if (x > (double)0x7FFFFFFF)
-                {
-                    break;
-                }  // AF: representation failure
+                
+                if (x > (double)0x7FFFFFFF) break; // AF: representation failure
             }
 
             if ((rational_part = (int)(m.m00 / m.m10)) != 0)
@@ -77,40 +73,14 @@ namespace OptimizationMethods
 
         public static string ToRationalStr(double value, bool fullRational = true)
         {
-            int r_part;
-
-            int num;
-
-            int denom;
-
+            int r_part, num, denom;
             DecimalToRational(value, out r_part, out num, out denom);
-            if (num == 0)
-            {
-                return r_part.ToString();
-            }
-            if (r_part == 0)
-            {
-                return num.ToString() + "/" + denom.ToString();
-            }
-
-            if (fullRational)
-            {
-                return ((num + Math.Abs(r_part) * denom) * (r_part >= 0 ? 1 : -1)).ToString() + "/" + denom.ToString();
-            }
-            return r_part.ToString() + " " + num.ToString() + "/" + denom.ToString();
+            if (num    == 0)  return $"{r_part}";
+            if (r_part == 0)  return $"{num}/{denom}";
+            if (fullRational) return $"{(num + Math.Abs(r_part) * denom) * (r_part >= 0 ? 1 : -1)}/{denom}";
+            return $"{r_part} {num}/{denom}";
         }
-        public static string ToRationalStr(Vector value, bool fullRational = true)
-        {
-            string str = "{ ";
-            for (int i = 0; i < value.Count - 1; i++)
-            {
-                str += ToRationalStr(value[i], fullRational);
-                str += ", ";
-            }
-            str += ToRationalStr(value[value.Count - 1], fullRational);
 
-            str += " }";
-            return str;
-        }
+        public static string ToRationalStr(Vector value, bool fullRational = true) => $"{{{string.Join(", ", value.Map((v) => ToRationalStr(v, fullRational)))}}}";
     }
 }

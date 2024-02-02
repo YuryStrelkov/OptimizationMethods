@@ -1,8 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Collections;
-using System.Text;
 using System;
 
 namespace OptimizationMethods
@@ -31,6 +28,7 @@ namespace OptimizationMethods
             PushBack(row);
             return this;
         }
+
         public new Matrix PushBack(Vector v) 
         {
             if (NRows == 0) 
@@ -43,51 +41,31 @@ namespace OptimizationMethods
             return this;
         }
 
-        public override string ToString()
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.Append("{\n");
-            foreach (var row in this)
-            {
-                sb.Append(row.ToString());
-                sb.Append(",\n");
-            }
-            sb.Remove(sb.Length - 2, 2);
-            sb.Append("\n}");
-            return sb.ToString();
-        }
+        public override string ToString() => $"{{\n  {string.Join(",\n  ", Map((v) => v.ToString()))}\n}}";
 
         /// <summary>
         ///  Количество строк
         /// </summary>
-        public int NRows
-        {
-            get => Count;
-        }
+        public int NRows => Count;
 
         /// <summary>
         /// Количество столбцов
         /// </summary>
-        public int NCols
-        {
-            get => NRows == 0? 0 : this[0].Count;
-        }
-        
+        public int NCols => NRows == 0 ? 0 : this[0].Count;
+
         public IEnumerable<Vector> Rows => this;
 
         /// <summary>
         /// Рамерность матрицы
         /// </summary>
-        public int[] Size
-        {
-            get => new int[] { NRows, NCols };
-        }
+        public int[] Size => new int[] { NRows, NCols };
 
         /// <summary>
         /// Конструктор матрицы из массива строк
         /// </summary>
         /// <param name="rows"></param>
         public Matrix() : base() { }
+        
         public Matrix(params Vector[] rows): base()
         {
             if (rows == null) throw new Exception("Data is null...");
@@ -124,7 +102,7 @@ namespace OptimizationMethods
         /// Конструктор копирования
         /// </summary>
         /// <param name="original"></param>
-        public Matrix(Matrix original):base(original.NRows)
+        public Matrix(Matrix original):base()
         {
             foreach (Vector row in original) PushBack(new Vector(row));
         }
@@ -170,6 +148,7 @@ namespace OptimizationMethods
             for (int i = 0; i < m; i++)
             {
                 int j;
+
                 for (j = 0; j < n; j++) if (!row_selected[j] && Math.Abs(A[j][i]) > 1e-12) break;
 
                 if (j != n)
@@ -198,21 +177,15 @@ namespace OptimizationMethods
         /// <param name="n_rows">число строк</param>
         /// <param name="n_cols">число столбцов</param>
         /// <returns>матрица нулей</returns>
-        public static Matrix Zeros(int n_rows, int n_cols)
-        {
-            return new Matrix(n_rows, n_cols);
-        }
-        
+        public static Matrix Zeros(int n_rows, int n_cols) => new Matrix(n_rows, n_cols);
+
         /// <summary>
         /// Создаёт квадратную матрицу нулей
         /// </summary>
         /// <param name="size">сторона матрицы</param>
         /// <returns>квадратная матрицы нулей</returns>
-        public static Matrix Zeros(int size)
-        {
-            return Zeros(size, size);
-        }
-        
+        public static Matrix Zeros(int size) => Zeros(size, size);
+
         /// <summary>
         /// Создаёт единичную матрицу
         /// </summary>
@@ -231,11 +204,8 @@ namespace OptimizationMethods
         /// </summary>
         /// <param name="size">сторона матрицы</param>
         /// <returns>квадратная единичная матрица</returns>
-        public static Matrix Identity(int size)
-        {
-            return Identity(size, size);
-        }
-        
+        public static Matrix Identity(int size) => Identity(size, size);
+
         /// <summary>
         /// LU hазложение матрицы на нижнюю и верхнюю треугольные матрицы
         /// </summary>
@@ -317,7 +287,7 @@ namespace OptimizationMethods
 
                 for (int j = i + 1; j < z.Count; j++) tmp += x[j] * up[i][j];
                 
-                x[i] = (z[i] - tmp);
+                x[i] = z[i] - tmp;
             }
 
             return x;
@@ -379,10 +349,10 @@ namespace OptimizationMethods
         public static Matrix Transpose(Matrix mat)
         {
             Matrix trans = new Matrix(mat.NCols, mat.NRows);
-            for (int i = 0; i < mat.NRows; i++)
+            Parallel.For(0, mat.NRows, (i) =>
             {
                 for (int j = 0; j < mat.NCols; j++) trans[j][i] = mat[i][j];
-            }
+            });
             return trans;
         }
 
@@ -446,7 +416,7 @@ namespace OptimizationMethods
         public static Vector operator *(Vector vec, Matrix mat)
         {
             if (mat.NRows != vec.Count) throw new Exception("unable to matrix and vector myltiply");
-            Vector result = new Vector(mat.NCols);
+            Vector result = new Vector();
 
             for (int i = 0; i < mat.NCols; i++)
             {

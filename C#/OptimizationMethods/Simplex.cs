@@ -108,10 +108,8 @@ namespace OptimizationMethods
 
             if (IsTargetFuncModified())
             {
-                if (!opt)
-                {
-                    return opt;
-                }
+                if (!opt) return opt;
+
                 row = _simplexTable[_simplexTable.NRows - 2];
 
                 foreach (int id in _naturalArgsIds)
@@ -121,9 +119,9 @@ namespace OptimizationMethods
                     break;
                 }
             }
-
             return opt;
         }
+
         /// <summary>
         /// Определяет ведущий столбец. Среди элементов строки симплекс-разностей ищет максимальны по модулю 
         /// отрицательный элемент. Если целевая функция была модифицирована и среди последней строки нет отрицательных
@@ -134,7 +132,6 @@ namespace OptimizationMethods
         /// <returns></returns>
         private int GetMainCol()
         {
-
             Vector row = _simplexTable[_simplexTable.NRows - 1];
 
             double delta = 0;
@@ -143,10 +140,7 @@ namespace OptimizationMethods
 
             for (int i = 0; i < row.Count - 1; i++)
             {
-                if (row[i] >= delta)
-                {
-                    continue;
-                }
+                if (row[i] >= delta) continue;
                 delta = row[i];
                 index = i;
             }
@@ -157,10 +151,7 @@ namespace OptimizationMethods
 
                 foreach (int id in _naturalArgsIds)
                 {
-                    if (row_add[id] >= delta)
-                    {
-                        continue;
-                    }
+                    if (row_add[id] >= delta) continue;
                     delta = row_add[id];
                     index = id;
                 }
@@ -306,10 +297,7 @@ namespace OptimizationMethods
             ///
             for (int row = 0; row < _simplexTable.NRows; row++)
             {
-                if (_boundsVector[row] >= 0)
-                {
-                    continue;
-                }
+                if (_boundsVector[row] >= 0) continue;
 
                 _inequalities[row] = _inequalities[row] == Sign.Less ? Sign.More : Sign.Less;
 
@@ -319,10 +307,7 @@ namespace OptimizationMethods
             }
 
 
-            for (int i = 0; i < _pricesVector.Count; i++)
-            {
-                _naturalArgsIds.Add(i);
-            }
+            for (int i = 0; i < _pricesVector.Count; i++) _naturalArgsIds.Add(i);
             /// <summary>
             /// построение искуственного базиса
             /// </summary>
@@ -371,27 +356,20 @@ namespace OptimizationMethods
             /// Если целевая функуция не была модифицирована
             /// </summary>
 
-            if (!IsTargetFuncModified())
-            {
-                return;
-            }
+            if (!IsTargetFuncModified()) return;
 
             /// <summary>
             /// Если всё же была...
             /// </summary>
             Vector s_deltas_add = new Vector(_simplexTable.NCols);
-            for (int j = 0; j < _simplexTable.NCols; j++)  s_deltas_add[j] = 0.0; //
+            for (int j = 0; j < _simplexTable.NCols; j++)  s_deltas_add[j] = 0.0; //  ???
             foreach (int fModArgsId in _fModArgs) s_deltas_add[fModArgsId] = 1.0;
-
             _simplexTable.AddRow(s_deltas_add);
         }
 
         private bool ExcludeModArgs()
         {
-            if (!IsTargetFuncModified())
-            {
-                return false;
-            }
+            if (!IsTargetFuncModified()) return false;
 
             int last_row_id = _simplexTable.NRows - 1;
 
@@ -414,7 +392,6 @@ namespace OptimizationMethods
 
         private bool ValidateSolution()
         {
-
             double val = 0;
 
             int n_rows = IsTargetFuncModified() ? _simplexTable.NRows - 2 : _simplexTable.NRows - 1;
@@ -430,51 +407,30 @@ namespace OptimizationMethods
                 if (Math.Abs(val - _simplexTable[n_rows][n_cols]) < 1e-5)
                 {
                     if (!IsTargetFuncModified()) return true;
-                    return true & (Math.Abs(_simplexTable[_simplexTable.NRows - 1][_simplexTable.NCols - 1]) < 1e-5);
+                    return Math.Abs(_simplexTable[_simplexTable.NRows - 1][_simplexTable.NCols - 1]) < 1e-5;
                 }
             }
             if (Math.Abs(val + _simplexTable[n_rows][n_cols]) < 1e-5)
             {
                 if (!IsTargetFuncModified()) return true;
-                return true & (Math.Abs(_simplexTable[_simplexTable.NRows - 1][_simplexTable.NCols - 1]) < 1e-5);
+                return Math.Abs(_simplexTable[_simplexTable.NRows - 1][_simplexTable.NCols - 1]) < 1e-5;
             }
             return false;
         }
 
-        public int NaturalArgsN()
-        {
-            return _pricesVector.Count;
-        }
+        public int NaturalArgsN() => _pricesVector.Count;
 
-        public Matrix BoundsMatrix()
-        {
-            return _boundsMatrix;
-        }
+        public Matrix BoundsMatrix() => _boundsMatrix;
 
-        public Vector BoundsCoeffs()
-        {
-            return _boundsVector;
-        }
+        public Vector BoundsCoeffs() => _boundsVector;
 
-        public Vector PricesCoeffs()
-        {
-            return _pricesVector;
-        }
+        public Vector PricesCoeffs() => _pricesVector;
 
-        public List<Sign> Inequations()
-        {
-            return _inequalities;
-        }
+        public List<Sign> Inequations() => _inequalities;
 
-        public List<int> BasisArgsuments()
-        {
-            return _basisArgs;
-        }
+        public List<int> BasisArgsuments() => _basisArgs;
 
-        public Matrix SimplexTable()
-        {
-            return _simplexTable;
-        }
+        public Matrix SimplexTable() => _simplexTable;
 
         public Vector CurrentSimplexSolution(bool only_natural_args = false)
         {
@@ -633,7 +589,7 @@ namespace OptimizationMethods
         {
             if (b.Count != ineq.Count) throw new Exception("Error simplex creation :: b.size() != inequation.size()");
             if (a.NRows != ineq.Count) throw new Exception("Error simplex creation :: A.rows_number() != inequation.size()");
-            if (a.NCols != c.Count) throw new Exception("Error simplex creation :: A.cols_number() != price_coeffs.size()");
+            if (a.NCols != c.Count)    throw new Exception("Error simplex creation :: A.cols_number() != price_coeffs.size()");
 
             _naturalArgsIds = new List<int>();
             _basisArgs      = new List<int>();

@@ -14,7 +14,7 @@ namespace OptimizationMethods
         }
 
         public static readonly double Phi = 1.61803398874989484820;
-        
+
         static void Swap<T>(ref T lhs, ref T rhs)
         {
             T temp;
@@ -25,9 +25,9 @@ namespace OptimizationMethods
 
         public static double BiSect (Function1D f, double x_0, double x_1, double eps = 1e-6, int max_iters = 1000)
         {
-            double x_c = 0.0;
-
             if (x_0 > x_1) Swap(ref x_0, ref x_1);
+            
+            double x_c = 0.0;
 
             int cntr = 0;
 
@@ -49,6 +49,7 @@ namespace OptimizationMethods
 #endif
             return x_c;
         }
+
         public static double GoldenRatio(Function1D f, double x_0, double x_1, double eps = 1e-6, int max_iters = 1000)
         {
             if (x_0 > x_1) Swap(ref x_0, ref x_1);
@@ -77,6 +78,7 @@ namespace OptimizationMethods
 #endif
             return (x_1 + x_0) * 0.5;
         }
+
         public static int[] FibonacchiNumbers(int index)
         {
             if (index < 1) return new int[] { 0 };
@@ -93,6 +95,7 @@ namespace OptimizationMethods
 
             return res;
         }
+
         public static void ClosestFibonacciPair(double value, ref int f_n, ref int f_n_1)
         {
             f_n   = 0;

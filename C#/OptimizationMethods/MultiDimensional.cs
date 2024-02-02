@@ -13,14 +13,15 @@ namespace OptimizationMethods
         {
             double val = 0.0;
 
-            for (int i=0; i < x.Count; i++) val += (x[i] - i) * x[i];
+            for (int i = 0; i < x.Count; i++) val += (x[i] - i) * x[i];
 
             return val; // min at point x_i = i/2, i from 0 to x.Size-1
         }
+
         ////////////////////
         /// Lab. work #2 ///
         ////////////////////
-        public static Vector BiSect  (FunctionND f, Vector x_0, Vector x_1, double eps = 1e-5, int max_iters = 1000)
+        public static Vector BiSect(FunctionND f, Vector x_0, Vector x_1, double eps = 1e-5, int max_iters = 1000)
         {
             Vector x_c, dir;
 
@@ -46,6 +47,7 @@ namespace OptimizationMethods
 #endif
             return (x_1 + x_0) * 0.5;
         }
+
         public static Vector GoldenRatio    (FunctionND f, Vector x_0, Vector x_1, double eps = 1e-5, int max_iters = 1000)
         {
             Vector a = new Vector(x_0);
@@ -78,6 +80,7 @@ namespace OptimizationMethods
 #endif
             return (a + b) * 0.5;
         }
+
         public static Vector Fibonacci      (FunctionND f, Vector x_0, Vector x_1, double eps = 1e-5)
         {
             int f_n = 0, f_n_1 = 0, f_tmp, cntr = 0;
@@ -113,6 +116,7 @@ namespace OptimizationMethods
 #endif
             return (a + b) * 0.5;
         }
+
         public static Vector PerCoordDescend(FunctionND f, Vector x_start, double eps = 1e-5, int max_iters = 1000)
         {
             Vector x_0 = new Vector(x_start);
@@ -169,6 +173,7 @@ namespace OptimizationMethods
 #endif
             return x_0;
         }
+
         ////////////////////
         /// Lab. work #3 ///
         ////////////////////
@@ -176,7 +181,7 @@ namespace OptimizationMethods
         {
             Vector x_i = new Vector(x_start);
 
-            Vector x_i_1 = new Vector(x_start); ;
+            Vector x_i_1 = new Vector(x_start);
 
             int cntr = 0;
 
@@ -195,6 +200,7 @@ namespace OptimizationMethods
 #endif
             return (x_i_1 + x_i) * 0.5;
         }
+
         public static Vector СonjGradientDescend(FunctionND f, Vector x_start, double eps = 1e-5, int max_iters = 1000)
         {
             Vector x_i = new Vector(x_start);
@@ -228,6 +234,7 @@ namespace OptimizationMethods
 #endif
             return (x_i_1 + x_i) * 0.5;
         }
+
         ////////////////////
         /// Lab. work #4 ///
         ////////////////////
