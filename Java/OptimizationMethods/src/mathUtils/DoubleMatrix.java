@@ -1,5 +1,4 @@
 package mathUtils;
-
 import functionalInterfaces.IFunctionND;
 
 import java.util.Arrays;
@@ -13,8 +12,6 @@ enum SolutionType {
 }
 
 public class DoubleMatrix extends TemplateVector<DoubleVector> {
-    public static boolean showMatrixDebugLog = false;
-
     private static int[] matrixSizeInfo(Iterator<DoubleVector> rows)
     {
         int[] info = new int[]{-1, -1}; // rows, cols
@@ -199,7 +196,7 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
     }
 
     public static DoubleMatrix hessian(IFunctionND f, DoubleVector x) {
-        return hessian(f, x, 1e-5);
+        return hessian(f, x, Common.NUMERIC_ACCURACY_MIDDLE);
     }
 
     public static int rank(DoubleMatrix A) {
@@ -214,7 +211,8 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
         for (int i = 0; i < m; i++) {
             int j;
 
-            for (j = 0; j < n; j++) if (!row_selected[j] && Math.abs(A.unchecked_get(i, j)) > 1e-12) break;
+            for (j = 0; j < n; j++)
+                if (!row_selected[j] && Math.abs(A.unchecked_get(i, j)) > Common.NUMERIC_ACCURACY_HIGH) break;
 
             if (j != n) {
                 ++rank;
@@ -225,7 +223,7 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
                         A.unchecked_get(j, p) / A.unchecked_get(j, i));
 
                 for (int k = 0; k < n; k++) {
-                    if (k != j && Math.abs(A.unchecked_get(k, i)) > 1e-12) {
+                    if (k != j && Math.abs(A.unchecked_get(k, i)) > Common.NUMERIC_ACCURACY_HIGH) {
                         for (int p = i + 1; p < m; p++) A.unchecked_set(k, p,
                                 A.unchecked_get(k, p) - A.unchecked_get(j, p) * A.unchecked_get(k, i));
                     }
@@ -251,7 +249,7 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
 
         int rank_a_b = DoubleMatrix.rank(ab.addCol(b));
 
-        if (showMatrixDebugLog) {
+        if (Common.SHOW_MATRIX_DEBUG_LOG) {
             System.out.println("rank ( A ) " + rank_a + "\n");
 
             System.out.println("rank (A|b) " + rank_a_b + "\n");
@@ -358,8 +356,8 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
 
         for (int i = 0; i < up.rows(); i++) det *= (up.unchecked_get(i, i) * up.unchecked_get(i, i));
 
-        if (Math.abs(det) < 1e-12) {
-            if (showMatrixDebugLog)
+        if (Math.abs(det) < Common.NUMERIC_ACCURACY_HIGH) {
+            if (Common.SHOW_MATRIX_DEBUG_LOG)
                 System.out.println("mathUtils.Matrix is probably singular :: unable to solve A^-1 b = x");
             return null;
         }
@@ -412,8 +410,8 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
 
         for (int i = 0; i < lu_[0].rows(); i++) det *= (lu_[0].unchecked_get(i, i) * lu_[0].unchecked_get(i, i));
 
-        if (Math.abs(det) < 1e-12) {
-            if (showMatrixDebugLog)
+        if (Math.abs(det) < Common.NUMERIC_ACCURACY_HIGH) {
+            if (Common.SHOW_MATRIX_DEBUG_LOG)
                 System.out.println("mathUtils.Matrix is probably singular :: unable to calculate invert matrix");
             return null;
         }
@@ -468,7 +466,7 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
     }
 
     public DoubleMatrix add(double other) {
-        apply((v) -> v.add(other));
+        apply(v -> v.add(other));
         return this;
     }
 
@@ -482,7 +480,7 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
     }
 
     public DoubleMatrix sub(double other) {
-        apply((v) -> v.sub(other));
+        apply(v -> v.sub(other));
         return this;
     }
 
@@ -490,7 +488,7 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
     //  MULTIPLICATION INTERNAL  //
     ///////////////////////////////
     public DoubleMatrix mul(double other) {
-        apply((v) -> v.mul(other));
+        apply(v -> v.mul(other));
         return this;
     }
     // public mathUtils.Matrix mul(mathUtils.Matrix other) ...
@@ -535,11 +533,11 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
     }
 
     public static DoubleMatrix mul(DoubleMatrix left, double right) {
-        return new DoubleMatrix(map(left, (row) -> (DoubleVector.mul(row, right))));
+        return new DoubleMatrix(map(left, row -> (DoubleVector.mul(row, right))));
     }
 
     public static DoubleMatrix mul(double left, DoubleMatrix right) {
-        return new DoubleMatrix(map(right, (row) -> (DoubleVector.mul(left, row))));
+        return new DoubleMatrix(map(right, row -> (DoubleVector.mul(left, row))));
     }
 
     ///////////////////////////////////
@@ -551,11 +549,11 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
     }
 
     public static DoubleMatrix add(DoubleMatrix left, double right) {
-        return new DoubleMatrix(map(left, (row) -> (DoubleVector.add(row, right))));
+        return new DoubleMatrix(map(left, row -> (DoubleVector.add(row, right))));
     }
 
     public static DoubleMatrix add(double left, DoubleMatrix right) {
-        return new DoubleMatrix(map(right, (row) -> (DoubleVector.add(left, row))));
+        return new DoubleMatrix(map(right, row -> (DoubleVector.add(left, row))));
     }
 
     ///////////////////////////////////
@@ -567,11 +565,11 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
     }
 
     public static DoubleMatrix sub(DoubleMatrix left, double right) {
-        return new DoubleMatrix(map(left, (row) -> (DoubleVector.sub(row, right))));
+        return new DoubleMatrix(map(left, row -> (DoubleVector.sub(row, right))));
     }
 
     public static DoubleMatrix sub(double left, DoubleMatrix right) {
-        return new DoubleMatrix(map(right, (row) -> (DoubleVector.sub(left, row))));
+        return new DoubleMatrix(map(right, row -> (DoubleVector.sub(left, row))));
     }
 
     ///////////////////////////////////
@@ -595,6 +593,6 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
     }
 
     public static DoubleMatrix div(double left, DoubleMatrix right) {
-        return new DoubleMatrix(map(right, (row) -> (DoubleVector.div(left, row))));
+        return new DoubleMatrix(map(right, row -> (DoubleVector.div(left, row))));
     }
 }

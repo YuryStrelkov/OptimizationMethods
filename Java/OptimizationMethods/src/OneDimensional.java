@@ -1,4 +1,5 @@
 import functionalInterfaces.IFunction1D;
+import mathUtils.Common;
 
 public final class OneDimensional {
     public static final IFunction1D testFunc = OneDimensional::testFunc;

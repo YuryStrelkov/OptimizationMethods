@@ -1,3 +1,4 @@
+package mathUtils;
 
 public class Common {
     public static final double PHI = 1.61803398874989484820;
@@ -12,5 +13,6 @@ public class Common {
     public static boolean      SHOW_ZERO_ORDER_METHODS_DEBUG_LOG = false;
     public static boolean      SHOW_DEBUG_LOG = false;
     public static boolean      SHOW_SIMPLEX_DEBUG_LOG = false;
+    public static boolean      SHOW_MATRIX_DEBUG_LOG  = false;
 
 }

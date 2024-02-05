@@ -7,7 +7,7 @@ import functionalInterfaces.IFunctionND;
 public class DoubleVector extends TemplateVector<Double>{
     public DoubleVector(int cap, double fill_value) {
         super(cap);
-        fill((i) -> fill_value);
+        fill(i -> fill_value);
     }
 
     public DoubleVector(int cap) {
@@ -32,7 +32,7 @@ public class DoubleVector extends TemplateVector<Double>{
 
     public DoubleVector normalize() {
         double inv_mag = 1.0 / magnitude();
-        apply((v) -> v * inv_mag);
+        apply(v -> v * inv_mag);
         return this;
     }
 
@@ -48,14 +48,14 @@ public class DoubleVector extends TemplateVector<Double>{
     @Override
     public String toString() {
         return String.format("{%s}", String.join("; ",
-                DoubleVector.map(this, (v) -> String.format("%8s", String.format("%.4f", v)))));
+                DoubleVector.map(this, v -> String.format("%8s", String.format("%.4f", v)))));
     }
 
     /**
      * Эквивалент this += other, где other может иметь типы double или DoubleVector
      */
     public DoubleVector add(double other) {
-        apply((v) -> v + other);
+        apply(v -> v + other);
         return this;
     }
 
@@ -69,7 +69,7 @@ public class DoubleVector extends TemplateVector<Double>{
      * Эквивалент this -= other, где other может иметь типы double или DoubleVector
      */
     public DoubleVector sub(double other) {
-        apply((v) -> v - other);
+        apply(v -> v - other);
         return this;
     }
 
@@ -83,7 +83,7 @@ public class DoubleVector extends TemplateVector<Double>{
      * Эквивалент this *= other, где other может иметь типы double или DoubleVector
      */
     public DoubleVector mul(double other) {
-        apply((v) -> v * other);
+        apply(v -> v * other);
         return this;
     }
 
@@ -97,7 +97,7 @@ public class DoubleVector extends TemplateVector<Double>{
      * Эквивалент this /= other, где other может иметь типы double или DoubleVector
      */
     public DoubleVector div(double other) {
-        apply((v) -> v / other);
+        apply(v -> v / other);
         return this;
     }
 
@@ -182,13 +182,16 @@ public class DoubleVector extends TemplateVector<Double>{
 
     public static double partial(IFunctionND func, DoubleVector x, int index, double eps) {
         if (x.notInRange(index)) throw new RuntimeException("Partial derivative index out of bounds!");
-
         x.unchecked_set(index, x.unchecked_get(index) + eps);
         double f_r = func.call(x);
         x.unchecked_set(index, x.unchecked_get(index) - 2.0 * eps);
         double f_l = func.call(x);
         x.unchecked_set(index, x.unchecked_get(index) + eps);
         return (f_r - f_l) / eps * 0.5;
+    }
+
+    public static double partial(IFunctionND func, DoubleVector x, int index) {
+        return partial(func, x, index, Common.NUMERIC_ACCURACY_MIDDLE);
     }
 
     public static double partial2(IFunctionND func, DoubleVector x, int index_1, int index_2, double eps) {
@@ -206,5 +209,13 @@ public class DoubleVector extends TemplateVector<Double>{
         DoubleVector df = new DoubleVector(x.size());
         for (int i = 0; i < x.size(); i++) df.unchecked_set(i, partial(func, x, i, eps));
         return df;
+    }
+
+    public static double partial2(IFunctionND func, DoubleVector x, int index_1, int index_2) {
+        return partial2(func, x, index_1, index_2, Common.NUMERIC_ACCURACY_MIDDLE);
+    }
+
+    public static DoubleVector gradient(IFunctionND func, DoubleVector x) {
+        return  gradient(func, x, Common.NUMERIC_ACCURACY_MIDDLE);
     }
 }
