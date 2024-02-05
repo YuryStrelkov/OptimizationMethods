@@ -9,11 +9,12 @@ import java.util.Arrays;
 public class TemplateVector<T> implements Iterable<T>, Cloneable {
     public static final int MINIMAL_VECTOR_SIZE = 9;
     public static final double VECTOR_SIZE_UPSCALE = 1.5;
-    private Object[] _data; // данные (размер 1.5N, где N исходный размер вектора)
+    private T[] _data; // данные (размер 1.5N, где N исходный размер вектора)
     private int _filling; // Заполнение данными от левого края
 
-    private static Object[] alloc(int capacity) {
-        return new Object[capacity];
+    @SuppressWarnings("unchecked")
+    private static <T> T[] alloc(int capacity) {
+        return (T[])(new Object[capacity]);
     }
 
     public static class Pair<T1, T2> {
@@ -26,7 +27,6 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public static class ValuesIterator<Type> implements Iterator<Type>, Iterable<Type> {
         private final TemplateVector<Type> _iterableVector;
 
@@ -45,7 +45,7 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
         @Override
         public Type next() {
             _index++;
-            return (Type) _iterableVector._data[_index];
+            return _iterableVector._data[_index];
         }
 
         @Override
@@ -152,7 +152,7 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
 
     public static <T1, T2> Iterable<T2> combine(T1 left, TemplateVector<T1> right,
                                                 ICombineFunction<T1, T2> combineFunction) {
-        return new ValuesCombineIterator<>(() -> new Iterator<T1>() {
+        return new ValuesCombineIterator<>(() -> new Iterator<>() {
             @Override
             public boolean hasNext() {
                 return true;
@@ -167,7 +167,7 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
 
     public static <T1, T2> Iterable<T2> combine(TemplateVector<T1> left, T1 right,
                                                 ICombineFunction<T1, T2> combineFunction) {
-        return new ValuesCombineIterator<>(left, () -> new Iterator<T1>() {
+        return new ValuesCombineIterator<>(left, () -> new Iterator<>() {
             @Override
             public boolean hasNext() {
                 return true;
@@ -193,7 +193,7 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
 
     public void apply(IForEachApplyFunction<T> applyFunction) {
         for (int index = 0; index < this.size(); index++)
-            _data[index] = applyFunction.call((T) _data[index]);
+            _data[index] = applyFunction.call(_data[index]);
     }
 
     public void applyEnumerate(Iterable<T> sequence, IForEnumerateApplyFunction<T> applyFunction) {
@@ -204,15 +204,14 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
 
     public void applyEnumerate(IForEnumerateApplyFunction<T> applyFunction) {
         for (int index = 0; index < this.size(); index++)
-            _data[index] = applyFunction.call(index, (T) _data[index]);
+            _data[index] = applyFunction.call(index, _data[index]);
     }
 
-    @SuppressWarnings("unchecked")
     public void combine(Iterable<T> sequence, ICombineFunction<T, T> combineFunction) {
         Iterator<T> iterator = sequence.iterator();
         int index = 0;
         while (iterator.hasNext()) {
-            _data[index] = combineFunction.call((T) _data[index], iterator.next());
+            _data[index] = combineFunction.call(_data[index], iterator.next());
             index++;
         }
     }
@@ -239,10 +238,9 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
         return _data.length;
     }
 
-    @SuppressWarnings("unchecked")
     public T get(int index) {
         if (notInRange(index)) throw new RuntimeException(String.format("get :: index {%s} out of range", index));
-        return (T) _data[index];
+        return _data[index];
     }
 
     public void set(int index, T value) {
@@ -251,9 +249,8 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
         _data[index] = value;
     }
 
-    @SuppressWarnings("unchecked")
     protected T unchecked_get(int index) {
-        return (T) _data[index];
+        return _data[index];
     }
 
     protected void unchecked_set(int index, T value) {
@@ -264,7 +261,7 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
     @SuppressWarnings("all")
     public TemplateVector<T> pushBack(T value) {
         if (_filling == _data.length) {
-            Object[] new_data = alloc((int) (size() * VECTOR_SIZE_UPSCALE));
+            T[] new_data = alloc((int) (size() * VECTOR_SIZE_UPSCALE));
             if (size() >= 0) System.arraycopy(_data, 0, new_data, 0, size());
             _data = new_data;
         }
@@ -316,7 +313,7 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
         if (size() >= 0) System.arraycopy(other._data, 0, _data, 0, size());
     }
 
-    @SuppressWarnings("unchecked")
+    @SafeVarargs
     public TemplateVector(T... other) {
         if (other.length == 0) {
             _data = alloc(MINIMAL_VECTOR_SIZE);

@@ -85,14 +85,15 @@ public class NumericUtils
         }
         if (number[0] == 0)
         {
-            return String.valueOf(number[1]) + "/" + String.valueOf(number[2]);
+            return String.format("%s/%s", number[1], number[2]);
         }
 
         if (fullRational)
         {
-            return String.valueOf((number[1] + Math.abs(number[0]) * number[2]) * (number[0] >= 0 ? 1 : -1)) + "/" + String.valueOf(number[2]);
+            return String.format("%s/%s",
+                    (number[1] + Math.abs(number[0]) * number[2]) * (number[0] >= 0 ? 1 : -1), number[2]);
         }
-        return String.valueOf(number[0]) + " " + String.valueOf(number[1]) + "/" + String.valueOf(number[2]);
+        return String.format("%s %s/%s", number[0], number[1], number[2]);
     }
 
     public static String toRationalStr(double value)
@@ -102,16 +103,8 @@ public class NumericUtils
 
     public static String toRationalStr(DoubleVector value, boolean fullRational)
     {
-        StringBuilder str = new StringBuilder("{ ");
-        for (int i = 0; i < value.size() - 1; i++)
-        {
-            str.append(toRationalStr(value.get(i), fullRational));
-            str.append(", ");
-        }
-        str.append(toRationalStr(value.get(value.size() - 1), fullRational));
-
-        str.append(" }");
-        return str.toString();
+        return String.format("{ %s }",
+                String.join("; ", DoubleVector.map(value, v->toRationalStr(v, fullRational))));
     }
     public static String toRationalStr(DoubleVector value)
     {
