@@ -120,7 +120,7 @@ public class DoubleVector extends TemplateVector<Double>{
 
     public static DoubleVector add(DoubleVector left, DoubleVector right) {
         if (left.size() != right.size()) throw new RuntimeException("Vectors sum :: this.Size()!= other.Size()");
-        return new DoubleVector(DoubleVector.combine(left, right, Double::sum));
+        return new DoubleVector(combine(left, right, Double::sum));
     }
 
     /**
