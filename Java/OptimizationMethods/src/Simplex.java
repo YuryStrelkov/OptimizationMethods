@@ -1,3 +1,7 @@
+import mathUtils.DoubleVector;
+import mathUtils.DoubleMatrix;
+import mathUtils.NumericUtils;
+
 import java.util.ArrayList;
 
 enum Sign
@@ -33,10 +37,10 @@ public class Simplex
     private final ArrayList<Integer> basisArgs;
 
     // Симплекс таблица
-    private  Matrix simplexTable;
+    private DoubleMatrix simplexTable;
 
     // матрица ограничений
-    private final Matrix boundsMatrix;
+    private final DoubleMatrix boundsMatrix;
 
     // вектор ограничений
     private final DoubleVector boundsVector;
@@ -52,7 +56,7 @@ public class Simplex
         return pricesVector.size();
     }
 
-    public Matrix boundsMatrix()
+    public DoubleMatrix boundsMatrix()
     {
         return boundsMatrix;
     }
@@ -77,7 +81,7 @@ public class Simplex
         return basisArgs;
     }
 
-    public Matrix simplexTable()
+    public DoubleMatrix simplexTable()
     {
         return simplexTable;
     }
@@ -289,7 +293,7 @@ public class Simplex
      */
     private void buildSimplexTable()
     {
-        simplexTable = new Matrix(boundsMatrix);
+        simplexTable = new DoubleMatrix(boundsMatrix);
         naturalArgsIds.clear(); // (индексы) x1, x2, x3 - те переменные, котоыре были в постановке задачи
         basisArgs.clear();      // (индексы) xi, xi+1, ..., xn - те переменные, которые вошли в базис
         fModArgs.clear();       // (индексы) xi, xi+1, ..., xn - те переменные, которые модифицировали целевую функцию
@@ -555,7 +559,7 @@ public class Simplex
         return solve(SimplexProblemType.Max);
     }
 
-    public Simplex(Matrix a, DoubleVector c, ArrayList<Sign> inequalities, DoubleVector b)
+    public Simplex(DoubleMatrix a, DoubleVector c, ArrayList<Sign> inequalities, DoubleVector b)
     {
         if (b.size() != inequalities.size())
         {
@@ -577,12 +581,12 @@ public class Simplex
         fModArgs          = new ArrayList<>();
 
         boundsVector      = new DoubleVector((DoubleVector)b.clone());
-        boundsMatrix      = new Matrix((Matrix)a.clone());
+        boundsMatrix      = new DoubleMatrix((DoubleMatrix)a.clone());
         pricesVector      = new DoubleVector((DoubleVector)c.clone());
         this.inequalities = inequalities;
     }
 
-    public Simplex(Matrix a, DoubleVector c, DoubleVector b)
+    public Simplex(DoubleMatrix a, DoubleVector c, DoubleVector b)
     {
         if (b.size() != b.size())
         {
@@ -603,7 +607,7 @@ public class Simplex
         fModArgs          = new ArrayList<>();
 
         boundsVector      = new DoubleVector((DoubleVector)b.clone());
-        boundsMatrix      = new Matrix((Matrix)a.clone());
+        boundsMatrix      = new DoubleMatrix((DoubleMatrix)a.clone());
         pricesVector      = new DoubleVector((DoubleVector)c.clone());
     }
 

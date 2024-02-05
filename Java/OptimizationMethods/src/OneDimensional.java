@@ -1,3 +1,5 @@
+import functionalInterfaces.IFunction1D;
+
 public final class OneDimensional
 {
     public static final IFunction1D testFunc = OneDimensional::testFunc;

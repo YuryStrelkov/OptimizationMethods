@@ -5,6 +5,27 @@ namespace OptimizationMethods
 {
    public static class Tests
     {
+
+        public static void VectorTest() 
+        {
+            Vector b = new Vector(5.0, 6.0, 8.0);
+            Console.Write("///////////////////////////////////////////\n");
+            Console.Write("////////         VectorTest        ////////\n");
+            Console.Write("///////////////////////////////////////////\n");
+            Console.Write($"{b} + {b} = {b + b}\n");
+            Console.Write($"{b} - {b} = {b - b}\n");
+            Console.Write($"{b} / {b} = {b / b}\n");
+            Console.Write($"{b} * {b} = {b * b}\n");
+            Console.Write($"{2} + {b} = {b + 2}\n");
+            Console.Write($"{b} + {2} = {2 + b}\n");
+            Console.Write($"{2} - {b} = {2 - b}\n");
+            Console.Write($"{b} - {2} = {b - 2}\n");
+            Console.Write($"{2} * {b} = {b * 2}\n");
+            Console.Write($"{b} * {2} = {2 * b}\n");
+            Console.Write($"{2} / {b} = {NumericUtils.ToRationalStr(2 / b, false)}\n");
+            Console.Write($"{b} / {2} = {NumericUtils.ToRationalStr(b / 2, false)}\n");
+        }
+
         public static void OneDimensionalMethodsTest()
         {
             Console.WriteLine("\n///////////////////////////////////////////");
@@ -39,8 +60,10 @@ namespace OptimizationMethods
         /// <summary>
         /// проверка работоспособности класса
         /// </summary>
+        /// 
         public static void MatrixTest()
         {
+
             Console.WriteLine("\n////////////////////////////");
             Console.WriteLine(  "//////// MatrixTest ////////");
             Console.WriteLine(  "////////////////////////////\n");
@@ -61,7 +84,7 @@ namespace OptimizationMethods
             Vector x = Matrix.Linsolve(matrix, b);
             Console.WriteLine($"\nx vector:\n{x}");
             Console.WriteLine($"\nAx - b:\n{matrix * x - b}");
-            Console.WriteLine($"\nA*inv(A):\n{matrix * Matrix.Invert(matrix)}");
+            Console.WriteLine($"\nA*inv(A):\n{matrix / matrix}");
             Matrix matrix_ = new Matrix(new Vector(8.0, 1.0, 6.0), new Vector(3.0, 5.0, 7.0));
             Console.WriteLine($"\nnon rect mat:\n{matrix_}");
             Console.WriteLine($"\nnon rect mat mul by transposed it self :\n{matrix_ * Matrix.Transpose(matrix_)}");
@@ -146,10 +169,10 @@ namespace OptimizationMethods
             // Console.WriteLine($"{string.Format("{0,0:F}", aaa).Replace(',', '.')}");
             // OneDimensionalMethodsTest();
             // MultiDimensionalMethodsTest();
-            // MultiDimensionalMethodsTest();
+            //VectorTest();
             MatrixTest();
             // SimpexTest();
-            NumericTests();
+            // NumericTests();
         }
     }
 }

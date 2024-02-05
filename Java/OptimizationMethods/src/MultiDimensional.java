@@ -1,3 +1,7 @@
+import functionalInterfaces.IFunctionND;
+import mathUtils.DoubleVector;
+import mathUtils.DoubleMatrix;
+
 public class MultiDimensional {
 
     public static final IFunctionND testFunc2d = MultiDimensional::_testFunc2D;
@@ -288,7 +292,7 @@ public class MultiDimensional {
 
         for (; cntr != max_iters; cntr++)
         {
-            x_i_1 = DoubleVector.sub(x_i, Matrix.mul(Matrix.invert(Matrix.hessian(f, x_i, eps)),DoubleVector.gradient(f, x_i, eps)));
+            x_i_1 = DoubleVector.sub(x_i, DoubleMatrix.mul(DoubleMatrix.invert(DoubleMatrix.hessian(f, x_i, eps)),DoubleVector.gradient(f, x_i, eps)));
 
             ///Метод работает, но условие снизу не отрабатывает
             if (DoubleVector.sub(x_i_1, x_i).magnitude() < eps) break;

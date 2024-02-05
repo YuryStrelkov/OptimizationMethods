@@ -1,3 +1,5 @@
+package mathUtils;
+
 public class NumericUtils
 {
     /**
@@ -115,5 +117,4 @@ public class NumericUtils
     {
         return toRationalStr( value,  true);
     }
-
 }

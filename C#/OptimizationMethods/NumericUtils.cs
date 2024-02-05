@@ -81,6 +81,6 @@ namespace OptimizationMethods
             return $"{r_part} {num}/{denom}";
         }
 
-        public static string ToRationalStr(Vector value, bool fullRational = true) => $"{{{string.Join(", ", value.Map((v) => ToRationalStr(v, fullRational)))}}}";
+        public static string ToRationalStr(Vector vector, bool fullRational = true) => $"{{{string.Join(", ", vector.Map((v) => ToRationalStr(v, fullRational)))}}}";
     }
 }

@@ -1,4 +1,9 @@
+import mathUtils.DoubleVector;
+import mathUtils.DoubleMatrix;
+import mathUtils.NumericUtils;
+
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class Tests {
     public static void oneDimensionalMethodsTest()
@@ -45,6 +50,43 @@ public class Tests {
         numbers = NumericUtils.decimalToRational(3.769230769230769230769);
         System.out.print(numbers[0]!=0? numbers[0] + " ":"");
         System.out.print(numbers[1]!=0? numbers[1]+"/"+numbers[2] + "\n":"\n");
+        DoubleVector v = new DoubleVector(1.5, 3.33, 2.75, 0.123434);
+        System.out.printf("%s\n",  NumericUtils.toRationalStr(v, false));
+    }
+
+    public static void VectorTest()
+    {
+        DoubleVector a = new DoubleVector(2.0, 3.0, 4.0);
+        DoubleVector b = new DoubleVector(5.0, 6.0, 8.0);
+
+        System.out.print("///////////////////////////////////////////\n");
+        System.out.print("////////         VectorTest        ////////\n");
+        System.out.print("///////////////////////////////////////////\n");
+        System.out.print("////////      Internal methods     ////////\n");
+        System.out.printf("%s += %s = ", b, a); b.add(a); System.out.printf("%s\n", b);
+        System.out.printf("%s -= %s = ", b, a); b.sub(a); System.out.printf("%s\n", b);
+        System.out.printf("%s *= %s = ", b, a); b.mul(a); System.out.printf("%s\n", b);
+        System.out.printf("%s /= %s = ", b, a); b.div(a); System.out.printf("%s\n", b);
+        System.out.printf("%s *= %s = ", b, 2); b.mul(2); System.out.printf("%s\n", b);
+        System.out.printf("%s /= %s = ", b, 2); b.div(2); System.out.printf("%s\n", b);
+        System.out.printf("%s += %s = ", b, 2); b.add(2); System.out.printf("%s\n", b);
+        System.out.printf("%s -= %s = ", b, 2); b.sub(2); System.out.printf("%s\n", b);
+        System.out.print("////////      External methods     ////////\n");
+        System.out.printf("%s + %s = %s\n", b, b, DoubleVector.add(b, b));
+        System.out.printf("%s - %s = %s\n", b, b, DoubleVector.sub(b, b));
+        System.out.printf("%s / %s = %s\n", a, b, DoubleVector.div(a, b));
+        System.out.printf("%s * %s = %s\n", b, b, DoubleVector.mul(b, b));
+        System.out.printf("%s + %s = %s\n", b, 2, DoubleVector.add(b, 2));
+        System.out.printf("%s + %s = %s\n", 2, b, DoubleVector.add(2, b));
+        System.out.printf("%s - %s = %s\n", 2, b, DoubleVector.sub(2, b));
+        System.out.printf("%s - %s = %s\n", b, 2, DoubleVector.sub(b, 2));
+        System.out.printf("%s * %s = %s\n", b, 2, DoubleVector.mul(b, 2));
+        System.out.printf("%s * %s = %s\n", 2, b, DoubleVector.mul(2, b));
+        System.out.printf("%s / %s = %s\n", b, 2, NumericUtils.toRationalStr(DoubleVector.div(b, 2), false));
+        System.out.printf("%s / %s = %s\n", 2, b, NumericUtils.toRationalStr(DoubleVector.div(2, b), false));
+        System.out.printf("| %s | = %s\n", b, b.magnitude());
+        System.out.printf("%s / | %s | = %s\n", b, b, b.normalized());
+        System.out.printf("(%s, %s) = %s\n", b.normalized(),  b.normalized(), b.normalized().dot( b.normalized()));
     }
 
     public static void matrixTest()
@@ -53,29 +95,55 @@ public class Tests {
         System.out.println(  "//////// MatrixTest ////////");
         System.out.println(  "////////////////////////////\n");
 
-        Matrix matrix =  new Matrix(new DoubleVector(8.0, 1.0, 6.0),
-                                    new DoubleVector(3.0, 5.0, 7.0),
-                                    new DoubleVector(4.0, 9.0, 2.0));
-        System.out.println(matrix);
-        System.out.println("\nmatrix + matrix:\n"+Matrix.add(matrix,matrix) +"\n");
-        System.out.println("\nmatrix - matrix:\n"+Matrix.sub(matrix,matrix) +"\n");
-        System.out.println("\nmatrix * matrix:\n"+Matrix.mul(matrix,matrix)+"\n");
-        Matrix[] lu = Matrix.lu(matrix);
-        System.out.println("\nL  matrix:\n" + lu[0]);
-        System.out.println("\nU  matrix:\n" + lu[1]);
-        System.out.println("\nL * U - matrix:\n" + Matrix.mul(lu[0] , lu[1]).sub(matrix));
+        DoubleMatrix matrix =  new DoubleMatrix(new DoubleVector(8.0, 1.0, 6.0),
+                                                new DoubleVector(3.0, 5.0, 7.0),
+                                                new DoubleVector(4.0, 9.0, 2.0));
+
+        DoubleMatrix matrix1 =  new DoubleMatrix(new DoubleVector(2.0, 9.0, 4.0),
+                                                 new DoubleVector(7.0, 5.0, 3.0),
+                                                 new DoubleVector(6.0, 1.0, 8.0));
+
+        System.out.printf("matrix1:\n%s\n", matrix);
+        System.out.printf("matrix2:\n%s\n", matrix1);
+        System.out.printf("matrix1 += matrix2 =\n%s\n", matrix.add(matrix1));
+        System.out.printf("matrix1 -= matrix2 =\n%s\n", matrix.sub(matrix1));
+        System.out.printf("matrix1 *= 2 =\n%s\n ", matrix.mul(2));
+        System.out.printf("matrix1 /= 2 =\n%s\n ", matrix.div(2));
+        System.out.printf("matrix1 += 2 =\n%s\n ", matrix.add(2));
+        System.out.printf("matrix1 -= 2 =\n%s\n ", matrix.sub(2));
+        System.out.print("////////      External methods     ////////\n");
+        System.out.printf("matrix1 + matrix2 =\n%s\n", DoubleMatrix.add(matrix, matrix1));
+        System.out.printf("matrix1 - matrix2 =\n%s\n", DoubleMatrix.sub(matrix, matrix1));
+        System.out.printf("matrix1 / matrix2 =\n%s\n", DoubleMatrix.div(matrix, matrix1));
+        System.out.printf("matrix1 * matrix2 =\n%s\n", DoubleMatrix.mul(matrix, matrix1));
+        System.out.printf("matrix1 +       2 =\n%s\n", DoubleMatrix.add(matrix, 2));
+        System.out.printf("2       + matrix1 =\n%s\n", DoubleMatrix.add(2,  matrix));
+        System.out.printf("2       - matrix1 =\n%s\n", DoubleMatrix.sub(2,  matrix));
+        System.out.printf("matrix1 -       2 =\n%s\n", DoubleMatrix.sub(matrix, 2));
+        System.out.printf("matrix1 *       2 =\n%s\n", DoubleMatrix.mul(matrix, 2));
+        System.out.printf("2       * matrix1 =\n%s\n", DoubleMatrix.mul(2,  matrix));
+
+        System.out.printf("matrix + matrix:\n%s\n", DoubleMatrix.add(matrix, matrix));
+        System.out.printf("matrix - matrix:\n%s\n", DoubleMatrix.sub(matrix, matrix));
+        System.out.printf("matrix * matrix:\n%s\n", DoubleMatrix.mul(matrix, matrix));
+        System.out.printf("matrix / matrix:\n%s\n", DoubleMatrix.div(matrix, matrix));
+        DoubleMatrix[] lu = DoubleMatrix.lu(matrix);
+        System.out.printf("L  matrix:\n%s\n", lu[0]);
+        System.out.printf("U  matrix:\n%s\n", lu[1]);
+        System.out.printf("L * U - matrix:\n%s\n", DoubleMatrix.mul(lu[0], lu[1]).sub(matrix));
         DoubleVector b = new DoubleVector(1.0, 2.0, 3.0);
         /// x = {0.05,0.3,0.05};
-        DoubleVector x = Matrix.linsolve(matrix, b);
-        System.out.println("\nx vector:\n" + x);
-        System.out.println("\nAx - b:\n" + Matrix.mul(matrix,x).sub(b));
-        System.out.println("\n A * inv(A):\n"+Matrix.mul(matrix , Matrix.invert(matrix)));
-        Matrix matrix_ = new Matrix(new DoubleVector(8.0, 1.0, 6.0),
-                                    new DoubleVector(3.0, 5.0, 7.0));
-        System.out.println("\nnon rect mat:\n" + matrix_);
-        System.out.println("\nnon rect mat mul by transposed it self :\n" +Matrix.mul(matrix_ , Matrix.transpose(matrix_)) );
-        Matrix m = Matrix.hessian(MultiDimensional.testFuncNd, new DoubleVector(0.0, 0.0, 0.0));
-        System.out.println("\nHessian(MultiDimensional.TestFuncND):\n"+m);
+        DoubleVector x = DoubleMatrix.linsolve(matrix, b);
+        System.out.printf("x vector  : %s\n", x);
+        System.out.printf("Ax - b    : %s\n", DoubleMatrix.mul(matrix,x).sub(b));
+        System.out.printf("A * inv(A):\n%s\n", DoubleMatrix.mul(matrix , Objects.requireNonNull(DoubleMatrix.invert(matrix))));
+        DoubleMatrix matrix_ = new DoubleMatrix(new DoubleVector(8.0, 1.0, 6.0),
+                                                new DoubleVector(3.0, 5.0, 7.0));
+        System.out.printf("non rect mat:\n%s\n", matrix_);
+        System.out.printf("non rect mat mul by transposed it self :\n%s\n",
+                DoubleMatrix.mul(matrix_ , DoubleMatrix.transpose(matrix_)) );
+        DoubleMatrix hessian= DoubleMatrix.hessian(MultiDimensional.testFuncNd, new DoubleVector(0.0, 0.0, 0.0));
+        System.out.printf("Hessian(MultiDimensional.TestFuncND):\n%s\n", hessian);
     }
     public static void multiDimensionalMethodsTest()
     {
@@ -104,7 +172,7 @@ public class Tests {
         System.out.println(  "//////// SimplexTest ////////");
         System.out.println(  "/////////////////////////////\n");
 
-        Matrix A = new Matrix(
+        DoubleMatrix A = new DoubleMatrix(
               new DoubleVector(-2.0, 6.0),
               new DoubleVector(3.0, 2.0),
               new DoubleVector(2.0,-1.0)
@@ -112,9 +180,9 @@ public class Tests {
 
         DoubleVector b  = new DoubleVector(40.0, 28.0, 14.0);
         DoubleVector c  = new DoubleVector(2.0, 3.0);
-        // DoubleVector c1 = new DoubleVector(-2.0, 3.0);
-        // DoubleVector c2 = new DoubleVector(2.0, 1.0);
-        // DoubleVector c3 = new DoubleVector(-2.0, -1.0);
+        // mathUtils.DoubleVector c1 = new mathUtils.DoubleVector(-2.0, 3.0);
+        // mathUtils.DoubleVector c2 = new mathUtils.DoubleVector(2.0, 1.0);
+        // mathUtils.DoubleVector c3 = new mathUtils.DoubleVector(-2.0, -1.0);
 
         System.out.println(" f(x,c) =  2x1 + 3x2;\n arg_max = {4, 8}, f(arg_max) = 32");
         System.out.println(" |-2x1 + 6x2 <= 40");

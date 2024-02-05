@@ -41,7 +41,7 @@ namespace OptimizationMethods
             return this;
         }
 
-        public override string ToString() => $"{{\n  {string.Join(",\n  ", Map((v) => v.ToString()))}\n}}";
+        public override string ToString() => $"{{\n  {string.Join(",\n  ", this.Map((v) => v.ToString()))}\n}}";
 
         /// <summary>
         ///  Количество строк
@@ -102,10 +102,16 @@ namespace OptimizationMethods
         /// Конструктор копирования
         /// </summary>
         /// <param name="original"></param>
-        public Matrix(Matrix original):base()
+        public Matrix(Matrix original) : base()
         {
             foreach (Vector row in original) PushBack(new Vector(row));
         }
+
+        /// <summary>
+        /// Конструктор через итератор
+        /// </summary>
+        /// <param name="original"></param>
+        public Matrix(IEnumerable<Vector> original) : base(original){}
 
         /// <summary>
         /// </summary>
@@ -133,8 +139,10 @@ namespace OptimizationMethods
         /// </summary>
         /// <param name="A"></param>
         /// <returns></returns>
-        public static int Rank(Matrix A)
+        public static int Rank(Matrix matrix)
         {
+            Matrix A = new Matrix(matrix);
+
             int n = A.NRows;
 
             int m = A.NCols;
@@ -349,10 +357,7 @@ namespace OptimizationMethods
         public static Matrix Transpose(Matrix mat)
         {
             Matrix trans = new Matrix(mat.NCols, mat.NRows);
-            Parallel.For(0, mat.NRows, (i) =>
-            {
-                for (int j = 0; j < mat.NCols; j++) trans[j][i] = mat[i][j];
-            });
+            Parallel.For(0, mat.NRows, (i) => { for (int j = 0; j < mat.NCols; j++) trans[j][i] = mat[i][j]; });
             return trans;
         }
 
@@ -364,9 +369,7 @@ namespace OptimizationMethods
         /// <returns>0 - нет решений, 1 - одно решение, 2 - бесконечное множествое решений</returns>
         public static SolutionType CheckSystem(Matrix A, Vector b)
         {
-            Matrix a = new Matrix(A);
-
-            int rank_a = Matrix.Rank(a);
+            int rank_a = Matrix.Rank(A);
 
             Matrix ab = new Matrix(A);
 
@@ -389,96 +392,113 @@ namespace OptimizationMethods
         /// <summary>
         /// Элементарные математические операции над матрицами
         /// </summary>
-        public static Matrix operator *(Matrix a, Matrix b)
+        private static void CheckSizes(Matrix left, Matrix right, string error_info = "")
         {
-            if (a.NCols != b.NRows) throw new Exception("Error matrix multiplication::a.NCols != b.NRows");
+            if (left.NCols != right.NCols) throw new Exception($"{error_info} :: left operand cols ({left.NCols}) != left operand cols ({right.NCols})");
+            if (left.NRows != right.NRows) throw new Exception($"{error_info} :: left operand rows ({left.NRows}) != left operand rows ({right.NRows})");
+        }
 
-            Matrix b_t = Transpose(b);
+        ///////////////////////////
+        /////    Operator *   /////
+        ///////////////////////////
+        public static Matrix operator *(Matrix left, Matrix right)
+        {
+            if (left.NCols != right.NRows) throw new Exception("Error matrix multiplication::a.NCols != b.NRows");
 
-            Matrix res = new Matrix(a.NRows, b.NCols);
+            Matrix b_t = Transpose(right);
 
-            Parallel.For(0, a.NRows, (i) => 
-            {
-                for (int j = 0; j < b.NCols; j++) res[i][j] = Vector.Dot(a[i], b_t[j]);
-            });
+            Matrix res = new Matrix(left.NRows, right.NCols);
+
+            Parallel.For(0, left.NRows, (i) => { for (int j = 0; j < right.NCols; j++) res[i][j] = Vector.Dot(left[i], b_t[j]); });
 
             return res;
         }
-   
-        public static Vector operator *(Matrix mat, Vector vec)
-        {
-            if (mat.NCols != vec.Count) throw new Exception("unable to matrix and vector myltiply");
-            Vector result = new Vector();
-            foreach (Vector row in mat) result.PushBack(Vector.Dot(row, vec));
-            return result;
-        }
-        
-        public static Vector operator *(Vector vec, Matrix mat)
-        {
-            if (mat.NRows != vec.Count) throw new Exception("unable to matrix and vector myltiply");
-            Vector result = new Vector();
 
-            for (int i = 0; i < mat.NCols; i++)
-            {
-                for (int j = 0; j < mat.NRows; j++) result[i] += mat[j][i] * vec[i];
-            }
+        public static Vector operator * (Matrix left, Vector right)
+        {
+            if (left.NCols != right.Count) throw new Exception("unable to matrix and vector myltiply");
+            return new Vector(left.Combine(right, (l, r) => Vector.Dot(l, r)));
+        }
 
+        public static Vector operator * (Vector left, Matrix right)
+        {
+            if (right.NRows != left.Count) throw new Exception("unable to matrix and vector myltiply");
+            Vector result = new Vector();
+            for (int i = 0; i < right.NCols; i++) for (int j = 0; j < right.NRows; j++) result[i] += right[j][i] * left[i];
+            return result;
+        }
+
+        public static Matrix operator * (Matrix left, double right)
+        {
+            Matrix result = new Matrix(left);
+            result.Apply((v) => v * right);
+            return result;
+        }
+
+        public static Matrix operator * (double left, Matrix right) => right * left;
+        
+        ///////////////////////////
+        /////    Operator +   /////
+        ///////////////////////////
+        public static Matrix operator + (Matrix left, Matrix right)
+        {
+            CheckSizes(left, right, "\"operator +\"");
+            return new Matrix(left.Combine(right, (l, r) => l + r));
+        }
+       
+        public static Matrix operator + (Matrix left, double right)
+        {
+            Matrix result = new Matrix(left);
+            result.Apply((v) => v + right);
             return result;
         }
         
-        public static Matrix operator *(Matrix mat, double a)
+        public static Matrix operator + (double left, Matrix right)
         {
-            Matrix result = new Matrix(mat);
-            foreach (Vector row in mat) result.PushBack(a * row);
+            Matrix result = new Matrix(right);
+            result.Apply((v) => left + v);
+            return result;
+        }
+    
+        ///////////////////////////
+        /////    Operator -   /////
+        ///////////////////////////
+        public static Matrix operator - (Matrix left, Matrix right)
+        {
+            CheckSizes(left, right, "\"operator -\"");
+            return new Matrix(left.Combine(right, (l, r) => l - r));
+        }
+        
+        public static Matrix operator - (Matrix left, double right)
+        {
+            Matrix result = new Matrix(left);
+            result.Apply((v) => v - right);
             return result;
         }
         
-        public static Matrix operator *(double a, Matrix mat)
+        public static Matrix operator - (double left, Matrix right)
         {
-            return mat * a;
-        }
-        
-        public static Matrix operator +(Matrix a, Matrix b)
-        {
-            if (a.NCols != b.NCols) throw new Exception("unable to add matrix a to matrix b");
-            if (a.NRows != b.NRows) throw new Exception("unable to add matrix a to matrix b");
-            Matrix result = new Matrix();
-            foreach (var pair in Zip(a, b)) result.PushBack(pair.First + pair.Second);
+            Matrix result = new Matrix(right);
+            result.Apply((v) => left - v);
             return result;
         }
-        
-        public static Matrix operator +(Matrix a, double b)
+
+        ///////////////////////////
+        /////    Operator /   /////
+        ///////////////////////////
+        public static Matrix operator / (Matrix left, Matrix right) => left * Matrix.Invert(right);
+
+        public static Matrix operator / (Matrix left, double right)
         {
-            Matrix result = new Matrix();
-            foreach (Vector row in a) result.PushBack(b + row);
+            Matrix result = new Matrix(left);
+            result.Apply((v) => v / right);
             return result;
         }
-        
-        public static Matrix operator +(double b, Matrix a)
+
+        public static Matrix operator / (double left, Matrix right)
         {
-            return a + b;
-        }
-        
-        public static Matrix operator -(Matrix a, Matrix b)
-        {
-            if (a.NCols != b.NCols) throw new Exception("unable to add matrix a to matrix b");
-            if (a.NRows != b.NRows) throw new Exception("unable to add matrix a to matrix b");
-            Matrix result = new Matrix();
-            foreach (var pair in Zip(a, b)) result.PushBack(pair.First - pair.Second);
-            return result;
-        }
-        
-        public static Matrix operator -(Matrix a, double b)
-        {
-            Matrix result = new Matrix();
-            foreach (Vector row in a) result.PushBack(row - b);
-            return result;
-        }
-        
-        public static Matrix operator -(double b, Matrix a)
-        {
-            Matrix result = new Matrix();
-            foreach (Vector row in a) result.PushBack(b - row);
+            Matrix result = new Matrix(right);
+            result.Apply((v) => left / v);
             return result;
         }
     }

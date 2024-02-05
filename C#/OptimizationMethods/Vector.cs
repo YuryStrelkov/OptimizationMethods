@@ -1,24 +1,18 @@
 ﻿using System.Globalization;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace OptimizationMethods
 {
     public delegate double FunctionND(Vector x);
 
-    public class Vector: TemplateVector<double>
+    public class Vector: TemplateVector<double>, IEquatable<Vector>
     {
         /// <summary>
         /// Длина вектра
         /// </summary>
-        public double MagnitudeSqr
-        {
-            get
-            {
-                double mag = 0.0;
-                foreach (double element in this) mag += (element * element);
-                return mag;
-            }
-        }
+        public double MagnitudeSqr => this.Reduce((accum, value) => accum = accum + value * value);
 
         /// <summary>
         /// Длина вектра
@@ -32,10 +26,10 @@ namespace OptimizationMethods
         {
             get
             {
-                Vector normalized = new Vector();
+                Vector normalized = new Vector(this);
                 double inv_mag = 1.0 / Magnitude;
-                foreach (double item in this) normalized.PushBack(item * inv_mag);
-                return normalized;
+                normalized.Apply((v) => v * inv_mag);
+                return normalized; 
             }
         }
 
@@ -46,7 +40,7 @@ namespace OptimizationMethods
         public Vector Normalize()
         {
             double inv_mag = 1.0 / Magnitude;
-            for (int i = 0; i < Count; i++) this[i] *= inv_mag;
+            Apply((v) => v * inv_mag);
             return this;
         }
 
@@ -58,9 +52,7 @@ namespace OptimizationMethods
         public double Dot(Vector other)
         {
             if (Count != other.Count) throw new Exception("Unable vector dot multiply");
-            double dot = 0.0;
-            foreach (var p in Zip(this, other)) dot += p.First * p.Second;
-            return dot;
+            return this.Combine(other, (l, r) => l * r).Reduce((acc, v) => acc + v);
         }
 
         /// <summary>
@@ -69,31 +61,30 @@ namespace OptimizationMethods
         /// <param name="a"></param>
         /// <param name="b"></param>
         /// <returns>(a;b)</returns>
-        public static double Dot(Vector a, Vector b) => a.Dot(b);
+        public static double Dot(Vector left, Vector right) => left.Dot(right);
 
         /// <summary>
         /// Строковое представление вектора
         /// </summary>
         /// <returns></returns>
-        public override string ToString() => $"{{{string.Join(", ", Map((v) => v.ToString("0.000", CultureInfo.InvariantCulture)))}]}}";
+        public override string ToString() => $"{{{string.Join(", ", this.Map((v) => v.ToString("0.000", CultureInfo.InvariantCulture)))}}}";
 
         /// <summary>
         /// Конструктор вектора из массива
         /// </summary>
         /// <param name="args"></param>
-
         public Vector(): base() {}
+        
         /// <summary>
         /// Конструктор вектора из массива
         /// </summary>
         /// <param name="args"></param>
-        
         public Vector(params double[] args): base(args) {}
+       
         /// <summary>
         /// Конструктор вектора по размеру и элементу по умолчанию
         /// </summary>
         /// <param name="cap"></param>
-        /// <param name="defaultValue"></param>
         public Vector(int cap): base(cap) {}
 
         /// <summary>
@@ -101,74 +92,67 @@ namespace OptimizationMethods
         /// </summary>
         /// <param name="vect"></param>
         public Vector(Vector other): base(other) {}
+        public Vector(IEnumerable<double> other) : base(other) { }
 
         /// <summary>
         /// Элементарные математические операции над векторами
         /// </summary>
-        public static Vector operator + (Vector a, Vector b)
-        {
-            if (a.Count != b.Count) throw new Exception("error:: operator+:: vectors of different dimensions");
-            Vector res = new Vector();
-            foreach (var p in Zip(a, b)) res.PushBack(p.First + p.Second);
-            return res;
-        }
 
-        public static Vector operator + (Vector a, double b)
+        ///////////////////////////
+        /////    Operator +   /////
+        ///////////////////////////
+        public static Vector operator + (Vector left, Vector right)
         {
-            Vector res = new Vector();
-            foreach (double v in a) res.PushBack(v + b);
-            return res;
-        }
+            if (left.Count != right.Count) throw new Exception("error:: operator + :: vectors of different dimensions");
 
-        public static Vector operator + (double b, Vector a)
-        {
-            return a + b;
+            return new Vector(left.Combine(right, (l, r) => l + r));
         }
+        public static Vector operator + (Vector left, double right) => new Vector(left.Combine(right, (l, r) => l + r));
+        public static Vector operator + (double left, Vector right) => new Vector(right.Combine(left, (l, r) => r + l));
 
-        public static Vector operator -(Vector a, Vector b)
+        ///////////////////////////
+        /////    Operator -   /////
+        ///////////////////////////
+        public static Vector operator - (Vector left, Vector right)
         {
-            if (a.Count != b.Count) throw new Exception("error:: operator-:: vectors of different dimensions");
-            Vector res = new Vector();
-            foreach (var p in Zip(a, b)) res.PushBack(p.First - p.Second);
-            return res;
+            if (left.Count != right.Count) throw new Exception("error:: operator - :: vectors of different dimensions");
+            return new Vector(left.Combine(right, (l, r) => l - r));
         }
+        public static Vector operator - (Vector left, double right) => new Vector(left.Combine(right, (l, r) => l - r));
+        public static Vector operator - (double left, Vector right) => new Vector(right.Combine(left, (l, r) => r - l));
+    
+        ///////////////////////////
+        /////    Operator *   /////
+        ///////////////////////////
+        public static Vector operator * (Vector left, Vector right)
+        {
+            if (left.Count != right.Count) throw new Exception("error :: operator * :: vectors of different dimensions");
+            return new Vector(left.Combine(right, (l, r) => l * r));
+        }
+        public static Vector operator * (Vector left, double right) => new Vector(left.Combine(right, (l, r) => l * r));
+        public static Vector operator * (double left, Vector right) => new Vector(right.Combine(left, (l, r) => r * l));
 
-        public static Vector operator -(Vector a, double b)
+        ///////////////////////////
+        /////    Operator /   /////
+        ///////////////////////////
+        public static Vector operator / (Vector left, Vector right)
         {
-            Vector res = new Vector();
-            foreach (double v in a) res.PushBack(v - b);
-            return res;
+            if (left.Count != right.Count) throw new Exception("error :: operator / :: vectors of different dimensions");
+            return new Vector(left.Combine(right, (l, r) => l / r));
         }
-        
-        public static Vector operator -(double b, Vector a)
-        {
-            Vector res = new Vector();
-            foreach (double v in a) res.PushBack(b - v);
-            return res;
-        }
-
-        public static Vector operator *(Vector a, double val)
-        {
-            Vector res = new Vector();
-            foreach (double v in a) res.PushBack(v * val);
-            return res;
-        }
-
-        public static Vector operator *(double val, Vector a)
-        {
-            return a * val;
-        }
+        public static Vector operator / (Vector left, double right) => new Vector(left.Combine(right, (l, r) => l / r));
+        public static Vector operator / (double left, Vector right) => new Vector(right.Combine(left, (l, r) => r / l));
 
         /// <summary>
         /// Рассчитывет единичный вектор в направлении от a до b
         /// </summary>
-        /// <param name="a"></param>
-        /// <param name="b"></param>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
         /// <returns></returns>
-        public static Vector Direction(Vector a, Vector b)
+        public static Vector Direction(Vector left, Vector right)
         {
-            if (a.Count != b.Count) return a;
-            return (b - a).Normalize();
+            if (left.Count != right.Count) throw new Exception("error :: dirction :: vectors of different dimensions");
+            return (right - left).Normalize();
         }
 
         /// <summary>
@@ -214,5 +198,7 @@ namespace OptimizationMethods
             x[coord_index_2] -= eps;
             return (f_r - f_l) / eps * 0.5;
         }
+
+        public bool Equals([AllowNull] Vector other) => base.Equals(other);
     }
 }
