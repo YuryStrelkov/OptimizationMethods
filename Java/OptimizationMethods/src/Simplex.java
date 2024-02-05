@@ -303,8 +303,10 @@ public class Simplex {
         DoubleVector simD = new DoubleVector(simplexTable.cols());
 
         if (mode == SimplexProblemType.Max) {
+            // simD.applyEnumerate(pricesVector, (i, v)-> i < pricesVector.size() ? -v : 0.0);
             for (int j = 0; j < simD.size(); j++) simD.set(j, j < pricesVector.size() ? -pricesVector.get(j) : 0.0);
         } else {
+            // simD.applyEnumerate(pricesVector, (i, v)-> i < pricesVector.size() ? v : 0.0);
             for (int j = 0; j < simD.size(); j++) simD.set(j, j < pricesVector.size() ? pricesVector.get(j) : 0.0);
         }
 
@@ -349,16 +351,16 @@ public class Simplex {
             val += simplexTable.get(i, nCols) * pricesVector.get(basisArgs.get(i));
         }
         if (mode == SimplexProblemType.Max) {
-            if (Math.abs(val - simplexTable.get(nRows, nCols)) < 1e-5) {
+            if (Math.abs(val - simplexTable.get(nRows, nCols)) < Common.NUMERIC_ACCURACY_MIDDLE) {
                 if (isTargetFuncModified()) {
-                    return (Math.abs(simplexTable.get(simplexTable.rows() - 1, simplexTable.cols() - 1)) < 1e-5);
+                    return (Math.abs(simplexTable.get(simplexTable.rows() - 1, simplexTable.cols() - 1)) < Common.NUMERIC_ACCURACY_MIDDLE);
                 }
                 return true;
             }
         }
-        if (Math.abs(val + simplexTable.get(nRows, nCols)) < 1e-5) {
+        if (Math.abs(val + simplexTable.get(nRows, nCols)) < Common.NUMERIC_ACCURACY_MIDDLE) {
             if (isTargetFuncModified()) {
-                return (Math.abs(simplexTable.get(simplexTable.rows() - 1, simplexTable.cols() - 1)) < 1e-5);
+                return (Math.abs(simplexTable.get(simplexTable.rows() - 1, simplexTable.cols() - 1)) < Common.NUMERIC_ACCURACY_MIDDLE);
             }
             return true;
         }
@@ -505,9 +507,9 @@ public class Simplex {
         basisArgs = new ArrayList<>();
         fModArgs = new ArrayList<>();
 
-        boundsVector = new DoubleVector((DoubleVector) b.clone());
-        boundsMatrix = new DoubleMatrix((DoubleMatrix) a.clone());
-        pricesVector = new DoubleVector((DoubleVector) c.clone());
+        boundsVector = new DoubleVector(b);
+        boundsMatrix = new DoubleMatrix(a);
+        pricesVector = new DoubleVector(c);
         this.inequalities = inequalities;
     }
 
@@ -525,12 +527,12 @@ public class Simplex {
         for (int i = 0; i < b.size(); i++) inequalities.add(Sign.Less);
 
         naturalArgsIds = new ArrayList<>();
-        basisArgs = new ArrayList<>();
-        fModArgs = new ArrayList<>();
+        basisArgs      = new ArrayList<>();
+        fModArgs       = new ArrayList<>();
 
-        boundsVector = new DoubleVector((DoubleVector) b.clone());
-        boundsMatrix = new DoubleMatrix((DoubleMatrix) a.clone());
-        pricesVector = new DoubleVector((DoubleVector) c.clone());
+        boundsVector = new DoubleVector(b);
+        boundsMatrix = new DoubleMatrix(a);
+        pricesVector = new DoubleVector(c);
     }
 
 }

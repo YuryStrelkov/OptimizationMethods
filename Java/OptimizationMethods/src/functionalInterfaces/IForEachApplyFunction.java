@@ -1,6 +1,6 @@
 package functionalInterfaces;
 
 @FunctionalInterface
-public interface IApplyFunction<T>{
+public interface IForEachApplyFunction<T>{
     T call(T element);
 }

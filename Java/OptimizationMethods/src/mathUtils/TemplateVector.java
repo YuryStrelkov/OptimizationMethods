@@ -185,15 +185,26 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
             _data[index] = fillFunction.call(index);
     }
 
-    public void apply(Iterable<T> sequence, IApplyFunction<T> applyFunction) {
+    public void apply(Iterable<T> sequence, IForEachApplyFunction<T> applyFunction) {
         Iterator<T> iterator = sequence.iterator();
         int index = 0;
         while (iterator.hasNext() && index < capacity()) _data[index] = applyFunction.call(iterator.next());
     }
 
-    public void apply(IApplyFunction<T> applyFunction) {
+    public void apply(IForEachApplyFunction<T> applyFunction) {
         for (int index = 0; index < this.size(); index++)
             _data[index] = applyFunction.call((T) _data[index]);
+    }
+
+    public void applyEnumerate(Iterable<T> sequence, IForEnumerateApplyFunction<T> applyFunction) {
+        Iterator<T> iterator = sequence.iterator();
+        int index = 0;
+        while (iterator.hasNext() && index < capacity()) _data[index] = applyFunction.call(index, iterator.next());
+    }
+
+    public void applyEnumerate(IForEnumerateApplyFunction<T> applyFunction) {
+        for (int index = 0; index < this.size(); index++)
+            _data[index] = applyFunction.call(index, (T) _data[index]);
     }
 
     @SuppressWarnings("unchecked")
