@@ -15,12 +15,12 @@ public class Tests {
         double x_0 = 10;
         double x_1 = -1;
 
-        OneDimensional.ShowDebugLog = true;
+        Common.SHOW_DEBUG_LOG = true;
         System.out.println("x_0 = " + x_0 + ",\nx_1 = " + x_1 + "\n");
         System.out.println("BiSect      : " + OneDimensional.biSect      (OneDimensional.testFunc, x_0, x_1, 1e-4));
         System.out.println("GoldenRatio : " + OneDimensional.goldenRatio (OneDimensional.testFunc, x_0, x_1, 1e-4));
         System.out.println("Fibonacci   : " + OneDimensional.fibonacci   (OneDimensional.testFunc, x_0, x_1, 1e-4) + " \n");
-        OneDimensional.ShowDebugLog = false;
+        Common.SHOW_DEBUG_LOG = false;
     }
 
     public static void numericTests()
@@ -154,7 +154,7 @@ public class Tests {
         DoubleVector x_0 = new DoubleVector (5.0, 3.0);
         DoubleVector x_1 = new DoubleVector (0.0, 0.0);
         DoubleVector x   = new DoubleVector (-13.0, 22.0 );
-        MultiDimensional.ShowDebugLog = true;
+        Common.SHOW_DEBUG_LOG = true;
         System.out.println("x_0 = "+ x_0 + ",\nx_1 = " + x_1 + "\n") ;
         System.out.println("biSect                   : "+ MultiDimensional.biSect             (MultiDimensional.testFunc2d, x_1, x_0));
         System.out.println("Golden ratio             : "+ MultiDimensional.goldenRatio        (MultiDimensional.testFunc2d, x_1, x_0));
@@ -163,7 +163,7 @@ public class Tests {
         System.out.println("Gradient descend         : "+ MultiDimensional.gradientDescend    (MultiDimensional.testFunc2d, x));
         System.out.println("Conj gradient descend    : "+ MultiDimensional.conjGradientDescend(MultiDimensional.testFunc2d, x));
         System.out.println("Newtone - Raphson        : "+ MultiDimensional.newtoneRaphson     (MultiDimensional.testFunc2d, x_1));
-        MultiDimensional.ShowDebugLog = false;
+        Common.SHOW_DEBUG_LOG = false;
     }
 
     public static void simplexTest()
@@ -203,7 +203,7 @@ public class Tests {
         signs_equal.add(Sign.Equal);
         signs_equal.add(Sign.Equal);
         signs_equal.add(Sign.Equal);
-        Simplex.showSimplexDebugLog = true;
+        Common.SHOW_SIMPLEX_DEBUG_LOG = true;
 
         Simplex sym_0 = new Simplex(A,new DoubleVector(2.0,  3.0 ), signs_less, b);
         sym_0.solve(SimplexProblemType.Max);

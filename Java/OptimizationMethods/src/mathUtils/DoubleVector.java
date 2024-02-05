@@ -3,6 +3,7 @@ package mathUtils;
 import functionalInterfaces.IFunctionND;
 
 
+
 public class DoubleVector extends TemplateVector<Double>{
     public DoubleVector(int cap, double fill_value) {
         super(cap);
@@ -182,28 +183,28 @@ public class DoubleVector extends TemplateVector<Double>{
     public static double partial(IFunctionND func, DoubleVector x, int index, double eps) {
         if (x.notInRange(index)) throw new RuntimeException("Partial derivative index out of bounds!");
 
-        x.set(index, x.get(index) + eps);
+        x.unchecked_set(index, x.unchecked_get(index) + eps);
         double f_r = func.call(x);
-        x.set(index, x.get(index) - 2.0 * eps);
+        x.unchecked_set(index, x.unchecked_get(index) - 2.0 * eps);
         double f_l = func.call(x);
-        x.set(index, x.get(index) + eps);
+        x.unchecked_set(index, x.unchecked_get(index) + eps);
         return (f_r - f_l) / eps * 0.5;
     }
 
     public static double partial2(IFunctionND func, DoubleVector x, int index_1, int index_2, double eps) {
         if (x.notInRange(index_2)) throw new RuntimeException("Partial derivative index out of bounds!");
 
-        x.set(index_2, x.get(index_2) - eps);
+        x.unchecked_set(index_2, x.unchecked_get(index_2) - eps);
         double f_l = partial(func, x, index_1, eps);
-        x.set(index_2, x.get(index_2) + 2.0 * eps);
+        x.unchecked_set(index_2, x.unchecked_get(index_2) + 2.0 * eps);
         double f_r = partial(func, x, index_1, eps);
-        x.set(index_2, x.get(index_2) - eps);
+        x.unchecked_set(index_2, x.unchecked_get(index_2) - eps);
         return (f_r - f_l) / eps * 0.5;
     }
 
     public static DoubleVector gradient(IFunctionND func, DoubleVector x, double eps) {
         DoubleVector df = new DoubleVector(x.size());
-        for (int i = 0; i < x.size(); i++) df.set(i, partial(func, x, i, eps));
+        for (int i = 0; i < x.size(); i++) df.unchecked_set(i, partial(func, x, i, eps));
         return df;
     }
 }

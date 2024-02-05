@@ -161,6 +161,10 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
         return get(row).get(col);
     }
 
+    protected double unchecked_get(int row, int col) {
+        return unchecked_get(row).unchecked_get(col);
+    }
+
     /**
      * Устанавливает новое значение элемента матрицы
      * элемент матрицы[row, col] = value
@@ -175,6 +179,11 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
         return this;
     }
 
+    protected DoubleMatrix unchecked_set(int row, int col, double value) {
+        unchecked_get(row).unchecked_set(col, value);
+        return this;
+    }
+
     public static DoubleMatrix hessian(IFunctionND f, DoubleVector x, double eps) {
         DoubleMatrix res = new DoubleMatrix(x.size(), x.size());
         int row, col;
@@ -182,8 +191,8 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
         for (row = 0; row < res.rows(); row++) {
             for (col = 0; col <= row; col++) {
                 val = DoubleVector.partial2(f, x, row, col, eps);
-                res.set(row, col, val);
-                res.set(col, row, val);
+                res.unchecked_set(row, col, val);
+                res.unchecked_set(col, row, val);
             }
         }
         return res;
@@ -205,18 +214,20 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
         for (int i = 0; i < m; i++) {
             int j;
 
-            for (j = 0; j < n; j++) if (!row_selected[j] && Math.abs(A.get(i, j)) > 1e-12) break;
+            for (j = 0; j < n; j++) if (!row_selected[j] && Math.abs(A.unchecked_get(i, j)) > 1e-12) break;
 
             if (j != n) {
                 ++rank;
 
                 row_selected[j] = true;
 
-                for (int p = i + 1; p < m; p++) A.set(j, p, A.get(j, p) / A.get(j, i));
+                for (int p = i + 1; p < m; p++) A.unchecked_set(j, p,
+                        A.unchecked_get(j, p) / A.unchecked_get(j, i));
 
                 for (int k = 0; k < n; k++) {
-                    if (k != j && Math.abs(A.get(k, i)) > 1e-12) {
-                        for (int p = i + 1; p < m; p++) A.set(k, p, A.get(k, p) - A.get(j, p) * A.get(k, i));
+                    if (k != j && Math.abs(A.unchecked_get(k, i)) > 1e-12) {
+                        for (int p = i + 1; p < m; p++) A.unchecked_set(k, p,
+                                A.unchecked_get(k, p) - A.unchecked_get(j, p) * A.unchecked_get(k, i));
                     }
                 }
             }
@@ -281,7 +292,7 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
      */
     public static DoubleMatrix identity(int n_rows, int n_cols) {
         DoubleMatrix I = new DoubleMatrix(n_rows, n_cols);
-        for (int i = 0; i < Math.min(n_rows, n_cols); i++) I.set(i, i, 1.0);
+        for (int i = 0; i < Math.min(n_rows, n_cols); i++) I.unchecked_set(i, i, 1.0);
         return I;
     }
 
@@ -307,9 +318,10 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
         for (i = 0; i < src.cols(); i++) {
             for (j = 0; j < src.cols(); j++) {
                 if (j >= i) {
-                    low.set(j, i, src.get(j, i));
+                    low.unchecked_set(j, i, src.unchecked_get(j, i));
 
-                    for (k = 0; k < i; k++) low.set(j, i, low.get(j, i) - low.get(j, k) * up.get(k, i));
+                    for (k = 0; k < i; k++) low.unchecked_set(j, i,
+                            low.unchecked_get(j, i) - low.unchecked_get(j, k) * up.unchecked_get(k, i));
                 }
             }
 
@@ -317,13 +329,15 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
                 if (j < i) continue;
 
                 if (j == i) {
-                    up.set(i, j, 1.0);
+                    up.unchecked_set(i, j, 1.0);
                     continue;
                 }
 
-                up.set(i, j, src.get(i, j) / low.get(i, i));
+                up.unchecked_set(i, j, src.unchecked_get(i, j) / low.unchecked_get(i, i));
 
-                for (k = 0; k < i; k++) up.set(i, j, up.get(i, j) - low.get(i, k) * up.get(k, j) / low.get(i, i));
+                for (k = 0; k < i; k++) up.unchecked_set(i, j,
+                        up.unchecked_get(i, j) - low.unchecked_get(i, k) *
+                                up.unchecked_get(k, j) / low.unchecked_get(i, i));
             }
         }
         return new DoubleMatrix[]{low, up};
@@ -342,7 +356,7 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
 
         DoubleVector x, z;
 
-        for (int i = 0; i < up.rows(); i++) det *= (up.get(i, i) * up.get(i, i));
+        for (int i = 0; i < up.rows(); i++) det *= (up.unchecked_get(i, i) * up.unchecked_get(i, i));
 
         if (Math.abs(det) < 1e-12) {
             if (showMatrixDebugLog)
@@ -356,16 +370,16 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
 
         for (int i = 0; i < z.size(); i++) {
             tmp = 0.0;
-            for (int j = 0; j < i; j++) tmp += z.get(j) * low.get(i, j);
-            z.set(i, (b.get(i) - tmp) / low.get(i, i));
+            for (int j = 0; j < i; j++) tmp += z.unchecked_get(j) * low.unchecked_get(i, j);
+            z.unchecked_set(i, (b.get(i) - tmp) / low.unchecked_get(i, i));
         }
 
         x = new DoubleVector(up.rows());
 
         for (int i = z.size() - 1; i >= 0; i--) {
             tmp = 0.0;
-            for (int j = i + 1; j < z.size(); j++) tmp += x.get(j) * up.get(i, j);
-            x.set(i, z.get(i) - tmp);
+            for (int j = i + 1; j < z.size(); j++) tmp += x.unchecked_get(j) * up.unchecked_get(i, j);
+            x.unchecked_set(i, z.get(i) - tmp);
         }
         return x;
     }
@@ -396,7 +410,7 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
 
         double det = 1.0;
 
-        for (int i = 0; i < lu_[0].rows(); i++) det *= (lu_[0].get(i, i) * lu_[0].get(i, i));
+        for (int i = 0; i < lu_[0].rows(); i++) det *= (lu_[0].unchecked_get(i, i) * lu_[0].unchecked_get(i, i));
 
         if (Math.abs(det) < 1e-12) {
             if (showMatrixDebugLog)
@@ -420,7 +434,7 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
 
             b.set(i, 0.0);
 
-            for (int j = 0; j < mat.rows(); j++) inv.set(j, i, col.get(j));
+            for (int j = 0; j < mat.rows(); j++) inv.unchecked_set(j, i, col.get(j));
         }
         return inv;
     }
@@ -433,7 +447,8 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
      */
     public static DoubleMatrix transpose(DoubleMatrix mat) {
         DoubleMatrix trans = new DoubleMatrix(mat.cols(), mat.rows());
-        for (int i = 0; i < mat.rows(); i++) for (int j = 0; j < mat.cols(); j++) trans.set(j, i, mat.get(i, j));
+        for (int i = 0; i < mat.rows(); i++)
+            for (int j = 0; j < mat.cols(); j++) trans.unchecked_set(j, i, mat.unchecked_get(i, j));
         return trans;
     }
 

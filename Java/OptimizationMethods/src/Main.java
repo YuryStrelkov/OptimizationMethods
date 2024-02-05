@@ -10,10 +10,10 @@ public class Main {
         // System.out.println(v2);
 
         // Tests.numericTests();//Pass
-        Tests.VectorTest();
-        Tests.matrixTest(); //Pass
-        //Tests.oneDimensionalMethodsTest();//Pass
-        //Tests.multiDimensionalMethodsTest();//Pass
+        //Tests.VectorTest();
+        //Tests.matrixTest(); //Pass
+        Tests.oneDimensionalMethodsTest();//Pass
+        Tests.multiDimensionalMethodsTest();//Pass
         // Tests.simplexTest();//Pass
         // Simplex.showSimplexDebugLog = true;
         // Simplex sym_0 = new Simplex(

@@ -240,6 +240,16 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
         _data[index] = value;
     }
 
+    @SuppressWarnings("unchecked")
+    protected T unchecked_get(int index) {
+        return (T) _data[index];
+    }
+
+    protected void unchecked_set(int index, T value) {
+        _filling = Math.max(_filling, index + 1);
+        _data[index] = value;
+    }
+
     @SuppressWarnings("all")
     public TemplateVector<T> pushBack(T value) {
         if (_filling == _data.length) {
