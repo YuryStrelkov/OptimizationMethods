@@ -196,7 +196,7 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
     }
 
     public static DoubleMatrix hessian(IFunctionND f, DoubleVector x) {
-        return hessian(f, x, Common.NUMERIC_ACCURACY_MIDDLE);
+        return hessian(f, x, NumericCommon.NUMERIC_ACCURACY_MIDDLE);
     }
 
     public static int rank(DoubleMatrix A) {
@@ -212,7 +212,7 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
             int j;
 
             for (j = 0; j < n; j++)
-                if (!row_selected[j] && Math.abs(A.unchecked_get(i, j)) > Common.NUMERIC_ACCURACY_HIGH) break;
+                if (!row_selected[j] && Math.abs(A.unchecked_get(i, j)) > NumericCommon.NUMERIC_ACCURACY_HIGH) break;
 
             if (j != n) {
                 ++rank;
@@ -223,7 +223,7 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
                         A.unchecked_get(j, p) / A.unchecked_get(j, i));
 
                 for (int k = 0; k < n; k++) {
-                    if (k != j && Math.abs(A.unchecked_get(k, i)) > Common.NUMERIC_ACCURACY_HIGH) {
+                    if (k != j && Math.abs(A.unchecked_get(k, i)) > NumericCommon.NUMERIC_ACCURACY_HIGH) {
                         for (int p = i + 1; p < m; p++) A.unchecked_set(k, p,
                                 A.unchecked_get(k, p) - A.unchecked_get(j, p) * A.unchecked_get(k, i));
                     }
@@ -249,7 +249,7 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
 
         int rank_a_b = DoubleMatrix.rank(ab.addCol(b));
 
-        if (Common.SHOW_MATRIX_DEBUG_LOG) {
+        if (NumericCommon.SHOW_MATRIX_DEBUG_LOG) {
             System.out.println("rank ( A ) " + rank_a + "\n");
 
             System.out.println("rank (A|b) " + rank_a_b + "\n");
@@ -356,8 +356,8 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
 
         for (int i = 0; i < up.rows(); i++) det *= (up.unchecked_get(i, i) * up.unchecked_get(i, i));
 
-        if (Math.abs(det) < Common.NUMERIC_ACCURACY_HIGH) {
-            if (Common.SHOW_MATRIX_DEBUG_LOG)
+        if (Math.abs(det) < NumericCommon.NUMERIC_ACCURACY_HIGH) {
+            if (NumericCommon.SHOW_MATRIX_DEBUG_LOG)
                 System.out.println("mathUtils.Matrix is probably singular :: unable to solve A^-1 b = x");
             return null;
         }
@@ -410,8 +410,8 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
 
         for (int i = 0; i < lu_[0].rows(); i++) det *= (lu_[0].unchecked_get(i, i) * lu_[0].unchecked_get(i, i));
 
-        if (Math.abs(det) < Common.NUMERIC_ACCURACY_HIGH) {
-            if (Common.SHOW_MATRIX_DEBUG_LOG)
+        if (Math.abs(det) < NumericCommon.NUMERIC_ACCURACY_HIGH) {
+            if (NumericCommon.SHOW_MATRIX_DEBUG_LOG)
                 System.out.println("mathUtils.Matrix is probably singular :: unable to calculate invert matrix");
             return null;
         }
@@ -499,7 +499,6 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
     public DoubleMatrix div(double other) {
         return this.mul(1.0 / other);
     }
-
     // public mathUtils.Matrix div(mathUtils.Matrix other) ...
 
     ///////////////////////////////////

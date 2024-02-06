@@ -1,155 +1,102 @@
 import functionalInterfaces.IFunction1D;
-import mathUtils.Common;
+import mathUtils.NumericCommon;
+import mathUtils.NumericUtils;
 
 public final class OneDimensional {
-    public static final IFunction1D testFunc = OneDimensional::testFunc;
-
     ////////////////////
     /// Lab. work #1 ///
     ////////////////////
-    public static double testFunc(double x) {
-        return (x - 5) * (x - 2); // min at point x = 3.5
-    }
-
-    public static double biSect(IFunction1D f, double x_0, double x_1, double eps, int max_iters) {
+    public static double biSect(IFunction1D f, double x1, double x2, double eps, int maxIterations) {
         double x_c = 0.0;
-
-        if (x_0 > x_1) {
-            double tmp = x_0;
-            x_0 = x_1;
-            x_1 = tmp;
+        if (x1 > x2) {
+            double tmp = x1;
+            x1 = x2;
+            x2 = tmp;
         }
-
-        int cntr = 0;
-
-        for (; cntr != max_iters; cntr++) {
-            if (x_1 - x_0 < eps) break;
-
-            x_c = (x_1 + x_0) * 0.5;
-
+        int counter = 0;
+        for (; counter != maxIterations; counter++) {
+            if (x2 - x1 < eps) break;
+            x_c = (x2 + x1) * 0.5;
             if (f.call(x_c + eps) > f.call(x_c - eps)) {
-                x_1 = x_c;
+                x2 = x_c;
                 continue;
             }
-            x_0 = x_c;
+            x1 = x_c;
         }
-
-        if (Common.SHOW_ZERO_ORDER_METHODS_DEBUG_LOG) System.out.println("BiSect iterations number : " + cntr);
-
+        if (NumericCommon.SHOW_ZERO_ORDER_METHODS_DEBUG_LOG) System.out.printf("BiSect iterations number : %s\n", counter);
         return x_c;
     }
 
-    public static double biSect(IFunction1D f, double x_0, double x_1, double eps) {
-        return biSect(f, x_0, x_1, eps, Common.ITERATIONS_COUNT_HIGH);
+    public static double biSect(IFunction1D f, double x1, double x2, double eps) {
+        return biSect(f, x1, x2, eps, NumericCommon.ITERATIONS_COUNT_HIGH);
     }
 
-    public static double biSect(IFunction1D f, double x_0, double x_1) {
-        return biSect(f, x_0, x_1, Common.NUMERIC_ACCURACY_MIDDLE, Common.ITERATIONS_COUNT_HIGH);
+    public static double biSect(IFunction1D f, double x1, double x2) {
+        return biSect(f, x1, x2, NumericCommon.NUMERIC_ACCURACY_MIDDLE, NumericCommon.ITERATIONS_COUNT_HIGH);
     }
 
-    public static double goldenRatio(IFunction1D f, double x_0, double x_1, double eps, int max_iters) {
-        if (x_0 > x_1) {
-            double tmp = x_0;
-            x_0 = x_1;
-            x_1 = tmp;
+    public static double goldenRatio(IFunction1D f, double x1, double x2, double eps, int maxIterations) {
+        if (x1 > x2) {
+            double tmp = x1;
+            x1 = x2;
+            x2 = tmp;
         }
-        double a = x_0, b = x_1, dx;
-
-        int cntr = 0;
-
-        for (; cntr != max_iters; cntr++) {
-            if (Math.abs(x_1 - x_0) < eps) break;
-
+        double a = x1, b = x2, dx;
+        int counter = 0;
+        for (; counter != maxIterations; counter++) {
+            if (Math.abs(x2 - x1) < eps) break;
             dx = b - a;
-            x_0 = b - dx * Common.ONE_OVER_PHI;
-            x_1 = a + dx * Common.ONE_OVER_PHI;
-
-            if (f.call(x_0) >= f.call(x_1)) {
-                a = x_0;
+            x1 = b - dx * NumericCommon.ONE_OVER_PHI;
+            x2 = a + dx * NumericCommon.ONE_OVER_PHI;
+            if (f.call(x1) >= f.call(x2)) {
+                a = x1;
                 continue;
             }
-            b = x_1;
+            b = x2;
         }
 
-        if (Common.SHOW_ZERO_ORDER_METHODS_DEBUG_LOG) System.out.println("Golden ratio iterations number : " + cntr);
-
-        return (x_1 + x_0) * 0.5;
+        if (NumericCommon.SHOW_ZERO_ORDER_METHODS_DEBUG_LOG)
+            System.out.printf("Golden ratio iterations number : %s\n", counter);
+        return (x2 + x1) * 0.5;
     }
 
-    public static double goldenRatio(IFunction1D f, double x_0, double x_1, double eps) {
-        return goldenRatio(f, x_0, x_1, eps, Common.ITERATIONS_COUNT_HIGH);
+    public static double goldenRatio(IFunction1D f, double x1, double x2, double eps) {
+        return goldenRatio(f, x1, x2, eps, NumericCommon.ITERATIONS_COUNT_HIGH);
     }
 
-    public static double goldenRatio(IFunction1D f, double x_0, double x_1) {
-        return goldenRatio(f, x_0, x_1, Common.NUMERIC_ACCURACY_MIDDLE, Common.ITERATIONS_COUNT_HIGH);
+    public static double goldenRatio(IFunction1D f, double x1, double x2) {
+        return goldenRatio(f, x1, x2, NumericCommon.NUMERIC_ACCURACY_MIDDLE, NumericCommon.ITERATIONS_COUNT_HIGH);
     }
 
-    public static int[] fibonacciNumbers(int index) {
-        if (index < 1) return new int[]{0};
-
-        if (index < 2) return new int[]{0, 1};
-
-        int[] res = new int[index];
-
-        res[0] = 0;
-
-        res[1] = 1;
-
-        for (int i = 2; i < index; i++) res[i] = res[i - 1] + res[i - 2];
-
-        return res;
-    }
-
-    public static int[] closestFibonacciPair(double value) {
-        int f_n = 0;
-        int f_n_1 = 0;
-        if (value < 1) return new int[]{0};
-        f_n_1 = 1;
-        if (value < 2) return new int[]{0, 1};
-        int f_tmp;
-
-        while (f_n < value) {
-            f_tmp = f_n;
-            f_n = f_n_1;
-            f_n_1 += f_tmp;
+    public static double fibonacci(IFunction1D f, double x1, double x2, double eps) {
+        if (x1 > x2) {
+            double tmp = x1;
+            x1 = x2;
+            x2 = tmp;
         }
-        return new int[]{f_n, f_n_1};
-    }
-
-    public static double fibonacci(IFunction1D f, double x_0, double x_1, double eps) {
-        if (x_0 > x_1) {
-            double tmp = x_0;
-            x_0 = x_1;
-            x_1 = tmp;
-        }
-
-        double a = x_0, b = x_1, dx;
-
-        int[] fib_pair = closestFibonacciPair((b - a) / eps);
-
-        int f_n = fib_pair[0], f_n_1 = fib_pair[1], f_tmp, cntr = 0;
-
+        double a = x1, b = x2, dx;
+        int[] fib_pair = NumericUtils.closestFibonacciPair((b - a) / eps);
+        int f_n = fib_pair[0], f_n_1 = fib_pair[1], f_tmp, counter = 0;
         while (f_n != f_n_1) {
-            if (x_1 - x_0 < eps) break;
-            cntr++;
+            if (x2 - x1 < eps) break;
+            counter++;
             dx = (b - a);
             f_tmp = f_n_1 - f_n;
-            x_0 = a + dx * ((double) f_tmp / f_n_1);
-            x_1 = a + dx * ((double) f_n / f_n_1);
+            x1 = a + dx * ((double) f_tmp / f_n_1);
+            x2 = a + dx * ((double) f_n / f_n_1);
             f_n_1 = f_n;
             f_n = f_tmp;
-            if (f.call(x_0) < f.call(x_1)) {
-                b = x_1;
+            if (f.call(x1) < f.call(x2)) {
+                b = x2;
                 continue;
             }
-            a = x_0;
+            a = x1;
         }
-        if (Common.SHOW_ZERO_ORDER_METHODS_DEBUG_LOG) System.out.println("Fibonacci iterations number : " + cntr);
-
-        return (x_1 + x_0) * 0.5;
+        if (NumericCommon.SHOW_ZERO_ORDER_METHODS_DEBUG_LOG) System.out.printf("Fibonacci iterations number : %s\n", counter);
+        return (x2 + x1) * 0.5;
     }
 
-    public static double fibonacci(IFunction1D f, double x_0, double x_1) {
-        return fibonacci(f, x_0, x_1, Common.NUMERIC_ACCURACY_MIDDLE);
+    public static double fibonacci(IFunction1D f, double x1, double x2) {
+        return fibonacci(f, x1, x2, NumericCommon.NUMERIC_ACCURACY_MIDDLE);
     }
 }

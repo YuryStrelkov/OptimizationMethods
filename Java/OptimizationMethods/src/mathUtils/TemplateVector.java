@@ -137,6 +137,25 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
         return initValue;
     }
 
+    public static <T> TemplateVector<T> filter(Iterable<T> vector, IConditionFunction<T> condition)
+    {
+        TemplateVector<T> filteredVector = new TemplateVector<>();
+        for (T item: vector) if(condition.call(item))filteredVector.pushBack(item);
+        return filteredVector;
+    }
+
+    public static <T> boolean any(Iterable<T> vector, IConditionFunction<T> condition)
+    {
+        for (T item: vector) if(condition.call(item))return true;
+        return false;
+    }
+
+    public static <T> boolean all(Iterable<T> vector, IConditionFunction<T> condition)
+    {
+        for (T item: vector) if(!condition.call(item))return false;
+        return true;
+    }
+
     public static <T1, T2> Iterable<Pair<T1, T2>> zip(TemplateVector<T1> first, TemplateVector<T2> second) {
         return new ValuesZipIterator<>(first, second);
     }
@@ -216,6 +235,20 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
         }
     }
 
+    public boolean any(IConditionFunction<T> condition)
+    {
+        return any(this, condition);
+    }
+
+    public boolean all(IConditionFunction<T> condition)
+    {
+       return all(this, condition);
+    }
+
+    public TemplateVector<T> filter(IConditionFunction<T>condition)
+    {
+        return filter(this, condition);
+    }
 
     @Override
     public Iterator<T> iterator() {

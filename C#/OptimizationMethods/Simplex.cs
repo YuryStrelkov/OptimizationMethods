@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using MathUtils;
 using System;
 
 namespace OptimizationMethods
@@ -22,6 +23,16 @@ namespace OptimizationMethods
         ////////////////////
         /// Lab. work #5 ///
         ////////////////////
+        /// <summary>
+        /// список знаков в неравенств в системе ограничений
+        /// </summary>
+        int _maxIterations = NumericCommon.ITERATIONS_COUNT_LOW;
+        public int MaxIterations 
+        {
+            get => _maxIterations;
+            set => _maxIterations = NumericUtils.Clamp(value, 10, NumericCommon.ITERATIONS_COUNT_HIGH);
+        }
+
         /// <summary>
         /// список знаков в неравенств в системе ограничений
         /// </summary>
@@ -89,37 +100,25 @@ namespace OptimizationMethods
             /// Проверяем значения последней строки сиплекс-разностей
             /// на положительность. Если все положительны, то план оптимален.
             /// </summary>
-
             Vector row = _simplexTable[_simplexTable.NRows - 1];
-
-            bool opt = true;
-
-            foreach (double v in row)
+            bool optimal = true;
+            for (int index = 0; index < row.Count - 1; index++) 
             {
-                if (v >= 0) continue;
-                opt = false;
-                break;
+                optimal = row[index] < 0;
+                if (!optimal) break;
             }
-
+            if (IsTargetFuncModified()) return optimal;
             /// <summary>
             /// если мы модифицировали целевую функцию, то среди списка естественнхых
             /// агументов проверям на положительнность предпослднюю строку симплекс-разностей 
             /// </summary>
-
-            if (IsTargetFuncModified())
+            row = _simplexTable[_simplexTable.NRows - 2];
+            foreach (int index in _naturalArgsIds)
             {
-                if (!opt) return opt;
-
-                row = _simplexTable[_simplexTable.NRows - 2];
-
-                foreach (int id in _naturalArgsIds)
-                {
-                    if (row[id] >= 0) continue;
-                    opt = false;
-                    break;
-                }
+                optimal &= row[index] < 0;
+                if (!optimal) break;
             }
-            return opt;
+            return optimal;
         }
 
         /// <summary>
@@ -167,7 +166,6 @@ namespace OptimizationMethods
         /// <returns></returns>
         int GetMainRow(int simplex_col)
         {
-
             double delta = 1e12;
 
             int index = -1;
@@ -306,7 +304,6 @@ namespace OptimizationMethods
                 _simplexTable[row] = _simplexTable[row] * (-1.0);
             }
 
-
             for (int i = 0; i < _pricesVector.Count; i++) _naturalArgsIds.Add(i);
             /// <summary>
             /// построение искуственного базиса
@@ -404,16 +401,16 @@ namespace OptimizationMethods
             }
             if (mode == SimplexProblemType.Max)
             {
-                if (Math.Abs(val - _simplexTable[n_rows][n_cols]) < 1e-5)
+                if (Math.Abs(val - _simplexTable[n_rows][n_cols]) < NumericCommon.NUMERIC_ACCURACY_MIDDLE)
                 {
                     if (!IsTargetFuncModified()) return true;
-                    return Math.Abs(_simplexTable[_simplexTable.NRows - 1][_simplexTable.NCols - 1]) < 1e-5;
+                    return Math.Abs(_simplexTable[_simplexTable.NRows - 1][_simplexTable.NCols - 1]) < NumericCommon.NUMERIC_ACCURACY_MIDDLE;
                 }
             }
-            if (Math.Abs(val + _simplexTable[n_rows][n_cols]) < 1e-5)
+            if (Math.Abs(val + _simplexTable[n_rows][n_cols]) < NumericCommon.NUMERIC_ACCURACY_MIDDLE)
             {
                 if (!IsTargetFuncModified()) return true;
-                return Math.Abs(_simplexTable[_simplexTable.NRows - 1][_simplexTable.NCols - 1]) < 1e-5;
+                return Math.Abs(_simplexTable[_simplexTable.NRows - 1][_simplexTable.NCols - 1]) < NumericCommon.NUMERIC_ACCURACY_MIDDLE;
             }
             return false;
         }
@@ -458,7 +455,7 @@ namespace OptimizationMethods
 
             for (; i < _simplexTable.NCols - 1; i++)
             {
-                sb.AppendFormat("|{0,-12}", " x " + (i + 1).ToString());
+                sb.AppendFormat("|{0,-12}", $" x {i + 1}");
             }
             sb.AppendFormat("|{0,-12}", " b");
 
@@ -482,7 +479,7 @@ namespace OptimizationMethods
                     }
                     else 
                     {
-                        sb.AppendFormat("{0,-6}", " x " + (_basisArgs[n_row] + 1).ToString());
+                        sb.AppendFormat("{0,-6}", $" x {_basisArgs[n_row] + 1}");
                     }
                 }
                 else 
@@ -493,7 +490,7 @@ namespace OptimizationMethods
                     }
                     else
                     {
-                        sb.AppendFormat("{0,-6}", " x " + (_basisArgs[n_row] + 1).ToString());
+                        sb.AppendFormat("{0,-6}", $" x {_basisArgs[n_row] + 1}");
                     }
                 }
 
@@ -501,7 +498,7 @@ namespace OptimizationMethods
                 {
                     if (row[col] >= 0)
                     {
-                        sb.AppendFormat("|{0,-12}", " " + NumericUtils.ToRationalStr(row[col]));
+                        sb.AppendFormat("|{0,-12}", $" {NumericUtils.ToRationalStr(row[col])}");
                         continue;
                     }
                     sb.AppendFormat("|{0,-12}", NumericUtils.ToRationalStr(row[col]));
@@ -530,6 +527,8 @@ namespace OptimizationMethods
 
             int main_col;
 
+            int iteration = 0;
+
             Console.WriteLine("Start simplex table:");
             Console.WriteLine(SimplexToString());
 
@@ -540,8 +539,10 @@ namespace OptimizationMethods
                 Console.WriteLine(SimplexToString());
             }
 
-            while (!IsPlanOptimal())
+            while ((!IsPlanOptimal()) || (iteration == MaxIterations))
             {
+                iteration++;
+
                 main_col = GetMainCol();
 
                 if (main_col == -1) break;

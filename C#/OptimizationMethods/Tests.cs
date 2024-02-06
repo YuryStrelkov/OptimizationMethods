@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System;
+using MathUtils;
 
 namespace OptimizationMethods
 {
@@ -35,9 +36,9 @@ namespace OptimizationMethods
             const double x_0 = 10.0;
             const double x_1 = -1.0;
             Console.WriteLine($"Search range: x_0 = {x_0}, x_1 = {x_1}");
-            Console.WriteLine($"BiSect      : {OneDimensional.BiSect     (OneDimensional.TestFunc, x_0, x_1, 1e-4)}");
-            Console.WriteLine($"GoldenRatio : {OneDimensional.GoldenRatio(OneDimensional.TestFunc, x_0, x_1, 1e-4)}");
-            Console.WriteLine($"Fibonacchi  : {OneDimensional.Fibonacci  (OneDimensional.TestFunc, x_0, x_1, 1e-4)}\n");
+            Console.WriteLine($"BiSect      : {OneDimensional.BiSect     (NumericUtils.TestFunc1D, x_0, x_1, 1e-4)}");
+            Console.WriteLine($"GoldenRatio : {OneDimensional.GoldenRatio(NumericUtils.TestFunc1D, x_0, x_1, 1e-4)}");
+            Console.WriteLine($"Fibonacchi  : {OneDimensional.Fibonacci  (NumericUtils.TestFunc1D, x_0, x_1, 1e-4)}\n");
         }
         public static void MultiDimensionalMethodsTest()
         {
@@ -49,13 +50,13 @@ namespace OptimizationMethods
             Vector x_0 = new Vector(5.0, 3.0);
 
             Console.WriteLine($"x_0 = {x_0},\nx_1 = {x_1}\n") ;
-            Console.WriteLine($"BiSect                 : {MultiDimensional.BiSect             (MultiDimensional.TestFunc2D, x_1, x_0)}");
-            Console.WriteLine($"GoldenRatio            : {MultiDimensional.GoldenRatio        (MultiDimensional.TestFunc2D, x_1, x_0)}");
-            Console.WriteLine($"Fibonacci              : {MultiDimensional.Fibonacci          (MultiDimensional.TestFunc2D, x_1, x_0)}");
-            Console.WriteLine($"PerCoordDescend        : {MultiDimensional.PerCoordDescend    (MultiDimensional.TestFunc2D, x_1)}");
-            Console.WriteLine($"GradientDescend        : {MultiDimensional.GradientDescend    (MultiDimensional.TestFunc2D, x_1)}");
-            Console.WriteLine($"СonjGradientDescend    : {MultiDimensional.СonjGradientDescend(MultiDimensional.TestFunc2D, x_1)}");
-            Console.WriteLine($"NewtoneRaphson         : {MultiDimensional.NewtoneRaphson     (MultiDimensional.TestFunc2D, x_1)}\n");
+            Console.WriteLine($"BiSect                 : {MultiDimensional.BiSect             (NumericUtils.TestFunc2D, x_1, x_0)}");
+            Console.WriteLine($"GoldenRatio            : {MultiDimensional.GoldenRatio        (NumericUtils.TestFunc2D, x_1, x_0)}");
+            Console.WriteLine($"Fibonacci              : {MultiDimensional.Fibonacci          (NumericUtils.TestFunc2D, x_1, x_0)}");
+            Console.WriteLine($"PerCoordDescend        : {MultiDimensional.PerCoordDescend    (NumericUtils.TestFunc2D, x_1)}");
+            Console.WriteLine($"GradientDescend        : {MultiDimensional.GradientDescend    (NumericUtils.TestFunc2D, x_1)}");
+            Console.WriteLine($"СonjGradientDescend    : {MultiDimensional.СonjGradientDescend(NumericUtils.TestFunc2D, x_1)}");
+            Console.WriteLine($"NewtoneRaphson         : {MultiDimensional.NewtoneRaphson     (NumericUtils.TestFunc2D, x_1)}\n");
         }
         /// <summary>
         /// проверка работоспособности класса
@@ -88,7 +89,7 @@ namespace OptimizationMethods
             Matrix matrix_ = new Matrix(new Vector(8.0, 1.0, 6.0), new Vector(3.0, 5.0, 7.0));
             Console.WriteLine($"\nnon rect mat:\n{matrix_}");
             Console.WriteLine($"\nnon rect mat mul by transposed it self :\n{matrix_ * Matrix.Transpose(matrix_)}");
-            Matrix m = Matrix.Hessian(MultiDimensional.TestFuncND, new Vector(0.0, 0.0, 0.0));
+            Matrix m = Matrix.Hessian(NumericUtils.TestFuncND, new Vector(0.0, 0.0, 0.0));
             Console.WriteLine($"\nHessian(MultiDimensional.TestFuncND):\n{m}");
         }
         public static void NumericTests()
@@ -167,10 +168,10 @@ namespace OptimizationMethods
         {
             // float aaa = 123.5123f;
             // Console.WriteLine($"{string.Format("{0,0:F}", aaa).Replace(',', '.')}");
-            // OneDimensionalMethodsTest();
-            // MultiDimensionalMethodsTest();
+            OneDimensionalMethodsTest();
+            MultiDimensionalMethodsTest();
             //VectorTest();
-            MatrixTest();
+            //  MatrixTest();
             // SimpexTest();
             // NumericTests();
         }

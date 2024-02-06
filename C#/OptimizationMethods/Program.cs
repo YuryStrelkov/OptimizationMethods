@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MathUtils;
+using System;
 
 namespace OptimizationMethods
 {

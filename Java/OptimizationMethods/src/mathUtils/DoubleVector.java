@@ -191,7 +191,7 @@ public class DoubleVector extends TemplateVector<Double>{
     }
 
     public static double partial(IFunctionND func, DoubleVector x, int index) {
-        return partial(func, x, index, Common.NUMERIC_ACCURACY_MIDDLE);
+        return partial(func, x, index, NumericCommon.NUMERIC_ACCURACY_MIDDLE);
     }
 
     public static double partial2(IFunctionND func, DoubleVector x, int index_1, int index_2, double eps) {
@@ -212,10 +212,10 @@ public class DoubleVector extends TemplateVector<Double>{
     }
 
     public static double partial2(IFunctionND func, DoubleVector x, int index_1, int index_2) {
-        return partial2(func, x, index_1, index_2, Common.NUMERIC_ACCURACY_MIDDLE);
+        return partial2(func, x, index_1, index_2, NumericCommon.NUMERIC_ACCURACY_MIDDLE);
     }
 
     public static DoubleVector gradient(IFunctionND func, DoubleVector x) {
-        return  gradient(func, x, Common.NUMERIC_ACCURACY_MIDDLE);
+        return  gradient(func, x, NumericCommon.NUMERIC_ACCURACY_MIDDLE);
     }
 }

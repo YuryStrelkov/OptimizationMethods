@@ -1,4 +1,4 @@
-import mathUtils.Common;
+import mathUtils.NumericCommon;
 import mathUtils.DoubleVector;
 import mathUtils.DoubleMatrix;
 import mathUtils.NumericUtils;
@@ -9,7 +9,7 @@ enum Sign {
     Equal,
     Less,
     More
-};
+}
 
 enum SimplexProblemType {
     Min,
@@ -21,6 +21,16 @@ enum SimplexProblemType {
 ////////////////////
 
 public class Simplex {
+
+    private int maxIterations = NumericCommon.ITERATIONS_COUNT_LOW;
+
+    public int getMaxIterations(){
+        return maxIterations;
+    }
+
+    public void setMaxIterations(int value){
+        maxIterations = NumericUtils.clamp(value, 10, NumericCommon.ITERATIONS_COUNT_HIGH);
+    }
 
     private final ArrayList<Sign> inequalities;
 
@@ -103,38 +113,26 @@ public class Simplex {
      * Если среди элементов от 1:n-1 в последней строке нет отрицательных, то проверяет
      * на неотрицательность только те элементы предпоследней строки, которые не являются искусственными.
      *
-     * @return
+     * @return является ли план оптимальным
      */
     public boolean isPlanOptimal() {
         // Проверяем значения последней строки сиплекс-разностей
         // на положительность. Если все положительны, то план оптимален
-
         DoubleVector row = simplexTable.row(simplexTable.rows() - 1);
-
-        boolean opt = true;
-
-        for (int i = 0; i < row.size() - 1; i++) {
-            if (row.get(i) >= 0) continue;
-            opt = false;
-            break;
+        boolean optimal = true;
+        for (int i = 0; i < (row.size() - 1); i++) {
+            optimal = row.get(i) < 0;
+            if (!optimal) break;
         }
-
+        if (!isTargetFuncModified()) return optimal;
         // если мы модифицировали целевую функцию, то среди списка естественнхых
         // агументов проверям на положительнность предпослднюю строку симплекс-разностей
-
-        if (isTargetFuncModified()) {
-            if (!opt) return opt;
-
-            DoubleVector row_ = simplexTable.row(simplexTable.rows() - 2);
-
-            for (int id : naturalArgsIds) {
-                if (row_.get(id) >= 0) continue;
-                opt = false;
-                break;
-            }
+        DoubleVector row_ = simplexTable.row(simplexTable.rows() - 2);
+        for (int id : naturalArgsIds) {
+            optimal &= row_.get(id) < 0;
+            if (!optimal) break;
         }
-
-        return opt;
+        return optimal;
     }
 
     /**
@@ -143,7 +141,7 @@ public class Simplex {
      * элементов, то посик таковых будет продолжен среди только тех элементов предпоследней строки, которые не
      * являются искусственными.
      *
-     * @return
+     * @return индекс ведущего столбца
      */
     private int getMainCol() {
         DoubleVector row = simplexTable.row(simplexTable.rows() - 1);
@@ -175,7 +173,7 @@ public class Simplex {
      * Определяет ведущую строку
      *
      * @param simplexCol ведущий столбец
-     * @return
+     * @return индекс ведущей строки
      */
     int getMainRow(int simplexCol) {
         double delta = 1e12;
@@ -202,9 +200,9 @@ public class Simplex {
     /**
      * строит виртуальный базисный вектор
      *
-     * @param inequalityId
-     * @param inequalitySign
-     * @return
+     * @param inequalityId   номер знака неравентсва
+     * @param inequalitySign знак неравенства
+     * @return массив индексов добавленных столбцов
      */
     private int[] buildVirtualBasisCol(int inequalityId, Sign inequalitySign) {
         if (inequalitySign == Sign.Equal) {
@@ -215,7 +213,6 @@ public class Simplex {
                 }
                 simplexTable.row(row).pushBack(0.0);
             }
-
             return new int[]{simplexTable.cols() - 1, simplexTable.cols() - 1};
         }
 
@@ -226,11 +223,9 @@ public class Simplex {
                     simplexTable.row(row).pushBack(1.0);
                     continue;
                 }
-
                 simplexTable.row(row).pushBack(0.0);
                 simplexTable.row(row).pushBack(0.0);
             }
-
             return new int[]{simplexTable.cols() - 2, simplexTable.cols() - 1};
         }
 
@@ -241,7 +236,6 @@ public class Simplex {
             }
             simplexTable.row(row).pushBack(0.0);
         }
-
         return new int[]{simplexTable.cols() - 1, -1};
     }
 
@@ -351,33 +345,32 @@ public class Simplex {
             val += simplexTable.get(i, nCols) * pricesVector.get(basisArgs.get(i));
         }
         if (mode == SimplexProblemType.Max) {
-            if (Math.abs(val - simplexTable.get(nRows, nCols)) < Common.NUMERIC_ACCURACY_MIDDLE) {
+            if (Math.abs(val - simplexTable.get(nRows, nCols)) < NumericCommon.NUMERIC_ACCURACY_MIDDLE) {
                 if (isTargetFuncModified()) {
-                    return (Math.abs(simplexTable.get(simplexTable.rows() - 1, simplexTable.cols() - 1)) < Common.NUMERIC_ACCURACY_MIDDLE);
+                    return (Math.abs(simplexTable.get(simplexTable.rows() - 1, simplexTable.cols() - 1)) < NumericCommon.NUMERIC_ACCURACY_MIDDLE);
                 }
                 return true;
             }
         }
-        if (Math.abs(val + simplexTable.get(nRows, nCols)) < Common.NUMERIC_ACCURACY_MIDDLE) {
+        if (Math.abs(val + simplexTable.get(nRows, nCols)) < NumericCommon.NUMERIC_ACCURACY_MIDDLE) {
             if (isTargetFuncModified()) {
-                return (Math.abs(simplexTable.get(simplexTable.rows() - 1, simplexTable.cols() - 1)) < Common.NUMERIC_ACCURACY_MIDDLE);
+                return (Math.abs(simplexTable.get(simplexTable.rows() - 1, simplexTable.cols() - 1)) < NumericCommon.NUMERIC_ACCURACY_MIDDLE);
             }
             return true;
         }
         return false;
     }
 
-    public String simplexToString() {
+    @Override
+    public String toString() {
         if (simplexTable.rows() == 0) return "";
 
         StringBuilder sb = new StringBuilder();
 
-        int i = 0;
+        sb.append(String.format("%-6s", ""));
 
-        sb.append(String.format("%-6s", " "));
-
-        for (; i < simplexTable.cols() - 1; i++) {
-            sb.append(String.format("|%-12s", " x " + String.valueOf((i + 1))));
+        for (int col = 0; col < simplexTable.cols() - 1; col++) {
+            sb.append(String.format("|%-12s", String.format(" x %s", (col + 1))));
         }
         sb.append(String.format("|%-12s", " b"));
 
@@ -394,19 +387,18 @@ public class Simplex {
                 } else if (nRow == simplexTable.rows() - 1) {
                     sb.append(String.format("%-6s", " d1"));
                 } else {
-                    sb.append(String.format("%-6s", " x " + String.valueOf(basisArgs.get(nRow) + 1)));
+                    sb.append(String.format("%-6s", String.format(" x %s", basisArgs.get(nRow) + 1)));
                 }
             } else {
                 if (nRow == simplexTable.rows() - 1) {
                     sb.append(String.format("%-6s", " d"));
                 } else {
-                    sb.append(String.format("%-6s", " x " + String.valueOf(basisArgs.get(nRow) + 1)));
+                    sb.append(String.format("%-6s", String.format(" x %s", basisArgs.get(nRow) + 1)));
                 }
             }
-
             for (int col = 0; col < row.size(); col++) {
                 if (row.get(col) >= 0) {
-                    sb.append(String.format("|%-12s", " " + NumericUtils.toRationalStr(row.get(col))));
+                    sb.append(String.format("| %-11s", NumericUtils.toRationalStr(row.get(col))));
                     continue;
                 }
                 sb.append(String.format("|%-12s", NumericUtils.toRationalStr(row.get(col))));
@@ -422,9 +414,7 @@ public class Simplex {
     public DoubleVector solve(SimplexProblemType mode) {
         this.mode = mode;
 
-        System.out.println("Simplex problem type : " + mode.toString() + "\n");
-
-        DoubleVector solution = new DoubleVector(naturalArgsN());
+        System.out.printf("Simplex problem type : %s\n", mode);
 
         buildSimplexTable();
 
@@ -434,16 +424,20 @@ public class Simplex {
 
         int mainCol;
 
+        int iteration = 0;
+
         System.out.println("Start simplex table:");
-        System.out.println(simplexToString());
+        System.out.println(this);
 
         if (excludeModArgs()) {
             // второй этап, если задача должна решаться двух проходным(двух этапным) алгоритмом
             System.out.println("Simplex table after args exclude:");
-            System.out.println(simplexToString());
+            System.out.println(this);
         }
 
-        while (!isPlanOptimal()) {
+        while ((!isPlanOptimal()) || (getMaxIterations() == iteration)){
+            iteration++;
+
             mainCol = getMainCol();
 
             if (mainCol == -1) {
@@ -468,17 +462,17 @@ public class Simplex {
                 if (i == mainRow) continue;
                 simplexTable.row(i).sub(DoubleVector.mul(simplexTable.get(i, mainCol), simplexTable.row(mainRow)));
             }
-            solution = currentSimplexSolution();
-            if (Common.SHOW_SIMPLEX_DEBUG_LOG) {
-                System.out.println("a_main{" + String.valueOf((mainRow + 1)) + ", " + String.valueOf((mainCol + 1)) + "} = " + NumericUtils.toRationalStr(aik) + "\n");
-                System.out.println(simplexToString());
-                System.out.println("current solution: " + NumericUtils.toRationalStr(currentSimplexSolution()));
+            // solution = currentSimplexSolution();
+            if (NumericCommon.SHOW_SIMPLEX_DEBUG_LOG) {
+                System.out.printf("a_main{%s, %s} = %s\n", mainRow + 1, mainCol + 1, NumericUtils.toRationalStr(aik));
+                System.out.println(this);
+                System.out.printf("current solution: %s\n", NumericUtils.toRationalStr(currentSimplexSolution()));
             }
         }
         if (validateSolution()) {
-            solution = currentSimplexSolution(true);
+            DoubleVector solution = currentSimplexSolution(true);
             // формирование ответа
-            System.out.println("solution: " + NumericUtils.toRationalStr(solution));
+            System.out.printf("solution: %s\n", NumericUtils.toRationalStr(solution));
             return solution;
         }
         System.out.println("Simplex is unresolvable");
@@ -527,8 +521,8 @@ public class Simplex {
         for (int i = 0; i < b.size(); i++) inequalities.add(Sign.Less);
 
         naturalArgsIds = new ArrayList<>();
-        basisArgs      = new ArrayList<>();
-        fModArgs       = new ArrayList<>();
+        basisArgs = new ArrayList<>();
+        fModArgs = new ArrayList<>();
 
         boundsVector = new DoubleVector(b);
         boundsMatrix = new DoubleMatrix(a);

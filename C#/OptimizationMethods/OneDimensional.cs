@@ -1,4 +1,5 @@
 ﻿using System;
+using MathUtils;
 
 namespace OptimizationMethods
 {
@@ -8,144 +9,98 @@ namespace OptimizationMethods
         ////////////////////
         /// Lab. work #1 ///
         ////////////////////
-        public static double TestFunc(double x)
+        public static double BiSect(Function1D f, double left, double right, double accuracy, int iterations)
         {
-	        return (x - 5) * (x - 2); // min at point x = 3.5
-        }
-
-        public static readonly double Phi = 1.61803398874989484820;
-
-        static void Swap<T>(ref T lhs, ref T rhs)
-        {
-            T temp;
-            temp = lhs;
-            lhs = rhs;
-            rhs = temp;
-        }
-
-        public static double BiSect (Function1D f, double x_0, double x_1, double eps = 1e-6, int max_iters = 1000)
-        {
-            if (x_0 > x_1) Swap(ref x_0, ref x_1);
+            if (left > right)  NumericUtils.Swap(ref left, ref right);
             
             double x_c = 0.0;
 
             int cntr = 0;
 
-            for (; cntr != max_iters; cntr++)
+            for (; cntr != iterations; cntr++)
             {
-                if (x_1 - x_0 < eps) break;
+                if (right - left < accuracy) break;
                 
-                x_c = (x_1 + x_0) * 0.5;
+                x_c = (right + left) * 0.5;
 
-                if (f(x_c + eps) > f(x_c - eps))
+                if (f(x_c + accuracy) > f(x_c - accuracy))
                 {
-                    x_1 = x_c;
+                    right = x_c;
                     continue;
                 }
-                x_0 = x_c;
+                left = x_c;
             }
 #if DEBUG
             Console.WriteLine($"dihotomia iterations number : {cntr}");
 #endif
             return x_c;
         }
+        public static double BiSect(Function1D f, double left, double right, double accuracy) => BiSect(f, left, right, accuracy, NumericCommon.ITERATIONS_COUNT_HIGH);
+        public static double BiSect(Function1D f, double left, double right) => BiSect(f, left, right, NumericCommon.NUMERIC_ACCURACY_MIDDLE, NumericCommon.ITERATIONS_COUNT_HIGH);
 
-        public static double GoldenRatio(Function1D f, double x_0, double x_1, double eps = 1e-6, int max_iters = 1000)
+        public static double GoldenRatio(Function1D f, double left, double right, double accuracy, int iterations)
         {
-            if (x_0 > x_1) Swap(ref x_0, ref x_1);
+            if (left > right) NumericUtils.Swap(ref left, ref right);
             
-            double a = x_0, b = x_1, dx;
+            double a = left, b = right, dx;
             
             int cntr = 0;
 
-            for (; cntr != max_iters; cntr++)
+            for (; cntr != iterations; cntr++)
             {
-                if (x_1 - x_0 < eps) break;
+                if (right - left < accuracy) break;
                
                 dx  = b - a;
-                x_0 = b - dx / Phi;
-                x_1 = a + dx / Phi;
+                left = b - dx * NumericCommon.ONE_OVER_PHI;
+                right = a + dx * NumericCommon.ONE_OVER_PHI;
 
-                if (f(x_0) >= f(x_1))
+                if (f(left) >= f(right))
                 {
-                    a = x_0;
+                    a = left;
                     continue;
                 }
-                b = x_1;
+                b = right;
             }
 #if DEBUG
             Console.WriteLine($"golden ratio iterations number : {cntr}");
 #endif
-            return (x_1 + x_0) * 0.5;
+            return (right + left) * 0.5;
         }
-
-        public static int[] FibonacchiNumbers(int index)
+        public static double GoldenRatio(Function1D f, double left, double right, double accuracy) => GoldenRatio(f, left, right, accuracy, NumericCommon.ITERATIONS_COUNT_HIGH);
+        public static double GoldenRatio(Function1D f, double left, double right) => GoldenRatio(f, left, right, NumericCommon.NUMERIC_ACCURACY_MIDDLE, NumericCommon.ITERATIONS_COUNT_HIGH);
+ 
+        public static double Fibonacci(Function1D f, double left, double right, double accuracy)
         {
-            if (index < 1) return new int[] { 0 };
+            if (left > right) NumericUtils.Swap(ref left, ref right);
             
-            if (index < 2) return new int[] { 0, 1 };
-
-            int[] res = new int[index];
-
-            res[0] = 0;
-
-            res[1] = 1;
-
-            for (int i = 2; i < index; i++) res[i] = res[i - 1] + res[i - 2];
-
-            return res;
-        }
-
-        public static void ClosestFibonacciPair(double value, ref int f_n, ref int f_n_1)
-        {
-            f_n   = 0;
-            f_n_1 = 0;
-
-            if (value < 1) return;
-
-            f_n_1 = 1;
-
-            if (value < 2) return;
-            int f_tmp;
-
-            while (f_n < value)
-            {
-                f_tmp = f_n;
-                f_n = f_n_1;
-                f_n_1 += f_tmp;
-            }
-        }
-        public static double Fibonacci(Function1D f, double x_0, double x_1, double eps = 1e-6)
-        {
-            if (x_0 > x_1) Swap(ref x_0, ref x_1);
-            
-            double a = x_0, b = x_1, dx;
+            double a = left, b = right, dx;
 
             int f_n = 0, f_n_1 = 0, f_tmp, cntr = 0;
 
-            ClosestFibonacciPair((b - a) / eps, ref f_n, ref f_n_1);
+            NumericUtils.ClosestFibonacciPair((b - a) / accuracy, ref f_n, ref f_n_1);
 
             while(f_n != f_n_1)
             {
-                if (x_1 - x_0 < eps) break;
+                if (right - left < accuracy) break;
                 cntr++;
                 dx = (b - a);
                 f_tmp = f_n_1 - f_n;
-                x_0 = a + dx * ((double)f_tmp / f_n_1);
-                x_1 = a + dx * ((double)f_n   / f_n_1);
+                left = a + dx * ((double)f_tmp / f_n_1);
+                right = a + dx * ((double)f_n   / f_n_1);
                 f_n_1 = f_n;
                 f_n = f_tmp;
-                if (f(x_0) < f(x_1))
+                if (f(left) < f(right))
                 {
-                    b = x_1;
+                    b = right;
                     continue;
                 }
-                a = x_0;
+                a = left;
             }
 #if DEBUG
             Console.WriteLine($"fibonacci iterations number : {cntr}");
 #endif
-            return (x_1 + x_0) * 0.5;
+            return (right + left) * 0.5;
         }
+        public static double Fibonacci(Function1D f, double left, double right) => Fibonacci(f, left, right, NumericCommon.NUMERIC_ACCURACY_MIDDLE);
     }
 }

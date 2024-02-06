@@ -1,4 +1,4 @@
-import mathUtils.Common;
+import mathUtils.NumericCommon;
 import mathUtils.DoubleVector;
 import mathUtils.DoubleMatrix;
 import mathUtils.NumericUtils;
@@ -16,12 +16,12 @@ public class Tests {
         double x_0 = 10;
         double x_1 = -1;
 
-        Common.SHOW_DEBUG_LOG = true;
+        NumericCommon.SHOW_DEBUG_LOG = true;
         System.out.println("x_0 = " + x_0 + ",\nx_1 = " + x_1 + "\n");
-        System.out.println("BiSect      : " + OneDimensional.biSect      (OneDimensional.testFunc, x_0, x_1, 1e-4));
-        System.out.println("GoldenRatio : " + OneDimensional.goldenRatio (OneDimensional.testFunc, x_0, x_1, 1e-4));
-        System.out.println("Fibonacci   : " + OneDimensional.fibonacci   (OneDimensional.testFunc, x_0, x_1, 1e-4) + " \n");
-        Common.SHOW_DEBUG_LOG = false;
+        System.out.println("BiSect      : " + OneDimensional.biSect      (NumericUtils.testFunc1d, x_0, x_1, 1e-4));
+        System.out.println("GoldenRatio : " + OneDimensional.goldenRatio (NumericUtils.testFunc1d, x_0, x_1, 1e-4));
+        System.out.println("Fibonacci   : " + OneDimensional.fibonacci   (NumericUtils.testFunc1d, x_0, x_1, 1e-4) + " \n");
+        NumericCommon.SHOW_DEBUG_LOG = false;
     }
 
     public static void numericTests()
@@ -143,7 +143,7 @@ public class Tests {
         System.out.printf("non rect mat:\n%s\n", matrix_);
         System.out.printf("non rect mat mul by transposed it self :\n%s\n",
                 DoubleMatrix.mul(matrix_ , DoubleMatrix.transpose(matrix_)) );
-        DoubleMatrix hessian= DoubleMatrix.hessian(MultiDimensional.testFuncNd, new DoubleVector(0.0, 0.0, 0.0));
+        DoubleMatrix hessian= DoubleMatrix.hessian(NumericUtils.testFuncNd, new DoubleVector(0.0, 0.0, 0.0));
         System.out.printf("Hessian(MultiDimensional.TestFuncND):\n%s\n", hessian);
     }
     public static void multiDimensionalMethodsTest()
@@ -155,16 +155,16 @@ public class Tests {
         DoubleVector x_0 = new DoubleVector (5.0, 3.0);
         DoubleVector x_1 = new DoubleVector (0.0, 0.0);
         DoubleVector x   = new DoubleVector (-13.0, 22.0 );
-        Common.SHOW_DEBUG_LOG = true;
+        NumericCommon.SHOW_DEBUG_LOG = true;
         System.out.println("x_0 = "+ x_0 + ",\nx_1 = " + x_1 + "\n") ;
-        System.out.println("biSect                   : "+ MultiDimensional.biSect             (MultiDimensional.testFunc2d, x_1, x_0));
-        System.out.println("Golden ratio             : "+ MultiDimensional.goldenRatio        (MultiDimensional.testFunc2d, x_1, x_0));
-        System.out.println("Fibonacci                : "+ MultiDimensional.fibonacci          (MultiDimensional.testFunc2d, x_1, x_0));
-        System.out.println("Per coordinate descend   : "+ MultiDimensional.perCordDescend     (MultiDimensional.testFunc2d, x));
-        System.out.println("Gradient descend         : "+ MultiDimensional.gradientDescend    (MultiDimensional.testFunc2d, x));
-        System.out.println("Conj gradient descend    : "+ MultiDimensional.conjGradientDescend(MultiDimensional.testFunc2d, x));
-        System.out.println("Newtone - Raphson        : "+ MultiDimensional.newtoneRaphson     (MultiDimensional.testFunc2d, x_1));
-        Common.SHOW_DEBUG_LOG = false;
+        System.out.println("biSect                   : "+ MultiDimensional.biSect             (NumericUtils.testFunc2d, x_1, x_0));
+        System.out.println("Golden ratio             : "+ MultiDimensional.goldenRatio        (NumericUtils.testFunc2d, x_1, x_0));
+        System.out.println("Fibonacci                : "+ MultiDimensional.fibonacci          (NumericUtils.testFunc2d, x_1, x_0));
+        System.out.println("Per coordinate descend   : "+ MultiDimensional.perCordDescend     (NumericUtils.testFunc2d, x));
+        System.out.println("Gradient descend         : "+ MultiDimensional.gradientDescend    (NumericUtils.testFunc2d, x));
+        System.out.println("Conj gradient descend    : "+ MultiDimensional.conjGradientDescend(NumericUtils.testFunc2d, x));
+        System.out.println("Newtone - Raphson        : "+ MultiDimensional.newtoneRaphson     (NumericUtils.testFunc2d, x_1));
+        NumericCommon.SHOW_DEBUG_LOG = false;
     }
 
     public static void simplexTest()
@@ -204,7 +204,7 @@ public class Tests {
         signs_equal.add(Sign.Equal);
         signs_equal.add(Sign.Equal);
         signs_equal.add(Sign.Equal);
-        Common.SHOW_SIMPLEX_DEBUG_LOG = true;
+        NumericCommon.SHOW_SIMPLEX_DEBUG_LOG = true;
 
         Simplex sym_0 = new Simplex(A,new DoubleVector(2.0,  3.0 ), signs_less, b);
         sym_0.solve(SimplexProblemType.Max);
