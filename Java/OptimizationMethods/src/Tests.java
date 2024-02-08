@@ -1,7 +1,4 @@
-import mathUtils.NumericCommon;
-import mathUtils.DoubleVector;
-import mathUtils.DoubleMatrix;
-import mathUtils.NumericUtils;
+import mathUtils.*;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -13,14 +10,25 @@ public class Tests {
         System.out.println(  "//////// OneDimensionalMethodsTest ////////");
         System.out.println(  "///////////////////////////////////////////\n");
 
-        double x_0 = 10;
-        double x_1 = -1;
+        final double x_0 = 10;
+        final double x_1 = -1;
 
         NumericCommon.SHOW_DEBUG_LOG = true;
         System.out.println("x_0 = " + x_0 + ",\nx_1 = " + x_1 + "\n");
-        System.out.println("BiSect      : " + OneDimensional.biSect      (NumericUtils.testFunc1d, x_0, x_1, 1e-4));
-        System.out.println("GoldenRatio : " + OneDimensional.goldenRatio (NumericUtils.testFunc1d, x_0, x_1, 1e-4));
-        System.out.println("Fibonacci   : " + OneDimensional.fibonacci   (NumericUtils.testFunc1d, x_0, x_1, 1e-4) + " \n");
+        final double biSect   = OneDimensional.biSect      (NumericUtils.testFunc1d, x_0, x_1);
+        final double gRatio   = OneDimensional.goldenRatio (NumericUtils.testFunc1d, x_0, x_1);
+        final double fNumbers = OneDimensional.fibonacci   (NumericUtils.testFunc1d, x_0, x_1);
+
+        if(NumericCommon.NUMBER_RATIONAL_FORMAT)
+        {
+            System.out.printf("BiSect      : %s\n", NumericUtils.toRationalStr(biSect  , false));
+            System.out.printf("GoldenRatio : %s\n", NumericUtils.toRationalStr(gRatio  , false));
+            System.out.printf("Fibonacci   : %s\n", NumericUtils.toRationalStr(fNumbers, false));
+        }else{
+            System.out.printf("BiSect      : %s\n", biSect  );
+            System.out.printf("GoldenRatio : %s\n", gRatio  );
+            System.out.printf("Fibonacci   : %s\n", fNumbers);
+        }
         NumericCommon.SHOW_DEBUG_LOG = false;
     }
 
@@ -57,9 +65,22 @@ public class Tests {
 
     public static void VectorTest()
     {
-        DoubleVector a = new DoubleVector(2.0, 3.0, 4.0);
-        DoubleVector b = new DoubleVector(5.0, 6.0, 8.0);
+        DoubleVector l = new DoubleVector(5.0, 6.0, 8.0, 5.5, 6.5, 8.5, 6.6, 7.7, 8.8);
+        TemplateVector<Integer> iv = new TemplateVector<>(30);
+        iv.fill(v -> (v - 10) % 10);
+        System.out.print("///////////////////////////////////////////\n");
+        System.out.print("////////       VectorSliceTest     ////////\n");
+        System.out.print("///////////////////////////////////////////\n");
+        DoubleVector longVector = new DoubleVector(2.0, 3.0, 4.0, 5.0, 6.0, 8.0);
+        System.out.printf("iv     = %s\n", iv);
+        System.out.printf("l      = %s\n", longVector);
+        Slice left  = new Slice(0, 3);
+        Slice right = new Slice(3, 6);
+        System.out.printf("l[%s] = %s \n", left,  longVector.get( left));
+        System.out.printf("r[%s] = %s \n", right, longVector.get(right));
 
+        DoubleVector a = longVector.get( left); // new DoubleVector(2.0, 3.0, 4.0);
+        DoubleVector b = longVector.get(right); // new DoubleVector(5.0, 6.0, 8.0);
         System.out.print("///////////////////////////////////////////\n");
         System.out.print("////////         VectorTest        ////////\n");
         System.out.print("///////////////////////////////////////////\n");
@@ -73,10 +94,10 @@ public class Tests {
         System.out.printf("%s += %s = ", b, 2); b.add(2); System.out.printf("%s\n", b);
         System.out.printf("%s -= %s = ", b, 2); b.sub(2); System.out.printf("%s\n", b);
         System.out.print("////////      External methods     ////////\n");
-        System.out.printf("%s + %s = %s\n", b, b, DoubleVector.add(b, b));
-        System.out.printf("%s - %s = %s\n", b, b, DoubleVector.sub(b, b));
+        System.out.printf("%s + %s = %s\n", a, b, DoubleVector.add(a, b));
+        System.out.printf("%s - %s = %s\n", a, b, DoubleVector.sub(a, b));
         System.out.printf("%s / %s = %s\n", a, b, DoubleVector.div(a, b));
-        System.out.printf("%s * %s = %s\n", b, b, DoubleVector.mul(b, b));
+        System.out.printf("%s * %s = %s\n", a, b, DoubleVector.mul(a, b));
         System.out.printf("%s + %s = %s\n", b, 2, DoubleVector.add(b, 2));
         System.out.printf("%s + %s = %s\n", 2, b, DoubleVector.add(2, b));
         System.out.printf("%s - %s = %s\n", 2, b, DoubleVector.sub(2, b));

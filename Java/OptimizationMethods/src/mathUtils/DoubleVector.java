@@ -3,7 +3,6 @@ package mathUtils;
 import functionalInterfaces.IFunctionND;
 
 
-
 public class DoubleVector extends TemplateVector<Double>{
     public DoubleVector(int cap, double fill_value) {
         super(cap);
@@ -24,6 +23,15 @@ public class DoubleVector extends TemplateVector<Double>{
 
     public DoubleVector(Iterable<Double> other) {
         super(other);
+    }
+
+    protected DoubleVector(Slice slice, DoubleVector other) {
+        super(slice, other);
+    }
+
+    public DoubleVector get(Slice slice)
+    {
+        return new DoubleVector(slice, this);
     }
 
     public double magnitude() {
@@ -47,6 +55,12 @@ public class DoubleVector extends TemplateVector<Double>{
 
     @Override
     public String toString() {
+        if(NumericCommon.NUMBER_RATIONAL_FORMAT)
+        {
+            return String.format("{%s}", String.join("; ",
+                    DoubleVector.map(this, v -> String.format("%8s",
+                            NumericUtils.toRationalStr(v, false)))));
+        }
         return String.format("{%s}", String.join("; ",
                 DoubleVector.map(this, v -> String.format("%8s", String.format("%.4f", v)))));
     }
@@ -207,7 +221,7 @@ public class DoubleVector extends TemplateVector<Double>{
 
     public static DoubleVector gradient(IFunctionND func, DoubleVector x, double eps) {
         DoubleVector df = new DoubleVector(x.size());
-        for (int i = 0; i < x.size(); i++) df.unchecked_set(i, partial(func, x, i, eps));
+        df.applyEnumerate((i, v) -> partial(func, x, i, eps));
         return df;
     }
 

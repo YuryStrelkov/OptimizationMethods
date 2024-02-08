@@ -5,6 +5,25 @@ import functionalInterfaces.IFunctionND;
 
 public class NumericUtils
 {
+    private static int getFactorial(int f) {
+        int result = 1;
+        for (int i = 1; i <= f; i++) {
+            result = result * i;
+        }
+        return result;
+    }
+    private static int[] calculateFactorials()
+    {
+        int[] factorials =  new int[128];
+        for(int i = 0; i < 128; i++)
+        {
+            factorials[i] = getFactorial(i  + 1);
+        }
+        return factorials;
+    }
+
+    public static final int[] factorialsTable128 = calculateFactorials();
+
     public static final IFunction1D testFunc1d = NumericUtils::testFunc1D;
 
     public static final IFunctionND testFunc2d = NumericUtils::_testFunc2D;

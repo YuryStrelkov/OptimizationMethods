@@ -12,6 +12,7 @@ enum SolutionType {
 }
 
 public class DoubleMatrix extends TemplateVector<DoubleVector> {
+
     private static int[] matrixSizeInfo(Iterator<DoubleVector> rows)
     {
         int[] info = new int[]{-1, -1}; // rows, cols
@@ -30,6 +31,17 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
         info[0] = n_rows;
         info[1] = rowSizeMin;
         return info;
+    }
+
+    protected DoubleMatrix(Slice rows, DoubleMatrix source)
+    {
+        super(rows, source);
+    }
+
+    protected DoubleMatrix(Slice rowsRaw, Slice colsRaw, DoubleMatrix source) {
+        Slice rows = rowsRaw.rebuild(source.rows());
+        Slice cols = colsRaw.rebuild(source.cols());
+        map(new DoubleMatrix(rows, this), col -> col.get(cols));
     }
 
     protected DoubleMatrix(Iterable<DoubleVector> rows) {
@@ -158,6 +170,16 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
         return get(row).get(col);
     }
 
+    public DoubleMatrix get(Slice slice)
+    {
+        return new DoubleMatrix(slice, this);
+    }
+
+    public DoubleMatrix get(Slice rows, Slice cols)
+    {
+        return new DoubleMatrix(rows, cols,this);
+    }
+
     protected double unchecked_get(int row, int col) {
         return unchecked_get(row).unchecked_get(col);
     }
@@ -233,6 +255,56 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
         return rank;
     }
 
+    public double trace()
+    {   double tr = 0;
+        for(int row = 0; row < Math.min(rows(), cols()); row++) tr += unchecked_get(row, row);
+        return tr;
+    }
+
+    /// later
+    /// https://www.codeproject.com/Articles/1268576/Singular-Values-Decomposition-SVD-in-Cplusplus11-b
+
+    double determinant() {
+        DoubleMatrix copy = new DoubleMatrix(this);
+        double det = 1.0;
+        for (int i = 0; i < copy.rows(); i++) {
+            int pivot = i;
+            for (int j = i + 1; j < copy.rows(); j++) {
+                if (Math.abs(copy.unchecked_get(j, i)) > Math.abs(copy.unchecked_get(pivot, i))) {
+                    pivot = j;
+                }
+            }
+            if (pivot != i) {
+                var tmp = copy.unchecked_get(pivot);
+                copy.unchecked_set(pivot, copy.unchecked_get(i));
+                copy.unchecked_set(i, tmp);
+                det *= -1.0;
+            }
+            if (Math.abs(copy.unchecked_get(i, i)) < NumericCommon.NUMERIC_ACCURACY_HIGH) {
+                return 0;
+            }
+            det *= copy.unchecked_get(i, i);
+            for (int j = i + 1; j < copy.rows(); j++) {
+                double factor = copy.unchecked_get(j, i) / copy.unchecked_get(i, i);
+                for (int k = i + 1; k < copy.rows(); k++) {
+                    copy.unchecked_set(j, k, copy.unchecked_get(j, k) - factor * copy.unchecked_get(i, k));
+                }
+            }
+        }
+        return det;
+    }
+
+    public static DoubleMatrix mexp(final DoubleMatrix matrix, final int steps)
+    {
+        DoubleMatrix result   = identity(matrix.rows(),  matrix.cols());
+        DoubleMatrix x_matrix = new DoubleMatrix(matrix);
+        for(int index = 0; index < Math.min(NumericUtils.factorialsTable128.length, steps); index++)
+        {
+            result.add(mul(x_matrix, 1.0 / NumericUtils.factorialsTable128[index]));
+            x_matrix = mul(x_matrix, x_matrix);
+        }
+        return result;
+    }
     /**
      * Проверяет совместность СЛАУ вида Ax = b. Используется теорема Кронекера-Капелли
      *
@@ -317,7 +389,6 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
             for (j = 0; j < src.cols(); j++) {
                 if (j >= i) {
                     low.unchecked_set(j, i, src.unchecked_get(j, i));
-
                     for (k = 0; k < i; k++) low.unchecked_set(j, i,
                             low.unchecked_get(j, i) - low.unchecked_get(j, k) * up.unchecked_get(k, i));
                 }
@@ -325,14 +396,11 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
 
             for (j = 0; j < src.cols(); j++) {
                 if (j < i) continue;
-
                 if (j == i) {
                     up.unchecked_set(i, j, 1.0);
                     continue;
                 }
-
                 up.unchecked_set(i, j, src.unchecked_get(i, j) / low.unchecked_get(i, i));
-
                 for (k = 0; k < i; k++) up.unchecked_set(i, j,
                         up.unchecked_get(i, j) - low.unchecked_get(i, k) *
                                 up.unchecked_get(k, j) / low.unchecked_get(i, i));
@@ -355,17 +423,13 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
         DoubleVector x, z;
 
         for (int i = 0; i < up.rows(); i++) det *= (up.unchecked_get(i, i) * up.unchecked_get(i, i));
-
         if (Math.abs(det) < NumericCommon.NUMERIC_ACCURACY_HIGH) {
             if (NumericCommon.SHOW_MATRIX_DEBUG_LOG)
                 System.out.println("mathUtils.Matrix is probably singular :: unable to solve A^-1 b = x");
             return null;
         }
-
         z = new DoubleVector(up.rows());
-
         double tmp;
-
         for (int i = 0; i < z.size(); i++) {
             tmp = 0.0;
             for (int j = 0; j < i; j++) tmp += z.unchecked_get(j) * low.unchecked_get(i, j);
