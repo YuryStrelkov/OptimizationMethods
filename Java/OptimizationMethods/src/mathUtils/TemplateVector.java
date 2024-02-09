@@ -30,6 +30,7 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
             _source = source;
         }
     }
+
     public static final int MINIMAL_VECTOR_SIZE = 9;
     public static final double VECTOR_SIZE_UPSCALE = 1.5;
     private T[] _data; // данные (размер 1.5N, где N исходный размер вектора)
@@ -216,23 +217,23 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
     }
 
     public static <T> T reduce(Iterable<T> vector, IReduceFunction<T> function, T initValue) {
-        for (T value : vector) initValue = function.call(initValue, value);
+        for (final T value : vector) initValue = function.call(initValue, value);
         return initValue;
     }
 
     public static <T> TemplateVector<T> filter(Iterable<T> vector, IConditionFunction<T> condition) {
         TemplateVector<T> filteredVector = new TemplateVector<>();
-        for (T item : vector) if (condition.call(item)) filteredVector.pushBack(item);
+        for (final T item : vector) if (condition.call(item)) filteredVector.pushBack(item);
         return filteredVector;
     }
 
     public static <T> boolean any(Iterable<T> vector, IConditionFunction<T> condition) {
-        for (T item : vector) if (condition.call(item)) return true;
+        for (final T item : vector) if (condition.call(item)) return true;
         return false;
     }
 
     public static <T> boolean all(Iterable<T> vector, IConditionFunction<T> condition) {
-        for (T item : vector) if (!condition.call(item)) return false;
+        for (final T item : vector) if (!condition.call(item)) return false;
         return true;
     }
 
@@ -260,13 +261,13 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
     }
 
     public void fill(IFillFunction<T> fillFunction) {
-        for (int index : new IndicesIterator<>(this)) {
+        for (final int index : new IndicesIterator<>(this)) {
             this._data[index] = fillFunction.call(index);
         }
     }
 
     public void apply(Iterable<T> sequence, IForEachApplyFunction<T> applyFunction) {
-        for (Pair<Integer, T> indexValue: new ValuesZipIterator<>(new IndicesIterator<>(this), sequence)) {
+        for (final Pair<Integer, T> indexValue: new ValuesZipIterator<>(new IndicesIterator<>(this), sequence)) {
             _data[indexValue.First] = applyFunction.call(indexValue.Second);
         }
     }
@@ -277,7 +278,7 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
 
     public void applyEnumerate(Iterable<T> sequence, IForEnumerateApplyFunction<T> applyFunction) {
         int index = -1;
-        for (Pair<Integer, T> indexValue : new ValuesZipIterator<>(new IndicesIterator<>(this), sequence)) {
+        for (final Pair<Integer, T> indexValue : new ValuesZipIterator<>(new IndicesIterator<>(this), sequence)) {
             index++;
             _data[indexValue.First] = applyFunction.call(index, indexValue.Second);
         }
@@ -288,7 +289,7 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
     }
 
     public void combine(Iterable<T> sequence, ICombineFunction<T, T> combineFunction) {
-        for (Pair<Integer, T> indexValue : new ValuesZipIterator<>(new IndicesIterator<>(this), sequence)) {
+        for (final Pair<Integer, T> indexValue : new ValuesZipIterator<>(new IndicesIterator<>(this), sequence)) {
             _data[indexValue.First] = combineFunction.call(_data[indexValue.First], indexValue.Second);
         }
     }
@@ -371,7 +372,7 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
     }
 
     public int indexOf(final T item) {
-        for (int index : new IndicesIterator<>(this)) if (_data[index].equals(item)) return index;
+        for (final int index : new IndicesIterator<>(this)) if (_data[index].equals(item)) return index;
         return -1;
     }
 
@@ -475,7 +476,7 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
         _data = alloc(MINIMAL_VECTOR_SIZE);
         _filling = 0;
         _slice = null;
-        for (T v : other) pushBack(v);
+        for (final T v : other) pushBack(v);
     }
 
    private int getSliceIndex(final int index) {
