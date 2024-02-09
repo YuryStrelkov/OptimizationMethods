@@ -1,4 +1,5 @@
 package mathUtils;
+
 import functionalInterfaces.IFunctionND;
 
 import java.util.Arrays;
@@ -13,28 +14,7 @@ enum SolutionType {
 
 public class DoubleMatrix extends TemplateVector<DoubleVector> {
 
-    private static int[] matrixSizeInfo(Iterator<DoubleVector> rows)
-    {
-        int[] info = new int[]{-1, -1}; // rows, cols
-        if (rows == null) return info;
-        int rowSizeMax = Integer.MIN_VALUE;
-        int rowSizeMin = Integer.MAX_VALUE;
-        int n_rows = 0;
-        while (rows.hasNext())
-        {
-            var row = rows.next();
-            n_rows++;
-            if (row.size() > rowSizeMax) rowSizeMax = row.size();
-            if (row.size() < rowSizeMin) rowSizeMin = row.size();
-        }
-        if (n_rows == 0 || rowSizeMax != rowSizeMin) return info;
-        info[0] = n_rows;
-        info[1] = rowSizeMin;
-        return info;
-    }
-
-    protected DoubleMatrix(Slice rows, DoubleMatrix source)
-    {
+    protected DoubleMatrix(Slice rows, DoubleMatrix source) {
         super(rows, source);
     }
 
@@ -46,14 +26,16 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
 
     protected DoubleMatrix(Iterable<DoubleVector> rows) {
         super();
-        for (DoubleVector v : rows) pushBack((DoubleVector) v.clone());
+        for (DoubleVector v : rows) pushBack(new DoubleVector(v));
     }
 
     public DoubleMatrix(DoubleVector... rows) {
         super();
-        int[] shape = matrixSizeInfo(Arrays.stream(rows).iterator());
-        if(shape[0] == -1) throw new RuntimeException("Matrix(DoubleVector... rows)::Data is wring...");
-        for (DoubleVector v : rows) pushBack((DoubleVector) v.clone());
+        if (rows.length == 0) return;
+        int rowSize = Integer.MAX_VALUE;
+        for (final DoubleVector row : rows) rowSize = Math.min(rowSize, row.size());
+        for (DoubleVector v : rows) pushBack(new DoubleVector(v.get(new Slice(0, rowSize))));
+        //applyEnumerate(rows, (index, row)->{row.pushBack(col.get(index)); return row;});
     }
 
     /**
@@ -63,8 +45,8 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
      * @param n_cols количество столбцов.
      */
     public DoubleMatrix(int n_rows, int n_cols) {
-        super();
-        for (int i = 0; i < n_rows; i++) pushBack(new DoubleVector(n_cols));
+        super(n_rows);
+        fill(i -> new DoubleVector(n_cols));
     }
 
     /**
@@ -73,8 +55,8 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
      * @param original исходная матрица.
      */
     public DoubleMatrix(DoubleMatrix original) {
-        super();
-        for (DoubleVector v : original) pushBack((DoubleVector) v.clone());
+        super(original.rows());
+        apply(original, DoubleVector::new);
     }
 
     @Override
@@ -129,11 +111,10 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
     public DoubleMatrix addCol(DoubleVector col) {
         if (col == null) return this;
         if (col.size() != rows()) throw new RuntimeException("Error::AddCol::col.Size != NRows");
-        int index = 0;
-        for (DoubleVector row : this) {
+        applyEnumerate((index, row) -> {
             row.pushBack(col.get(index));
-            index++;
-        }
+            return row;
+        });
         return this;
     }
 
@@ -170,14 +151,12 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
         return get(row).get(col);
     }
 
-    public DoubleMatrix get(Slice slice)
-    {
+    public DoubleMatrix get(Slice slice) {
         return new DoubleMatrix(slice, this);
     }
 
-    public DoubleMatrix get(Slice rows, Slice cols)
-    {
-        return new DoubleMatrix(rows, cols,this);
+    public DoubleMatrix get(Slice rows, Slice cols) {
+        return new DoubleMatrix(rows, cols, this);
     }
 
     protected double unchecked_get(int row, int col) {
@@ -205,6 +184,11 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
 
     public static DoubleMatrix hessian(IFunctionND f, DoubleVector x, double eps) {
         DoubleMatrix res = new DoubleMatrix(x.size(), x.size());
+        // не учитывает симметричность матрицы
+        // res.applyEnumerate((row, vec) -> {
+        //     vec.applyEnumerate((col, v) -> DoubleVector.partial2(f, x, row, col, eps));
+        //     return vec;
+        // });
         int row, col;
         double val;
         for (row = 0; row < res.rows(); row++) {
@@ -241,13 +225,15 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
 
                 row_selected[j] = true;
 
-                for (int p = i + 1; p < m; p++) A.unchecked_set(j, p,
-                        A.unchecked_get(j, p) / A.unchecked_get(j, i));
+                for (int p = i + 1; p < m; p++)
+                    A.unchecked_set(j, p,
+                            A.unchecked_get(j, p) / A.unchecked_get(j, i));
 
                 for (int k = 0; k < n; k++) {
                     if (k != j && Math.abs(A.unchecked_get(k, i)) > NumericCommon.NUMERIC_ACCURACY_HIGH) {
-                        for (int p = i + 1; p < m; p++) A.unchecked_set(k, p,
-                                A.unchecked_get(k, p) - A.unchecked_get(j, p) * A.unchecked_get(k, i));
+                        for (int p = i + 1; p < m; p++)
+                            A.unchecked_set(k, p,
+                                    A.unchecked_get(k, p) - A.unchecked_get(j, p) * A.unchecked_get(k, i));
                     }
                 }
             }
@@ -255,9 +241,9 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
         return rank;
     }
 
-    public double trace()
-    {   double tr = 0;
-        for(int row = 0; row < Math.min(rows(), cols()); row++) tr += unchecked_get(row, row);
+    public double trace() {
+        double tr = 0;
+        for (int row = 0; row < Math.min(rows(), cols()); row++) tr += unchecked_get(row, row);
         return tr;
     }
 
@@ -294,17 +280,16 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
         return det;
     }
 
-    public static DoubleMatrix mexp(final DoubleMatrix matrix, final int steps)
-    {
-        DoubleMatrix result   = identity(matrix.rows(),  matrix.cols());
+    public static DoubleMatrix mexp(final DoubleMatrix matrix, final int steps) {
+        DoubleMatrix result = identity(matrix.rows(), matrix.cols());
         DoubleMatrix x_matrix = new DoubleMatrix(matrix);
-        for(int index = 0; index < Math.min(NumericUtils.factorialsTable128.length, steps); index++)
-        {
+        for (int index = 0; index < Math.min(NumericUtils.factorialsTable128.length, steps); index++) {
             result.add(mul(x_matrix, 1.0 / NumericUtils.factorialsTable128[index]));
             x_matrix = mul(x_matrix, x_matrix);
         }
         return result;
     }
+
     /**
      * Проверяет совместность СЛАУ вида Ax = b. Используется теорема Кронекера-Капелли
      *
@@ -389,8 +374,9 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
             for (j = 0; j < src.cols(); j++) {
                 if (j >= i) {
                     low.unchecked_set(j, i, src.unchecked_get(j, i));
-                    for (k = 0; k < i; k++) low.unchecked_set(j, i,
-                            low.unchecked_get(j, i) - low.unchecked_get(j, k) * up.unchecked_get(k, i));
+                    for (k = 0; k < i; k++)
+                        low.unchecked_set(j, i,
+                                low.unchecked_get(j, i) - low.unchecked_get(j, k) * up.unchecked_get(k, i));
                 }
             }
 
@@ -401,9 +387,10 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
                     continue;
                 }
                 up.unchecked_set(i, j, src.unchecked_get(i, j) / low.unchecked_get(i, i));
-                for (k = 0; k < i; k++) up.unchecked_set(i, j,
-                        up.unchecked_get(i, j) - low.unchecked_get(i, k) *
-                                up.unchecked_get(k, j) / low.unchecked_get(i, i));
+                for (k = 0; k < i; k++)
+                    up.unchecked_set(i, j,
+                            up.unchecked_get(i, j) - low.unchecked_get(i, k) *
+                                    up.unchecked_get(k, j) / low.unchecked_get(i, i));
             }
         }
         return new DoubleMatrix[]{low, up};
@@ -514,8 +501,7 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
         return trans;
     }
 
-    private static void checkSizes(DoubleMatrix left, DoubleMatrix right)
-    {
+    private static void checkSizes(DoubleMatrix left, DoubleMatrix right) {
         if (left.rows() != right.rows()) throw new RuntimeException("Dot product :: this.Size()!= other.Size()");
         if (left.cols() != right.rows()) throw new RuntimeException("Dot product :: this.Size()!= other.Size()");
     }
@@ -570,28 +556,21 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
     ///////////////////////////////////
     public static DoubleMatrix mul(DoubleMatrix left, DoubleMatrix right) {
         if (left.cols() != right.rows()) throw new RuntimeException("Error matrix multiplication::a.NCols != b.NRows");
-        DoubleMatrix b_t = transpose(right);
-        DoubleMatrix res = new DoubleMatrix(left.rows(), right.cols());
-        for (int i = 0; i < left.rows(); i++)
-            for (int j = 0; j < right.cols(); j++)
-                res.set(i, j, DoubleVector.dot(left.row(i), b_t.row(j)));
-        return res;
+        DoubleMatrix right_t = transpose(right);
+        return new DoubleMatrix(map(left, vec -> new DoubleVector(map(right_t, col -> col.dot(vec)))));
     }
 
     public static DoubleVector mul(DoubleMatrix left, DoubleVector right) {
         if (left.cols() != right.size()) throw new RuntimeException("unable to matrix and vector multiply");
-        return new DoubleVector(combine(left, right, (l, r) -> l.dot(r)));
+        return new DoubleVector(map(left, row -> row.dot(right)));
     }
 
     public static DoubleVector mul(DoubleVector left, DoubleMatrix right) {
         if (right.rows() != left.size()) throw new RuntimeException("unable to matrix and vector multiply");
-
         DoubleVector result = new DoubleVector(right.cols());
-
         for (int i = 0; i < right.cols(); i++) {
             for (int j = 0; j < right.rows(); j++) result.set(i, right.get(j, i) * left.get(i));
         }
-
         return result;
     }
 

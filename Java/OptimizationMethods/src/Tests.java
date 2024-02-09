@@ -5,35 +5,6 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class Tests {
-    public static void oneDimensionalMethodsTest()
-    {
-        System.out.printf("%s\n", "///////////////////////////////////////////");
-        System.out.printf("%s\n", "//////// OneDimensionalMethodsTest ////////");
-        System.out.printf("%s\n", "///////////////////////////////////////////");
-
-        final double x_0 = 10;
-        final double x_1 = -1;
-
-        NumericCommon.SHOW_DEBUG_LOG = true;
-        System.out.println("x_0 = " + x_0 + ",\nx_1 = " + x_1 + "\n");
-        final double biSect   = OneDimensional.biSect      (NumericUtils.testFunc1d, x_0, x_1);
-        final double gRatio   = OneDimensional.goldenRatio (NumericUtils.testFunc1d, x_0, x_1);
-        final double fNumbers = OneDimensional.fibonacci   (NumericUtils.testFunc1d, x_0, x_1);
-
-        if(NumericCommon.NUMBER_RATIONAL_FORMAT)
-        {
-            System.out.printf("BiSect      : %s\n", NumericUtils.toRationalStr(biSect  , false));
-            System.out.printf("GoldenRatio : %s\n", NumericUtils.toRationalStr(gRatio  , false));
-            System.out.printf("Fibonacci   : %s\n", NumericUtils.toRationalStr(fNumbers, false));
-        }else{
-            System.out.printf("BiSect      : %s\n", biSect  );
-            System.out.printf("GoldenRatio : %s\n", gRatio  );
-            System.out.printf("Fibonacci   : %s\n", fNumbers);
-        }
-        NumericCommon.SHOW_DEBUG_LOG = false;
-        System.out.println("");
-    }
-
     public static void numericTests()
     {
         System.out.print("///////////////////////////////////////////\n");
@@ -98,12 +69,12 @@ public class Tests {
         System.out.println(  "////////////////////////////\n");
 
         DoubleMatrix matrix =  new DoubleMatrix(new DoubleVector(8.0, 1.0, 6.0),
-                                                new DoubleVector(3.0, 5.0, 7.0),
-                                                new DoubleVector(4.0, 9.0, 2.0));
+                new DoubleVector(3.0, 5.0, 7.0),
+                new DoubleVector(4.0, 9.0, 2.0));
 
         DoubleMatrix matrix1 =  new DoubleMatrix(new DoubleVector(2.0, 9.0, 4.0),
-                                                 new DoubleVector(7.0, 5.0, 3.0),
-                                                 new DoubleVector(6.0, 1.0, 8.0));
+                new DoubleVector(7.0, 5.0, 3.0),
+                new DoubleVector(6.0, 1.0, 8.0));
 
         System.out.printf("matrix1:\n%s\n", matrix);
         System.out.printf("matrix2:\n%s\n", matrix1);
@@ -140,7 +111,7 @@ public class Tests {
         System.out.printf("Ax - b    : %s\n", DoubleMatrix.mul(matrix,x).sub(b));
         System.out.printf("A * inv(A):\n%s\n", DoubleMatrix.mul(matrix , Objects.requireNonNull(DoubleMatrix.invert(matrix))));
         DoubleMatrix matrix_ = new DoubleMatrix(new DoubleVector(8.0, 1.0, 6.0),
-                                                new DoubleVector(3.0, 5.0, 7.0));
+                new DoubleVector(3.0, 5.0, 7.0));
         System.out.printf("non rect mat:\n%s\n", matrix_);
         System.out.printf("non rect mat mul by transposed it self :\n%s\n",
                 DoubleMatrix.mul(matrix_ , DoubleMatrix.transpose(matrix_)) );
@@ -148,6 +119,36 @@ public class Tests {
         System.out.printf("Hessian(MultiDimensional.TestFuncND):\n%s\n", hessian);
         System.out.println("");
     }
+
+    public static void oneDimensionalMethodsTest()
+    {
+        System.out.printf("%s\n", "///////////////////////////////////////////");
+        System.out.printf("%s\n", "//////// OneDimensionalMethodsTest ////////");
+        System.out.printf("%s\n", "///////////////////////////////////////////");
+
+        final double x_0 = 10;
+        final double x_1 = -1;
+
+        NumericCommon.SHOW_DEBUG_LOG = true;
+        System.out.println("x_0 = " + x_0 + ",\nx_1 = " + x_1 + "\n");
+        final double biSect   = OneDimensional.biSect      (NumericUtils.testFunc1d, x_0, x_1);
+        final double gRatio   = OneDimensional.goldenRatio (NumericUtils.testFunc1d, x_0, x_1);
+        final double fNumbers = OneDimensional.fibonacci   (NumericUtils.testFunc1d, x_0, x_1);
+
+        if(NumericCommon.NUMBER_RATIONAL_FORMAT)
+        {
+            System.out.printf("BiSect      : %s\n", NumericUtils.toRationalStr(biSect  , false));
+            System.out.printf("GoldenRatio : %s\n", NumericUtils.toRationalStr(gRatio  , false));
+            System.out.printf("Fibonacci   : %s\n", NumericUtils.toRationalStr(fNumbers, false));
+        }else{
+            System.out.printf("BiSect      : %s\n", biSect  );
+            System.out.printf("GoldenRatio : %s\n", gRatio  );
+            System.out.printf("Fibonacci   : %s\n", fNumbers);
+        }
+        NumericCommon.SHOW_DEBUG_LOG = false;
+        System.out.println("");
+    }
+
     public static void multiDimensionalMethodsTest()
     {
         System.out.printf("%s\n", "/////////////////////////////////////////////");

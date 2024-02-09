@@ -101,7 +101,6 @@ public class Simplex {
         return currentSimplexSolution(false);
     }
 
-
     public boolean isTargetFuncModified() {
         return fModArgs.size() != 0;
     }
