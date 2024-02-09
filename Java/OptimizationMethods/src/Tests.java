@@ -39,16 +39,8 @@ public class Tests {
         System.out.print("///////////////////////////////////////////\n");
         System.out.print("////////         NumericsTest      ////////\n");
         System.out.print("///////////////////////////////////////////\n\n");
-        System.out.printf("number = %15s = %15s\n",  1.666, new RationalNumber(1.666));
-        System.out.printf("number = %15s = %15s\n",  0.666, new RationalNumber(0.666));
-        System.out.printf("number = %15s = %15s\n", -3.0,   new RationalNumber(-3.0));
-        System.out.printf("number = %15s = %15s\n", -0.125, new RationalNumber(-0.125));
-        System.out.printf("number = %15s = %15s\n",  3.769, new RationalNumber(3.769));
-        System.out.printf("number = %15s = %15s\n", -1.666, new RationalNumber(-1.666));
-        System.out.printf("number = %15s = %15s\n", -0.666, new RationalNumber(-0.666));
-        System.out.printf("number = %15s = %15s\n",  3.0,   new RationalNumber(3.0));
-        System.out.printf("number = %15s = %15s\n",  0.125, new RationalNumber(0.125));
-        System.out.printf("number = %15s = %15s\n", -3.769, new RationalNumber(-3.769));
+        double[] numbers = { 1.666, 0.666, -3.0, -0.125, 3.769, -1.666, -0.666, 3.0, 0.125, -3.769 };
+        for(double number: numbers) System.out.printf("number = %15s = %15s\n", number, new RationalNumber(number));
         System.out.println("");
     }
 

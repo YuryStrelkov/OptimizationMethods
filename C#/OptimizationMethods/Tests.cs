@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System;
 using MathUtils;
+using static MathUtils.NumericUtils;
 
 namespace OptimizationMethods
 {
@@ -97,20 +98,8 @@ namespace OptimizationMethods
             Console.WriteLine("\n//////////////////////////////");
             Console.WriteLine(  "//////// NumericTests ////////");
             Console.WriteLine(  "//////////////////////////////\n");
-
-            int rational;
-            int numerator;
-            int denominator;
-            NumericUtils.DecimalToRational(1.6666,out rational, out numerator, out denominator);
-            Console.WriteLine($"{rational} {numerator} / {denominator}\n");
-            NumericUtils.DecimalToRational(0.6666, out rational, out numerator, out denominator);
-            Console.WriteLine($"{rational} {numerator} / {denominator}\n");
-            NumericUtils.DecimalToRational(-3, out rational, out numerator, out denominator);
-            Console.WriteLine($"{rational} {numerator} / {denominator}\n");
-            NumericUtils.DecimalToRational(-0.125, out rational, out numerator, out denominator);
-            Console.WriteLine($"{rational} {numerator} / {denominator}\n");
-            NumericUtils.DecimalToRational(3.769230769230769230769, out rational, out numerator, out denominator);
-            Console.WriteLine($"{rational} {numerator} / {denominator}\n");
+            double[] numbers = { 1.666, 0.666, -3.0, -0.125, 3.769, -1.666, -0.666, 3.0, 0.125, -3.769 };
+            foreach(double number in numbers) Console.WriteLine($"number = {number} = {new RationalNumber(number)}");
             Vector b = new Vector(1.412, 2.33, -3.75);
             Console.WriteLine(b);
             Console.WriteLine(NumericUtils.ToRationalStr(b, false));
@@ -131,7 +120,6 @@ namespace OptimizationMethods
               new Vector( 3.0, 2.0),
               new Vector( 2.0,-1.0)
             );
-
 
             Console.WriteLine(" f(x,c) =  2x1 + 3x2;\n arg_max = {4, 8}, f(arg_max) = 32");
             Console.WriteLine(" |-2x1 + 6x2 <= 40");
@@ -168,12 +156,12 @@ namespace OptimizationMethods
         {
             // float aaa = 123.5123f;
             // Console.WriteLine($"{string.Format("{0,0:F}", aaa).Replace(',', '.')}");
-            OneDimensionalMethodsTest();
-            MultiDimensionalMethodsTest();
-            //VectorTest();
+            // NumericTests();
+            // OneDimensionalMethodsTest();
+            // MultiDimensionalMethodsTest();
+            VectorTest();
             //  MatrixTest();
             // SimpexTest();
-            // NumericTests();
         }
     }
 }

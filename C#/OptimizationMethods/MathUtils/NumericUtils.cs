@@ -162,12 +162,55 @@ namespace MathUtils
         {
             int r_part, num, denom;
             DecimalToRational(value, out r_part, out num, out denom);
-            if (num    == 0)  return $"{r_part}";
-            if (r_part == 0)  return $"{num}/{denom}";
+            return ToRationalStr(r_part, num, denom);
+        }
+        private static string ToRationalStr(int r_part, int num, int denom, bool fullRational = true) 
+        {
+            if (num == 0) return $"{r_part}";
+            if (r_part == 0) return $"{num}/{denom}";
             if (fullRational) return $"{(num + Math.Abs(r_part) * denom) * (r_part >= 0 ? 1 : -1)}/{denom}";
             return $"{r_part} {num}/{denom}";
         }
 
+
         public static string ToRationalStr(IEnumerable<double> vector, bool fullRational = true) => $"{{{string.Join(", ", vector.Map(v => ToRationalStr(v, fullRational)))}}}";
+
+        public struct RationalNumber: IEquatable<RationalNumber>
+        {
+            private readonly int _numerator;
+            private readonly int _denominator;
+            private readonly int _intPart;
+            public bool Equals(RationalNumber number)
+            {
+                if (number.Numerator   != Numerator) return false;
+                if (number.Denominator != Denominator) return false;
+                if (number.IntPart     != IntPart) return false;
+                return true;
+            }
+            
+            public override string ToString()
+            {
+                return ToRationalStr(IntPart, Numerator, Denominator, false);
+            }
+
+            public int Numerator => _numerator;
+            public int Denominator => _denominator;
+            public int IntPart => _intPart;
+
+            public RationalNumber(int numerator, int denominator, int intPart)
+            {
+                _numerator = numerator;
+                _denominator = denominator;
+                _intPart = intPart;
+            }
+
+            public RationalNumber(RationalNumber other): this(other.IntPart, other.Numerator, other.Denominator){}
+
+            public RationalNumber(double value)
+            {
+              DecimalToRational(value, out _intPart, out _numerator, out _denominator);
+            }
+        }
+
     }
 }

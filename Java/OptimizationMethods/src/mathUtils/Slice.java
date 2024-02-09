@@ -55,12 +55,20 @@ public class Slice {
         this._end   = end;
     }
 
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Slice slice = (Slice) o;
-        return (slice.begin() == begin()) && (slice.end() == end()) && (slice.step() == step());
+        return equals((Slice) o);
     }
+
+    public boolean equals(Slice slice) {
+        if(slice.begin() != begin())return false;
+        if(slice.end()   != end())return false;
+        if(slice.step()  != step())return false;
+        return true;
+    }
+
     @Override
     public String toString(){
         return step() == 1 ? String.format("%s:%s", begin(), end()) : String.format("%s:%s:%s", begin(), end(), step());

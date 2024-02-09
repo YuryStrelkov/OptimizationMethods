@@ -430,9 +430,7 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
     @SuppressWarnings("unchecked")
     public TemplateVector<T> clone() {
         if (isSlice()) {
-            TemplateVector<T> cloneObj = new TemplateVector<>(this.size());
-            cloneObj.apply(this, v -> v);
-            return cloneObj;
+            return new TemplateVector<>(this);
         }
         try {
             TemplateVector<T> cloneObj = (TemplateVector<T>) super.clone();
@@ -470,7 +468,7 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
         _data = alloc((int) (other.length * VECTOR_SIZE_UPSCALE));
         _filling = other.length;
         _slice = null;
-        if (size() >= 0) System.arraycopy(other, 0, _data, 0, size());
+        System.arraycopy(other, 0, _data, 0, size());
     }
 
     protected TemplateVector(final Iterable<T> other) {

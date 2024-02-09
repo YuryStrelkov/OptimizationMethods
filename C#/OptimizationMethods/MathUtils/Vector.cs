@@ -165,7 +165,7 @@ namespace MathUtils
         /// <returns></returns>
         public static Vector Gradient(FunctionND func, Vector x, double eps)
         {
-            Vector df = new Vector();
+            Vector df = new Vector(x.Count);
             for (int i = 0; i < x.Count; i++) df.PushBack(Partial(func, x, i, eps));
             return df;
         }

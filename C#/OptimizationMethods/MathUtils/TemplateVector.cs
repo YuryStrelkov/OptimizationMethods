@@ -2,15 +2,17 @@
 using System.Collections.Generic;
 using System.Collections;
 using System;
+using OptimizationMethods.MathUtils;
 
 namespace MathUtils
 {
-    public delegate T    ReduceFunction <T>            (T accum, T value);
-    public delegate T2   CombineFunction<in T1, out T2>(T1 left, T1 right);
-    public delegate T2   MapFunction    <in T1, out T2>(T1 item);
-    public delegate T    FillingFunction<T>            (uint index);
-    public delegate T    ApplyFunction  <T>            (T value);
-    public delegate bool Predicate      <T>            (T item);
+    public delegate T    ReduceFunction         <T>            (T accum, T value);
+    public delegate T2   CombineFunction        <in T1, out T2>(T1 left, T1 right);
+    public delegate T2   MapFunction            <in T1, out T2>(T1 item);
+    public delegate T    FillingFunction        <T>            (int index);
+    public delegate T    ApplyEnumerateFunction <T>            (int index, T value);
+    public delegate T    ApplyFunction          <T>            (T value);
+    public delegate bool Predicate              <T>            (T item);
 
     public readonly struct TemplatePair<T, K> : IEquatable<TemplatePair<T, K>> where T: IEquatable<T> where K: IEquatable<K>
     {
@@ -73,8 +75,25 @@ namespace MathUtils
 
     public class TemplateVector<T>: ICollection<T>, IEquatable<TemplateVector<T>>, ICloneable where T : IEquatable<T>, new()
     {
-        public static readonly int    MINIMAL_VECTOR_SIZE = 5;
+        public static readonly uint    MINIMAL_VECTOR_SIZE = 5;
         public static readonly double VECTOR_SIZE_UPSCALE = 1.5;
+        private class SliceObject
+        {
+            private Slice _slice;
+            private TemplateVector<T> _source;
+            public Slice Slice => _slice;
+            public TemplateVector<T> Source => _source;
+            public SliceObject(SliceObject other)
+            {
+                _slice = other.Slice;
+                _source = other.Source;
+            }
+            public SliceObject(Slice slice, TemplateVector<T> source)
+            {
+                _slice = slice;
+                _source = source;
+            }
+        }
 
         #region Private fields
         /// <summary>
@@ -85,14 +104,15 @@ namespace MathUtils
         /// заполнение массива
         /// </summary>
         private T[] _data;
+
+        private SliceObject _slice = null;
         #endregion
-        
+
         //////////////////////////////////////////////
         ///     Simple iterator implementation     ///
         //////////////////////////////////////////////
         #region IEnumerable<T>, IEnumerable
- 
-        public struct VectorEnumerator : IEnumerator<T>
+        public struct ValuesEnumerator : IEnumerator<T>
         {
             int index;
             private readonly TemplateVector<T> _enumerableVector;
@@ -105,14 +125,48 @@ namespace MathUtils
             }
             public void Reset() => index = -1;
             public void Dispose() { }
-            public VectorEnumerator(TemplateVector<T> v)
+            public ValuesEnumerator(TemplateVector<T> v)
             {
                 _enumerableVector = v;
                 index = -1;
             }
         }
-        public VectorEnumerator GetEnumerator() => new VectorEnumerator(this);
-        IEnumerator<T> IEnumerable<T>.GetEnumerator() => new VectorEnumerator(this);
+        public struct IndicesEnumerator : IEnumerator<int>, IEnumerable<int>
+        {
+            private readonly int _begin;
+            private readonly int _end;
+            private readonly int _step;
+            private int _index;
+
+            public IndicesEnumerator(TemplateVector<T> vector)
+            {
+                _index = -1;
+                if (vector.IsSlice)
+                {
+                    _begin = vector._slice.Slice.Begin;
+                    _end   = vector._slice.Slice.End  ;
+                    _step  = vector._slice.Slice.Step ;
+                    return;
+                }
+                _begin = 0;
+                _step = 1;
+                _end = vector.Count - 1;
+            }
+            
+            public int Current => _begin + _index * _step;
+            object IEnumerator.Current => Current;
+            public bool MoveNext()
+            {
+                _index++;
+                return _index != _end;
+            }
+            public void Reset() => _index = -1;
+            public void Dispose() { }
+            public IEnumerator<int> GetEnumerator() => GetEnumerator();
+            IEnumerator IEnumerable.GetEnumerator() => this;
+        }
+        public ValuesEnumerator GetEnumerator() => new ValuesEnumerator(this);
+        IEnumerator<T> IEnumerable<T>.GetEnumerator() => new ValuesEnumerator(this);
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
         #endregion
         
@@ -133,29 +187,42 @@ namespace MathUtils
         
         public static TemplateVector<T1> Filter<T1>(TemplateVector<T1> vector, Predicate<T1> predicate) where T1 : IEquatable<T1>, new() => new TemplateVector<T1>(vector.Filter(predicate));
         #endregion
-        
+
         //////////////////////////////////////////////
         ///            Instance methods            ///
         //////////////////////////////////////////////
         #region Instance Map, Zip, Combine, Reduce, Apply, Fill
 
+        public IEnumerable<T> Values => this;
+        public IEnumerable<int> Indices => new IndicesEnumerator(this);
         protected IEnumerable<T> FilterEnum(Predicate<T> predicate)
         {
             foreach (T element in this) if (predicate(element)) yield return element;
         }
-
-        public void Apply(ApplyFunction<T> function) 
+        public void Apply(IEnumerable<T> vector, ApplyFunction<T> function) 
         {
-            for (uint index = 0; index < Count; index++) _data[index] = function(_data[index]);
+            foreach (var pair in Zip(Indices, vector)) _data[pair.First] = function(pair.Second);
         }
-
+        public void Apply(ApplyFunction<T> function) => Apply(this, function);
+        public void ApplyEnumerate(IEnumerable<T> vector, ApplyEnumerateFunction<T> function)
+        {
+            int index = -1;
+            foreach (var pair in Zip(Indices, vector))
+            {
+                 index++;
+                 _data[pair.First] = function(index, pair.Second);
+            }
+        }
+        public void ApplyEnumerate(ApplyEnumerateFunction<T> function) => ApplyEnumerate(this, function);
         public void Fill (FillingFunction<T> function)
         {
-            for (uint index = 0; index < Count; index++) _data[index] = function(index);
+            foreach (int index in Indices) _data[index] = function(index);
         }
         #endregion
 
         #region get/set
+        public bool IsSlice => _slice != null;
+
         protected int Filling
         {
             get => _filling;
@@ -193,6 +260,8 @@ namespace MathUtils
                 _data[index] = value;
             }
         }
+
+
         #endregion
 
         #region Object class methods, IEquatable<TemplateVector<T>>
@@ -257,7 +326,7 @@ namespace MathUtils
         
         public int IndexOf(T item)
         {
-            for (int index = 0; index < this.Filling; index++) if (_data[index].Equals(item)) return index;
+            foreach(int index in Indices) if (_data[index].Equals(item)) return index;
             return -1;
         }
 
@@ -289,32 +358,12 @@ namespace MathUtils
             if (!InRange(index)) return false;
             Array.Copy(_data, index + 1, _data, index, Count - index - 1);
             _filling--;
+            if (IsSlice) _slice.Source.Filling--;
             return true;
         }
         #endregion
 
         #region Constructors
-        /// <summary>
-        /// Конструктор вектора из массива
-        /// </summary>
-        /// <param name="args"></param>
-        public TemplateVector()
-        {
-            _data = new T[MINIMAL_VECTOR_SIZE];
-            _filling = 0;
-        }
-
-        /// <summary>
-        /// Конструктор вектора из массива
-        /// </summary>
-        /// <param name="args"></param>
-        public TemplateVector(params T[] args)
-        {
-            _data = new T[(int)(args.Length * VECTOR_SIZE_UPSCALE)];
-            _filling = 0;
-            foreach (T v in args) PushBack(v);
-        }
-
         /// <summary>
         /// Конструктор вектора по размеру и элементу по умолчанию
         /// </summary>
@@ -327,13 +376,43 @@ namespace MathUtils
         }
 
         /// <summary>
+        /// Конструктор вектора из массива
+        /// </summary>
+        /// <param name="args"></param>
+        public TemplateVector()
+        {
+            _data = new T[MINIMAL_VECTOR_SIZE];
+            _filling = 0;
+        }
+        /// <summary>
+        /// Конструктор вектора из массива
+        /// </summary>
+        /// <param name="args"></param>
+        public TemplateVector(params T[] args)
+        {
+            if (args.Length == 0)
+            {
+                _data = new T[MINIMAL_VECTOR_SIZE];
+                _filling = 0;
+                _slice = null;
+            }
+            _data = new T[(int)(args.Length * VECTOR_SIZE_UPSCALE)];
+            _filling = args.Length;
+            Array.Copy(args, 0, _data, 0, Count);
+        }
+
+
+        /// <summary>
         /// Конструктор копирования
         /// </summary>
         /// <param name="vect"></param>
-        public TemplateVector(TemplateVector<T> other)
+        public TemplateVector(TemplateVector<T> other): this(other.Count)
         {
-            _data = new T[(int)(other.Count * VECTOR_SIZE_UPSCALE)];
-            _filling = other.Count;
+            if (other.IsSlice) 
+            {
+                Apply(other, v => v);
+                return;
+            }
             if (Count >= 0) Array.Copy(other._data, 0, _data, 0, Count);
         }
 
@@ -341,6 +420,14 @@ namespace MathUtils
         {
             _data = new T[MINIMAL_VECTOR_SIZE];
             foreach (var val in other) PushBack(val);
+        }
+
+        protected TemplateVector(Slice rawSlice, TemplateVector<T> source)
+        {
+            Slice slice = rawSlice.Rebuild(source.Count);
+            _filling = slice.Length;
+            _slice = new SliceObject(slice, source);
+            _data  = source._data;
         }
 
         /// <summary>
