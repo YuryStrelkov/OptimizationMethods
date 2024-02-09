@@ -3,6 +3,8 @@ package mathUtils;
 import functionalInterfaces.IFunction1D;
 import functionalInterfaces.IFunctionND;
 
+import java.util.Arrays;
+
 public class NumericUtils
 {
     private static int getFactorial(int f) {
@@ -166,24 +168,25 @@ public class NumericUtils
         return decimalToRational(value, NumericCommon.ITERATIONS_COUNT_HIGH);
     }
 
-    public static String toRationalStr(double value, boolean fullRational)
+    private static String toRationalStr(int _int, int _num, int _den, boolean fullRational)
     {
-        int[] number =  NumericUtils.decimalToRational(value);
-        if (number[1] == 0)
-        {
-            return String.valueOf(number[0]);
-        }
-        if (number[0] == 0)
-        {
-            return String.format("%s/%s", number[1], number[2]);
-        }
-
+        // 0 _int number[0]
+        // 1 _num number[1]
+        // 2 _den number[2]
+        if (_num == 0) return String.valueOf(_int);
+        if (_int == 0) return String.format("%s/%s", _num, _den);
         if (fullRational)
         {
             return String.format("%s/%s",
-                    (number[1] + Math.abs(number[0]) * number[2]) * (number[0] >= 0 ? 1 : -1), number[2]);
+                    (_num + Math.abs(_int) * _den) * (_int >= 0 ? 1 : -1), _den);
         }
-        return String.format("%s %s/%s", number[0], number[1], number[2]);
+        return String.format("%s %s/%s", _int, _num, _den);
+    }
+
+    public static String toRationalStr(double value, boolean fullRational)
+    {
+        int[] number =  NumericUtils.decimalToRational(value);
+        return toRationalStr(number[0], number[1], number[2], fullRational);
     }
 
     public static String toRationalStr(double value)
@@ -200,5 +203,58 @@ public class NumericUtils
     public static String toRationalStr(DoubleVector value)
     {
         return toRationalStr( value,  false);
+    }
+
+    public static class RationalNumber{
+        private final int _numerator  ;
+        private final int _denominator;
+        private final int _intPart    ;
+        @Override
+        public boolean equals(Object other)
+        {
+            if (this == other) return true;
+            if (other == null || getClass() != other.getClass()) return false;
+            return equals((RationalNumber) other);
+        }
+        public boolean equals(RationalNumber number)
+        {
+            if(number.numerator() != numerator())return false;
+            if(number.denominator() != denominator())return false;
+            if(number.intPart() != intPart())return false;
+            return true;
+        }
+        @Override
+        public String toString(){
+            return toRationalStr(intPart(), numerator(), denominator(), false);
+        }
+
+        public int numerator  (){
+            return _numerator  ;
+        }
+
+        public int denominator(){
+            return _denominator;
+        }
+
+        public int intPart    (){
+            return _intPart    ;
+        }
+
+        public RationalNumber(final int numerator, final int denominator, final int intPart){
+            this._numerator   = numerator;
+            this._denominator = denominator;
+            this._intPart     = intPart;
+        }
+
+        public RationalNumber(final RationalNumber other){
+            this(other.numerator(), other.denominator(), other.intPart());
+        }
+
+        public RationalNumber(final double value){
+            int[] number = decimalToRational(value);
+            this._numerator   = number[1];
+            this._denominator = number[2];
+            this._intPart     = number[0];
+        }
     }
 }

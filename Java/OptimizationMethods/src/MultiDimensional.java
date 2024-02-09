@@ -7,24 +7,6 @@ import mathUtils.NumericUtils;
 import java.util.Objects;
 
 public class MultiDimensional {
-
-    // public static final IFunctionND testFunc2d = MultiDimensional::_testFunc2D;
-//
-    // public static final IFunctionND testFuncNd = MultiDimensional::_testFuncND;
-//
-    // private static double _testFunc2D(DoubleVector x) {
-    //     return (x.get(0) - 5) * x.get(0) + (x.get(1) - 3) * x.get(1); // min at point x = 2.5, y = 1.5
-    // }
-//
-    // private static double _testFuncND(DoubleVector x) {
-    //     double val = 0.0;
-//
-    //     for (int i = 0; i < x.size(); i++) {
-    //         val += (x.get(i) - i) * x.get(i);
-    //     }
-    //     return val; // min at point x_i = i/2, i from 0 to x.Size-1
-    // }
-
     ////////////////////
     /// Lab. work #2 ///
     ////////////////////

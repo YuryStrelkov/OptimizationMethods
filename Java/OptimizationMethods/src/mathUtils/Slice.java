@@ -5,7 +5,7 @@ public class Slice {
     private final int _begin;
     private final int _step;
 
-    private static int calcIndex(int index, int stride)
+    private static int calcIndex(final int index, final int stride)
     {
         return ((index % stride) + stride) % stride;
     }
@@ -45,11 +45,11 @@ public class Slice {
         this(0, 0, 1);
     }
 
-    public Slice(int begin, int end) {
+    public Slice(final int begin, final int end) {
         this(begin, end, 1);
     }
 
-    public Slice(int begin, int end, int step) {
+    public Slice(final int begin, final int end, final int step) {
         this._step  = step == 0 ? 1 : step;
         this._begin = begin;
         this._end   = end;
