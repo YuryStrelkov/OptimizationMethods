@@ -3,6 +3,7 @@ package mathUtils;
 import functionalInterfaces.IFunctionND;
 
 
+@SuppressWarnings("all")
 public class DoubleVector extends TemplateVector<Double>{
     public DoubleVector(int cap, double fill_value) {
         super(cap);

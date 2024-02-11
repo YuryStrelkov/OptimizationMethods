@@ -6,27 +6,87 @@ import java.util.Iterator;
 import java.util.Arrays;
 
 
+@SuppressWarnings("all")
 public class TemplateVector<T> implements Iterable<T>, Cloneable {
 
-    private static class SliceObject<T> {
-        private final Slice _slice;
+    private final static class SliceObject<T> {
         private final TemplateVector<T> _source;
+        private int _begin;
+        private int _end;
+        private final int _step;
 
-        public final Slice slice() {
-            return _slice;
+        //exclusive index
+        public int end() {
+            return _end;
         }
 
-        public final TemplateVector<T> source() {
+        //inclusive index
+        public int begin() {
+            return _begin;
+        }
+
+        public int step() {
+            return _step;
+        }
+
+        public boolean shiftBegin(final int amount) {
+            final int value = _begin + amount;
+            if (value > source().size()) return false;
+            if (value < 0) return false;
+            _begin = value;
+            return true;
+        }
+
+        public boolean shiftEnd(final int amount) {
+            final int value = _end + amount;
+            if (value > source().size()) return false;
+            if (value < 0) return false;
+            _end = value;
+            return true;
+        }
+
+        public int length() {
+            int total = Math.abs(end() - begin());
+            return Math.abs(total / step() + total % step());
+        }
+
+        private static int calcIndex(final int index, final int stride) {
+            return index == stride ? stride : (stride + index) % stride;
+        }
+
+        public int sourceIndex(final int index) {
+            return begin() + index * step();
+        }
+
+        public int sliceIndex(final int index) {
+            return (index - begin()) / step();
+        }
+
+        public TemplateVector<T> source() {
             return _source;
         }
 
         public SliceObject(SliceObject<T> other) {
-            _slice = other.slice();
+            _begin = other.begin();
+            _end = other.end();
+            _step = other.step();
             _source = other.source();
         }
 
         public SliceObject(Slice slice, TemplateVector<T> source) {
-            _slice = slice;
+            _begin = calcIndex(slice.begin(), source.size());
+            _end = calcIndex(slice.end(), source.size());
+            _step = slice.step();
+            if (_begin < 0) throw
+                    new RuntimeException(String.format("Unable to take slice with begin border of value %s, while total length is %s", _begin, source.size()));
+            if (_end < 0) throw
+                    new RuntimeException(String.format("Unable to take slice with end border of value %s, while total length is %s", _end, source.size()));
+            if (_end == _begin) throw new RuntimeException("Empty slice!");
+            if ((_begin > _end) && (_step > 0)) {
+                int t = _end;
+                _end = _begin;
+                _begin = t;
+            }
             _source = source;
         }
     }
@@ -37,12 +97,11 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
     private int _filling; // Заполнение данными от левого края
     private SliceObject<T> _slice = null;
 
-    @SuppressWarnings("unchecked")
     private static <T> T[] alloc(int capacity) {
         return (T[]) (new Object[capacity]);
     }
 
-    public static class Pair<T1, T2> {
+    public final static class Pair<T1, T2> {
         public final T1 First;
         public final T2 Second;
 
@@ -52,7 +111,7 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
         }
     }
 
-    private static class ConstValueIterator<Type> implements Iterator<Type>, Iterable<Type> {
+    private final static class ConstValueIterator<Type> implements Iterator<Type>, Iterable<Type> {
         private final Type _value;
 
         public ConstValueIterator(Type _value) {
@@ -75,34 +134,32 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
         }
     }
 
-    public static class IndicesIterator<Type> implements Iterator<Integer>, Iterable<Integer> {
-        private final int _begin;
+    public final static class IndicesIterator<Type> implements Iterator<Integer>, Iterable<Integer> {
         private final int _end;
         private final int _step;
-        private int _index;
+        private int _begin;
 
         public IndicesIterator(TemplateVector<Type> vector) {
-            this._index = -1;
             if (vector.isSlice()) {
-                this._begin = vector._slice.slice().begin();
-                this._end = vector._slice.slice().end();
-                this._step = vector._slice.slice().step();
+                this._begin = vector._slice.begin() - vector._slice.step();
+                this._end = vector._slice.end();
+                this._step = vector._slice.step();
                 return;
             }
-            this._begin = 0;
+            this._begin = -1;
             this._step = 1;
-            this._end = vector.size() - 1;
+            this._end = vector.size();
         }
 
         @Override
         public boolean hasNext() {
-            return _index != _end;
+            _begin += _step;
+            return _begin != _end;
         }
 
         @Override
         public Integer next() {
-            _index++;
-            return _begin + _index * _step;
+            return _begin;
         }
 
         @Override
@@ -111,25 +168,23 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
         }
     }
 
-    public static class ValuesIterator<Type> implements Iterator<Type>, Iterable<Type> {
-        private final TemplateVector<Type> _iterableVector;
-
-        int _index;
+    public final static class ValuesIterator<Type> implements Iterator<Type>, Iterable<Type> {
+        private final IndicesIterator<Type> _iterable;
+        private final Type[] _data;
 
         public ValuesIterator(TemplateVector<Type> vector) {
-            _index = -1;
-            _iterableVector = vector;
+            _data = vector._data;
+            _iterable = new IndicesIterator<>(vector);
         }
 
         @Override
         public boolean hasNext() {
-            return (_index != _iterableVector.size() - 1);
+            return _iterable.hasNext();
         }
 
         @Override
         public Type next() {
-            _index++;
-            return _iterableVector.unchecked_get(_index);
+            return _data[_iterable.next()];
         }
 
         @Override
@@ -138,7 +193,7 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
         }
     }
 
-    public static class ValuesZipIterator<T1, T2> implements Iterable<Pair<T1, T2>>, Iterator<Pair<T1, T2>> {
+    public final static class ValuesZipIterator<T1, T2> implements Iterable<Pair<T1, T2>>, Iterator<Pair<T1, T2>> {
         private final Iterator<T1> _iterable1;
         private final Iterator<T2> _iterable2;
 
@@ -163,7 +218,7 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
         }
     }
 
-    public static class ValuesMapIterator<T1, T2> implements Iterator<T1>, Iterable<T1> {
+    public final static class ValuesMapIterator<T1, T2> implements Iterator<T1>, Iterable<T1> {
         private final Iterator<T2> iterable;
         private final IMapFunction<T1, T2> mapFunction;
 
@@ -188,7 +243,7 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
         }
     }
 
-    public static class ValuesCombineIterator<T1, T2> implements Iterator<T2>, Iterable<T2> {
+    public final static class ValuesCombineIterator<T1, T2> implements Iterator<T2>, Iterable<T2> {
         private final ValuesZipIterator<T1, T1> iterator;
         private final ICombineFunction<T1, T2> combineFunction;
 
@@ -256,9 +311,7 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
     }
 
     public void fill(IFillFunction<T> fillFunction) {
-        for (final int index : new IndicesIterator<>(this)) {
-            this._data[index] = fillFunction.call(index);
-        }
+        for (final int index : new IndicesIterator<>(this)) this._data[index] = fillFunction.call(index);
     }
 
     public void apply(Iterable<T> sequence, IForEachApplyFunction<T> applyFunction) {
@@ -340,30 +393,34 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
     }
 
     protected T unchecked_get(final int index) {
-        return isSlice() ? _data[getSliceIndex(index)] : _data[index];
+        return _data[isSlice() ? _slice.sourceIndex(index) : index];
     }
 
     protected void unchecked_set(final int index, final T value) {
-        if (isSlice()) _data[getSliceIndex(index)] = value;
-        else _data[index] = value;
+        _data[isSlice() ? _slice.sourceIndex(index) : index] = value;
     }
 
     private void checkAnIncreaseSize() {
         if (size() != capacity()) return;
-        T[] new_data = alloc((int) (size() * VECTOR_SIZE_UPSCALE));
-        if (size() >= 0) System.arraycopy(_data, 0, new_data, 0, size());
-        _data = new_data;
+        T[] newData = alloc((int) (size() * VECTOR_SIZE_UPSCALE));
+        System.arraycopy(_data, 0, newData, 0, size());
+        _data = newData;
     }
 
-    @SuppressWarnings("all")
     public TemplateVector<T> pushBack(final T value) {
+        if (isSlice()) {
+            _slice.source().insert(_slice.sourceIndex(size()), value);
+            _filling++;
+            return this;
+        }
         checkAnIncreaseSize();
         _data[_filling++] = value;
         return this;
     }
 
     public int indexOf(final T item) {
-        for (final int index : new IndicesIterator<>(this)) if (_data[index].equals(item)) return index;
+        for (final int index : new IndicesIterator<>(this))
+            if (_data[index].equals(item)) return _slice.sliceIndex(index);
         return -1;
     }
 
@@ -376,26 +433,32 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
     }
 
     public TemplateVector<T> removeAt(final int index) {
+        if(isSlice())
+        {
+            _slice.source().removeAt(_slice.sourceIndex(index));
+            _filling--;
+            _slice.shiftEnd(-1);
+            return this;
+        }
         if (!inRange(index)) return this;
         System.arraycopy(_data, index + 1, _data, index, size() - index - 1);
         _filling--;
-        if (isSlice()) _slice.source()._filling--;
         return this;
     }
 
     public TemplateVector<T> insert(final int index, final T value) {
+        if (isSlice()) {
+            _slice.source().insert(_slice.sourceIndex(index), value);
+            _slice.shiftEnd(1);
+            _filling++;
+            return this;
+        }
+        if (index < 0) return this;
         if (index > size()) return pushBack(value);
         checkAnIncreaseSize();
-        int _index = Math.max(0, index);
-        System.arraycopy(_data, index, _data, _index + 1, size() - _index);
-        if (isSlice()) {
-            _data[getSliceIndex(index)] = value;
-            _filling++;
-            _slice.source()._filling++;
-        } else {
-            _filling++;
-            _data[index] = value;
-        }
+        System.arraycopy(_data, index, _data, index + 1, size() - index);
+        _data[index] = value;
+        _filling++;
         return this;
     }
 
@@ -405,7 +468,6 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -419,19 +481,8 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public TemplateVector<T> clone() {
-        if (isSlice()) {
-            return new TemplateVector<>(this);
-        }
-        try {
-            TemplateVector<T> cloneObj = (TemplateVector<T>) super.clone();
-            cloneObj._data = Arrays.copyOf(_data, _data.length);
-            cloneObj._filling = _filling;
-            return cloneObj;
-        } catch (CloneNotSupportedException e) {
-            throw new InternalError(e);
-        }
+        return new TemplateVector<>(this);
     }
 
     public TemplateVector(final int cap) {
@@ -439,7 +490,6 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
         _filling = cap;
     }
 
-    @SuppressWarnings("all")
     public TemplateVector(final TemplateVector<T> other) {
         this(other.size());
         _slice = null;
@@ -471,14 +521,11 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
         for (final T v : other) pushBack(v);
     }
 
-    private int getSliceIndex(final int index) {
-        return _slice.slice().index(index);
-    }
-
-    protected TemplateVector(final Slice rawSlice, final TemplateVector<T> source) {
-        Slice slice = rawSlice.rebuild(source.size());
-        _filling = slice.length();
-        _slice = new SliceObject<>(slice, source);
+    protected TemplateVector(final Slice slice, final TemplateVector<T> source) {
+        // Нельзя создать срез от среза
+        // Такой срез будет ссылаться на исходный вектор
+        _slice = new SliceObject<>(slice, source.isSlice() ? source._slice.source() : source);
+        _filling = _slice.length();
         _data = source._data;
     }
 }

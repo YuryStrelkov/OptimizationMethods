@@ -59,7 +59,20 @@ public class Tests {
         System.out.printf("| %s | = %s\n", b, b.magnitude());
         System.out.printf("%s / | %s | = %s\n", b, b, b.normalized());
         System.out.printf("(%s, %s) = %s\n", b.normalized(),  b.normalized(), b.normalized().dot( b.normalized()));
-        System.out.println("");
+        // System.out.println("");
+        // System.out.println("");
+        // System.out.printf("a = %s \n", a);
+        // System.out.printf("b = %s \n", b);
+        // System.out.printf("l = %s\n", longVector);
+        // a.insert(1,13.0);
+        // System.out.println("");
+        // System.out.printf("a = %s \n", a);
+        // System.out.printf("b = %s \n", b);
+        // b.removeAt(0);
+        // System.out.printf("a = %s \n", a);
+        // System.out.printf("b = %s \n", b);
+        // System.out.printf("l = %s\n", longVector);
+        // System.out.println("");
     }
 
     public static void matrixTest()

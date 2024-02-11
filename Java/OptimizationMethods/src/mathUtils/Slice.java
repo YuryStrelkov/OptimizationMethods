@@ -1,43 +1,19 @@
 package mathUtils;
 
-public class Slice {
+public final class Slice {
     private final int _end;
     private final int _begin;
     private final int _step;
-
-    private static int calcIndex(final int index, final int stride)
-    {
-        return ((index % stride) + stride) % stride;
-    }
-
-    public Slice rebuild(final int targetLength) {
-        final int begin = begin() == 0 ? 0 : calcIndex(begin(), targetLength);
-        final int end   = end()   == 0 ? targetLength: calcIndex(end(),   targetLength);
-        return step() > 0 ? new  Slice(begin, end == 0 ? targetLength: end, step()) :
-                new  Slice( end == 0 ? targetLength: end, begin, step());
-    }
-
-    public final int index(final int index)
-    {
-        return begin() + index * step();
-    }
-
-    public final int length() {
-        int total = Math.abs(end() - begin());
-        return Math.abs(total / step() + total % step());
-    }
-
     //exclusive index
-    public final int end() {
+    public int end() {
         return _end;
     }
-
     //inclusive index
-    public final int begin() {
+    public int begin() {
         return _begin;
     }
 
-    public final int step() {
+    public int step() {
         return _step;
     }
 
@@ -50,7 +26,7 @@ public class Slice {
     }
 
     public Slice(final int begin, final int end, final int step) {
-        this._step  = step == 0 ? 1 : step;
+        this._step  = step; // == 0 ? 1 : step;
         this._begin = begin;
         this._end   = end;
     }

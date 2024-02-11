@@ -1,10 +1,8 @@
 package mathUtils;
 
 import functionalInterfaces.IFunctionND;
-
-import java.util.Arrays;
-import java.util.Iterator;
 import java.util.Objects;
+
 
 enum SolutionType {
     Single,
@@ -12,16 +10,16 @@ enum SolutionType {
     None
 }
 
+
+@SuppressWarnings("all")
 public class DoubleMatrix extends TemplateVector<DoubleVector> {
 
     protected DoubleMatrix(Slice rows, DoubleMatrix source) {
         super(rows, source);
     }
 
-    protected DoubleMatrix(Slice rowsRaw, Slice colsRaw, DoubleMatrix source) {
-        Slice rows = rowsRaw.rebuild(source.rows());
-        Slice cols = colsRaw.rebuild(source.cols());
-        map(new DoubleMatrix(rows, this), col -> col.get(cols));
+    protected DoubleMatrix(Slice rows, Slice cols, DoubleMatrix source) {
+        map(new DoubleMatrix(rows, source), col -> col.get(cols));
     }
 
     protected DoubleMatrix(Iterable<DoubleVector> rows) {
