@@ -12,7 +12,7 @@ enum SolutionType {
 
 
 @SuppressWarnings("all")
-public class DoubleMatrix extends TemplateVector<DoubleVector> {
+public final class DoubleMatrix extends TemplateVector<DoubleVector> {
 
     protected DoubleMatrix(Slice rows, DoubleMatrix source) {
         super(rows, source);
@@ -204,34 +204,27 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
     }
 
     public static int rank(DoubleMatrix A) {
-        int n = A.rows();
-
-        int m = A.cols();
-
+        int n_rows = A.rows();
+        int m_cols = A.cols();
+        int row, col;
         int rank = 0;
+        boolean[] row_selected = new boolean[n_rows];
 
-        boolean[] row_selected = new boolean[n];
-
-        for (int i = 0; i < m; i++) {
-            int j;
-
-            for (j = 0; j < n; j++)
-                if (!row_selected[j] && Math.abs(A.unchecked_get(i, j)) > NumericCommon.NUMERIC_ACCURACY_HIGH) break;
-
-            if (j != n) {
+        for (row = 0; row < m_cols; row++) {
+            for (col = 0; col < n_rows; col++)
+                if (!row_selected[col] && Math.abs(A.unchecked_get(row, col)) > NumericCommon.NUMERIC_ACCURACY_HIGH) break;
+            if (col != n_rows) {
                 ++rank;
+                row_selected[col] = true;
+                for (int p = row + 1; p < m_cols; p++)
+                    A.unchecked_set(col, p,
+                            A.unchecked_get(col, p) / A.unchecked_get(col, row));
 
-                row_selected[j] = true;
-
-                for (int p = i + 1; p < m; p++)
-                    A.unchecked_set(j, p,
-                            A.unchecked_get(j, p) / A.unchecked_get(j, i));
-
-                for (int k = 0; k < n; k++) {
-                    if (k != j && Math.abs(A.unchecked_get(k, i)) > NumericCommon.NUMERIC_ACCURACY_HIGH) {
-                        for (int p = i + 1; p < m; p++)
+                for (int k = 0; k < n_rows; k++) {
+                    if (k != col && Math.abs(A.unchecked_get(k, row)) > NumericCommon.NUMERIC_ACCURACY_HIGH) {
+                        for (int p = row + 1; p < m_cols; p++)
                             A.unchecked_set(k, p,
-                                    A.unchecked_get(k, p) - A.unchecked_get(j, p) * A.unchecked_get(k, i));
+                                    A.unchecked_get(k, p) - A.unchecked_get(col, p) * A.unchecked_get(k, row));
                     }
                 }
             }
@@ -251,27 +244,28 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
     double determinant() {
         DoubleMatrix copy = new DoubleMatrix(this);
         double det = 1.0;
-        for (int i = 0; i < copy.rows(); i++) {
-            int pivot = i;
-            for (int j = i + 1; j < copy.rows(); j++) {
-                if (Math.abs(copy.unchecked_get(j, i)) > Math.abs(copy.unchecked_get(pivot, i))) {
-                    pivot = j;
+        int row, col, pivot;
+        for (row = 0; row < copy.rows(); row++) {
+            pivot = row;
+            for (col = row + 1; col < copy.rows(); col++) {
+                if (Math.abs(copy.unchecked_get(col, row)) > Math.abs(copy.unchecked_get(pivot, row))) {
+                    pivot = col;
                 }
             }
-            if (pivot != i) {
+            if (pivot != row) {
                 var tmp = copy.unchecked_get(pivot);
-                copy.unchecked_set(pivot, copy.unchecked_get(i));
-                copy.unchecked_set(i, tmp);
+                copy.unchecked_set(pivot, copy.unchecked_get(row));
+                copy.unchecked_set(row, tmp);
                 det *= -1.0;
             }
-            if (Math.abs(copy.unchecked_get(i, i)) < NumericCommon.NUMERIC_ACCURACY_HIGH) {
+            if (Math.abs(copy.unchecked_get(row, row)) < NumericCommon.NUMERIC_ACCURACY_HIGH) {
                 return 0;
             }
-            det *= copy.unchecked_get(i, i);
-            for (int j = i + 1; j < copy.rows(); j++) {
-                double factor = copy.unchecked_get(j, i) / copy.unchecked_get(i, i);
-                for (int k = i + 1; k < copy.rows(); k++) {
-                    copy.unchecked_set(j, k, copy.unchecked_get(j, k) - factor * copy.unchecked_get(i, k));
+            det *= copy.unchecked_get(row, row);
+            for (int j = row + 1; j < copy.rows(); j++) {
+                double factor = copy.unchecked_get(j, row) / copy.unchecked_get(row, row);
+                for (int k = row + 1; k < copy.rows(); k++) {
+                    copy.unchecked_set(j, k, copy.unchecked_get(j, k) - factor * copy.unchecked_get(row, k));
                 }
             }
         }
@@ -305,14 +299,11 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
         int rank_a_b = DoubleMatrix.rank(ab.addCol(b));
 
         if (NumericCommon.SHOW_MATRIX_DEBUG_LOG) {
-            System.out.println("rank ( A ) " + rank_a + "\n");
-
-            System.out.println("rank (A|b) " + rank_a_b + "\n");
-            if (rank_a == rank_a_b) System.out.println("one solution\n");
-
-            if (rank_a < rank_a_b) System.out.println("infinite amount of solutions\n");
-
-            if (rank_a > rank_a_b) System.out.println("no solutions\n");
+            System.out.printf("rank ( A ) %s\n", rank_a);
+            System.out.printf("rank ( A|b ) %s\n", rank_a_b);
+            if (rank_a == rank_a_b) System.out.print("one solution\n");
+            if (rank_a < rank_a_b) System.out.print("infinite amount of solutions\n");
+            if (rank_a > rank_a_b) System.out.print("no solutions\n");
         }
 
         if (rank_a == rank_a_b) return SolutionType.Single;
@@ -366,29 +357,29 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
 
         up = new DoubleMatrix(src.cols(), src.cols());
 
-        int i, j, k;
+        int row, col, index;
 
-        for (i = 0; i < src.cols(); i++) {
-            for (j = 0; j < src.cols(); j++) {
-                if (j >= i) {
-                    low.unchecked_set(j, i, src.unchecked_get(j, i));
-                    for (k = 0; k < i; k++)
-                        low.unchecked_set(j, i,
-                                low.unchecked_get(j, i) - low.unchecked_get(j, k) * up.unchecked_get(k, i));
+        for (row = 0; row < src.cols(); row++) {
+            for (col = 0; col < src.cols(); col++) {
+                if (col >= row) {
+                    low.unchecked_set(col, row, src.unchecked_get(col, row));
+                    for (index = 0; index < row; index++)
+                        low.unchecked_set(col, row,low.unchecked_get(col, row) -
+                                low.unchecked_get(col, index) * up.unchecked_get(index, row));
                 }
             }
 
-            for (j = 0; j < src.cols(); j++) {
-                if (j < i) continue;
-                if (j == i) {
-                    up.unchecked_set(i, j, 1.0);
+            for (col = 0; col < src.cols(); col++) {
+                if (col < row) continue;
+                if (col == row) {
+                    up.unchecked_set(row, col, 1.0);
                     continue;
                 }
-                up.unchecked_set(i, j, src.unchecked_get(i, j) / low.unchecked_get(i, i));
-                for (k = 0; k < i; k++)
-                    up.unchecked_set(i, j,
-                            up.unchecked_get(i, j) - low.unchecked_get(i, k) *
-                                    up.unchecked_get(k, j) / low.unchecked_get(i, i));
+                up.unchecked_set(row, col, src.unchecked_get(row, col) / low.unchecked_get(row, row));
+                for (index = 0; index < row; index++)
+                    up.unchecked_set(row, col,
+                            up.unchecked_get(row, col) - low.unchecked_get(row, index) *
+                                    up.unchecked_get(index, col) / low.unchecked_get(row, row));
             }
         }
         return new DoubleMatrix[]{low, up};
@@ -404,9 +395,7 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
      */
     private static DoubleVector linsolve(DoubleMatrix low, DoubleMatrix up, DoubleVector b) {
         double det = 1.0;
-
         DoubleVector x, z;
-
         for (int i = 0; i < up.rows(); i++) det *= (up.unchecked_get(i, i) * up.unchecked_get(i, i));
         if (Math.abs(det) < NumericCommon.NUMERIC_ACCURACY_HIGH) {
             if (NumericCommon.SHOW_MATRIX_DEBUG_LOG)
@@ -457,7 +446,8 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
 
         double det = 1.0;
 
-        for (int i = 0; i < lu_[0].rows(); i++) det *= (lu_[0].unchecked_get(i, i) * lu_[0].unchecked_get(i, i));
+        for (int rows = 0; rows < lu_[0].rows(); rows++)
+            det *= (lu_[0].unchecked_get(rows, rows) * lu_[0].unchecked_get(rows, rows));
 
         if (Math.abs(det) < NumericCommon.NUMERIC_ACCURACY_HIGH) {
             if (NumericCommon.SHOW_MATRIX_DEBUG_LOG)
@@ -471,17 +461,13 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
 
         DoubleMatrix inv = zeros(mat.rows());
 
-        for (int i = 0; i < mat.cols(); i++) {
-            b.set(i, 1.0);
+        for (int cols = 0; cols < mat.cols(); cols++) {
+            b.set(cols, 1.0);
             col = linsolve(lu_[0], lu_[1], b);
-
             if (col == null) throw new RuntimeException("unable to find matrix inversion");
-
             if (col.size() == 0) throw new RuntimeException("unable to find matrix inversion");
-
-            b.set(i, 0.0);
-
-            for (int j = 0; j < mat.rows(); j++) inv.unchecked_set(j, i, col.get(j));
+            b.set(cols, 0.0);
+            for (int rows = 0; rows < mat.rows(); rows++) inv.unchecked_set(rows, cols, col.get(rows));
         }
         return inv;
     }
@@ -494,8 +480,8 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
      */
     public static DoubleMatrix transpose(DoubleMatrix mat) {
         DoubleMatrix trans = new DoubleMatrix(mat.cols(), mat.rows());
-        for (int i = 0; i < mat.rows(); i++)
-            for (int j = 0; j < mat.cols(); j++) trans.unchecked_set(j, i, mat.unchecked_get(i, j));
+        for (int row = 0; row < mat.rows(); row++)
+            for (int col = 0; col < mat.cols(); col++) trans.unchecked_set(col, row, mat.unchecked_get(row, col));
         return trans;
     }
 
@@ -566,8 +552,8 @@ public class DoubleMatrix extends TemplateVector<DoubleVector> {
     public static DoubleVector mul(DoubleVector left, DoubleMatrix right) {
         if (right.rows() != left.size()) throw new RuntimeException("unable to matrix and vector multiply");
         DoubleVector result = new DoubleVector(right.cols());
-        for (int i = 0; i < right.cols(); i++) {
-            for (int j = 0; j < right.rows(); j++) result.set(i, right.get(j, i) * left.get(i));
+        for (int row = 0; row < right.cols(); row++) {
+            for (int col = 0; col < right.rows(); col++) result.set(row, right.get(col, row) * left.get(row));
         }
         return result;
     }

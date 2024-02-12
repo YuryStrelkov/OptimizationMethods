@@ -4,7 +4,7 @@ import functionalInterfaces.IFunctionND;
 
 
 @SuppressWarnings("all")
-public class DoubleVector extends TemplateVector<Double>{
+public final class DoubleVector extends TemplateVector<Double>{
     public DoubleVector(int cap, double fill_value) {
         super(cap);
         fill(i -> fill_value);
@@ -211,7 +211,6 @@ public class DoubleVector extends TemplateVector<Double>{
 
     public static double partial2(IFunctionND func, DoubleVector x, int index_1, int index_2, double eps) {
         if (x.notInRange(index_2)) throw new RuntimeException("Partial derivative index out of bounds!");
-
         x.unchecked_set(index_2, x.unchecked_get(index_2) - eps);
         double f_l = partial(func, x, index_1, eps);
         x.unchecked_set(index_2, x.unchecked_get(index_2) + 2.0 * eps);

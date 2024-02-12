@@ -8,7 +8,8 @@ import java.util.Arrays;
 
 @SuppressWarnings("all")
 public class TemplateVector<T> implements Iterable<T>, Cloneable {
-
+    // later :: parallel ops...
+    // https://raygun.com/blog/java-performance-optimization-tips/
     private final static class SliceObject<T> {
         private final TemplateVector<T> _source;
         private int _begin;
@@ -376,6 +377,14 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
 
     public int capacity() {
         return _data.length;
+    }
+
+    public void clear(){
+        _filling = 0;
+    }
+
+    public boolean isEmpty(){
+        return size() == 0;
     }
 
     public T get(final int index) {

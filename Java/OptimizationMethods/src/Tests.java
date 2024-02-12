@@ -207,20 +207,11 @@ public class Tests {
         System.out.println(" | 3x1 + 2x2 <= 28");
         System.out.println(" | 2x1 -  x2 <= 14\n");
 
-        ArrayList<Sign> signs_less = new ArrayList<>(3);
-        signs_less.add(Sign.Less);
-        signs_less.add(Sign.Less);
-        signs_less.add(Sign.Less);
+        TemplateVector<Sign> signs_less = new TemplateVector<>(Sign.Less, Sign.Less, Sign.Less);
 
-        ArrayList<Sign> signs_more = new ArrayList<>(3);
-        signs_more.add(Sign.More);
-        signs_more.add(Sign.More);
-        signs_more.add(Sign.More);
+        TemplateVector<Sign> signs_more = new TemplateVector<>(Sign.More, Sign.More, Sign.More);
 
-        ArrayList<Sign> signs_equal = new ArrayList<>(3);
-        signs_equal.add(Sign.Equal);
-        signs_equal.add(Sign.Equal);
-        signs_equal.add(Sign.Equal);
+        TemplateVector<Sign> signs_equal = new TemplateVector<>(Sign.Equal, Sign.Equal, Sign.Equal);
         NumericCommon.SHOW_SIMPLEX_DEBUG_LOG = true;
 
         Simplex sym_0 = new Simplex(A,new DoubleVector(2.0,  3.0 ), signs_less, b);

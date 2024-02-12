@@ -1,9 +1,4 @@
-import mathUtils.NumericCommon;
-import mathUtils.DoubleVector;
-import mathUtils.DoubleMatrix;
-import mathUtils.NumericUtils;
-
-import java.util.ArrayList;
+import mathUtils.*;
 
 enum Sign {
     Equal,
@@ -32,16 +27,16 @@ public class Simplex {
         maxIterations = NumericUtils.clamp(value, 10, NumericCommon.ITERATIONS_COUNT_HIGH);
     }
 
-    private final ArrayList<Sign> inequalities;
+    private final TemplateVector<Sign> inequalities;
 
     // список индексов переменных которые войдут в целевую функию, модифицируя ее
-    private final ArrayList<Integer> fModArgs;
+    private final TemplateVector<Integer> fModArgs;
 
     // индексы естественных переменных
-    private final ArrayList<Integer> naturalArgsIds;
+    private final TemplateVector<Integer> naturalArgsIds;
 
     // список индексов текущих базисных переменных
-    private final ArrayList<Integer> basisArgs;
+    private final TemplateVector<Integer> basisArgs;
 
     // Симплекс таблица
     private DoubleMatrix simplexTable;
@@ -74,11 +69,11 @@ public class Simplex {
         return pricesVector;
     }
 
-    public ArrayList<Sign> inequalities() {
+    public TemplateVector<Sign> inequalities() {
         return inequalities;
     }
 
-    public ArrayList<Integer> basisArguments() {
+    public TemplateVector<Integer> basisArguments() {
         return basisArgs;
     }
 
@@ -260,7 +255,6 @@ public class Simplex {
         naturalArgsIds.clear(); // (индексы) x1, x2, x3 - те переменные, котоыре были в постановке задачи
         basisArgs.clear();      // (индексы) xi, xi+1, ..., xn - те переменные, которые вошли в базис
         fModArgs.clear();       // (индексы) xi, xi+1, ..., xn - те переменные, которые модифицировали целевую функцию
-
         // Если среди вектора b есть отрицательные значения, то соответствующие строки
         // матрицы ограничений умножаем на мину один и меняем знак сравнения
         for (int row = 0; row < simplexTable.rows(); row++) {
@@ -269,50 +263,43 @@ public class Simplex {
             boundsVector.set(row, boundsVector.get(row) * -1.0);
             simplexTable.row(row).mul(-1.0);
         }
-
         // построение списка индексов естественных переменных(те, что не искусственные)
-        for (int i = 0; i < pricesVector.size(); i++) naturalArgsIds.add(i);
-
+        for (int i = 0; i < pricesVector.size(); i++) naturalArgsIds.pushBack(i);
         // построение искуственного базиса
         int[] basisArgsInfo;
 
         for (int inequalityId = 0; inequalityId < inequalities.size(); inequalityId++) {
             basisArgsInfo = buildVirtualBasisCol(inequalityId, inequalities.get(inequalityId));
 
-            naturalArgsIds.add(basisArgsInfo[0]);
+            naturalArgsIds.pushBack(basisArgsInfo[0]);
 
             if (basisArgsInfo[1] != -1) {
-                basisArgs.add(basisArgsInfo[1]);
-                fModArgs.add(basisArgsInfo[1]);
+                basisArgs.pushBack(basisArgsInfo[1]);
+                fModArgs.pushBack(basisArgsInfo[1]);
                 continue;
             }
-            basisArgs.add(basisArgsInfo[0]);
+            basisArgs.pushBack(basisArgsInfo[0]);
         }
-
         // добавим столбец ограницений
-        for (int row = 0; row < simplexTable.rows(); row++) simplexTable.row(row).pushBack(boundsVector.get(row));
-
+        // for (int row = 0; row < simplexTable.rows(); row++) simplexTable.row(row).pushBack(boundsVector.get(row));
+        simplexTable.applyEnumerate((i, v) -> {v.pushBack(boundsVector.get(i)); return v;});
         // Построение симплекс разностей
         DoubleVector simD = new DoubleVector(simplexTable.cols());
 
         if (mode == SimplexProblemType.Max) {
-            // simD.applyEnumerate(pricesVector, (i, v)-> i < pricesVector.size() ? -v : 0.0);
-            for (int j = 0; j < simD.size(); j++) simD.set(j, j < pricesVector.size() ? -pricesVector.get(j) : 0.0);
+            simD.applyEnumerate(pricesVector, (i, v) -> i < pricesVector.size() ? -v : 0.0);
+            // for (int j = 0; j < simD.size(); j++) simD.set(j, j < pricesVector.size() ? -pricesVector.get(j) : 0.0);
         } else {
-            // simD.applyEnumerate(pricesVector, (i, v)-> i < pricesVector.size() ? v : 0.0);
-            for (int j = 0; j < simD.size(); j++) simD.set(j, j < pricesVector.size() ? pricesVector.get(j) : 0.0);
+            simD.applyEnumerate(pricesVector, (i, v)-> i < pricesVector.size() ? v : 0.0);
+            // for (int j = 0; j < simD.size(); j++) simD.set(j, j < pricesVector.size() ? pricesVector.get(j) : 0.0);
         }
 
         simplexTable.addRow(simD);
-
         // Если целевая функуция не была модифицирована
         if (!isTargetFuncModified()) return;
-
         // Если всё же была...
         DoubleVector sDeltasAdd = new DoubleVector(simplexTable.cols());
-
         for (Integer fModArgId : fModArgs) sDeltasAdd.set(fModArgId, 1.0);
-
         simplexTable.addRow(sDeltasAdd);
     }
 
@@ -483,7 +470,7 @@ public class Simplex {
         return solve(SimplexProblemType.Max);
     }
 
-    public Simplex(DoubleMatrix a, DoubleVector c, ArrayList<Sign> inequalities, DoubleVector b) {
+    public Simplex(DoubleMatrix a, DoubleVector c, TemplateVector<Sign> inequalities, DoubleVector b) {
         if (b.size() != inequalities.size()) {
             throw new RuntimeException("Error simplex creation :: b.size() != inequalities.size()");
         }
@@ -496,9 +483,9 @@ public class Simplex {
             throw new RuntimeException("Error simplex creation :: A.cols_number() != price coefficients.size()");
         }
 
-        naturalArgsIds = new ArrayList<>();
-        basisArgs = new ArrayList<>();
-        fModArgs = new ArrayList<>();
+        naturalArgsIds = new TemplateVector<>();
+        basisArgs = new TemplateVector<>();
+        fModArgs = new TemplateVector<>();
 
         boundsVector = new DoubleVector(b);
         boundsMatrix = new DoubleMatrix(a);
@@ -515,13 +502,13 @@ public class Simplex {
             throw new RuntimeException("Error simplex creation :: A.cols_number() != price coefficients.size()");
         }
 
-        inequalities = new ArrayList<>();
+        inequalities = new TemplateVector<>();
 
-        for (int i = 0; i < b.size(); i++) inequalities.add(Sign.Less);
+        for (int i = 0; i < b.size(); i++) inequalities.pushBack(Sign.Less);
 
-        naturalArgsIds = new ArrayList<>();
-        basisArgs = new ArrayList<>();
-        fModArgs = new ArrayList<>();
+        naturalArgsIds = new TemplateVector<>();
+        basisArgs = new TemplateVector<>();
+        fModArgs = new TemplateVector<>();
 
         boundsVector = new DoubleVector(b);
         boundsMatrix = new DoubleMatrix(a);
