@@ -100,12 +100,50 @@ static void  lab_4(func_nd f)
 	std::cout << "newtone_raphson       : " << newtoneRaphson(bouded_func, x_start, 1e-5) << "\n";
 }
 
+#include "template_vector.h"
+
+
 int main()
 {
-	lab_1(  test_func);
-	lab_2(test_func_2);
-	lab_3(test_func_2);
-	lab_4(test_func_2);
+	int a = 13;
+	int* b = &a;
+	std::cout << "b[0]: " << b[0] << "\n";
+
+	auto first  = template_vector_<int>();
+	auto second = template_vector_<double>();
+
+	first.push_back(11).push_back(22).push_back(33).push_back(44).push_back(55);
+	std::cout << "first: " << first << "\n";
+
+	for (auto const& v : first.values())
+	{
+		std::cout << "i: " << v << "\n";
+	}
+
+	 for (auto const& v : first.values())
+	 {
+	 	std::cout << "v: " << v << "\n";
+	 }
+	 
+	 for (auto const v : first.map<double>([](const int& i){return std::sqrt(i);}))
+	 {
+	 	std::cout << v << "\n";
+	 	second.push_back(v);
+	 }
+	 
+	 for (auto v : first.combine<int>(1000, [](const int& l, const int& r) {return l + r; }))
+	 {
+	 	std::cout << v << "\n";
+	 }
+	 
+	 // double summ = second.reduce([](const double& l, const double& r) {return l + r; });
+	 // std::cout << "summ: " << summ << "\n";
+	 // std::cout << "sum:" << first.reduce([](const int& l, const int& r) {return l + r; }) << "\n";
+
+	// lab_1(  test_func);
+	// lab_2(test_func_2);
+	// lab_3(test_func_2);
+	// lab_4(test_func_2);
 	// testAll();
 	return 0;
 }

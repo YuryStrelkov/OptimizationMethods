@@ -11,6 +11,7 @@ typedef std::vector<double>   vec_n;
 typedef std::vector<vec_n>    mat_mn;
 typedef double(*func_1d)(const double&);
 typedef double(*func_nd)(const vec_n&);
+#define DOUBLE_PRECISION      1
 #define N_DIM_ACCURACY        1e-6
 #define N_DIM_DERIVATIVE_STEP 1e-6
 #define N_DIM_ITERS_MAX       1000
