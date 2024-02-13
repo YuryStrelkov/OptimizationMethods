@@ -115,18 +115,18 @@ public:
 	bool                         operator!=(const map_values_iterator<T1, T2>& other) const { return !(*this == other); }
 	map_values_iterator<T1, T2>& operator++()                                               { values++; return *this; }
 	map_values_iterator<T1, T2>  operator++(int)                                            { map_values_iterator retval = *this; ++(*this); return retval; }
-	const T2&                    operator* ()                                         const {return map_function((*values));}
-	const T2*                    operator& ()                                         const {return map_function((*values));}
+	const T2&                    operator* ()                                         const {return map_function(*values);}
+	const T2*                    operator& ()                                         const {return map_function(*values);}
 };
 
 template<typename T1, typename T2>
-struct map_vector_values: public iterable_<map_values_iterator<T1, T2>>
+struct map_values: public iterable_<map_values_iterator<T1, T2>>
 {
 private:
 	const std::function<T2(const T1&)> map_f;
 	const vector_values<T1> values;
 public:
-	map_vector_values<T1, T2>(vector_values<T1>&& values, std::function<T2(const T1&)> map_f) : values(values), map_f(map_f) {}
+	map_values<T1, T2>(vector_values<T1>&& values, std::function<T2(const T1&)> map_f) : values(values), map_f(map_f) {}
 	map_values_iterator<T1, T2> begin() const override { return map_values_iterator<T1, T2>(values.begin(), map_f); }
 	map_values_iterator<T1, T2> end()   const override { return map_values_iterator<T1, T2>(values.end()  , map_f); }
 };
@@ -171,15 +171,15 @@ public:
 };
 
 template<typename T1, typename T2>
-struct zip_vector_values : public iterable_<zip_values_iterator<T1, T2>>
+struct zip_values : public iterable_<zip_values_iterator<T1, T2>>
 {
 private:
 	const vector_values<T1>values1;
 	const vector_values<T2>values2;
 public:
-	zip_vector_values<T1, T2>(vector_values<T1>&& values1, vector_values<T2>&& values2) : values1(values1),                  values2(values2) {}
-	zip_vector_values<T1, T2>(const T1&           value,   vector_values<T2>&& values2) : values1(vector_values<T1>(value)), values2(values2) {}
-	zip_vector_values<T1, T2>(vector_values<T1>&& values1, const T2&           value  ) : values1(values1),                  values2(vector_values<T2>(value)) {}
+	zip_values<T1, T2>(vector_values<T1>&& values1, vector_values<T2>&& values2) : values1(values1),                  values2(values2) {}
+	zip_values<T1, T2>(const T1&           value,   vector_values<T2>&& values2) : values1(vector_values<T1>(value)), values2(values2) {}
+	zip_values<T1, T2>(vector_values<T1>&& values1, const T2&           value  ) : values1(values1),                  values2(vector_values<T2>(value)) {}
 	zip_values_iterator<T1, T2> begin() const override { return zip_values_iterator<T1, T2>(values1.begin(), values2.begin()); }
 	zip_values_iterator<T1, T2> end()   const override { return zip_values_iterator<T1, T2>(values1.end(),   values2.end()); }
 };
@@ -206,14 +206,23 @@ public:
 };
 
 template<typename T1, typename T2>
-struct combine_vector_values : public iterable_<combine_values_iterator<T1, T2>>
+struct combine_values : public iterable_<combine_values_iterator<T1, T2>>
 {
 private:
-	const zip_vector_values<T1, T1> zip_values;
+	const zip_values<T1, T1> zip_vals;
 	const std::function<T2(const T1&, const T1&)> combine_f;
 public:
-	combine_vector_values<T1, T2>(zip_vector_values<T1, T1>&& zip_values,
-		std::function<T2(const T1&, const T1&)> combine_f) : zip_values(zip_values), combine_f(combine_f) {}
-	combine_values_iterator<T1, T2> begin() const override { return combine_values_iterator<T1, T2>(zip_values.begin(), combine_f); }
-	combine_values_iterator<T1, T2> end()   const override { return combine_values_iterator<T1, T2>(zip_values.end(),   combine_f); }
+	combine_values<T1, T2>(zip_values<T1, T1>&& zip_vals, std::function<T2(const T1&, const T1&)> combine_f):
+		zip_vals(zip_vals), combine_f(combine_f) {
+	}
+	
+	combine_values<T1, T2>(vector_values<T1>&& values1,
+		                   vector_values<T1>&& values2,
+						   std::function<T2(const T1&, const T1&)> combine_f):
+		zip_vals(zip_values<T1, T1>(std::move(values1), std::move(values2))), combine_f(combine_f){
+	}
+	combine_values<T1, T2>(const T1&           value,    vector_values<T1>&& values2, std::function<T2(const T1&, const T1&)> combine_f) : zip_vals(zip_values<T1, T1>(value, std::move(values2))), combine_f(combine_f) {}
+	combine_values<T1, T2>(vector_values<T1>&& values1,  const T1&           value,   std::function<T2(const T1&, const T1&)> combine_f) : zip_vals(zip_values<T1, T1>(std::move(values1), value)), combine_f(combine_f) {}
+	combine_values_iterator<T1, T2> begin() const override { return combine_values_iterator<T1, T2>(zip_vals.begin(), combine_f); }
+	combine_values_iterator<T1, T2> end()   const override { return combine_values_iterator<T1, T2>(zip_vals.end(),   combine_f); }
 };

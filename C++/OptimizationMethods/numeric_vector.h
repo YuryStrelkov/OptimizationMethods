@@ -6,32 +6,15 @@ typedef numeric_vector<double> double_vector;
 typedef numeric_vector<float>  float_vector;
 typedef numeric_vector<int>    int_vector;
 
-template <typename T>
-T sum_f(const T& lhs, const T& rhs) 
-{
-	return lhs + rhs;
-}
-template <typename T>
-T dif_f(const T& lhs, const T& rhs)
-{
-	return lhs - rhs;
-}
-template <typename T>
-T div_f(const T& lhs, const T& rhs)
-{
-	return lhs / rhs;
-}
-
-template <typename T>
-T mul_f(const T& lhs, const T& rhs)
-{
-	return lhs * rhs;
-}
-
+auto sum_f = [](const auto& lhs, const auto& rhs) { return lhs + rhs; };
+auto dif_f = [](const auto& lhs, const auto& rhs) { return lhs - rhs; };
+auto div_f = [](const auto& lhs, const auto& rhs) { return lhs / rhs; };
+auto mul_f = [](const auto& lhs, const auto& rhs) { return lhs * rhs; };
 
 template<typename T>
 class numeric_vector: public template_vector_<T>
 {
+public:
 	numeric_vector<T>&       normalize ();
 	numeric_vector<T>        normalized()const;
 	T                        magintude ()const;
@@ -65,6 +48,23 @@ class numeric_vector: public template_vector_<T>
 	template<typename T>friend numeric_vector<T> operator-(const numeric_vector<T>& lhs, const T& rhs);
 	template<typename T>friend numeric_vector<T> operator*(const numeric_vector<T>& lhs, const T& rhs);
 	template<typename T>friend numeric_vector<T> operator/(const numeric_vector<T>& lhs, const T& rhs);
+
+	numeric_vector(const int& cap) : template_vector_<T>(cap) {
+	};
+
+	numeric_vector() : template_vector_<T>() {
+	};
+
+	numeric_vector(const numeric_vector<T>& vector) : template_vector_<T>(vector) {
+	};
+
+	template<typename T1, typename T2>
+	numeric_vector(const map_values<T1, T2>& values) : template_vector_<T2>(values) {
+	};
+
+	template<typename T1, typename T2>
+	numeric_vector(const combine_values<T1, T2>& values) : template_vector_<T2>(values) {
+	};
 };
 
 template<typename T>
@@ -76,7 +76,7 @@ inline numeric_vector<T>& numeric_vector<T>::normalize()
 template<typename T>
 inline numeric_vector<T> numeric_vector<T>::normalized() const
 {
-	return numeric_vector<T>(combine_values_iterator(this, T{1.0} / magintude(), [](const T& lhs, const T& rhs) {return lhs * rhs; }));
+	return numeric_vector<T>(combine_values<T, T>(this, T{1.0} / magintude(), [](const T& lhs, const T& rhs) {return lhs * rhs; }));
 }
 
 template<typename T>
@@ -121,45 +121,49 @@ template<typename T>
 inline numeric_vector<T>& numeric_vector<T>::operator+=(const numeric_vector<T>& rhs)
 {
 	// TODO: вставьте здесь оператор return
+	return (*this);
 }
 
 template<typename T>
 inline numeric_vector<T>& numeric_vector<T>::operator-=(const numeric_vector<T>& rhs)
 {
 	// TODO: вставьте здесь оператор return
+	return (*this);
 }
 
 template<typename T>
 inline numeric_vector<T>& numeric_vector<T>::operator*=(const numeric_vector<T>& rhs)
 {
 	// TODO: вставьте здесь оператор return
+	return (*this);
 }
 
 template<typename T>
 inline numeric_vector<T>& numeric_vector<T>::operator/=(const numeric_vector<T>& rhs)
 {
 	// TODO: вставьте здесь оператор return
+	return (*this);
 }
 
 template<typename T>
 inline numeric_vector<T>& numeric_vector<T>::operator+=(const T& rhs)
 {
-	apply([](const T& value) {return value + rhs; });
-	return (*this)
+	// apply([](const T& value) {return value + rhs; });
+	return (*this);
 }
 
 template<typename T>
 inline numeric_vector<T>& numeric_vector<T>::operator-=(const T& rhs)
 {
-	apply([](const T& value) {return value - rhs; });
-	return (*this)
+	// apply([](const T& value) {return value - rhs; });
+	return (*this);
 }
 
 template<typename T>
 inline numeric_vector<T>& numeric_vector<T>::operator*=(const T& rhs)
 {
-	apply([](const T& value) {return value * rhs; });
-	return (*this)
+	// apply([](const T& value) {return value * rhs; });
+	return (*this);
 }
 
 template<typename T>
@@ -171,71 +175,101 @@ inline numeric_vector<T>& numeric_vector<T>::operator/=(const T& rhs)
 template<typename T>
 inline numeric_vector<T> operator+(const numeric_vector<T>& lhs, const numeric_vector<T>& rhs)
 {
-	return numeric_vector<T>(combine_vector_values(lhs, rhs, sum_f));
+	const combine_values<T, T> combine_vals = combine_values<T, T>(lhs.values(), rhs.values(), sum_f);
+	return numeric_vector<T>(combine_vals);
 }
 
 template<typename T>
 inline numeric_vector<T> operator-(const numeric_vector<T>& lhs, const numeric_vector<T>& rhs)
 {
-	return numeric_vector<T>(combine_vector_values(lhs, rhs, dif_f));
+	const combine_values<T, T> combine_vals = combine_values<T, T>(lhs.values(), rhs.values(), dif_f); 
+	return numeric_vector<T>(combine_vals);
 }
 
 template<typename T>
 inline numeric_vector<T> operator*(const numeric_vector<T>& lhs, const numeric_vector<T>& rhs)
 {
-	return numeric_vector<T>(combine_vector_values(lhs, rhs, mul_f));
+	const combine_values<T, T> combine_vals = combine_values<T, T>(lhs.values(), rhs.values(), mul_f);
+	return numeric_vector<T>(combine_vals);
 }
 
 template<typename T>
 inline numeric_vector<T> operator/(const numeric_vector<T>& lhs, const numeric_vector<T>& rhs)
 {
-	return numeric_vector<T>(combine_vector_values(lhs, rhs, div_f));
+	const combine_values<T, T> combine_vals = combine_values<T, T>(lhs.values(), rhs.values(), div_f);
+	return numeric_vector<T>(combine_vals);
 }
 
 template<typename T>
 inline numeric_vector<T> operator+(const T& lhs, const numeric_vector<T>& rhs)
 {
-	return numeric_vector<T>(combine_vector_values(lhs, rhs, sum_f));
+	return numeric_vector<T>(combine_values<T, T>(lhs, rhs.values(), sum_f));
 }
 
 template<typename T>
 inline numeric_vector<T> operator-(const T& lhs, const numeric_vector<T>& rhs)
 {
-	return numeric_vector<T>(combine_vector_values(lhs, rhs, dif_f));
+	return numeric_vector<T>(combine_values<T, T>(lhs, rhs.values(), dif_f));
 }
 
 template<typename T>
 inline numeric_vector<T> operator*(const T& lhs, const numeric_vector<T>& rhs)
 {
-	return numeric_vector<T>(combine_vector_values(lhs, rhs, mul_f));
+	return numeric_vector<T>(combine_values<T, T>(lhs, rhs.values(), mul_f));
 }
 
 template<typename T>
 inline numeric_vector<T> operator/(const T& lhs, const numeric_vector<T>& rhs)
 {
-	return numeric_vector<T>(combine_vector_values(lhs, rhs, div_f));
+	return numeric_vector<T>(combine_values<T, T>(lhs, rhs.values(), div_f));
 }
 
 template<typename T>
 inline numeric_vector<T> operator+(const numeric_vector<T>& lhs, const T& rhs)
 {
-	return numeric_vector<T>(combine_vector_values(lhs, rhs, sum_f));
+	return numeric_vector<T>(combine_values<T, T>(lhs.values(), rhs, sum_f));
 }
 
 template<typename T>
 inline numeric_vector<T> operator-(const numeric_vector<T>& lhs, const T& rhs)
 {
-	return numeric_vector<T>(combine_vector_values(lhs, rhs, dif_f));
+	return numeric_vector<T>(combine_values<T, T>(lhs.values(), rhs, dif_f));
 }
 
 template<typename T>
 inline numeric_vector<T> operator*(const numeric_vector<T>& lhs, const T& rhs)
 {
-	return numeric_vector<T>(combine_vector_values(lhs, rhs, mul_f));
+	return numeric_vector<T>(combine_values<T, T>(lhs.values(), rhs, mul_f));
 }
 
 template<typename T>
 inline numeric_vector<T> operator/(const numeric_vector<T>& lhs, const T& rhs)
 {
-	return numeric_vector<T>(combine_vector_values(lhs, rhs, div_f));
+	return numeric_vector<T>(combine_values<T, T>(lhs.values(), rhs, div_f));
+}
+
+void numeric_vector_test();
+
+void numeric_vector_test() 
+{
+	double_vector lhs, rhs;
+	lhs.push_back(1.0).push_back(2.0).push_back(3.0).push_back(4.0);
+	rhs.push_back(9.0).push_back(8.0).push_back(7.0).push_back(6.0);
+	std::cout << "lhs       : " << lhs << "\n";
+	std::cout << "rhs       : " << rhs << "\n";
+	std::cout << "rhs - copy: " << double_vector(rhs) << "\n";
+	std::cout << "lhs + rhs : " << lhs + rhs << "\n";
+	std::cout << "lhs - rhs : " << lhs - rhs << "\n";
+	std::cout << "lhs * rhs : " << lhs * rhs << "\n";
+	std::cout << "lhs / rhs : " << lhs / rhs << "\n";
+
+	std::cout << "2 + rhs   : " << 2.0 + rhs << "\n";
+	std::cout << "2 - rhs   : " << 2.0 - rhs << "\n";
+	std::cout << "2 * rhs   : " << 2.0 * rhs << "\n";
+	std::cout << "2 / rhs   : " << 2.0 / rhs << "\n";
+
+	std::cout << "rhs + 2   : " << rhs + 2.0 << "\n";
+	std::cout << "rhs - 2   : " << rhs - 2.0 << "\n";
+	std::cout << "rhs * 2   : " << rhs * 2.0 << "\n";
+	std::cout << "rhs / 2   : " << rhs / 2.0 << "\n";
 }
