@@ -389,7 +389,7 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
 
     public T get(final int index) {
         if (notInRange(index)) throw new RuntimeException(String.format("get :: index {%s} out of range", index));
-        return unchecked_get(index);
+        return uncheckedGet(index);
     }
 
     public TemplateVector<T> get(final Slice slice) {
@@ -398,14 +398,14 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
 
     public void set(final int index, final T value) {
         if (notInRange(index)) throw new RuntimeException(String.format("get :: index {%s} out of range", index));
-        unchecked_set(index, value);
+        uncheckedSet(index, value);
     }
 
-    protected T unchecked_get(final int index) {
+    protected T uncheckedGet(final int index) {
         return _data[isSlice() ? _slice.sourceIndex(index) : index];
     }
 
-    protected void unchecked_set(final int index, final T value) {
+    protected void uncheckedSet(final int index, final T value) {
         _data[isSlice() ? _slice.sourceIndex(index) : index] = value;
     }
 

@@ -10,7 +10,6 @@ using namespace std;
 #include <initializer_list>
 #include "vector_itaretors.h"
 
-
 template <typename T>
 class template_vector_
 {
@@ -120,7 +119,6 @@ public:
 	{
 		applyEnumerate((*this), apply_f);
 	}
-
 
 	template_vector_<T> filter(std::function<bool(const T&)> condition_f)
 	{
@@ -384,7 +382,6 @@ inline std::ostream& operator<<(std::ostream& steram, const template_vector_<T>&
 	return steram;
 }
 
-
 template<typename T>
 inline T template_vector_<T>::reduce(const template_vector_<T>& vector, std::function<T(const T&, const T&)> reduce_f, T init_value)
 {
@@ -413,7 +410,6 @@ static  template_vector_<T> filter(const template_vector_<T>& vector, std::funct
 	for (const T& item : vector.values()) if (condition_f(item)) filtered_vector.push_back(item);
 	return filtered_vector;
 }
-
 
 template<typename T>
 template<typename T1>

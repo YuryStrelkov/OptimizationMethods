@@ -197,11 +197,11 @@ public final class DoubleVector extends TemplateVector<Double>{
 
     public static double partial(IFunctionND func, DoubleVector x, int index, double eps) {
         if (x.notInRange(index)) throw new RuntimeException("Partial derivative index out of bounds!");
-        x.unchecked_set(index, x.unchecked_get(index) + eps);
+        x.uncheckedSet(index, x.uncheckedGet(index) + eps);
         double f_r = func.call(x);
-        x.unchecked_set(index, x.unchecked_get(index) - 2.0 * eps);
+        x.uncheckedSet(index, x.uncheckedGet(index) - 2.0 * eps);
         double f_l = func.call(x);
-        x.unchecked_set(index, x.unchecked_get(index) + eps);
+        x.uncheckedSet(index, x.uncheckedGet(index) + eps);
         return (f_r - f_l) / eps * 0.5;
     }
 
@@ -210,13 +210,13 @@ public final class DoubleVector extends TemplateVector<Double>{
     }
 
     public static double partial2(IFunctionND func, DoubleVector x, int index_1, int index_2, double eps) {
-        if (x.notInRange(index_2)) throw new RuntimeException("Partial derivative index out of bounds!");
-        x.unchecked_set(index_2, x.unchecked_get(index_2) - eps);
-        double f_l = partial(func, x, index_1, eps);
-        x.unchecked_set(index_2, x.unchecked_get(index_2) + 2.0 * eps);
-        double f_r = partial(func, x, index_1, eps);
-        x.unchecked_set(index_2, x.unchecked_get(index_2) - eps);
-        return (f_r - f_l) / eps * 0.5;
+       if (x.notInRange(index_2)) throw new RuntimeException("Partial derivative index out of bounds!");
+       x.uncheckedSet(index_2, x.uncheckedGet(index_2) - eps);
+       double f_l = partial(func, x, index_1, eps);
+       x.uncheckedSet(index_2, x.uncheckedGet(index_2) + 2.0 * eps);
+       double f_r = partial(func, x, index_1, eps);
+       x.uncheckedSet(index_2, x.uncheckedGet(index_2) - eps);
+       return (f_r - f_l) / eps * 0.5;
     }
 
     public static DoubleVector gradient(IFunctionND func, DoubleVector x, double eps) {

@@ -146,6 +146,7 @@
     <ClInclude Include="main.h" />
     <ClInclude Include="matrix_utils.h" />
     <ClInclude Include="multi_dimensional.h" />
+    <ClInclude Include="numeric_matrix.h" />
     <ClInclude Include="numeric_utils.h" />
     <ClInclude Include="numeric_vector.h" />
     <ClInclude Include="one_dimensional.h" />

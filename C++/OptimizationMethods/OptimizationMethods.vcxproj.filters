@@ -59,5 +59,8 @@
     <ClInclude Include="numeric_vector.h">
       <Filter>NumericUtils</Filter>
     </ClInclude>
+    <ClInclude Include="numeric_matrix.h">
+      <Filter>NumericUtils</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
