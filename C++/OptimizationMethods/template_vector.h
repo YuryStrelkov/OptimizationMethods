@@ -7,6 +7,7 @@ using namespace std;
 #include <iostream>
 #include <iterator>
 #include <numeric>
+#include <initializer_list>
 #include "vector_itaretors.h"
 
 
@@ -81,6 +82,16 @@ public:
 		for (int index : indices()) m_data[index] = fill_f(index);
 	}
 
+	void apply(const combine_values<T, T> combiner) 
+	{
+		int index = 0;
+		for (const T value : combiner)
+		{
+			if (index == filling()) break;
+			unchecked_access(index++) = value;
+		}
+	}
+
 	void apply(const template_vector_<T>& vector, std::function<T(const T&)>  apply_f) {
 		int index = 0;
 		for(const T& value: vector.values())
@@ -95,9 +106,9 @@ public:
 		apply((*this), apply_f);
 	}
 
-	void applyEnumerate(const template_vector_<T>& vector, std::function<T(const int, const T&)>  apply_f) {
+	void applyEnumerate(const template_vector_<T>& vector, std::function<T(const int&, const T&)>  apply_f) {
 		int index = 0;
-		for (const T& value : vector.values())
+		for (const T value : vector.values())
 		{
 			if (index == filling()) break;
 			unchecked_access(index) = apply_f(index, value);
@@ -109,6 +120,7 @@ public:
 	{
 		applyEnumerate((*this), apply_f);
 	}
+
 
 	template_vector_<T> filter(std::function<bool(const T&)> condition_f)
 	{
@@ -329,6 +341,17 @@ public:
 		m_capacity = 32;
 		m_data     = alloc(m_capacity);
 	};
+
+	template_vector_(const initializer_list<T>& values) :template_vector_()
+	{
+		for (auto v : values) push_back(v);
+	};
+
+	// template< typename... Args>
+	// template_vector_(T val, Args... values):template_vector_()
+	// {
+	// 	push_back(values...);
+	// };
 
 	template_vector_(const vector_values<T>& values):template_vector_(){
 		for (const T& value : values) push_back(value);
