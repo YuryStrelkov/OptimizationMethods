@@ -27,10 +27,27 @@ private:
 		if (filling() != capacity())return;
 		resize(int(m_capacity * 1.5));
 	}
-	T*  m_data;
+	T*       m_data;
 	uint32_t m_capacity;
 	uint32_t m_filling;
 	bool     m_is_silce = false;
+protected:
+	void exchange_data(template_vector_<T>&& other)
+	{
+		if (this == &other) return;
+		dealloc();
+		if (other.is_slice()) 
+		{
+			m_data     = alloc(other.capacity());
+			m_capacity = other.capacity();
+			m_filling  = other.filling();
+			apply(other, [](const T& v) {return v;});
+			return;
+		};
+		m_data     = std::exchange(other.m_data    , nullptr);
+		m_capacity = std::exchange(other.m_capacity, -1);
+		m_filling  = std::exchange(other.m_filling , -1);
+	}
 public:
 	static T reduce(const template_vector_<T>& vector, std::function<T(const T&, const T&)> reduce_f, T init_value = T{ 0 });
 
@@ -277,12 +294,7 @@ public:
 	
 	template_vector_<T>& operator=(template_vector_<T>&& other)
 	{
-		if (this == &other)
-			return *this;
-		dealloc();
-		m_data     = std::exchange(other.m_data, nullptr); // leave other in valid state
-		m_filling  = std::exchange(other.m_filling, 0);
-		m_capacity = std::exchange(other.m_capacity, 0);
+		exchange_data(other);
 		return (*this);
 	}
 	
@@ -321,9 +333,7 @@ public:
 	
 	template_vector_(template_vector_&& other)
 	{
-		m_data     = std::exchange(other.m_data, nullptr); // leave other in valid state
-		m_filling  = std::exchange(other.m_filling, 0);
-		m_capacity = std::exchange(other.m_capacity, 0);
+		exchange_data(other);
 	};
 	
 	template_vector_(const int& cap )

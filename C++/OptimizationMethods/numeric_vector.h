@@ -15,12 +15,12 @@ template<typename T>
 class numeric_vector_: public template_vector_<T>
 {
 public:
-	numeric_vector_<T>&       normalize ();
-	numeric_vector_<T>        normalized()const;
+	numeric_vector_<T>&      normalize ();
+	numeric_vector_<T>       normalized()const;
 	T                        magintude ()const;
 	static T                 dot       (const numeric_vector_<T>& lhs, const numeric_vector_<T>& rhs);
-	static numeric_vector_<T> direction (const numeric_vector_<T>& lhs, const numeric_vector_<T>& rhs);
-	static numeric_vector_<T> gradient  (std::function<T(const numeric_vector_<T>&)> func, numeric_vector_<T>& x, const T& accuracy);
+	static numeric_vector_<T>direction (const numeric_vector_<T>& lhs, const numeric_vector_<T>& rhs);
+	static numeric_vector_<T>gradient  (std::function<T(const numeric_vector_<T>&)> func, numeric_vector_<T>& x, const T& accuracy);
 	static T                 partial   (std::function<T(const numeric_vector_<T>&)> func, numeric_vector_<T>& x, const int& index, const T& accuracy);
 	static T                 partial2  (std::function<T(const numeric_vector_<T>&)> func, numeric_vector_<T>& x, const int& index1, const int& index2, const T& accuracy);
 
@@ -84,6 +84,9 @@ public:
 	};
 
 	numeric_vector_(const numeric_vector_<T>& vector) : template_vector_<T>(vector) {
+	};
+
+	numeric_vector_(numeric_vector_<T>&& vector) : template_vector_<T>(vector) {
 	};
 
 	template<typename T1, typename T2>
