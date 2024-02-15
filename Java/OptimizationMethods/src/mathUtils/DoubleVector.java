@@ -210,13 +210,7 @@ public final class DoubleVector extends TemplateVector<Double>{
     }
 
     public static double partial2(IFunctionND func, DoubleVector x, int index_1, int index_2, double eps) {
-       if (x.notInRange(index_2)) throw new RuntimeException("Partial derivative index out of bounds!");
-       x.uncheckedSet(index_2, x.uncheckedGet(index_2) - eps);
-       double f_l = partial(func, x, index_1, eps);
-       x.uncheckedSet(index_2, x.uncheckedGet(index_2) + 2.0 * eps);
-       double f_r = partial(func, x, index_1, eps);
-       x.uncheckedSet(index_2, x.uncheckedGet(index_2) - eps);
-       return (f_r - f_l) / eps * 0.5;
+       return partial((arg)->partial(func, arg, index_1, eps), x, index_2, eps);
     }
 
     public static DoubleVector gradient(IFunctionND func, DoubleVector x, double eps) {
