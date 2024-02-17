@@ -7,6 +7,7 @@ import java.util.Arrays;
 
 public class NumericUtils
 {
+
     private static int getFactorial(int f) {
         int result = 1;
         for (int i = 1; i <= f; i++) {
@@ -253,9 +254,9 @@ public class NumericUtils
 
         public RationalNumber(final double value){
             int[] number = decimalToRational(value);
+            this._intPart     = number[0];
             this._numerator   = number[1];
             this._denominator = number[2];
-            this._intPart     = number[0];
         }
     }
 }

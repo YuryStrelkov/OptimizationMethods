@@ -6,6 +6,7 @@ import mathUtils.NumericUtils;
 
 import java.util.Objects;
 
+@SuppressWarnings("all")
 public class MultiDimensional {
     ////////////////////
     /// Lab. work #2 ///
@@ -143,19 +144,12 @@ public class MultiDimensional {
     ////////////////////
     public static DoubleVector gradientDescend(IFunctionND f, DoubleVector xStart, double eps, int maxIterations) {
         DoubleVector x_i = new DoubleVector(xStart);
-
         DoubleVector x_i_1 = new DoubleVector(xStart);
-        ;
-
         int cntr = 0;
-
         for (; cntr != maxIterations; cntr++) {
             x_i_1 = DoubleVector.sub(x_i, DoubleVector.gradient(f, x_i, eps));
-
             x_i_1 = biSect(f, x_i, x_i_1, eps, maxIterations);
-
             if (DoubleVector.sub(x_i_1, x_i).magnitude() < eps) break;
-
             x_i = x_i_1;
         }
 

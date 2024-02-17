@@ -15,12 +15,10 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
         private int _begin;
         private int _end;
         private final int _step;
-
         //exclusive index
         public int end() {
             return _end;
         }
-
         //inclusive index
         public int begin() {
             return _begin;
@@ -79,20 +77,21 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
             _end = calcIndex(slice.end(), source.size());
             _step = slice.step();
             if (_begin < 0) throw
-                    new RuntimeException(String.format("Unable to take slice with begin border of value %s, while total length is %s", _begin, source.size()));
+                    new RuntimeException(String.format("Unable to take slice with begin border of value %s," +
+                            " while total length is %s", _begin, source.size()));
             if (_end < 0) throw
-                    new RuntimeException(String.format("Unable to take slice with end border of value %s, while total length is %s", _end, source.size()));
+                    new RuntimeException(String.format("Unable to take slice with end border of value %s," +
+                            " while total length is %s", _end, source.size()));
             if (_end == _begin) throw new RuntimeException("Empty slice!");
             if ((_begin > _end) && (_step > 0)) {
-                int t = _end;
+                final int t = _end;
                 _end = _begin;
                 _begin = t;
             }
             _source = source;
         }
     }
-
-    public static final int MINIMAL_VECTOR_SIZE = 9;
+    public static final int MINIMAL_VECTOR_SIZE = 8;
     public static final double VECTOR_SIZE_UPSCALE = 1.5;
     private T[] _data; // данные (размер 1.5N, где N исходный размер вектора)
     private int _filling; // Заполнение данными от левого края
@@ -140,21 +139,35 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
         private final int _step;
         private int _begin;
 
-        public IndicesIterator(TemplateVector<Type> vector) {
+        public IndicesIterator(final TemplateVector<Type> vector) {
+            this(vector, 0, vector.size() - 1);
+        }
+
+        public IndicesIterator(final TemplateVector<Type> vector, final int rangeBegin, final int rangeEnd) {
+            if(!vector.inRange(rangeBegin))throw
+                    new RuntimeException(
+                            String.format("IndicesIterator::rangeBegin {%s} is out of range vector indices...",
+                                    rangeBegin));
+            if(!vector.inRange(rangeEnd))throw
+                    new RuntimeException(
+                            String.format("IndicesIterator::rangeEnd {%s} is out of range vector indices...",
+                                    rangeEnd));
             if (vector.isSlice()) {
-                this._begin = vector._slice.begin() - vector._slice.step();
-                this._end = vector._slice.end();
-                this._step = vector._slice.step();
+                // final int beginShift = (rangeBegin - 1) * vector._slice.step();
+                // final int endShift   = (rangeEnd + 1 - rangeBegin) * vector._slice.step();
+                this._begin = vector._slice.begin() - vector._slice.step(); // + beginShift;
+                this._end   = vector._slice.end();
+                this._step  = vector._slice.step();
                 return;
             }
-            this._begin = -1;
-            this._step = 1;
-            this._end = vector.size();
+            this._begin = rangeBegin - 1;
+            this._step  = 1;
+            this._end   = rangeEnd + 1;
         }
 
         @Override
         public boolean hasNext() {
-            _begin += _step;
+            _begin+=_step;
             return _begin != _end;
         }
 
@@ -170,22 +183,22 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
     }
 
     public final static class ValuesIterator<Type> implements Iterator<Type>, Iterable<Type> {
-        private final IndicesIterator<Type> _iterable;
+        private final IndicesIterator<Type> _indices;
         private final Type[] _data;
 
         public ValuesIterator(TemplateVector<Type> vector) {
             _data = vector._data;
-            _iterable = new IndicesIterator<>(vector);
+            _indices = new IndicesIterator<>(vector);
         }
 
         @Override
         public boolean hasNext() {
-            return _iterable.hasNext();
+            return _indices.hasNext();
         }
 
         @Override
         public Type next() {
-            return _data[_iterable.next()];
+            return _data[_indices.next()];
         }
 
         @Override
@@ -195,22 +208,22 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
     }
 
     public final static class ValuesZipIterator<T1, T2> implements Iterable<Pair<T1, T2>>, Iterator<Pair<T1, T2>> {
-        private final Iterator<T1> _iterable1;
-        private final Iterator<T2> _iterable2;
+        private final Iterator<T1> _iterator1;
+        private final Iterator<T2> _iterator2;
 
         public ValuesZipIterator(Iterable<T1> vector1, Iterable<T2> vector2) {
-            _iterable1 = vector1.iterator();
-            _iterable2 = vector2.iterator();
+            _iterator1 = vector1.iterator();
+            _iterator2 = vector2.iterator();
         }
 
         @Override
         public boolean hasNext() {
-            return _iterable1.hasNext() && _iterable2.hasNext();
+            return _iterator1.hasNext() && _iterator2.hasNext();
         }
 
         @Override
         public Pair<T1, T2> next() {
-            return new Pair<>(_iterable1.next(), _iterable2.next());
+            return new Pair<>(_iterator1.next(), _iterator2.next());
         }
 
         @Override
@@ -220,17 +233,17 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
     }
 
     public final static class ValuesMapIterator<T1, T2> implements Iterator<T1>, Iterable<T1> {
-        private final Iterator<T2> iterable;
-        private final IMapFunction<T1, T2> mapFunction;
+        private final Iterator<T2> _values;
+        private final IMapFunction<T1, T2> _mapFunction;
 
         @Override
         public boolean hasNext() {
-            return iterable.hasNext();
+            return _values.hasNext();
         }
 
         @Override
         public T1 next() {
-            return mapFunction.call(iterable.next());
+            return _mapFunction.call(_values.next());
         }
 
         @Override
@@ -239,24 +252,24 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
         }
 
         public ValuesMapIterator(Iterable<T2> iterable, IMapFunction<T1, T2> mapFunction) {
-            this.iterable = iterable.iterator();
-            this.mapFunction = mapFunction;
+            this._values = iterable.iterator();
+            this._mapFunction = mapFunction;
         }
     }
 
     public final static class ValuesCombineIterator<T1, T2> implements Iterator<T2>, Iterable<T2> {
-        private final ValuesZipIterator<T1, T1> iterator;
-        private final ICombineFunction<T1, T2> combineFunction;
+        private final ValuesZipIterator<T1, T1> _zipValues;
+        private final ICombineFunction<T1, T2> _combineFunction;
 
         @Override
         public boolean hasNext() {
-            return iterator.hasNext();
+            return _zipValues.hasNext();
         }
 
         @Override
         public T2 next() {
-            Pair<T1, T1> pair = iterator.next();
-            return combineFunction.call(pair.First, pair.Second);
+            Pair<T1, T1> pair = _zipValues.next();
+            return _combineFunction.call(pair.First, pair.Second);
         }
 
         @Override
@@ -265,13 +278,13 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
         }
 
         public ValuesCombineIterator(Iterable<T1> iterable1, Iterable<T1> iterable2, ICombineFunction<T1, T2> combineFunction) {
-            iterator = new ValuesZipIterator<>(iterable1, iterable2);
-            this.combineFunction = combineFunction;
+            _zipValues = new ValuesZipIterator<>(iterable1, iterable2);
+            this._combineFunction = combineFunction;
         }
     }
 
     public static <T> T reduce(Iterable<T> vector, IReduceFunction<T> function, T initValue) {
-        for (final T value : vector) initValue = function.call(initValue, value);
+        for (final T item : vector) initValue = function.call(initValue, item);
         return initValue;
     }
 
@@ -396,9 +409,25 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
         return new TemplateVector<>(slice, this);
     }
 
-    public void set(final int index, final T value) {
+    public TemplateVector<T> set(final int index, final T value) {
         if (notInRange(index)) throw new RuntimeException(String.format("get :: index {%s} out of range", index));
         uncheckedSet(index, value);
+        return this;
+    }
+
+    public TemplateVector<T> set(final Slice slice, TemplateVector<T> values) {
+        final int length = Math.abs(slice.end() - slice.begin()) / slice.step();
+        if (length != values.size())
+            throw new RuntimeException(
+                    String.format("get sliced access error :: slice values count {%s} while values vector size is {%s}",
+                            length,  values.size()));
+        if (length != size())
+            throw new RuntimeException(
+                    String.format("get sliced access error :: slice values count {%s} while target vector size is {%s}",
+                            length, size()));
+        TemplateVector<T> view = new TemplateVector<>(slice, this);
+        view.apply(values, v -> v);
+        return this;
     }
 
     protected T uncheckedGet(final int index) {
@@ -409,7 +438,7 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
         _data[isSlice() ? _slice.sourceIndex(index) : index] = value;
     }
 
-    private void checkAnIncreaseSize() {
+    private void checkAndIncreaseSize() {
         if (size() != capacity()) return;
         T[] newData = alloc((int) (size() * VECTOR_SIZE_UPSCALE));
         System.arraycopy(_data, 0, newData, 0, size());
@@ -422,7 +451,7 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
             _filling++;
             return this;
         }
-        checkAnIncreaseSize();
+        checkAndIncreaseSize();
         _data[_filling++] = value;
         return this;
     }
@@ -464,7 +493,7 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
         }
         if (index < 0) return this;
         if (index > size()) return pushBack(value);
-        checkAnIncreaseSize();
+        checkAndIncreaseSize();
         System.arraycopy(_data, index, _data, index + 1, size() - index);
         _data[index] = value;
         _filling++;

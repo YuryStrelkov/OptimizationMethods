@@ -40,7 +40,7 @@ public final class Slice {
 
     public boolean equals(Slice slice) {
         if(slice.begin() != begin())return false;
-        if(slice.end()   != end())return false;
+        if(slice.end()   != end() )return false;
         if(slice.step()  != step())return false;
         return true;
     }
