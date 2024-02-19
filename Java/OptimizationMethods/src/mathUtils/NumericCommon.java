@@ -16,4 +16,6 @@ public class NumericCommon {
     public static boolean      SHOW_SIMPLEX_DEBUG_LOG = false;
     public static boolean      SHOW_MATRIX_DEBUG_LOG  = false;
     public static boolean      NUMBER_RATIONAL_FORMAT = true;
+
+    // public static boolean      ITERATOR_BASED_IMPLEMENTATION = true;
 }

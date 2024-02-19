@@ -168,24 +168,25 @@ static void numericTests()
 	int rational;
 	int numerator;
 	int denominator;
-	decimalToRational(1.6666, rational, numerator, denominator);
-	std::cout << rational << " " << numerator << "/" << denominator << std::endl;
-	decimalToRational(0.6666, rational, numerator, denominator);
-	std::cout << rational << " " << numerator << "/" << denominator << std::endl;
-	decimalToRational(-3, rational, numerator, denominator);
-	std::cout << rational << " " << numerator << "/" << denominator << std::endl;
-	decimalToRational(-0.125, rational, numerator, denominator);
-	std::cout << rational << " " << numerator << "/" << denominator << std::endl;
-	decimalToRational(3.769230769230769230769, rational, numerator, denominator);
-	std::cout << rational << " " << numerator << "/" << denominator << std::endl;
+	std::cout << "1.6666       = " << rational_number(1.6666     ) << "\n";
+	std::cout << "0.6666       = " << rational_number(0.6666     ) << "\n";
+	std::cout << "-3.0         = " << rational_number(-3.0       ) << "\n";
+	std::cout << "-0.125       = " << rational_number(-0.125     ) << "\n";
+	std::cout << "3.769230769  = " << rational_number(3.769230769) << "\n";
+
+	std::cout << "-1.6666      = " << rational_number(-1.6666     ) << "\n";
+	std::cout << "-0.6666      = " << rational_number(-0.6666     ) << "\n";
+	std::cout << "3.0          = " << rational_number(3.0         ) << "\n";
+	std::cout << "0.125        = " << rational_number(0.125       ) << "\n";
+	std::cout << "-3.769230769 = " << rational_number(-3.769230769) << "\n";
 }
 
 static int testAll()
 {
-	oneDimensionalMethodsTest();
-	multiDimensionalMethodsTest();
-	matrixTest();
-	simplexMethodTest();
+	// oneDimensionalMethodsTest();
+	// multiDimensionalMethodsTest();
+	// matrixTest();
+	// simplexMethodTest();
 	numericTests();
 	return 0;
 }

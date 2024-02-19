@@ -1,8 +1,5 @@
 #pragma once
-#include <algorithm>
-#include <iostream>
-#include <vector>
-
+#include "common.h"
 
 template <typename Type>
 struct iterator_ : public std::iterator<

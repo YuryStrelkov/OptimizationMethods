@@ -1,4 +1,10 @@
 #pragma once
+#include <functional>
+#include <algorithm>
+#include <string>
+#include <iterator>
+#include <numeric>
+#include <initializer_list>
 #include <vector>
 #include <stdio.h>
 #include <iostream>

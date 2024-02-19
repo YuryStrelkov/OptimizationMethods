@@ -1,14 +1,14 @@
 #pragma once
 #include "vector_utils.h"
 
-static mat_mn zeros(const int rows, const int cols)
+static mat_mn zeros(const int rows_count, const int cols_count)
 {
 	mat_mn res;
-	res.resize(rows);
+	res.resize(rows_count);
 	for (auto& row : res)
 	{
-		row.resize(cols);
-		for (int i = 0; i < cols; i++)	row[i] = 0;
+		row.resize(cols_count);
+		for (int i = 0; i < cols_count; i++)	row[i] = 0;
 	}
 	return res;
 }
@@ -18,15 +18,15 @@ static mat_mn zeros(const int size)
 	return zeros(size, size);
 }
 
-static mat_mn identity(const int rows, const int cols)
+static mat_mn identity(const int rows_count, const int cols_count)
 {
 	mat_mn res;
-	res.resize(rows);
+	res.resize(rows_count);
 	int row_n = 0;
 	for (auto& row : res)
 	{
-		row.resize(cols);
-		for (int i = 0; i < cols; i++)row[i] = row_n == i ? 1.0 : 0.0;
+		row.resize(cols_count);
+		for (int i = 0; i < cols_count; i++)row[i] = row_n == i ? 1.0 : 0.0;
 		row_n++;
 	}
 	return res;
@@ -164,21 +164,21 @@ static mat_mn operator-(const mat_mn& a, const mat_mn& b)
 
 static void lu(const mat_mn& mat, mat_mn& low, mat_mn& up)
 {
-	int rows = mat.size();
+	int rows_count = mat.size();
 
-	int cols = mat[0].size();
+	int cols_count = mat[0].size();
 
-	if (rows != cols) throw std::runtime_error("error :: matrix lu decomposition :: non square matrix");
+	if (rows_count != cols_count) throw std::runtime_error("error :: matrix lu decomposition :: non square matrix");
 
-	if (size(mat) != size(low))	low = zeros(rows, cols);
+	if (size(mat) != size(low))	low = zeros(rows_count, cols_count);
 
-	if (size(mat) != size(up)) up = zeros(rows, cols);
+	if (size(mat) != size(up)) up = zeros(rows_count, cols_count);
 
 	int i = 0, j = 0, k = 0;
 
-	for (i = 0; i < rows; i++)
+	for (i = 0; i < rows_count; i++)
 	{
-		for (j = 0; j < rows; j++)
+		for (j = 0; j < rows_count; j++)
 		{
 			if (j >= i)
 			{
@@ -188,7 +188,7 @@ static void lu(const mat_mn& mat, mat_mn& low, mat_mn& up)
 			}
 		}
 
-		for (j = 0; j < cols; j++)
+		for (j = 0; j < cols_count; j++)
 		{
 			if (j < i)continue;
 			
@@ -241,11 +241,11 @@ static vec_n linsolve(const mat_mn& low, const mat_mn& up, const vec_n& b)
 
 static vec_n linsolve(const mat_mn& mat, const vec_n& b)
 {
-	int rows = mat.size();
+	int rows_count = mat.size();
 
-	int cols = mat[0].size();
+	int cols_count = mat[0].size();
 
-	if (rows != cols) throw std::runtime_error("error :: matrix inversion :: non square matrix");
+	if (rows_count != cols_count) throw std::runtime_error("error :: matrix inversion :: non square matrix");
 
 	mat_mn low, up;
 
@@ -256,11 +256,11 @@ static vec_n linsolve(const mat_mn& mat, const vec_n& b)
 
 static mat_mn invert(const mat_mn& mat)
 {
-	int rows = mat.size();
+	int rows_count = mat.size();
 
-	int cols = mat[0].size();
+	int cols_count = mat[0].size();
 
-	if (rows != cols) throw std::runtime_error("error :: matrix inversion :: non square matrix");
+	if (rows_count != cols_count) throw std::runtime_error("error :: matrix inversion :: non square matrix");
 
 	mat_mn low, up, inv;
 
@@ -268,19 +268,19 @@ static mat_mn invert(const mat_mn& mat)
 
 	vec_n b, col;
 
-	b.resize(rows);
+	b.resize(rows_count);
 
 	for (int i = 0; i < b.size(); i++) b[i] = 0.0;
 	
-	inv = zeros(rows);
+	inv = zeros(rows_count);
 
-	for (int i = 0; i < cols; i++)
+	for (int i = 0; i < cols_count; i++)
 	{
 		b[i] = 1.0;
 		col = linsolve(low, up, b);
 		if (col.size() == 0) throw std::runtime_error("error :: unable to find matrix inversion");
 		b[i] = 0.0;
-		for (int j = 0; j < rows; j++) inv[j][i] = col[j];
+		for (int j = 0; j < rows_count; j++) inv[j][i] = col[j];
 	}
 	return inv;
 }

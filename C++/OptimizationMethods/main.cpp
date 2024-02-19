@@ -101,17 +101,19 @@ static void  lab_4(func_nd f)
 }
 
 // #include "template_vector.h"
-#include "numeric_vector.h"
+// #include "numeric_vector.h"
+#include "numeric_matrix.h"
 
 int main()
 {
 	int a = 13;
 	int* b = &a;
 	std::cout << "b[0]: " << b[0] << "\n";
-
+	// testAll();
 	// template_vector_test();
-	numeric_vector_test();
-	 // double summ = second.reduce([](const double& l, const double& r) {return l + r; });
+	// numeric_vector_test();
+	numeric_matrix_test();
+	// double summ = second.reduce([](const double& l, const double& r) {return l + r; });
 	 // std::cout << "summ: " << summ << "\n";
 	 // std::cout << "sum:" << first.reduce([](const int& l, const int& r) {return l + r; }) << "\n";
 

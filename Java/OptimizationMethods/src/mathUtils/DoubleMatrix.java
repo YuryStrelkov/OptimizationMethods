@@ -53,7 +53,7 @@ public final class DoubleMatrix extends TemplateVector<DoubleVector> {
      * @param original исходная матрица.
      */
     public DoubleMatrix(DoubleMatrix original) {
-        super(original.rows());
+        super(original.rowsCount());
         apply(original, DoubleVector::new);
     }
 
@@ -86,7 +86,7 @@ public final class DoubleMatrix extends TemplateVector<DoubleVector> {
      *
      * @return Количество строк.
      */
-    public int rows() {
+    public int rowsCount() {
         return super.size();
     }
 
@@ -95,8 +95,8 @@ public final class DoubleMatrix extends TemplateVector<DoubleVector> {
      *
      * @return Количество столбцов.
      */
-    public int cols() {
-        if (rows() == 0) return 0;
+    public int colsCount() {
+        if (rowsCount() == 0) return 0;
         return row(0).size();
     }
 
@@ -108,7 +108,7 @@ public final class DoubleMatrix extends TemplateVector<DoubleVector> {
      */
     public DoubleMatrix addCol(DoubleVector col) {
         if (col == null) return this;
-        if (col.size() != rows()) throw new RuntimeException("Error::AddCol::col.Size != NRows");
+        if (col.size() != rowsCount()) throw new RuntimeException("Error::AddCol::col.Size != NRows");
         applyEnumerate((index, row) -> {
             row.pushBack(col.get(index));
             return row;
@@ -124,7 +124,7 @@ public final class DoubleMatrix extends TemplateVector<DoubleVector> {
      */
     public DoubleMatrix addRow(DoubleVector row) {
         if (row == null) return this;
-        if (row.size() != cols()) throw new RuntimeException("Error::AddRow::row.Size != NCols");
+        if (row.size() != colsCount()) throw new RuntimeException("Error::AddRow::row.Size != NCols");
         pushBack(row);
         return this;
     }
@@ -135,7 +135,7 @@ public final class DoubleMatrix extends TemplateVector<DoubleVector> {
      * @return массив из целых чисел (количество строк, количество столбцов).
      */
     public final int[] shape() {
-        return new int[]{rows(), cols()};
+        return new int[]{rowsCount(), colsCount()};
     }
 
     /**
@@ -189,11 +189,10 @@ public final class DoubleMatrix extends TemplateVector<DoubleVector> {
         // });
         int row, col;
         double val;
-        for (row = 0; row < res.rows(); row++) {
+        for (row = 0; row < res.rowsCount(); row++) {
             for (col = 0; col <= row; col++) {
                 val = DoubleVector.partial2(f, x, row, col, eps);
-                res.uncheckedSet(row, col, val);
-                res.uncheckedSet(col, row, val);
+                res.uncheckedSet(row, col, val).uncheckedSet(col, row, val);
             }
         }
         return res;
@@ -204,8 +203,8 @@ public final class DoubleMatrix extends TemplateVector<DoubleVector> {
     }
 
     public static int rank(DoubleMatrix A) {
-        int n_rows = A.rows();
-        int m_cols = A.cols();
+        int n_rows = A.rowsCount();
+        int m_cols = A.colsCount();
         int row, col;
         int rank = 0;
         boolean[] row_selected = new boolean[n_rows];
@@ -234,7 +233,7 @@ public final class DoubleMatrix extends TemplateVector<DoubleVector> {
 
     public double trace() {
         double tr = 0;
-        for (int row = 0; row < Math.min(rows(), cols()); row++) tr += uncheckedGet(row, row);
+        for (int row = 0; row < Math.min(rowsCount(), colsCount()); row++) tr += uncheckedGet(row, row);
         return tr;
     }
 
@@ -245,9 +244,9 @@ public final class DoubleMatrix extends TemplateVector<DoubleVector> {
         DoubleMatrix copy = new DoubleMatrix(this);
         double det = 1.0;
         int row, col, pivot;
-        for (row = 0; row < copy.rows(); row++) {
+        for (row = 0; row < copy.rowsCount(); row++) {
             pivot = row;
-            for (col = row + 1; col < copy.rows(); col++) {
+            for (col = row + 1; col < copy.rowsCount(); col++) {
                 if (Math.abs(copy.uncheckedGet(col, row)) > Math.abs(copy.uncheckedGet(pivot, row))) {
                     pivot = col;
                 }
@@ -262,9 +261,9 @@ public final class DoubleMatrix extends TemplateVector<DoubleVector> {
                 return 0;
             }
             det *= copy.uncheckedGet(row, row);
-            for (int j = row + 1; j < copy.rows(); j++) {
+            for (int j = row + 1; j < copy.rowsCount(); j++) {
                 double factor = copy.uncheckedGet(j, row) / copy.uncheckedGet(row, row);
-                for (int k = row + 1; k < copy.rows(); k++) {
+                for (int k = row + 1; k < copy.rowsCount(); k++) {
                     copy.uncheckedSet(j, k, copy.uncheckedGet(j, k) - factor * copy.uncheckedGet(row, k));
                 }
             }
@@ -273,7 +272,7 @@ public final class DoubleMatrix extends TemplateVector<DoubleVector> {
     }
 
     public static DoubleMatrix mexp(final DoubleMatrix matrix, final int steps) {
-        DoubleMatrix result = identity(matrix.rows(), matrix.cols());
+        DoubleMatrix result = identity(matrix.rowsCount(), matrix.colsCount());
         DoubleMatrix x_matrix = new DoubleMatrix(matrix);
         for (int index = 0; index < Math.min(NumericUtils.factorialsTable128.length, steps); index++) {
             result.add(mul(x_matrix, 1.0 / NumericUtils.factorialsTable128[index]));
@@ -351,16 +350,16 @@ public final class DoubleMatrix extends TemplateVector<DoubleVector> {
     public static DoubleMatrix[] lu(DoubleMatrix src) {
         DoubleMatrix low, up;
 
-        if (src.cols() != src.rows()) throw new RuntimeException("LU decomposition error::non square matrix");
+        if (src.colsCount() != src.rowsCount()) throw new RuntimeException("LU decomposition error::non square matrix");
 
-        low = new DoubleMatrix(src.cols(), src.cols());
+        low = new DoubleMatrix(src.colsCount(), src.colsCount());
 
-        up = new DoubleMatrix(src.cols(), src.cols());
+        up = new DoubleMatrix(src.colsCount(), src.colsCount());
 
         int row, col, index;
 
-        for (row = 0; row < src.cols(); row++) {
-            for (col = 0; col < src.cols(); col++) {
+        for (row = 0; row < src.colsCount(); row++) {
+            for (col = 0; col < src.colsCount(); col++) {
                 if (col >= row) {
                     low.uncheckedSet(col, row, src.uncheckedGet(col, row));
                     for (index = 0; index < row; index++)
@@ -369,7 +368,7 @@ public final class DoubleMatrix extends TemplateVector<DoubleVector> {
                 }
             }
 
-            for (col = 0; col < src.cols(); col++) {
+            for (col = 0; col < src.colsCount(); col++) {
                 if (col < row) continue;
                 if (col == row) {
                     up.uncheckedSet(row, col, 1.0);
@@ -396,13 +395,13 @@ public final class DoubleMatrix extends TemplateVector<DoubleVector> {
     private static DoubleVector linsolve(DoubleMatrix low, DoubleMatrix up, DoubleVector b) {
         double det = 1.0;
         DoubleVector x, z;
-        for (int i = 0; i < up.rows(); i++) det *= (up.uncheckedGet(i, i) * up.uncheckedGet(i, i));
+        for (int i = 0; i < up.rowsCount(); i++) det *= (up.uncheckedGet(i, i) * up.uncheckedGet(i, i));
         if (Math.abs(det) < NumericCommon.NUMERIC_ACCURACY_HIGH) {
             if (NumericCommon.SHOW_MATRIX_DEBUG_LOG)
                 System.out.println("mathUtils.Matrix is probably singular :: unable to solve A^-1 b = x");
             return null;
         }
-        z = new DoubleVector(up.rows());
+        z = new DoubleVector(up.rowsCount());
         double tmp;
         for (int i = 0; i < z.size(); i++) {
             tmp = 0.0;
@@ -410,7 +409,7 @@ public final class DoubleMatrix extends TemplateVector<DoubleVector> {
             z.uncheckedSet(i, (b.get(i) - tmp) / low.uncheckedGet(i, i));
         }
 
-        x = new DoubleVector(up.rows());
+        x = new DoubleVector(up.rowsCount());
 
         for (int i = z.size() - 1; i >= 0; i--) {
             tmp = 0.0;
@@ -428,7 +427,7 @@ public final class DoubleMatrix extends TemplateVector<DoubleVector> {
      * @return x = A^-1 * b.
      */
     public static DoubleVector linsolve(DoubleMatrix mat, DoubleVector b) {
-        if (mat.rows() != mat.cols()) throw new RuntimeException("non square matrix");
+        if (mat.rowsCount() != mat.colsCount()) throw new RuntimeException("non square matrix");
         DoubleMatrix[] lu_ = lu(mat);
         return linsolve(lu_[0], lu_[1], b);
     }
@@ -440,13 +439,13 @@ public final class DoubleMatrix extends TemplateVector<DoubleVector> {
      * @return A^-1.
      */
     public static DoubleMatrix invert(DoubleMatrix mat) {
-        if (mat.rows() != mat.cols()) throw new RuntimeException("non square matrix");
+        if (mat.rowsCount() != mat.colsCount()) throw new RuntimeException("non square matrix");
 
         DoubleMatrix[] lu_ = lu(mat);
 
         double det = 1.0;
 
-        for (int rows = 0; rows < lu_[0].rows(); rows++)
+        for (int rows = 0; rows < lu_[0].rowsCount(); rows++)
             det *= (lu_[0].uncheckedGet(rows, rows) * lu_[0].uncheckedGet(rows, rows));
 
         if (Math.abs(det) < NumericCommon.NUMERIC_ACCURACY_HIGH) {
@@ -457,17 +456,17 @@ public final class DoubleMatrix extends TemplateVector<DoubleVector> {
 
         DoubleVector b, col;
 
-        b = new DoubleVector(mat.rows());
+        b = new DoubleVector(mat.rowsCount());
 
-        DoubleMatrix inv = zeros(mat.rows());
+        DoubleMatrix inv = zeros(mat.rowsCount());
 
-        for (int cols = 0; cols < mat.cols(); cols++) {
+        for (int cols = 0; cols < mat.colsCount(); cols++) {
             b.set(cols, 1.0);
             col = linsolve(lu_[0], lu_[1], b);
             if (col == null) throw new RuntimeException("unable to find matrix inversion");
             if (col.size() == 0) throw new RuntimeException("unable to find matrix inversion");
             b.set(cols, 0.0);
-            for (int rows = 0; rows < mat.rows(); rows++) inv.uncheckedSet(rows, cols, col.get(rows));
+            for (int rows = 0; rows < mat.rowsCount(); rows++) inv.uncheckedSet(rows, cols, col.get(rows));
         }
         return inv;
     }
@@ -479,15 +478,15 @@ public final class DoubleMatrix extends TemplateVector<DoubleVector> {
      * @return A^T.
      */
     public static DoubleMatrix transpose(DoubleMatrix mat) {
-        DoubleMatrix trans = new DoubleMatrix(mat.cols(), mat.rows());
-        for (int row = 0; row < mat.rows(); row++)
-            for (int col = 0; col < mat.cols(); col++) trans.uncheckedSet(col, row, mat.uncheckedGet(row, col));
+        DoubleMatrix trans = new DoubleMatrix(mat.colsCount(), mat.rowsCount());
+        for (int row = 0; row < mat.rowsCount(); row++)
+            for (int col = 0; col < mat.colsCount(); col++) trans.uncheckedSet(col, row, mat.uncheckedGet(row, col));
         return trans;
     }
 
     private static void checkSizes(DoubleMatrix left, DoubleMatrix right) {
-        if (left.rows() != right.rows()) throw new RuntimeException("Dot product :: this.Size()!= other.Size()");
-        if (left.cols() != right.rows()) throw new RuntimeException("Dot product :: this.Size()!= other.Size()");
+        if (left.rowsCount() != right.rowsCount()) throw new RuntimeException("Dot product :: this.Size()!= other.Size()");
+        if (left.colsCount() != right.rowsCount()) throw new RuntimeException("Dot product :: this.Size()!= other.Size()");
     }
 
     ///////////////////////////////
@@ -539,21 +538,37 @@ public final class DoubleMatrix extends TemplateVector<DoubleVector> {
     ////  MULTIPLICATION EXTERNAL  ////
     ///////////////////////////////////
     public static DoubleMatrix mul(DoubleMatrix left, DoubleMatrix right) {
-        if (left.cols() != right.rows()) throw new RuntimeException("Error matrix multiplication::a.NCols != b.NRows");
-        DoubleMatrix right_t = transpose(right);
-        return new DoubleMatrix(map(left, vec -> new DoubleVector(map(right_t, col -> col.dot(vec)))));
+        if (left.colsCount() != right.rowsCount()) throw new RuntimeException("Error matrix multiplication::a.NCols != b.NRows");
+        // Возможно версия в лоб для наших целей будет быстрее, чем транспонирование и поэлементное
+        // скалярное произведение... Но последнее много изящнее, да...
+        DoubleMatrix result = new DoubleMatrix(left.rowsCount(), right.colsCount());
+        int rowIndex, colIndex, index;
+        for (rowIndex = 0; rowIndex < left.rowsCount(); rowIndex++) {
+            final DoubleVector row = left.get(rowIndex);
+            for (colIndex = 0; colIndex < right.colsCount(); colIndex++) {
+                double result_ij = 0.0;
+                for (index = 0; index < right.rowsCount(); index++)
+                    result_ij += right.uncheckedGet(index, colIndex) * row.uncheckedGet(index);
+                result.uncheckedSet(rowIndex, colIndex, result_ij);
+            }
+        }
+        return result;
+        // DoubleMatrix right_t = transpose(right);
+        // return new DoubleMatrix(map(left, vec -> new DoubleVector(map(right_t, col -> col.dot(vec)))));
     }
 
     public static DoubleVector mul(DoubleMatrix left, DoubleVector right) {
-        if (left.cols() != right.size()) throw new RuntimeException("unable to matrix and vector multiply");
+        if (left.colsCount() != right.size()) throw new RuntimeException("unable to matrix and vector multiply");
         return new DoubleVector(map(left, row -> row.dot(right)));
     }
 
     public static DoubleVector mul(DoubleVector left, DoubleMatrix right) {
-        if (right.rows() != left.size()) throw new RuntimeException("unable to matrix and vector multiply");
-        DoubleVector result = new DoubleVector(right.cols());
-        for (int row = 0; row < right.cols(); row++) {
-            for (int col = 0; col < right.rows(); col++) result.set(row, right.get(col, row) * left.get(row));
+        if (right.rowsCount() != left.size()) throw new RuntimeException("unable to matrix and vector multiply");
+        DoubleVector result = new DoubleVector(right.colsCount());
+        for (int row = 0; row < right.colsCount(); row++) {
+            final double rowValue = left.uncheckedGet(row);
+            for (int col = 0; col < right.rowsCount(); col++)
+                result.uncheckedSet(row, right.get(col, row) * rowValue);
         }
         return result;
     }
@@ -606,7 +621,7 @@ public final class DoubleMatrix extends TemplateVector<DoubleVector> {
     }
 
     public static DoubleVector div(DoubleMatrix left, DoubleVector right) {
-        if (left.cols() != right.size()) throw new RuntimeException("unable to matrix and vector multiply");
+        if (left.colsCount() != right.size()) throw new RuntimeException("unable to matrix and vector multiply");
         return new DoubleVector(combine(left, right, (l, r) -> l.dot(r)));
     }
 

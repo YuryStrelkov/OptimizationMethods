@@ -247,10 +247,10 @@ namespace sm
 			{
 				if (row[col] >= 0)
 				{
-					stream << std::left << std::setw(colom_w) << std::setfill(separator) << "| " + strRational(row[col]);
+					stream << std::left << std::setw(colom_w) << std::setfill(separator) << "| " + rational_str(row[col]);
 					continue;
 				}
-				stream << std::left << std::setw(colom_w) << std::setfill(separator) << "|" + strRational(row[col]);
+				stream << std::left << std::setw(colom_w) << std::setfill(separator) << "|" + rational_str(row[col]);
 			}
 
 			stream << "\n";
@@ -685,9 +685,9 @@ namespace sm
 			solution = currentSimplexSolution();
 
 #if _DEBUG
-			std::cout << "a_main { " << main_row + 1 << ", " << main_col + 1 << " } = " << strRational(a_ik) << "\n";
+			std::cout << "a_main { " << main_row + 1 << ", " << main_col + 1 << " } = " << rational_str(a_ik) << "\n";
 			std::cout << *this;
-			std::cout << "current_solution" << strRational(solution) << "\n";
+			std::cout << "current_solution" << rational_str(solution) << "\n";
 			std::cout << "\n";
 #endif
 		}
@@ -695,7 +695,7 @@ namespace sm
 		{
 			solution = currentSimplexSolution(true);
 			/// формирование ответа
-			std::cout << "solution : " << strRational(solution) << "\n";
+			std::cout << "solution : " << rational_str(solution) << "\n";
 			return solution;
 		}
 		std::cout << "Simplex is unresolvable\n";

@@ -101,6 +101,11 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
         return (T[]) (new Object[capacity]);
     }
 
+    private int sourceIndex(final int index)
+    {
+        return isSlice() ? _slice.sourceIndex(index) : index;
+    }
+
     public final static class Pair<T1, T2> {
         public final T1 First;
         public final T2 Second;
@@ -431,11 +436,11 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
     }
 
     protected T uncheckedGet(final int index) {
-        return _data[isSlice() ? _slice.sourceIndex(index) : index];
+        return _data[sourceIndex(index)];
     }
 
     protected void uncheckedSet(final int index, final T value) {
-        _data[isSlice() ? _slice.sourceIndex(index) : index] = value;
+        _data[sourceIndex(index)] = value;
     }
 
     private void checkAndIncreaseSize() {
@@ -458,7 +463,7 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
 
     public int indexOf(final T item) {
         for (final int index : new IndicesIterator<>(this))
-            if (_data[index].equals(item)) return _slice.sliceIndex(index);
+            if (_data[index].equals(item)) return sourceIndex(index);
         return -1;
     }
 
@@ -562,8 +567,8 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
     protected TemplateVector(final Slice slice, final TemplateVector<T> source) {
         // Нельзя создать срез от среза
         // Такой срез будет ссылаться на исходный вектор
-        _slice = new SliceObject<>(slice, source.isSlice() ? source._slice.source() : source);
+        _slice   = new SliceObject<>(slice, source.isSlice() ? source._slice.source() : source);
         _filling = _slice.length();
-        _data = source._data;
+        _data    = _slice.source()._data;
     }
 }
