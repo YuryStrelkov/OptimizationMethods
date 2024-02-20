@@ -252,9 +252,9 @@ public final class DoubleMatrix extends TemplateVector<DoubleVector> {
                 }
             }
             if (pivot != row) {
-                var tmp = copy.uncheckedGet(pivot);
-                copy.uncheckedSet(pivot, copy.uncheckedGet(row));
-                copy.uncheckedSet(row, tmp);
+                var tmp = copy.uncheckedGet(pivot, col);
+                copy.uncheckedSet(pivot, col, copy.uncheckedGet(row, col));
+                copy.uncheckedSet(row, col, tmp);
                 det *= -1.0;
             }
             if (Math.abs(copy.uncheckedGet(row, row)) < NumericCommon.NUMERIC_ACCURACY_HIGH) {
@@ -403,18 +403,21 @@ public final class DoubleMatrix extends TemplateVector<DoubleVector> {
         }
         z = new DoubleVector(up.rowsCount());
         double tmp;
-        for (int i = 0; i < z.size(); i++) {
+        int row, col;
+        for (row = 0; row < z.size(); row++) {
             tmp = 0.0;
-            for (int j = 0; j < i; j++) tmp += z.uncheckedGet(j) * low.uncheckedGet(i, j);
-            z.uncheckedSet(i, (b.get(i) - tmp) / low.uncheckedGet(i, i));
+            for (col = 0; col < row; col++)
+                tmp += z.uncheckedGet(col) * low.uncheckedGet(row, col);
+            z.uncheckedSet(row, (b.get(row) - tmp) / low.uncheckedGet(row, row));
         }
 
         x = new DoubleVector(up.rowsCount());
 
-        for (int i = z.size() - 1; i >= 0; i--) {
+        for (row = z.size() - 1; row >= 0; row--) {
             tmp = 0.0;
-            for (int j = i + 1; j < z.size(); j++) tmp += x.uncheckedGet(j) * up.uncheckedGet(i, j);
-            x.uncheckedSet(i, z.get(i) - tmp);
+            for (col = row + 1; col < z.size(); col++)
+                tmp += x.uncheckedGet(col) * up.uncheckedGet(row, col);
+            x.uncheckedSet(row, z.get(row) - tmp);
         }
         return x;
     }
@@ -466,7 +469,8 @@ public final class DoubleMatrix extends TemplateVector<DoubleVector> {
             if (col == null) throw new RuntimeException("unable to find matrix inversion");
             if (col.size() == 0) throw new RuntimeException("unable to find matrix inversion");
             b.set(cols, 0.0);
-            for (int rows = 0; rows < mat.rowsCount(); rows++) inv.uncheckedSet(rows, cols, col.get(rows));
+            for (int rows = 0; rows < mat.rowsCount(); rows++)
+                inv.uncheckedSet(rows, cols, col.get(rows));
         }
         return inv;
     }

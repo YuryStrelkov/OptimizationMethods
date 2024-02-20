@@ -13,8 +13,9 @@ private:
 	struct slice_object
 	{
 	private:
-		static int calc_index(const int& index, const int& stride) {
-			return index == stride ? stride : (stride + index) % stride;
+		static int calc_index(const int& index, const int& stride, const int& step) {
+			// return index == stride ? stride : index % (stride + step);
+			return index % (stride + step);
 		};
 	private:
 		int m_begin;
@@ -71,8 +72,8 @@ private:
 		}
 
 		slice_object(const slice& _slice, template_vector_<T>& source) {
-			m_begin = calc_index(_slice.begin(), source.filling());
-			m_end   = calc_index(_slice.end(),   source.filling());
+			m_begin = calc_index(_slice.begin(), source.filling(), _slice.step());
+			m_end   = calc_index(_slice.end(),   source.filling(), _slice.step());
 			m_step  = _slice.step();
 			if (begin() < 0) throw std::runtime_error("Unable to take slice with begin border of value " + std::to_string(m_begin) +
 													  ", while total length is" + std::to_string(source.filling()));

@@ -125,7 +125,7 @@ static std::string rational_str(const double& val, const bool& full_rational = t
 	int numerator;
 	int denomerator;
 	decimal_to_rational(val, int_part, numerator, denomerator);
-	return rational_str(int_part, numerator, denomerator);
+	return rational_str(int_part, numerator, denomerator, full_rational);
 }
 
 static std::string rational_str(const vec_n& val, const bool& full_rational = true)
