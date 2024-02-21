@@ -10,12 +10,12 @@ struct iterator_ : public std::iterator<
 	const Type&>             // reference
 {
 // public:
-// 	bool             operator!=(const iterator_<Type>& other) const { return !(*this == other); }
-// 	bool             operator==(const iterator_<Type>& other) const { return  false; }
-// 	iterator_<Type>  operator++(int)                                { iterator_<Type> retval = *this; ++(*this); return retval; }
-// 	iterator_<Type>& operator++()                                   { return *this; }
-// 	const Type*      operator* ()                             const { return nullptr; }
-// 	const Type&      operator& ()                             const { return 0; }
+//		bool             operator!=(const iterator_<Type>& other) const { return !(*this == other); }
+//		bool             operator==(const iterator_<Type>& other) const { return  false; }
+//		iterator_<Type>  operator++(int)                                { iterator_<Type> retval = *this; ++(*this); return retval; }
+//		iterator_<Type>& operator++()                                   { return *this; }
+//		const Type*      operator* ()                             const { return nullptr; }
+//		const Type&      operator& ()                             const { return 0; }
 };
 
 template <typename T> struct iterable_
