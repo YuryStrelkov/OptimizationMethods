@@ -704,7 +704,7 @@ inline std::ostream& operator<<(std::ostream& stream, const numeric_matrix_<T>& 
 		}
 		stream << (col == rhs.cols_count() - 1 ? "]\n" : ",\n");
 	}
-	stream << "\n]";
+	stream << "]";
 #else
 	for (row = 0; row < rhs.rows_count(); row++)
 	{
@@ -716,7 +716,7 @@ inline std::ostream& operator<<(std::ostream& stream, const numeric_matrix_<T>& 
 		}
 		stream << (col == rhs.cols_count() - 1 ? "]\n" : ",\n");
 }
-	stream << "\n]";
+	stream << "]";
 	}
 #endif
 	return stream;
@@ -725,7 +725,7 @@ inline std::ostream& operator<<(std::ostream& stream, const numeric_matrix_<T>& 
 template<typename T>
 inline numeric_matrix_<T>& numeric_matrix_<T>::add_col(const numeric_vector_<T>& col)
 {
-	if (rows_count() != col.filling())return(*this);
+	if (rows_count() != col.filling())return *this;
 	int insert_index = cols_count();
 	for (const T& item : col.values())
 	{
@@ -733,16 +733,16 @@ inline numeric_matrix_<T>& numeric_matrix_<T>::add_col(const numeric_vector_<T>&
 		insert_index += cols_count() + 1;
 	}
 	this->m_cols += 1;
-	return(*this);
+	return *this;
 }
 
 template<typename T>
 inline numeric_matrix_<T>& numeric_matrix_<T>::add_row(const numeric_vector_<T>& row)
 {
-	if (cols_count() != row.filling())return(*this);
+	if (cols_count() != row.filling())return *this;
 	for (const T& item: row.values()) template_vector_<T>::push_back(item);
 	this->m_rows += 1;
-	return(*this);
+	return *this;
 }
 
 template<typename T>
@@ -755,7 +755,7 @@ inline numeric_matrix_<T>& numeric_matrix_<T>::add_col()
 		insert_index += cols_count() + 1;
 	}
 	this->m_cols += 1;
-	return(*this);
+	return *this;
 }
 
 template<typename T>
@@ -764,7 +764,7 @@ inline numeric_matrix_<T>& numeric_matrix_<T>::add_row()
 	for (int32_t index = 0; index < cols_count(); index++)
 		template_vector_<T>::push_back(T{ 0.0 });
 	this->m_rows += 1;
-	return(*this);
+	return *this;
 }
 
 template<typename T>
