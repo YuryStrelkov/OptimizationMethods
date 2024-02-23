@@ -31,37 +31,37 @@ public:
 class indices_iterator: public iterator_<int32_t>
 {
 private:
-	int32_t _index;
-	int32_t _step;
+	int32_t m_index;
+	int32_t m_step;
 public:
-	indices_iterator(const int32_t& index, const int32_t& step)
+	indices_iterator(const int32_t index, const int32_t step)
 	{
-		_index = index;
-		_step = step;
+		m_index = index;
+		m_step = step;
 	}
 	// Унаследовано через iterator_
-	bool              operator==(const indices_iterator& other) const /*override*/ { return _index == other._index; }
-    bool              operator!=(const indices_iterator& other) const /*override*/ { return !(*this == other); }
-	indices_iterator& operator++()                                    /*override*/ { _index += _step; return *this; }
-	indices_iterator  operator++(int)                                 /*override*/ { indices_iterator& retval = *this; ++(*this); return retval; }
-	reference         operator*()                               const /*override*/ { return _index; }
-	pointer           operator&()                               const /*override*/ { return &_index; }
+	bool              operator==(const indices_iterator& other) const { return m_index == other.m_index; }
+    bool              operator!=(const indices_iterator& other) const { return !(*this == other); }
+	indices_iterator& operator++()                                    { m_index += m_step; return *this; }
+	indices_iterator  operator++(int)                                 { indices_iterator& retval = *this; ++(*this); return retval; }
+	reference         operator*()                               const { return m_index; }
+	pointer           operator&()                               const { return &m_index; }
 };
 
 struct vector_indices: iterable_<indices_iterator>
 {
 private:
-	const int32_t _begin;
-	const int32_t _end;
-	const int32_t _step;
+	const int32_t m_begin;
+	const int32_t m_end;
+	const int32_t m_step;
 public:
-	vector_indices(const int32_t& start, const int32_t& stop, const int32_t& step) :_begin(start), _end(stop), _step(step) {}
-	vector_indices(const int32_t& start, const int32_t& stop) :_begin(start), _end(stop), _step(1) {}
-	vector_indices(const int32_t& range) :_begin(0), _end(range), _step(1) {}
+	vector_indices(const int32_t start, const int32_t stop, const int32_t step) :m_begin(start), m_end(stop), m_step(step) {}
+	vector_indices(const int32_t start, const int32_t stop) :m_begin(start), m_end(stop), m_step(1) {}
+	vector_indices(const int32_t range) :m_begin(0), m_end(range), m_step(1) {}
 
 	// Унаследовано через iterable_
-	indices_iterator begin() const override { return indices_iterator(_begin, _step); }
-	indices_iterator end() const override { return indices_iterator(_end, _step); }
+	indices_iterator begin() const override { return indices_iterator(m_begin, m_step); }
+	indices_iterator end() const override { return indices_iterator(m_end, m_step); }
 };
 
 //////////////////////////////////////
@@ -71,30 +71,30 @@ template<typename T>
 struct values_iterator: public iterator_<T>
 {
 private:
-	const T* data;
-	indices_iterator index;
+	const T* m_data;
+	indices_iterator m_index;
 public:
-	values_iterator<T>(const T* data, indices_iterator&& indices) : data(data), index(indices) {}
-	values_iterator<T>(const T value): data(&value), index(vector_indices(0, 0, 0)){}
-	bool               operator==(const values_iterator<T>& other) const { return index == other.index; }
+	values_iterator<T>(const T* data, indices_iterator&& indices) : m_data(data), m_index(indices) {}
+	values_iterator<T>(const T value): m_data(&value), m_index(vector_indices(0, 0, 0)){}
+	bool               operator==(const values_iterator<T>& other) const { return m_index == other.m_index; }
 	bool               operator!=(const values_iterator<T>& other) const { return !(*this == other); }
-	values_iterator<T>&operator++()                                      { index++; return *this; }
+	values_iterator<T>&operator++()                                      { m_index++; return *this; }
 	values_iterator<T> operator++(int)                                   { values_iterator retval = *this; ++(*this); return retval; }
-	const T&           operator* ()                                const { return data[*index]; }
-	const T*           operator& ()                                const { return data[*index]; }
+	const T&           operator* ()                                const { return m_data[*m_index]; }
+	const T*           operator& ()                                const { return m_data[*m_index]; }
 };
 
 template <typename T>
 struct vector_values: public iterable_<values_iterator<T>>
 {
 private:
-	const T* _data;
-	const vector_indices _indices;
+	const T* m_data;
+	const vector_indices m_indices;
 public:
-	vector_values(const T* data, vector_indices&& indices) : _data(data), _indices(indices) {}
-	vector_values(const T& value) : _data(&value), _indices(vector_indices(0, 1, 0)) {}
-	values_iterator<T> begin() const override { return values_iterator<T>(_data, _indices.begin()); }
-	values_iterator<T> end()   const override { return values_iterator<T>(_data, _indices.end()); }
+	vector_values(const T* data, vector_indices&& indices) : m_data(data), m_indices(indices) {}
+	vector_values(const T& value) : m_data(&value), m_indices(vector_indices(0, 1, 0)) {}
+	values_iterator<T> begin() const override { return values_iterator<T>(m_data, m_indices.begin()); }
+	values_iterator<T> end()   const override { return values_iterator<T>(m_data, m_indices.end()); }
 };
 
 /////////////////////////////////////////////
@@ -104,28 +104,28 @@ template<typename T1, typename T2>
 struct map_values_iterator : public  iterator_<T2>
 {
 private:
-	values_iterator<T1> values;
-	const std::function<T2(const T1&)> map_function;
+	values_iterator<T1> m_values;
+	const std::function<T2(const T1&)> m_map_function;
 public:
-	map_values_iterator<T1, T2>(values_iterator<T1>&& values, std::function<T2(const T1&)> map) : map_function(map), values(values) {}
-	bool                         operator==(const map_values_iterator<T1, T2>& other) const { return values == other.values; }
+	map_values_iterator<T1, T2>(values_iterator<T1>&& values, std::function<T2(const T1&)> map_function) : m_map_function(map_function), m_values(values) {}
+	bool                         operator==(const map_values_iterator<T1, T2>& other) const { return m_values == other.m_values; }
 	bool                         operator!=(const map_values_iterator<T1, T2>& other) const { return !(*this == other); }
-	map_values_iterator<T1, T2>& operator++()                                               { values++; return *this; }
+	map_values_iterator<T1, T2>& operator++()                                               { m_values++; return *this; }
 	map_values_iterator<T1, T2>  operator++(int)                                            { map_values_iterator retval = *this; ++(*this); return retval; }
-	const T2&                    operator* ()                                         const {return map_function(*values);}
-	const T2*                    operator& ()                                         const {return map_function(*values);}
+	const T2&                    operator* ()                                         const {return m_map_function(*m_values);}
+	const T2*                    operator& ()                                         const {return m_map_function(*m_values);}
 };
 
 template<typename T1, typename T2>
 struct map_values: public iterable_<map_values_iterator<T1, T2>>
 {
 private:
-	const std::function<T2(const T1&)> map_f;
-	const vector_values<T1> values;
+	const std::function<T2(const T1&)> m_map_function;
+	const vector_values<T1> m_values;
 public:
-	map_values<T1, T2>(vector_values<T1>&& values, std::function<T2(const T1&)> map_f) : values(values), map_f(map_f) {}
-	map_values_iterator<T1, T2> begin() const override { return map_values_iterator<T1, T2>(values.begin(), map_f); }
-	map_values_iterator<T1, T2> end()   const override { return map_values_iterator<T1, T2>(values.end()  , map_f); }
+	map_values<T1, T2>(vector_values<T1>&& values, std::function<T2(const T1&)> map_function) : m_values(values), m_map_function(map_function) {}
+	map_values_iterator<T1, T2> begin() const override { return map_values_iterator<T1, T2>(m_values.begin(), m_map_function); }
+	map_values_iterator<T1, T2> end()   const override { return map_values_iterator<T1, T2>(m_values.end()  , m_map_function); }
 };
 
 
@@ -155,30 +155,30 @@ template<typename T1, typename T2>
 struct zip_values_iterator : public iterator_<pair_<T1, T2>>
 {
 private:
-	values_iterator<T1> iterable1;
-	values_iterator<T2> iterable2;
+	values_iterator<T1> m_iterable1;
+	values_iterator<T2> m_iterable2;
 public:
-	zip_values_iterator<T1, T2>(values_iterator<T1>&&      values1, values_iterator<T2>&&      values2) : iterable1(values1), iterable2(values2) {}
-	bool                         operator==(const zip_values_iterator<T1, T2>& other) const { return (iterable1 == other.iterable1) || (iterable2 == other.iterable2);}
+	zip_values_iterator<T1, T2>(values_iterator<T1>&& values1, values_iterator<T2>&& values2) : m_iterable1(values1), m_iterable2(values2) {}
+	bool                         operator==(const zip_values_iterator<T1, T2>& other) const { return (m_iterable1 == other.m_iterable1) || (m_iterable2 == other.m_iterable2);}
 	bool                         operator!=(const zip_values_iterator<T1, T2>& other) const { return !(*this == other); }
-	zip_values_iterator<T1, T2>& operator++()                                               { iterable1++; iterable2++; return *this; }
+	zip_values_iterator<T1, T2>& operator++()                                               { m_iterable1++; m_iterable2++; return *this; }
 	zip_values_iterator<T1, T2>  operator++(int)                                            { zip_values_iterator retval = *this; ++(*this); return retval; }
-	const pair_<T1, T2>&         operator*()                                          const { return pair_<T1, T2>(*iterable1, *iterable2); }
-	const pair_<T1, T2>*         operator&()                                          const { return pair_<T1, T2>(*iterable1, *iterable2); }
+	const pair_<T1, T2>&         operator*()                                          const { return pair_<T1, T2>(*m_iterable1, *m_iterable2); }
+	const pair_<T1, T2>*         operator&()                                          const { return pair_<T1, T2>(*m_iterable1, *m_iterable2); }
 };
 
 template<typename T1, typename T2>
 struct zip_values : public iterable_<zip_values_iterator<T1, T2>>
 {
 private:
-	const vector_values<T1>values1;
-	const vector_values<T2>values2;
+	const vector_values<T1>m_values1;
+	const vector_values<T2>m_values2;
 public:
-	zip_values<T1, T2>(vector_values<T1>&& values1, vector_values<T2>&& values2) : values1(values1),                  values2(values2) {}
-	zip_values<T1, T2>(const T1&           value,   vector_values<T2>&& values2) : values1(vector_values<T1>(value)), values2(values2) {}
-	zip_values<T1, T2>(vector_values<T1>&& values1, const T2&           value  ) : values1(values1),                  values2(vector_values<T2>(value)) {}
-	zip_values_iterator<T1, T2> begin() const override { return zip_values_iterator<T1, T2>(values1.begin(), values2.begin()); }
-	zip_values_iterator<T1, T2> end()   const override { return zip_values_iterator<T1, T2>(values1.end(),   values2.end()); }
+	zip_values<T1, T2>(vector_values<T1>&& values1, vector_values<T2>&& values2) : m_values1(values1),                  m_values2(values2) {}
+	zip_values<T1, T2>(const T1&           value,   vector_values<T2>&& values2) : m_values1(vector_values<T1>(value)), m_values2(values2) {}
+	zip_values<T1, T2>(vector_values<T1>&& values1, const T2&           value  ) : m_values1(values1),                  m_values2(vector_values<T2>(value)) {}
+	zip_values_iterator<T1, T2> begin() const override { return zip_values_iterator<T1, T2>(m_values1.begin(), m_values2.begin()); }
+	zip_values_iterator<T1, T2> end()   const override { return zip_values_iterator<T1, T2>(m_values1.end(),   m_values2.end()); }
 };
 
 ///////////////////////////////////////////////
@@ -189,37 +189,37 @@ template<typename T1, typename T2>
 struct combine_values_iterator : public iterator_<T2>
 {
 private:
-	zip_values_iterator<T1, T1> iterables;
-	const std::function<T2(const T1&, const T1&)> combine_f;
+	zip_values_iterator<T1, T1> m_iterables;
+	const std::function<T2(const T1&, const T1&)> m_combine_function;
 public:
 	combine_values_iterator<T1, T2>(zip_values_iterator<T1, T1>&& zip_values,
-									std::function<T2(const T1&, const T1&)> combine_f) : iterables(zip_values), combine_f(combine_f){}
-	bool                             operator==(const combine_values_iterator<T1, T2>& other) const { return iterables == other.iterables;}
+									std::function<T2(const T1&, const T1&)> combine_f) : m_iterables(zip_values), m_combine_function(combine_f){}
+	bool                             operator==(const combine_values_iterator<T1, T2>& other) const { return m_iterables == other.m_iterables;}
 	bool                             operator!=(const combine_values_iterator<T1, T2>& other) const { return !(*this == other); }
-	combine_values_iterator<T1, T2>& operator++()                                                   { iterables++; return *this; }
+	combine_values_iterator<T1, T2>& operator++()                                                   { m_iterables++; return *this; }
 	combine_values_iterator<T1, T2>  operator++(int)                                                { combine_values_iterator retval = *this; ++(*this); return retval; }
-	const T2&                        operator*() const                                              { return combine_f((*iterables).first, (*iterables).second); }
-	const T2*                        operator&() const                                              { return combine_f((*iterables).first, (*iterables).second);}
+	const T2&                        operator*() const                                              { return m_combine_function((*m_iterables).first, (*m_iterables).second); }
+	const T2*                        operator&() const                                              { return m_combine_function((*m_iterables).first, (*m_iterables).second);}
 };
 
 template<typename T1, typename T2>
 struct combine_values : public iterable_<combine_values_iterator<T1, T2>>
 {
 private:
-	const zip_values<T1, T1> zip_vals;
-	const std::function<T2(const T1&, const T1&)> combine_f;
+	const zip_values<T1, T1> m_iterables;
+	const std::function<T2(const T1&, const T1&)> m_combine_function;
 public:
 	combine_values<T1, T2>(zip_values<T1, T1>&& zip_vals, std::function<T2(const T1&, const T1&)> combine_f):
-		zip_vals(zip_vals), combine_f(combine_f) {
+		m_iterables(zip_vals), m_combine_function(combine_f) {
 	}
 	
 	combine_values<T1, T2>(vector_values<T1>&& values1,
 		                   vector_values<T1>&& values2,
 						   std::function<T2(const T1&, const T1&)> combine_f):
-		zip_vals(zip_values<T1, T1>(std::move(values1), std::move(values2))), combine_f(combine_f){
+		m_iterables(zip_values<T1, T1>(std::move(values1), std::move(values2))), m_combine_function(combine_f){
 	}
-	combine_values<T1, T2>(const T1&           value,    vector_values<T1>&& values2, std::function<T2(const T1&, const T1&)> combine_f) : zip_vals(zip_values<T1, T1>(value, std::move(values2))), combine_f(combine_f) {}
-	combine_values<T1, T2>(vector_values<T1>&& values1,  const T1&           value,   std::function<T2(const T1&, const T1&)> combine_f) : zip_vals(zip_values<T1, T1>(std::move(values1), value)), combine_f(combine_f) {}
-	combine_values_iterator<T1, T2> begin() const override { return combine_values_iterator<T1, T2>(zip_vals.begin(), combine_f); }
-	combine_values_iterator<T1, T2> end()   const override { return combine_values_iterator<T1, T2>(zip_vals.end(),   combine_f); }
+	combine_values<T1, T2>(const T1&           value,    vector_values<T1>&& values2, std::function<T2(const T1&, const T1&)> combine_f) : m_iterables(zip_values<T1, T1>(value, std::move(values2))), m_combine_function(combine_f) {}
+	combine_values<T1, T2>(vector_values<T1>&& values1,  const T1&           value,   std::function<T2(const T1&, const T1&)> combine_f) : m_iterables(zip_values<T1, T1>(std::move(values1), value)), m_combine_function(combine_f) {}
+	combine_values_iterator<T1, T2> begin() const override { return combine_values_iterator<T1, T2>(m_iterables.begin(), m_combine_function); }
+	combine_values_iterator<T1, T2> end()   const override { return combine_values_iterator<T1, T2>(m_iterables.end(), m_combine_function); }
 };

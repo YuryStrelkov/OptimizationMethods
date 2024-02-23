@@ -1,4 +1,5 @@
 #pragma once
+// TODO REMOVE
 #include "vector_utils.h"
 
 static mat_mn zeros(const int rows_count, const int cols_count)
@@ -59,20 +60,20 @@ static std::ostream& operator<<(std::ostream& steram, const mat_mn& v)
 	return steram;
 }
 
-static mat_mn hessian(func_nd func, vec_n& x, const double eps = N_DIM_ACCURACY)
-{
-	mat_mn res = zeros(x.size(), x.size());
-	int row, col;
-	for (row = 0; row < x.size(); row++)
-	{
-		for (col = 0; col <= row; col++)
-		{
-			res[row][col] = partial2(func, x, row, col, eps);
-			res[col][row] = res[row][col];
-		}
-	}
-	return res;
-}
+// static mat_mn hessian(func_nd func, vec_n& x, const double eps = N_DIM_ACCURACY)
+// {
+// 	mat_mn res = zeros(x.size(), x.size());
+// 	int row, col;
+// 	for (row = 0; row < x.size(); row++)
+// 	{
+// 		for (col = 0; col <= row; col++)
+// 		{
+// 			res[row][col] = partial2(func, x, row, col, eps);
+// 			res[col][row] = res[row][col];
+// 		}
+// 	}
+// 	return res;
+// }
 
 static vec_n  operator*(const mat_mn& mat, const vec_n& vec)
 {
@@ -315,13 +316,13 @@ mat_mn& addCol(mat_mn& mat, const vec_n& col)
 	return mat;
 }
 
-int rank(mat_mn& A)
+int systemRank(mat_mn& A)
 {
 	int n = A.size();
 
 	int m = A[0].size();
 
-	int rank = 0;
+	int systemRank = 0;
 
 	std::vector<bool> row_selected(n, false);
 
@@ -336,7 +337,7 @@ int rank(mat_mn& A)
 
 		if (j != n)
 		{
-			++rank;
+			++systemRank;
 
 			row_selected[j] = true;
 
@@ -351,13 +352,13 @@ int rank(mat_mn& A)
 			}
 		}
 	}
-	return rank;
+	return systemRank;
 }
 
-int rank(const mat_mn& a)
+int systemRank(const mat_mn& a)
 {
 	mat_mn A(a);
-	return rank(A);
+	return systemRank(A);
 }
 
 /// <summary>
@@ -368,13 +369,13 @@ int rank(const mat_mn& a)
 /// <returns>0 - нет решений, 1 - одно решение, 2 - бесконечное множествое решений</returns>
 int checkSystem(const  mat_mn& A, const vec_n& b)
 {
-	int rank_a   = rank(A);
+	int rank_a   = systemRank(A);
 	mat_mn ab    = A;
-	int rank_a_b = rank(addCol(ab, b));
+	int rank_a_b = systemRank(addCol(ab, b));
 
 #if _DEBUG
-	std::cout << "rank ( A ) " << rank_a   << "\n";
-	std::cout << "rank (A|b) " << rank_a_b << "\n";
+	std::cout << "systemRank ( A ) " << rank_a   << "\n";
+	std::cout << "systemRank (A|b) " << rank_a_b << "\n";
 	if (rank_a == rank_a_b) std::cout << "one solution" << "\n";
 	if (rank_a  < rank_a_b) std::cout << "infinite amount of solutions" << "\n";
 	if (rank_a  > rank_a_b) std::cout << "no solutions" << "\n";

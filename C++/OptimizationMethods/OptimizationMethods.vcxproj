@@ -150,6 +150,7 @@
     <ClInclude Include="numeric_utils.h" />
     <ClInclude Include="numeric_vector.h" />
     <ClInclude Include="one_dimensional.h" />
+    <ClInclude Include="rational.h" />
     <ClInclude Include="simplex.h" />
     <ClInclude Include="slice.h" />
     <ClInclude Include="template_vector.h" />

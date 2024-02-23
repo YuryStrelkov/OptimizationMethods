@@ -1,4 +1,5 @@
 #pragma once
+// TODO REMOVE
 #include <vector>
 #include <cassert>
 #include <iostream>
@@ -121,37 +122,37 @@ static vec_n direction (const vec_n& a, const vec_n& b)
 	return normalize(res);
 }
 // частная производная по i-ой координате
-static double partial  (func_nd func, vec_n& x, const int& coord_index,
-						const double& eps = N_DIM_DERIVATIVE_STEP)
-{
-	if (x.size() <= coord_index)throw std::runtime_error("Partial derivative index out of bounds!");
-	x[coord_index] += eps;
-	double f_r = func(x);
-	x[coord_index] -= (2.0 * eps);
-	double f_l = func(x);
-	x[coord_index] += eps;
-	return (f_r - f_l) / eps * 0.5;
-}
+// static double partial  (func_nd func, vec_n& x, const int& coord_index,
+// 						const double& eps = N_DIM_DERIVATIVE_STEP)
+// {
+// 	if (x.size() <= coord_index)throw std::runtime_error("Partial derivative index out of bounds!");
+// 	x[coord_index] += eps;
+// 	double f_r = func(x);
+// 	x[coord_index] -= (2.0 * eps);
+// 	double f_l = func(x);
+// 	x[coord_index] += eps;
+// 	return (f_r - f_l) / eps * 0.5;
+// }
 //вторая частная производная по i-ой j-ой координатам
-static double partial2 (func_nd func, vec_n& x, const int& coord_index_1,
-						const int& coord_index_2, const double& eps = N_DIM_DERIVATIVE_STEP)
-{
-	if (x.size() <= coord_index_2)throw std::runtime_error("Partial derivative index out of bounds!");
-	x[coord_index_2] -= eps;
-	double f_l = partial(func, x, coord_index_1, eps);
-	x[coord_index_2] += (2.0 * eps);
-	double f_r = partial(func, x, coord_index_1, eps);
-	x[coord_index_2] -= eps;
-	return (f_r - f_l) / eps * 0.5;
-}
+// static double partial2 (func_nd func, vec_n& x, const int& coord_index_1,
+// 						const int& coord_index_2, const double& eps = N_DIM_DERIVATIVE_STEP)
+// {
+// 	if (x.size() <= coord_index_2)throw std::runtime_error("Partial derivative index out of bounds!");
+// 	x[coord_index_2] -= eps;
+// 	double f_l = partial(func, x, coord_index_1, eps);
+// 	x[coord_index_2] += (2.0 * eps);
+// 	double f_r = partial(func, x, coord_index_1, eps);
+// 	x[coord_index_2] -= eps;
+// 	return (f_r - f_l) / eps * 0.5;
+// }
 // производная (центральный разностный аналог) n-мерной функции в точке x с шагом eps
-static vec_n gradient(func_nd fun, const vec_n& x, const double& eps = N_DIM_DERIVATIVE_STEP)
-{
-	vec_n x_copy(x), df;
-	df.resize(x.size());
-	for (int i = 0; i < x.size(); i++) df[i] = partial(fun, x_copy, i, eps);
-	return df;
-}
+// static vec_n gradient(func_nd fun, const vec_n& x, const double& eps = N_DIM_DERIVATIVE_STEP)
+// {
+// 	vec_n x_copy(x), df;
+// 	df.resize(x.size());
+// 	for (int i = 0; i < x.size(); i++) df[i] = partial(fun, x_copy, i, eps);
+// 	return df;
+// }
 
 static double max      (const vec_n& x, int& index, const int range = 0)
 {

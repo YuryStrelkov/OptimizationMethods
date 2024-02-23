@@ -1,155 +1,94 @@
 #pragma once
-#include "one_dimensional.h"
-#include "vector_utils.h"
-#include "matrix_utils.h"
+#include "numeric_vector.h"
+#include "numeric_matrix.h"
+#include "numeric_utils.h"
 
-#include <vector>
-#include <cassert>
-//Параметры по умолчанию
-
+typedef double(*function_nd)(const double_vector&);
 
 // Методы n-мерной дихотомии, золотого сечения и Фибоначчи определяют минимум строго вдоль направления из  x_0 в x_1
 // т.е., если истинный минимум функции на этом направлении не лежит, метод всё равно найдёт минимальное значение, но оно 
 // будет отличаться от истинного минимума
-static vec_n bisect(func_nd f, const vec_n& x_0, const vec_n& x_1, const double& eps = N_DIM_ACCURACY, const int& max_iters = N_DIM_ITERS_MAX)
+static double_vector bisect(function_nd f, const double_vector& x_0, const double_vector& x_1, const double eps = N_DIM_ACCURACY, const int max_iters = N_DIM_ITERS_MAX)
 {
-	vec_n x_l = x_0, x_r = x_1, x_c, dir;
-
-	dir = direction(x_0, x_1) * eps;
-
+	double_vector x_l = x_0, x_r = x_1, x_c, dir;
+	dir = double_vector::direction(x_0, x_1) * eps;
 	int cntr = 0;
-
 	for (; cntr != max_iters; cntr++)
 	{
-		if (magnitude(x_r - x_l) < eps) break;
-// #if DISPLAY_PROGRES
-// 		progresBar((float)cntr / (float)ITERS_MAX);
-// #endif
+		if ((x_r - x_l).magnitude() < eps) break;
 		x_c = (x_r + x_l) * 0.5;
-
 		if (f(x_c + dir) > f(x_c - dir))
-		{
 			x_r = x_c;
-			continue;
-		}
-		x_l = x_c;
+		else
+			x_l = x_c;
 	}
-// #ifdef DISPLAY_PROGRES 
-// 	std::cout << LINE_CLEAR << "dihotomia iterations number : " << cntr << "\n";
-// #endif
 	return x_c;
 }
 
-static vec_n goldenRatio        (func_nd f, const vec_n& x_0, const vec_n& x_1, const double& eps = N_DIM_ACCURACY, const int& max_iters = N_DIM_ITERS_MAX)
+static double_vector golden_ratio(function_nd function, const double_vector& x_0, const double_vector& x_1, const double eps = N_DIM_ACCURACY, const int max_iters = N_DIM_ITERS_MAX)
 {
-	vec_n  a = x_0, b = x_1;
-
-	vec_n x_l(a), x_r(b), dx;
-
+	double_vector  a = x_0, b = x_1;
+	double_vector x_l(a), x_r(b), dx;
 	int cntr = 0;
-
-	double one_div_phi = 1.0 / phi;
-
 	for (; cntr != max_iters; cntr++)
 	{
-		if (magnitude(x_r - x_l) < eps) break;
-// #if DISPLAY_PROGRES
-// 		progresBar((float)cntr / (float)ITERS_MAX);
-// #endif
-		dx   = (b - a) * one_div_phi;
-
+		if ((x_r - x_l).magnitude() < eps) break;
+		dx  = (b - a) * ONE_OVER_PHI;
 		x_l =  b - dx;
 		x_r =  a + dx;
-
-		if (f(x_l) >= f(x_r))
-		{
+		if (function(x_l) >= function(x_r))
 			a = x_l;
-			continue;
-		}
-		b = x_r;
+		else
+			b = x_r;
 	}
-// #if DISPLAY_PROGRES
-//	std::cout << LINE_CLEAR << "golden ratio iterations number : " << cntr << "\n";
-// #endif
 	return (a + b) * 0.5;
 }
 
-static vec_n fibonacci          (func_nd f, const vec_n& x_0, const vec_n& x_1, const double& eps = N_DIM_ACCURACY)
+static double_vector fibonacci(function_nd function, const double_vector& x_0, const double_vector& x_1, const double eps = N_DIM_ACCURACY)
 {
-	vec_n a(x_0), b(x_1);
-	
-	vec_n x_l(x_0), x_r(x_1), dx;
-	
+	double_vector a(x_0), b(x_1);
+	double_vector x_l(x_0), x_r(x_1), dx;
 	int f_n, f_n_1, f_tmp, cntr = 0;
-
-	get_closeset_fibonacci_pair(magnitude(b - a) / eps, f_n, f_n_1);
-
+	closest_fibonacci_pair((b - a).magnitude() / eps, f_n, f_n_1);
 	while (f_n != f_n_1)
 	{
-		if (magnitude(x_r - x_l) < eps) break;
-// #if DISPLAY_PROGRES
-// 		progresBar((float)cntr / (float)ITERS_MAX);
-// #endif
+		if ((x_r - x_l).magnitude() < eps) break;
 		dx = (b - a);
 		f_tmp = f_n_1 - f_n;
 		x_l = a + dx * ((double)f_tmp / f_n_1);
 		x_r = a + dx * ((double)f_n   / f_n_1);
 		f_n_1 = f_n;
 		f_n = f_tmp;
-		if (f(x_l) < f(x_r))
-		{
+		if (function(x_l) < function(x_r))
 			b = x_r;
-			continue;
-		}
-		a = x_l;
+		else
+			a = x_l;
 	}
-// #if DISPLAY_PROGRES
-// 	std::cout << LINE_CLEAR << "fibonacchi iterations number : " << cntr << "\n";
-// #endif
 	return (x_r + x_l) * 0.5;
 }
 
 // Покоординатный спуск, градиентный спуск и спуск с помощью сопряжённых градиентов, определяют
 // минимальное значение функции только по одной начальной точке x_start.
 // Поэтому не зависят от выбора направления.
-static vec_n perCoordDescend    (func_nd f, const vec_n& x_start, const double& eps = N_DIM_ACCURACY, const int& max_iters = N_DIM_ITERS_MAX)
+static double_vector per_coord_descend(function_nd function, const double_vector& x_start, const double eps = N_DIM_ACCURACY, const int max_iters = N_DIM_ITERS_MAX)
 {
-	vec_n x_0(x_start);
-	
-	vec_n x_1(x_start);
-
+	double_vector x_0(x_start);
+	double_vector x_1(x_start);
 	double step = 1.0;
-	
 	double x_i, y_1, y_0;
-
 	int opt_coord_n = 0, coord_id;
-
 	for (int i = 0; i < max_iters; i++)
 	{
-
-#if DISPLAY_PROGRES
-		progresBar((float)i / (float)max_iters);
-#endif
 		coord_id = i % x_0.size();
-
 		x_1[coord_id] -= eps;
-
-		y_0 = f(x_1);
-
+		y_0 = function(x_1);
 		x_1[coord_id] += 2.0 * eps;
-
-		y_1 = f(x_1);
-
+		y_1 = function(x_1);
 		x_1[coord_id] -= eps;
-
 		x_1[coord_id] = y_0 > y_1 ? x_1[coord_id] += step : x_1[coord_id] -= step;
-
 		x_i = x_0[coord_id];
-
-		x_1 = bisect(f, x_0, x_1, eps, max_iters);
-
+		x_1 = bisect(function, x_0, x_1, eps, max_iters);
 		x_0 = x_1;
-
 		if (abs(x_1[coord_id] - x_i) < eps)
 		{
 			opt_coord_n++;
@@ -171,25 +110,18 @@ static vec_n perCoordDescend    (func_nd f, const vec_n& x_start, const double& 
 	return x_0;
 }
 //
-static vec_n gradientDescend    (func_nd f, const vec_n& x_start, const double& eps = N_DIM_ACCURACY, const int& max_iters = N_DIM_ITERS_MAX)
+static double_vector gradient_descend(function_nd function, const double_vector& x_start, const double eps = N_DIM_ACCURACY, const int max_iters = N_DIM_ITERS_MAX)
 {
-	vec_n x_i(x_start);
-	vec_n x_i_1; 
-	vec_n grad;
+	double_vector x_i(x_start);
+	double_vector x_i_1;
+	double_vector grad;
 	int cntr = 0;
 	for(; cntr <= max_iters; cntr++)
 	{
-#if DISPLAY_PROGRES
-		progresBar((float)cntr / (float)max_iters);
-#endif
-		grad  = gradient(f, x_i, eps);
-
+		grad  = double_vector::gradient(function, x_i, eps);
 		x_i_1 = x_i - grad;
-		
-		x_i_1 = bisect(f, x_i, x_i_1, eps, max_iters);
-		
-		if (magnitude(x_i_1 - x_i) < eps) break;
-	
+		x_i_1 = bisect(function, x_i, x_i_1, eps, max_iters);
+		if ((x_i_1 - x_i).magnitude() < eps) break;
 		x_i = x_i_1;
 	}
 #if DISPLAY_PROGRES
@@ -198,30 +130,21 @@ static vec_n gradientDescend    (func_nd f, const vec_n& x_start, const double& 
 	return (x_i_1 + x_i) * 0.5;
 }
 
-static vec_n conjGradientDescend(func_nd f, const vec_n& x_start, const double& eps = N_DIM_ACCURACY, const int& max_iters = N_DIM_ITERS_MAX)
+static double_vector conj_gradient_descend(function_nd f, const double_vector& x_start, const double eps = N_DIM_ACCURACY, const int max_iters = N_DIM_ITERS_MAX)
 {
-	vec_n x_i(x_start);
-	vec_n x_i_1;
-	vec_n s_i = gradient(f, x_start, eps)*(-1.0), s_i_1;
+	double_vector x_i(x_start);
+	double_vector x_i_1;
+	double_vector s_i = double_vector::gradient(f, x_i, eps)*(-1.0), s_i_1;
 	double omega;
 	int cntr = 0;
 	for (; cntr <= max_iters; cntr++)
 	{
-#if DISPLAY_PROGRES
-		progresBar((float)cntr / (float)max_iters);
-#endif
 		x_i_1 = x_i + s_i;
-
-		if (magnitude(x_i_1 - x_i) < eps) break;
-
+		if ((x_i_1 - x_i).magnitude() < eps) break;
 		x_i_1 = bisect(f, x_i, x_i_1, eps, max_iters);
-
-		s_i_1 = gradient(f, x_i_1, eps);
-
-		omega = pow(magnitude(s_i_1), 2) / pow(magnitude(s_i), 2);
-
+		s_i_1 = double_vector::gradient(f, x_i_1, eps);
+		omega = pow(s_i_1.magnitude(), 2) / pow(s_i.magnitude(), 2);
 		s_i = s_i * omega - s_i_1;
-
 		x_i = x_i_1;
 	}
 #if DISPLAY_PROGRES
@@ -230,26 +153,19 @@ static vec_n conjGradientDescend(func_nd f, const vec_n& x_start, const double& 
 	return (x_i_1 + x_i) * 0.5;
 }
 
-static vec_n newtoneRaphson     (func_nd f, const vec_n& x_start, const double& eps = N_DIM_ACCURACY, const int& max_iters = N_DIM_ITERS_MAX)
+static double_vector newtone_raphson (function_nd f, const double_vector& x_start, const double eps = N_DIM_ACCURACY, const int max_iters = N_DIM_ITERS_MAX)
 {
-	vec_n x_i(x_start);
-	vec_n x_i_1;
-	vec_n grad;
-	mat_mn hess;
+	double_vector x_i(x_start);
+	double_vector x_i_1;
+	double_vector grad ;
+	double_matrix hess(1, 1);
 	int cntr = 0;
 	for (; cntr <= max_iters; cntr++)
 	{
-#if DISPLAY_PROGRES
-		progresBar((float)cntr / (float)max_iters);
-#endif
-		grad = gradient(f, x_i, eps);
-	
-		hess = invert(hessian(f, x_i, eps));
-		
-		x_i_1 = x_i - hess * grad;
-		
-		if (magnitude(x_i_1 - x_i) < eps) break;
-
+		grad = double_vector::gradient(f, x_i, eps);
+		hess = double_matrix::invert(double_matrix::hessian(f, x_i, eps));
+		x_i_1 = x_i - (hess * grad);
+		if ((x_i_1 - x_i).magnitude() < eps) break;
 		x_i = x_i_1;
 	}
 #if DISPLAY_PROGRES

@@ -49,8 +49,10 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
             return Math.abs(total / step() + total % step());
         }
 
-        private static int calcIndex(final int index, final int stride) {
-            return index == stride ? stride : (stride + index) % stride;
+        private static int calcIndex(final int index, final int stride, final int step) {
+            // return index == stride ? stride : (stride + index) % stride;
+            // return index == stride ? stride : index % (stride + step);
+            return index % (stride + step);
         }
 
         public int sourceIndex(final int index) {
@@ -73,8 +75,8 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
         }
 
         public SliceObject(Slice slice, TemplateVector<T> source) {
-            _begin = calcIndex(slice.begin(), source.size());
-            _end = calcIndex(slice.end(), source.size());
+            _begin = calcIndex(slice.begin(), source.size(), slice.step());
+            _end = calcIndex(slice.end(), source.size(), slice.step());
             _step = slice.step();
             if (_begin < 0) throw
                     new RuntimeException(String.format("Unable to take slice with begin border of value %s," +
@@ -282,7 +284,8 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
             return this;
         }
 
-        public ValuesCombineIterator(Iterable<T1> iterable1, Iterable<T1> iterable2, ICombineFunction<T1, T2> combineFunction) {
+        public ValuesCombineIterator(Iterable<T1> iterable1, Iterable<T1> iterable2,
+                                     ICombineFunction<T1, T2> combineFunction) {
             _zipValues = new ValuesZipIterator<>(iterable1, iterable2);
             this._combineFunction = combineFunction;
         }
@@ -317,15 +320,18 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
         return new ValuesMapIterator<>(vector, function);
     }
 
-    public static <T1, T2> Iterable<T2> combine(TemplateVector<T1> left, TemplateVector<T1> right, ICombineFunction<T1, T2> combineFunction) {
+    public static <T1, T2> Iterable<T2> combine(TemplateVector<T1> left, TemplateVector<T1> right,
+                                                ICombineFunction<T1, T2> combineFunction) {
         return new ValuesCombineIterator<>(left, right, combineFunction);
     }
 
-    public static <T1, T2> Iterable<T2> combine(T1 left, TemplateVector<T1> right, ICombineFunction<T1, T2> combineFunction) {
+    public static <T1, T2> Iterable<T2> combine(T1 left, TemplateVector<T1> right,
+                                                ICombineFunction<T1, T2> combineFunction) {
         return new ValuesCombineIterator<>(new ConstValueIterator<>(left), right, combineFunction);
     }
 
-    public static <T1, T2> Iterable<T2> combine(TemplateVector<T1> left, T1 right, ICombineFunction<T1, T2> combineFunction) {
+    public static <T1, T2> Iterable<T2> combine(TemplateVector<T1> left, T1 right,
+                                                ICombineFunction<T1, T2> combineFunction) {
         return new ValuesCombineIterator<>(left, new ConstValueIterator<>(right), combineFunction);
     }
 

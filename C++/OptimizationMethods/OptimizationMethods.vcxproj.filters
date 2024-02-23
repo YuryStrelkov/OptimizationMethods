@@ -65,5 +65,8 @@
     <ClInclude Include="numeric_utils.h">
       <Filter>NumericUtils</Filter>
     </ClInclude>
+    <ClInclude Include="rational.h">
+      <Filter>NumericUtils</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
