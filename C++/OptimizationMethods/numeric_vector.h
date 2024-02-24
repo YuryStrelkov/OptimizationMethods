@@ -519,13 +519,13 @@ void numeric_vector_test()
 	std::cout << "lhs -= 2.0     : " << (lhs -= 2.0) << "\n";
 	std::cout << "lhs *= 2.0     : " << (lhs *= 2.0) << "\n";
 	std::cout << "lhs /= 2.0     : " << (lhs /= 2.0) << "\n";
-	std::cout << "mag(lhs)       : " << lhs.magnitude() << "\n";
-	std::cout << "dot(lhs, rhs)  : " << double_vector::dot(lhs, rhs) << "\n";
+	std::cout << "mag(lhs)       : " << rational::rational_number(lhs.magnitude()) << "\n";
+	std::cout << "dot(lhs, rhs)  : " << rational::rational_number(double_vector::dot(lhs, rhs)) << "\n";
 	std::cout << "dir(lhs, rhs)  : " << double_vector::direction(lhs, rhs) << "\n";
 	std::cout << "normalized(lhs): " << lhs.normalized() << "\n";
 	std::cout << "normalize (lhs): " << lhs.normalize() << "\n";
 	std::cout << "gradient  (lhs): " << double_vector::gradient(test_f, lhs, 1e-9) << "\n";
-	std::cout << "partial2  (lhs): " << double_vector::partial2(test_f, lhs,0,0, 1e-9) << "\n";
+	std::cout << "partial2  (lhs): " << rational::rational_number(double_vector::partial2(test_f, lhs,0,0, 1e-9)) << "\n";
 	std::cout << "lhs == rhs     : " << (lhs == rhs) << "\n";
 	std::cout << "lhs != rhs     : " << (lhs != rhs) << "\n";
 	std::cout << "lhs > rhs      : " << (lhs > rhs) << "\n";

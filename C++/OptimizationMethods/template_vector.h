@@ -245,6 +245,8 @@ public:
 	}
 
 	vector_indices indices() const{
+		if(is_slice())
+			return vector_indices(m_slice->begin(), m_slice->end(), m_slice->step());
 		return vector_indices(0, this->filling(), 1);
 	};
 

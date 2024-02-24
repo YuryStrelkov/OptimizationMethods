@@ -79,7 +79,7 @@ static void simplex_method_test()
 	sm::simplex sym_0(double_matrix({ -2, 6, 3, 2, 2, -1 }, 3, 2), { 2, 3 }, { sm::LESS_EQUAL, sm::LESS_EQUAL, sm::LESS_EQUAL }, { 40, 28, 14 });
 	sym_0.solve(SIMPLEX_MAX); 
 	std::cout << "\n";
-
+	return;
 	std::cout << " f(x,c) = -2x1 + 3x2;\n arg_min = {7, 0}, f(arg_min) =-14\n\n";
 
 	sm::simplex sym_1(double_matrix({-2, 6, 3, 2, 2, -1}, 3, 2), { -2, 3 }, { sm::LESS_EQUAL, sm::LESS_EQUAL, sm::LESS_EQUAL }, { 40, 28, 14 });

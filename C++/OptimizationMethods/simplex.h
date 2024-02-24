@@ -1,6 +1,6 @@
 #pragma once
-#include "vector_utils.h"
-#include "matrix_utils.h"
+// #include "vector_utils.h"
+// #include "matrix_utils.h"
 #include "numeric_matrix.h"
 #include "numeric_vector.h"
 // #include "numeric_utils.h"
@@ -162,8 +162,8 @@ namespace sm
 		/// <param name="basis">список базисных параметров</param>
 		/// <param name="n_agrs">количество исходных переменных</param>
 		/// <returns></returns>
-		vec_n currentSimplexSolution (const bool only_natural_args = false)const;
-		vec_n solve (const int mode = SIMPLEX_MAX);
+		double_vector currentSimplexSolution (const bool only_natural_args = false)const;
+		double_vector solve (const int mode = SIMPLEX_MAX);
 		simplex (const double_matrix& a, const double_vector& c, const int_vector& _ineq, const double_vector& b);
 		simplex (const double_matrix& a, const double_vector& c, const double_vector& b);
 	
@@ -307,27 +307,29 @@ namespace sm
 
 	int simplex::                                  getMainCol()const
 	{
-		const double_vector& row = simplex_t[simplex_t.size() - 1];
-
+		const int32_t n_rows = simplex_t.rows_count();
+		const int32_t n_cols = simplex_t.cols_count();
+		// const double_vector& row = simplex_t[simplex_t.size() - 1];
 		double delta = 0;
-
+		double value = 0;
 		int    index = -1;
 
-		for (int i = 0; i < row.size() - 1; i++)
+		for (int i = 0; i < n_cols - 1; i++)
 		{
-			if (row[i] >= delta)continue;
-			delta = row[i];
+			value = simplex_t.get(n_rows - 1, i);
+			if (value >= delta)continue;
+			delta = value;
 			index = i;
 		}
 
 		if (isTargetFunctionModified() && index == -1)
 		{
-			const double_vector& row_add = simplex_t[simplex_t.size() - 2];
-
+			// const double_vector& row_add = simplex_t[simplex_t.size() - 2];
 			for (const int id : naturalArgsIds.values())
 			{
-				if (row_add[id] >= delta)continue;
-				delta = row_add[id];
+				value = simplex_t.get(n_rows - 2, id);
+				if (value >= delta)continue;
+				delta = value;
 				index = id;
 			}
 		}
@@ -346,7 +348,7 @@ namespace sm
 
 		int cntr = 0;
 
-		int rows_n = isTargetFunctionModified() ? simplex_t.size() - 2 : simplex_t.size() - 1;
+		int rows_n = isTargetFunctionModified() ? simplex_t.rows_count() - 2 : simplex_t.rows_count() - 1;
 
 		for (int i = 0; i < rows_n; i++)
 		{
@@ -357,7 +359,7 @@ namespace sm
 				cntr++;
 				continue;
 			}
-			if (simplex_t.get(i, b_index) / a_ik > delta)continue;
+			if (simplex_t.get(i, b_index) / a_ik > delta) continue;
 			delta = simplex_t.get(i, b_index) / a_ik;
 			index = i;
 		}
@@ -541,11 +543,11 @@ namespace sm
 		return true;
 	}
 
-	bool simplex::                           validateSolution()const
+	bool simplex::validateSolution()const
 	{
 		double val = 0;
 
-		int n_rows = isTargetFunctionModified() ? simplex_t.size() - 2 : simplex_t.size() - 1;
+		int n_rows = isTargetFunctionModified() ? simplex_t.rows_count() - 2 : simplex_t.rows_count() - 1;
 
 		int n_cols = simplex_t.cols_count() - 1;
 
@@ -579,7 +581,7 @@ namespace sm
 		return false;
 	}
 
-	int simplex::                                naturalArgsN()const
+	int simplex::naturalArgsN()const
 	{
 		return prices_v.size();
 	}
@@ -616,9 +618,9 @@ namespace sm
 		return virtualArgsIds.size() != 0;
 	}
 
-	vec_n simplex::currentSimplexSolution(const bool only_natural_args)const
+	double_vector simplex::currentSimplexSolution(const bool only_natural_args)const
 	{
-		vec_n solution(only_natural_args ? naturalArgsN() : simplex_t.cols_count() - 1);
+		double_vector solution(only_natural_args ? naturalArgsN() : simplex_t.cols_count() - 1);
 
 		for (int i = 0; i < basisArgsIds.size(); i++)
 		{
@@ -629,7 +631,7 @@ namespace sm
 		return solution;
 	}
 
-	vec_n simplex::solve(const int mode)
+	double_vector simplex::solve(const int mode)
 	{
 		this->mode = mode;
 
@@ -637,7 +639,7 @@ namespace sm
 
 		buildSimplexTable();
 
-		vec_n solution;
+		double_vector solution;
 
 		double a_ik;
 
@@ -677,20 +679,18 @@ namespace sm
 
 			a_ik = simplex_t.get(main_row, main_col);
 
-			simplex_t[main_row] = simplex_t[main_row] * (1.0 / a_ik);
-
-			for (int i = 0; i < simplex_t.size(); i++)
+			double_vector main_row_vector = simplex_t.get_row(main_row) *= 1.0 / a_ik;
+			// simplex_t[main_row] = simplex_t[main_row] * (1.0 / a_ik);
+ 			for (int i = 0; i < simplex_t.rows_count(); i++)
 			{
 				if (i == main_row)continue;
-
-				simplex_t[i] = simplex_t[i] - simplex_t.get(i, main_col) * simplex_t[main_row];
+				simplex_t.get_row(i) -= (simplex_t.get(i, main_col) * main_row_vector);
 			}
 			solution = currentSimplexSolution();
-
 #if _DEBUG
 			std::cout << "a_main { " << main_row + 1 << ", " << main_col + 1 << " } = " << rational::rational_str(a_ik) << "\n";
 			std::cout << *this;
-			std::cout << "current_solution" << rational::rational_str(solution) << "\n";
+			std::cout << "current_solution" << solution << "\n";
 			std::cout << "\n";
 #endif
 		}
@@ -698,7 +698,7 @@ namespace sm
 		{
 			solution = currentSimplexSolution(true);
 			/// формирование ответа
-			std::cout << "solution : " << rational::rational_str(solution) << "\n";
+			std::cout << "solution : " << solution << "\n";
 			return solution;
 		}
 		std::cout << "Simplex is unresolvable\n";

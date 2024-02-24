@@ -1058,6 +1058,15 @@ void numeric_matrix_test()
 
 	std::cout << "rhs + col:\n" << rhs.add_row({ 1, 2, 3 }) << "\n";
 	std::cout << "rhs + col:\n" << rhs.add_col({ 100, 100, 100, 100 }) << "\n";
+	auto row = rhs.get_row(0);
+	// rhs.get_row(0) -= row;
+	// std::cout << "rhs - rhs[0:]:\n" << rhs<< "\n";
+	rhs.get_row(1) -= row;
+	std::cout << "rhs - rhs[1:]:\n" << rhs << "\n";
+	rhs.get_row(2) -= row;
+	std::cout << "rhs - rhs[2:]:\n" << rhs << "\n";
+	rhs.get_row(3) -= row;
+	std::cout << "rhs - rhs[3:]:\n" << rhs << "\n";
 
 }
 

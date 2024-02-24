@@ -1,6 +1,11 @@
 #pragma once
 namespace rational
 {
+	struct lmat{
+		long m00, m01,
+			 m10, m11;
+		lmat() : m00(1), m01(0), m10(0), m11(1) {}
+	};
 	/// <summary>
 	/// Конвертирует десятичную запись числа в рациональную, например, для числа 1.666 получим 1 2/3
 	/// </summary>
@@ -11,59 +16,36 @@ namespace rational
 	/// <param name="max_den">максимально допустимый знаменатель</param>
 	static void decimal_to_rational(const double& value, int32_t& rational_part, int32_t& numerator, int32_t& denominator, const int32_t max_den = MAX_DENOMINATOR)
 	{
-		long m[2][2];
-
-		m[0][0] = m[1][1] = 1;
-		m[0][1] = m[1][0] = 0;
-
+		lmat mat;
 		long ai;
-
-		double x, startx;
-
-		int32_t sign = value >= 0 ? 1 : -1;
-
-		x = abs(value);
-
 		long t;
+		double x = abs(value), startx;
+		int32_t sign = value >= 0 ? 1 : -1;
+		while (mat.m10 * (ai = (long)x) + mat.m11 <= max_den) {
 
-		while (m[1][0] * (ai = (long)x) + m[1][1] <= max_den) {
+			t = mat.m00 * ai + mat.m01;
+			mat.m01 = mat.m00;
+			mat.m00 = t;
+			
+			t = mat.m10 * ai + mat.m11;
+			mat.m11 = mat.m10;
+			mat.m10 = t;
 
-			t = m[0][0] * ai + m[0][1];
-
-			m[0][1] = m[0][0];
-			m[0][0] = t;
-
-			t = m[1][0] * ai + m[1][1];
-
-			m[1][1] = m[1][0];
-			m[1][0] = t;
-
-			if (x == (double)ai)
-			{
-				break;
-			}   // AF: division by zero
-			x = 1 / (x - (double)ai);
-			if (x > (double)0x7FFFFFFF)
-			{
-				break;
-			}  // AF: representation failure
+			if (x == (double)ai) break; // AF: division by zero
+			x = 1.0 / (x - (double)ai);
+			if (x > (double)0x7FFFFFFF) break;// AF: representation failure
 		}
 
-		if ((rational_part = m[0][0] / m[1][0]) != 0)
+		if ((rational_part = mat.m00 / mat.m10) != 0)
 		{
-			numerator = m[0][0] - rational_part * m[1][0];
-
+			numerator = mat.m00 - rational_part * mat.m10;
 			rational_part *= sign;
-
-			denominator = m[1][0];
-
+			denominator = mat.m10;
 			return;
 		}
 		rational_part = 0;
-
-		numerator = sign * m[0][0];
-
-		denominator = m[1][0];
+		numerator = sign * mat.m00;
+		denominator = mat.m10;
 	};
 
 	static std::string rational_str(const int32_t int_part,

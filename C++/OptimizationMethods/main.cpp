@@ -111,8 +111,8 @@ int main()
 	// std::cout << "b[0]: " << b[0] << "\n";
 	// template_vector_test();
 	// numeric_vector_test();
-	numeric_matrix_test();
-	// test_all();
+	// numeric_matrix_test();
+	test_all();
 	// double summ = second.reduce([](const double& l, const double& r) {return l + r; });
 	 // std::cout << "summ: " << summ << "\n";
 	 // std::cout << "sum:" << first.reduce([](const int& l, const int& r) {return l + r; }) << "\n";
