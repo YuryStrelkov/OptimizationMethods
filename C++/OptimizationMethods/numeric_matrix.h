@@ -1,10 +1,10 @@
 #pragma once
 #include "numeric_vector.h"
 
-template<typename T>   class     numeric_matrix_;
-typedef numeric_matrix_<double>  double_matrix;
-typedef numeric_matrix_<float>   float_matrix;
-typedef numeric_matrix_<int32_t> int_matrix;
+template<typename T> class numeric_matrix_;
+typedef numeric_matrix_<F64> matrix_f64;
+typedef numeric_matrix_<F32> matrix_f32;
+typedef numeric_matrix_<I32> matrix_i32;
 
 #define MAT_MUL_SZIE_CHECK 0
 #define MAT_VECT_MUL_SZIE_CHECK 1
@@ -22,9 +22,9 @@ public:
 	{
 	private:
 		numeric_matrix_<T>* m_matrix;
-		int32_t m_index;
+		I32 m_index;
 	public:
-		rows_iterator(numeric_matrix_<T>& src, const int32_t& start_index)
+		rows_iterator(numeric_matrix_<T>& src, const I32& start_index)
 		{
 			m_matrix =*src;
 			m_index = start_index;
@@ -33,7 +33,7 @@ public:
 		bool                operator==(const rows_iterator& other) const { return m_index == other.m_index; }
 		bool                operator!=(const rows_iterator& other) const { return !(*this == other); }
 		rows_iterator&      operator++()    { m_index++; return *this; }
-		rows_iterator       operator++(int) { rows_iterator& retval = *this; ++(*this); return retval; }
+		rows_iterator       operator++(I32) { rows_iterator& retval = *this; ++(*this); return retval; }
 		numeric_vector_<T>  operator* ()    { return m_matrix->get_row(m_index); }
 		numeric_vector_<T>* operator& ()    { return *(m_matrix->get_row(m_index)); }
 	};
@@ -54,9 +54,9 @@ public:
 	{
 	private:
 		numeric_matrix_<T>* m_matrix;
-		int32_t m_index;
+		I32 m_index;
 	public:
-		cols_iterator(numeric_matrix_<T>& src, const int32_t& start_index)
+		cols_iterator(numeric_matrix_<T>& src, const I32& start_index)
 		{
 			m_matrix = *src;
 			m_index = start_index;
@@ -65,7 +65,7 @@ public:
 		bool                operator==(const cols_iterator& other) const { return m_index == other.m_index; }
 		bool                operator!=(const cols_iterator& other) const { return !(*this == other); }
 		cols_iterator&      operator++()                                 { m_index++; return *this; }
-		cols_iterator       operator++(int)                              { cols_iterator& retval = *this; ++(*this); return retval; }
+		cols_iterator       operator++(I32)                              { cols_iterator& retval = *this; ++(*this); return retval; }
 		numeric_vector_<T>  operator* ()                                 { return m_matrix->get_col(m_index); }
 		numeric_vector_<T>* operator& ()                                 { return *(m_matrix->get_col(m_index)); }
 	};
@@ -80,8 +80,8 @@ public:
 		cols_iterator end() { return cols_iterator(*m_matrix, m_matrix->rows_count()); }
 	};
 private:
-	uint32_t m_rows;
-	uint32_t m_cols;
+	I32 m_rows;
+	I32 m_cols;
 	static bool size_check(const numeric_matrix_<T>& lhs, const numeric_matrix_<T>& rhs, const uint8_t& comparing_mode = MAT_SIZE_CHECK)
 	{
 		return lhs.size_check(rhs, comparing_mode);
@@ -123,22 +123,22 @@ private:
 	}
 	static numeric_vector_<T> linsolve(const numeric_matrix_<T>& low, const numeric_matrix_<T>& up, const numeric_vector_<T>& b);
 protected:
-	const T& unchecked_access(const uint32_t& row, const uint32_t& col)const
+	const T& unchecked_access(const I32 row, const I32 col)const
 	{
 		return template_vector_<T>::unchecked_access(row * cols_count() + col);
 	}
-	T& unchecked_access(const uint32_t& row, const uint32_t& col)
+	T& unchecked_access(const I32 row, const I32 col)
 	{
 		return template_vector_<T>::unchecked_access(row * cols_count() + col);
 	}
 public:
-	const T& get(const uint32_t& row, const uint32_t& col)const
+	const T& get(const I32 row, const I32 col)const
 	{
 		assert((row >= 0 && row < rows_count()) && "numeric_matrix :: get(i, j) error :: row is out of range...\n");
 		assert((col >= 0 && row < cols_count()) && "numeric_matrix :: get(i, j) error :: col is out of range...\n");
 		return unchecked_access(row, col);
 	}
-	T& get(const uint32_t& row, const uint32_t& col)
+	T& get(const I32 row, const I32 col)
 	{
 		assert((row >= 0 && row < rows_count()) && "numeric_matrix :: get(i, j) error :: row is out of range...\n");
 		assert((col >= 0 && row < cols_count()) && "numeric_matrix :: get(i, j) error :: col is out of range...\n"); 
@@ -154,8 +154,8 @@ public:
 		return matrix_cols(*this);
 	}
 
-	uint32_t rows_count() const { return m_rows;};
-	uint32_t cols_count() const { return m_cols;};
+	I32 rows_count() const { return m_rows;};
+	I32 cols_count() const { return m_cols;};
 
 	numeric_matrix_<T>& add_col(const numeric_vector_<T>& col);
 	numeric_matrix_<T>& add_row(const numeric_vector_<T>& row);
@@ -168,17 +168,17 @@ public:
 
 	static numeric_vector_<T> linsolve (const numeric_matrix_<T>& matrix, const numeric_vector_<T>& b);
 	// static numeric_matrix_<T> mexp     (const numeric_matrix_<T>& matrix);
-	// static uint32_t           rank     (const numeric_matrix_<T>& matrix);
+	// static I32           rank     (const numeric_matrix_<T>& matrix);
 	static numeric_matrix_<T> transpose(const numeric_matrix_<T>& matrix);
 	static numeric_matrix_<T> invert   (const numeric_matrix_<T>& matrix);
-	static numeric_matrix_<T> zeros    (const int32_t n_rows, const int32_t m_cols);
-	static numeric_matrix_<T> identity (const int32_t n_rows, const int32_t m_cols);
-	static numeric_matrix_<T> zeros    (const int32_t size);
-	static numeric_matrix_<T> identity (const int32_t size);
+	static numeric_matrix_<T> zeros    (const I32 n_rows, const I32 m_cols);
+	static numeric_matrix_<T> identity (const I32 n_rows, const I32 m_cols);
+	static numeric_matrix_<T> zeros    (const I32 size);
+	static numeric_matrix_<T> identity (const I32 size);
 	static void               lu       (const numeric_matrix_<T>& matrix, numeric_matrix_<T>& low, numeric_matrix_<T>& up);
 	static numeric_matrix_<T> hessian  (std::function<T(const numeric_vector_<T>&)> func, numeric_vector_<T>& arg, const T& eps = N_DIM_ACCURACY);
-	numeric_vector_<T>		  get_row(const int32_t index);
-	numeric_vector_<T>		  get_col(const int32_t index);
+	numeric_vector_<T>		  get_row(const I32 index);
+	numeric_vector_<T>		  get_col(const I32 index);
 	// static matrices_pair      qr       (const numeric_matrix_<T>& matrix);
 	// static numeric_matrix_<T> svd      (const numeric_matrix_<T>& matrix);
 	// static numeric_matrix_<T> chol     (const numeric_matrix_<T>& matrix);
@@ -186,7 +186,11 @@ public:
 	numeric_matrix_<T>const* operator*()const { return this; }
 	numeric_matrix_<T>& operator&() { return (*this); }
 	numeric_matrix_<T>* operator*() { return this; }
-
+	numeric_vector_<T> operator[](const I32 index) { return get_row(index); }
+	
+	const T& operator()(const I32 row, const I32 col)const{ return get(row, col); }
+	T& operator()(const I32 row, const I32 col) { return get(row, col); }
+	
 	numeric_matrix_<T>& operator=(const numeric_matrix_<T>& rhs);
 	numeric_matrix_<T>& operator=(numeric_matrix_<T>&& rhs)noexcept;
 
@@ -244,7 +248,7 @@ public:
 
 	numeric_matrix_(numeric_matrix_<T>&& src)noexcept: numeric_matrix_(src, src.rows_count(), src.cols_count()) {}
 	numeric_matrix_(numeric_vector_<T>&& src)noexcept: numeric_matrix_(src, 1, src.filling()) {}
-	numeric_matrix_(numeric_vector_<T>&& src, const uint32_t rows, const uint32_t cols)noexcept
+	numeric_matrix_(numeric_vector_<T>&& src, const I32 rows, const I32 cols)noexcept
 	{
 		assert(rows * cols == src.filling());
 		m_rows = rows;
@@ -253,19 +257,19 @@ public:
 	}
 	numeric_matrix_(const numeric_vector_<T>& src) : numeric_matrix_(src, 1, src.filling()) {}
 	numeric_matrix_(const numeric_matrix_<T>& src) : numeric_matrix_(src, src.rows_count(), src.cols_count()) {}
-	numeric_matrix_(const numeric_vector_<T>& src, const uint32_t rows, const uint32_t cols)
+	numeric_matrix_(const numeric_vector_<T>& src, const I32 rows, const I32 cols)
 	{
 		assert(rows * cols == src.filling());
 		m_rows = rows;
 		m_cols = cols;
 		template_vector_<T>::operator=((const template_vector_<T>&)src);
 	}
-	numeric_matrix_(const initializer_list<T>& values, const uint32_t rows, const uint32_t cols) : template_vector_<T>(values)
+	numeric_matrix_(const initializer_list<T>& values, const I32 rows, const I32 cols) : template_vector_<T>(values)
 	{
 		m_rows = rows;
 		m_cols = cols;
 	}
-	numeric_matrix_(const uint32_t rows, const uint32_t cols, const bool fill_by_default_value = true) : template_vector_<T>(rows * cols)
+	numeric_matrix_(const I32 rows, const I32 cols, const bool fill_by_default_value = true) : template_vector_<T>(rows * cols)
 	{
 		if (fill_by_default_value)
 			template_vector_<T>::fill([](const T& v) {return T{ 0.0f }; });
@@ -275,12 +279,12 @@ public:
 	numeric_matrix_() : numeric_matrix_<T>(1, 1, true){}
 protected:
 	template<typename T1, typename T2>
-	numeric_matrix_(const uint32_t& rows, const uint32_t& cols, const map_values<T1, T2>& values) : template_vector_<T2>(values) {
+	numeric_matrix_(const I32 rows, const I32 cols, const map_values<T1, T2>& values) : template_vector_<T2>(values) {
 		m_rows = rows;
 		m_cols = cols;
 	};
 	template<typename T1, typename T2>
-	numeric_matrix_(const uint32_t& rows, const uint32_t& cols, const combine_values<T1, T2>& values) : template_vector_<T2>(values) {
+	numeric_matrix_(const I32 rows, const I32 cols, const combine_values<T1, T2>& values) : template_vector_<T2>(values) {
 		m_rows = rows;
 		m_cols = cols;
 	};
@@ -290,7 +294,7 @@ template<typename T>
 inline numeric_matrix_<T> numeric_matrix_<T>::hessian(std::function<T(const numeric_vector_<T>&)> func, numeric_vector_<T>& arg, const T& eps)
 {
 	numeric_matrix_<T> res = numeric_matrix_<T>::zeros(arg.size(), arg.size());
-	int row, col;
+	I32 row, col;
 	for (row = 0; row < arg.size(); row++)
 	{
 		for (col = 0; col <= row; col++)
@@ -305,9 +309,9 @@ inline numeric_matrix_<T> numeric_matrix_<T>::hessian(std::function<T(const nume
 template<typename T>
 inline void numeric_matrix_<T>::lu(const numeric_matrix_<T>& matrix, numeric_matrix_<T>& low, numeric_matrix_<T>& up)
 {
-	int rows_count = matrix.rows_count();
+	const I32 rows_count = matrix.rows_count();
 
-	int cols_count = matrix.cols_count();
+	const I32 cols_count = matrix.cols_count();
 
 	if (rows_count != cols_count) throw std::runtime_error("error :: matrix lu decomposition :: non square matrix");
 
@@ -321,7 +325,7 @@ inline void numeric_matrix_<T>::lu(const numeric_matrix_<T>& matrix, numeric_mat
 		up = zeros(rows_count, cols_count);
 	}
 
-	int row = 0, col = 0, index = 0;
+	I32 row = 0, col = 0, index = 0;
 
 	for (row = 0; row < cols_count; row++)
 	{
@@ -350,7 +354,7 @@ inline void numeric_matrix_<T>::lu(const numeric_matrix_<T>& matrix, numeric_mat
 }
 
 template<typename T>
-inline numeric_vector_<T> numeric_matrix_<T>::get_row(const int32_t index)
+inline numeric_vector_<T> numeric_matrix_<T>::get_row(const I32 index)
 {
 	if (index < 0 || index >= rows_count())
 		throw std::runtime_error("Matrix::get_row::row index: " + std::to_string(index) + " is out of rows indices range...");
@@ -359,7 +363,7 @@ inline numeric_vector_<T> numeric_matrix_<T>::get_row(const int32_t index)
 }
 
 template<typename T>
-inline numeric_vector_<T> numeric_matrix_<T>::get_col(const int32_t index)
+inline numeric_vector_<T> numeric_matrix_<T>::get_col(const I32 index)
 {
 	if (index < 0 || index >= cols_count())
 		throw std::runtime_error("Matrix::get_col::col index: " + std::to_string(index) + " is out of cols indices range...");
@@ -457,10 +461,10 @@ inline numeric_vector_<T> operator*(const numeric_vector_<T>& lhs, const numeric
 	assert(numeric_matrix_<T>::size_check(rhs, lhs) && "numeric_matrix::operator * :: matrix multiply by vector sizes mismatch...\n");
 	numeric_vector_<T> result(rhs.cols_count());
 	T value;
-	for (uint32_t col = 0; col < rhs.cols_count(); col++)
+	for (I32 col = 0; col < rhs.cols_count(); col++)
 	{
 		value = T{ 0.0 };
-		for (uint32_t row = 0; row < rhs.rows_count(); row++)
+		for (I32 row = 0; row < rhs.rows_count(); row++)
 			value += rhs.unchecked_access(row, col) * lhs.unchecked_access(row);
 		result.unchecked_access(col) = value;
 	}
@@ -473,10 +477,10 @@ inline numeric_vector_<T> operator * (const numeric_matrix_<T>& lhs, const numer
 	assert(numeric_matrix_<T>::size_check(rhs, lhs) && "numeric_matrix::operator * :: vector multiply by matrix sizes mismatch...\n");
 	numeric_vector_<T> result(lhs.rows_count());
 	T value;
-	for (uint32_t row = 0; row < lhs.rows_count(); row++)
+	for (I32 row = 0; row < lhs.rows_count(); row++)
 	{
 		value = T{ 0.0 };
-		for (uint32_t col = 0; col < lhs.rows_count(); col++)
+		for (I32 col = 0; col < lhs.rows_count(); col++)
 			value += lhs.unchecked_access(row, col) * rhs.unchecked_access(col);
 		result.unchecked_access(row) = value;
 	}
@@ -514,15 +518,15 @@ inline numeric_matrix_<T> operator*(const numeric_matrix_<T>& lhs, const numeric
 
 	numeric_matrix_<T> result(lhs.cols_count(), rhs.rows_count(), false);
 
-	for (int row = 0; row < lhs.rows_count(); row++)
+	for (I32 row = 0; row < lhs.rows_count(); row++)
 	{	
 		const T* row_data = &lhs.unchecked_access(row, 0);
 		
-		for (int col = 0; col < rhs.cols_count(); col++)
+		for (I32 col = 0; col < rhs.cols_count(); col++)
 		{
 			T value = T{ 0 };
 
-			for (int k = 0; k < rhs.rows_count(); k++) 
+			for (I32 k = 0; k < rhs.rows_count(); k++) 
 			{
 				value += row_data[k] * rhs.unchecked_access(k, col);
 			}
@@ -689,9 +693,9 @@ inline bool operator<=(const numeric_matrix_<T>& lhs, const T& rhs)
 template<typename T>
 inline std::ostream& operator<<(std::ostream& stream, const numeric_matrix_<T>& rhs)
 {
-	int  index    = 0;
-	int  col      = 0;
-	int  row      = 0;
+	I32  index    = 0;
+	I32  col      = 0;
+	I32  row      = 0;
 	stream << "[\n";
 #ifdef RATIONAL_NUMBERS_REPRESNTATION
 	for (row = 0; row < rhs.rows_count(); row++)
@@ -726,7 +730,7 @@ template<typename T>
 inline numeric_matrix_<T>& numeric_matrix_<T>::add_col(const numeric_vector_<T>& col)
 {
 	if (rows_count() != col.filling())return *this;
-	int insert_index = cols_count();
+	I32 insert_index = cols_count();
 	for (const T& item : col.values())
 	{
 		template_vector_<T>::insert(insert_index, item);
@@ -748,8 +752,8 @@ inline numeric_matrix_<T>& numeric_matrix_<T>::add_row(const numeric_vector_<T>&
 template<typename T>
 inline numeric_matrix_<T>& numeric_matrix_<T>::add_col()
 {
-	int insert_index = cols_count();
-	for (int32_t index = 0; index < rows_count(); index++)
+	I32 insert_index = cols_count();
+	for (I32 index = 0; index < rows_count(); index++)
 	{
 		template_vector_<T>::insert(insert_index, T{ 0.0 });
 		insert_index += cols_count() + 1;
@@ -761,7 +765,7 @@ inline numeric_matrix_<T>& numeric_matrix_<T>::add_col()
 template<typename T>
 inline numeric_matrix_<T>& numeric_matrix_<T>::add_row()
 {
-	for (int32_t index = 0; index < cols_count(); index++)
+	for (I32 index = 0; index < cols_count(); index++)
 		template_vector_<T>::push_back(T{ 0.0 });
 	this->m_rows += 1;
 	return *this;
@@ -771,7 +775,7 @@ template<typename T>
 inline T numeric_matrix_<T>::trace() const
 {
 	T tr = T{ 0.0 };
-	for (int index = 0; index < MIN(rows_count(), cols_count()); index++)tr += unchecked_access(index, index);
+	for (I32 index = 0; index < MIN(rows_count(), cols_count()); index++)tr += unchecked_access(index, index);
 	return tr;
 }
 
@@ -780,7 +784,7 @@ inline T numeric_matrix_<T>::determinant() const
 {
 	numeric_matrix_<T> copy(*this);
 	T det = { 1.0 };
-	int row, col, pivot;
+	I32 row, col, pivot;
 	for (row = 0; row < copy.rows_count(); row++) {
 		pivot = row;
 		for (col = row + 1; col < copy.rows_count(); col++) {
@@ -798,9 +802,9 @@ inline T numeric_matrix_<T>::determinant() const
 			return T{0.0};
 		}
 		det *= copy.unchecked_access(row, row);
-		for (int j = row + 1; j < copy.rows_count(); j++) {
+		for (I32 j = row + 1; j < copy.rows_count(); j++) {
 			T factor = copy.unchecked_access(j, row) / copy.unchecked_access(row, row);
-			for (int k = row + 1; k < copy.rows_count(); k++) {
+			for (I32 k = row + 1; k < copy.rows_count(); k++) {
 				copy.unchecked_access(j, k) = copy.unchecked_access(j, k) - factor * copy.unchecked_access(row, k);
 			}
 		}
@@ -811,8 +815,8 @@ inline T numeric_matrix_<T>::determinant() const
 template<typename T>
 inline numeric_matrix_<T>& numeric_matrix_<T>::transpose()
 {
-	for (int row = 0; row < rows_count(); row++)
-		for (int col = 0; col < cols_count(); col++)
+	for (I32 row = 0; row < rows_count(); row++)
+		for (I32 col = 0; col < cols_count(); col++)
 			unchecked_access(col, row) = unchecked_access(row, col);
 	return (*this);
 }
@@ -829,7 +833,7 @@ inline numeric_vector_<T> numeric_matrix_<T>::linsolve(const numeric_matrix_<T>&
 {
 	T det = T{ 1.0 };
 
-	for (int row = 0; row < up.rows_count(); row++)
+	for (I32 row = 0; row < up.rows_count(); row++)
 		det *= (up.unchecked_access(row, row) * up.unchecked_access(row, row));
 
 	if (std::abs(det) < ACCURACY)
@@ -838,7 +842,7 @@ inline numeric_vector_<T> numeric_matrix_<T>::linsolve(const numeric_matrix_<T>&
 	numeric_vector_<T> x(b.filling()), z(b.filling());
 
 	T tmp;
-	int row, col;
+	I32 row, col;
 	for (row = 0; row < z.filling(); row++)
 	{
 		tmp = T{ 0.0f };
@@ -874,8 +878,8 @@ template<typename T>
 inline numeric_matrix_<T> numeric_matrix_<T>::transpose(const numeric_matrix_<T>& matrix)
 {
 	numeric_matrix_<T> t_matrix(matrix.cols_count(), matrix.rows_count());
-	for (int row = 0; row < matrix.rows_count(); row++)
-		for (int col = 0; col < matrix.cols_count(); col++)
+	for (I32 row = 0; row < matrix.rows_count(); row++)
+		for (I32 col = 0; col < matrix.cols_count(); col++)
 			t_matrix.unchecked_access(col, row) = t_matrix.unchecked_access(row, col);
 	return t_matrix;
 }
@@ -891,7 +895,7 @@ inline numeric_matrix_<T> numeric_matrix_<T>::invert(const numeric_matrix_<T>& m
 	lu(matrix, low, up);
 
 	T det = T{ 1.0 };
-	for (int rows = 0; rows < low.rows_count(); rows++)
+	for (I32 rows = 0; rows < low.rows_count(); rows++)
 		det *= (low.unchecked_access(rows, rows) * low.unchecked_access(rows, rows));
 
 	if (std::abs(det) < ACCURACY)
@@ -901,41 +905,41 @@ inline numeric_matrix_<T> numeric_matrix_<T>::invert(const numeric_matrix_<T>& m
 
 	numeric_matrix_<T> inv = numeric_matrix_<T>::zeros(matrix.rows_count());
 
-	for (int col = 0; col < matrix.cols_count(); col++)
+	for (I32 col = 0; col < matrix.cols_count(); col++)
 	{
 		b.unchecked_access(col) = T{ 1.0 };
 		column = numeric_matrix_<T>::linsolve(low, up, b);
 		if (column.filling() != b.filling())
 			throw std::runtime_error("error :: unable to find matrix inversion");
 		b.unchecked_access(col) = T{ 0.0 };
-		for (int row = 0; row < matrix.rows_count(); row++)
+		for (I32 row = 0; row < matrix.rows_count(); row++)
 			inv.unchecked_access(row, col) = column.unchecked_access(row);
 	}
 	return inv;
 }
 
 template<typename T>
-inline numeric_matrix_<T> numeric_matrix_<T>::zeros(const int32_t n_rows, const int32_t m_cols)
+inline numeric_matrix_<T> numeric_matrix_<T>::zeros(const I32 n_rows, const I32 m_cols)
 {
 	return numeric_matrix_<T>(n_rows, m_cols);
 }
 
 template<typename T>
-inline numeric_matrix_<T> numeric_matrix_<T>::identity(const int32_t n_rows, const int32_t n_cols)
+inline numeric_matrix_<T> numeric_matrix_<T>::identity(const I32 n_rows, const I32 n_cols)
 {
 	numeric_matrix_<T> matrix = numeric_matrix_<T>::zeros(n_rows, m_cols);
-	for (int index = 0; index < MIN(n_rows, n_cols); index++)matrix.unchecked_access(index, index) = T{ 1.0 };
+	for (I32 index = 0; index < MIN(n_rows, n_cols); index++)matrix.unchecked_access(index, index) = T{ 1.0 };
 	return matrix;
 }
 
 template<typename T>
-inline numeric_matrix_<T> numeric_matrix_<T>::zeros(const int32_t size)
+inline numeric_matrix_<T> numeric_matrix_<T>::zeros(const I32 size)
 {
 	return numeric_matrix_<T>::zeros(size, size);
 }
 
 template<typename T>
-inline numeric_matrix_<T> numeric_matrix_<T>::identity(const int32_t size)
+inline numeric_matrix_<T> numeric_matrix_<T>::identity(const I32 size)
 {
 	return numeric_matrix_<T>::identity(size, size);
 }
@@ -944,15 +948,15 @@ void numeric_matrix_test();
 
 void numeric_matrix_test()
 {	
-	double_vector vec({ 1.0, 2.0, 3.0 });
+	vector_f64 vec({ 1.0, 2.0, 3.0 });
 
-	double_matrix lhs({ 8.0, 1.0, 6.0,
-					    3.0, 5.0, 7.0,
-					    4.0, 9.0, 2.0 }, 3, 3);
+	matrix_f64 lhs({8.0, 1.0, 6.0,
+					3.0, 5.0, 7.0,
+					4.0, 9.0, 2.0 }, 3, 3);
 
-	double_matrix rhs({ 2.0, 9.0, 4.0,
-						7.0, 5.0, 3.0 ,
-						6.0, 1.0, 8.0}, 3, 3);
+	matrix_f64 rhs({2.0, 9.0, 4.0,
+					7.0, 5.0, 3.0 ,
+					6.0, 1.0, 8.0}, 3, 3);
 	// rhs.push_back(9.0).push_back(8.0).push_back(7.0).push_back(6.0);
 	std::cout << "Test matrices\n";
 	std::cout << "lhs       :\n" << lhs << "\n";
@@ -985,15 +989,15 @@ void numeric_matrix_test()
 	{
 		std::cout << v << " ";
 	}
-	// std::cout << "rhs - copy:\n" << double_matrix(rhs) << "\n";
+	// std::cout << "rhs - copy:\n" << matrix_f64(rhs) << "\n";
 	std::cout << "\nOperations +,-,*,/ for matrix and matrix\n";
 	std::cout << "lhs + rhs :\n" << lhs + rhs << "\n";
 	std::cout << "lhs - rhs :\n" << lhs - rhs << "\n";
 	std::cout << "lhs * rhs :\n" << lhs * rhs << "\n";
 	std::cout << "lhs / rhs :\n" << lhs / lhs << "\n";
 
-	double_matrix low(1,1), up(1, 1);
-	double_matrix::lu(lhs, low, up);
+	matrix_f64 low(1,1), up(1, 1);
+	matrix_f64::lu(lhs, low, up);
 	std::cout << "LU decomposition\n";
 	std::cout << "low(lhs)  :\n" << low << "\n";
 	std::cout << "up (lhs)  :\n" << up << "\n";
@@ -1033,10 +1037,10 @@ void numeric_matrix_test()
 	std::cout << "lhs >= 100     : " << (lhs >= 100.0) << "\n";
 	std::cout << "lhs <= 100     : " << (lhs <= 100.0) << "\n";
 	std::cout << "lhs            :\n" << lhs << "\n";
-	lhs[slice(3, 6)] = double_vector({ 13.0, 13.0, 13.0 });
+	//lhs[slice(3, 6)] = vector_f64({ 13.0, 13.0, 13.0 });
 	std::cout << "lhs            :\n" << lhs << "\n";
-	double_matrix big_mat = 
-	double_matrix({0.8147, 0.4218, 0.2769, 0.7094, 0.8909, 0.3517, 0.5688, 0.2290, 0.2599, 0.4018, 0.7803, 0.6491, 0.4868, 0.6225, 0.9049, 0.0855,
+	matrix_f64 big_mat = 
+	matrix_f64({0.8147, 0.4218, 0.2769, 0.7094, 0.8909, 0.3517, 0.5688, 0.2290, 0.2599, 0.4018, 0.7803, 0.6491, 0.4868, 0.6225, 0.9049, 0.0855,
 				   0.9058, 0.9157, 0.0462, 0.7547, 0.9593, 0.8308, 0.4694, 0.9133, 0.8001, 0.0760, 0.3897, 0.7317, 0.4359, 0.5870, 0.9797, 0.2625,
 				   0.1270, 0.7922, 0.0971, 0.2760, 0.5472, 0.5853, 0.0119, 0.1524, 0.4314, 0.2399, 0.2417, 0.6477, 0.4468, 0.2077, 0.4389, 0.8010,
 				   0.9134, 0.9595, 0.8235, 0.6797, 0.1386, 0.5497, 0.3371, 0.8258, 0.9106, 0.1233, 0.4039, 0.4509, 0.3063, 0.3012, 0.1111, 0.0292,
@@ -1053,7 +1057,7 @@ void numeric_matrix_test()
 				   0.8003, 0.7060, 0.4456, 0.5060, 0.6160, 0.9340, 0.4505, 0.0844, 0.3510, 0.3692, 0.0430, 0.9294, 0.8759, 0.4302, 0.4242, 0.4889,
 				   0.1419, 0.0318, 0.6463, 0.6991, 0.4733, 0.1299, 0.0838, 0.3998, 0.5132, 0.1112, 0.1690, 0.7757, 0.5502, 0.1848, 0.5079, 0.6241 }, 16, 16);
 	std::cout << "big_mat             :\n" << big_mat << "\n";
-	std::cout << "big_mat^-1          :\n" << double_matrix::invert(big_mat) << "\n";
+	std::cout << "big_mat^-1          :\n" << matrix_f64::invert(big_mat) << "\n";
 	std::cout << "big_mat * big_mat^-1:\n" << big_mat/ big_mat << "\n";
 
 	std::cout << "rhs + col:\n" << rhs.add_row({ 1, 2, 3 }) << "\n";

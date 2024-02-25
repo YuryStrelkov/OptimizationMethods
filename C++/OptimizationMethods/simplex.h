@@ -1,21 +1,16 @@
 #pragma once
-// #include "vector_utils.h"
-// #include "matrix_utils.h"
 #include "numeric_matrix.h"
 #include "numeric_vector.h"
-// #include "numeric_utils.h"
-#include <iomanip>
-#include <string>
 #include "rational.h"
-// TODO vec_n / mat_mn -> numeric_vector / numeric_matrix
+
 ////////////////////
 /// Lab. work #5 ///
 ////////////////////
 namespace sm
 {
-	constexpr int EQUAL = 0;
-	constexpr int LESS_EQUAL = -1;
-	constexpr int MORE_EQUAL = 1;
+	constexpr I32 EQUAL = 0;
+	constexpr I32 LESS_EQUAL = -1;
+	constexpr I32 MORE_EQUAL = 1;
 
 #define SIMPLEX_MAX  0
 #define SIMPLEX_MIN  1
@@ -26,47 +21,47 @@ namespace sm
 		/// <summary>
 		/// список знаков в неравенств в системе ограничений
 		/// </summary>
-		int_vector _inequations;
+		vector_i32 m_inequations;
 
 		/// <summary>
 		/// список индексов переменных которые войдут в целевую функию, модифицируя ее
 		/// </summary>
-		int_vector virtualArgsIds;
+		vector_i32 m_virtual_args_indices;
 
 		/// <summary>
 		///индексы естественных переменных
 		/// </summary>
-		int_vector naturalArgsIds;
+		vector_i32 m_natural_args_indices;
 
 		/// <summary>
 		/// список индексов текущих базисных переменных 
 		/// </summary>
-		int_vector basisArgsIds;
+		vector_i32 m_basis_args_indices;
 
 		/// <summary>
 		/// Симплекс таблица
 		/// </summary>
-		double_matrix simplex_t;
+		matrix_f64 m_simplex_table;
 
 		/// <summary>
 		/// матрица ограничений
 		/// </summary>
-		double_matrix bounds_m;
+		matrix_f64 m_bounds_matrix;
 
 		/// <summary>
 		/// вектор ограничений
 		/// </summary>
-		double_vector bounds_v;
+		vector_f64 m_bounds_vector;
 
 		/// <summary>
 		/// вектор стоимостей
 		/// </summary>
-		double_vector prices_v;
+		vector_f64 m_prices_vector;
 
 		/// <summary>
 		/// режим поиска решения
 		/// </summary>
-		int mode = SIMPLEX_MAX;
+		UI8 m_problem_type = SIMPLEX_MAX;
 
 		/// <summary>
 		/// Проверяет оптимальность текущего опорного плана. Исследуется положительность 
@@ -77,9 +72,9 @@ namespace sm
 		/// искусственными.
 		/// </summary>
 		/// <param name="A">СМ таблицa</param>
-		/// <param name="mode"></param>
+		/// <param name="m_problem_type"></param>
 		/// <returns></returns>
-		bool isPlanOptimal       ()const;
+		bool is_plan_optimal()const;
 
 		/// <summary>
 		/// Определяет ведущий столбец. Среди элементов строки симплекс-разностей ищет максимальны по модулю 
@@ -89,7 +84,7 @@ namespace sm
 		/// </summary>
 		/// <param name="A"></param>
 		/// <returns></returns>
-		int getMainCol           ()const;
+		I32 get_main_col()const;
 
 		/// <summary>
 		/// Определяет ведущую строку 
@@ -97,15 +92,17 @@ namespace sm
 		/// <param name="simplex_col">ведущий столбец</param>
 		/// <param name="A">СМ таблица</param>
 		/// <returns></returns>
-		int getMainRow           (const int simplex_col)const;
+		I32 get_main_row(const I32 main_col)const;
+
 		/// <summary>
 		/// строит виртуальный базисный вектор
 		/// </summary>
-		/// <param name="ineq_id"></param>
+		/// <param name="inequation_id"></param>
 		/// <param name="_ineq"></param>
 		/// <param name="col_index"></param>
 		/// <param name="col_index_aditional"></param>
-		bool buildVirtualBasisCol(const int ineq_id, const int ineq, int& col_index, int& col_index_aditional);
+		bool build_virtual_basis_column(const I32 inequation_id, const I32 ineq, I32& col_index, I32& col_index_aditional);
+
 		/// <summary>
 		/// Строит СМ таблицу для задачи вида:
 		/// Маирица системы ограниченй:
@@ -130,31 +127,31 @@ namespace sm
 		/// <param name="b"></param>
 		///( A|I)  b
 		///(-c|0)  F(x,c)
-		void buildSimplexTable   ();
+		void build_simplex_table();
 
-		bool excludeVirtualArgs  ();
+		bool exclude_virtual_args();
 
-		bool validateSolution    ()const;
+		bool validate_solution()const;
 
 	public:
 		/// <summary>
 		/// количество аргументов исходной целевой функции
 		/// </summary>
-		int naturalArgsN ()const;
+		I32 natural_args_count()const;
 
-		inline const double_matrix& boundsMatrix ()const;
+		inline const matrix_f64& bounds_matrix()const;
 
-		inline const double_vector& boundsCoeffs ()const;
+		inline const vector_f64& bounds_vector()const;
 
-		inline const double_vector& pricesCoeffs ()const;
+		inline const vector_f64& prices_vector()const;
 
-		inline const int_vector& inequations ()const;
+		inline const vector_i32& inequations()const;
 
-		inline const int_vector& basisArgumentsIds ()const;
+		inline const vector_i32& basis_args_indices()const;
 
-		inline const double_matrix& table ()const;
+		inline const matrix_f64& simplex_table()const;
 
-		inline bool isTargetFunctionModified ()const;
+		inline bool is_target_function_modified()const;
 		/// <summary>
 		/// Выводит текущее решение СМ таблицы для не искусственных переменных
 		/// </summary>
@@ -162,11 +159,14 @@ namespace sm
 		/// <param name="basis">список базисных параметров</param>
 		/// <param name="n_agrs">количество исходных переменных</param>
 		/// <returns></returns>
-		double_vector currentSimplexSolution (const bool only_natural_args = false)const;
-		double_vector solve (const int mode = SIMPLEX_MAX);
-		simplex (const double_matrix& a, const double_vector& c, const int_vector& _ineq, const double_vector& b);
-		simplex (const double_matrix& a, const double_vector& c, const double_vector& b);
-	
+		vector_f64 current_simplex_solution(const bool only_natural_args = false)const;
+		vector_f64 solve(const I32 m_problem_type = SIMPLEX_MAX);
+		simplex(const matrix_f64& bounds_matrix, const vector_f64& prices_vector, const vector_i32& inequations, const vector_f64& bounds_vector);
+		simplex(const matrix_f64& bounds_matrix, const vector_f64& prices_vector, const vector_f64& bounds_vector);
+
+		simplex(matrix_f64&& bounds_matrix, vector_f64&& prices_vector, vector_i32&& inequations, vector_f64&& bounds_vector);
+		simplex(matrix_f64&& bounds_matrix, vector_f64&& prices_vector, vector_f64&& bounds_vector);
+
 		friend std::ostream& operator<<(std::ostream& stream, const simplex& s);
 	};
 
@@ -181,11 +181,11 @@ namespace sm
 		/// <param name="b"></param>
 		/// <param name="c"></param>
 
-		const  double_matrix& table = s.table();
+		const  matrix_f64& table = s.simplex_table();
 
-		const bool targeFuncMod = s.isTargetFunctionModified();
+		const bool targeFuncMod = s.is_target_function_modified();
 
-		const int_vector& basisArgsIds = s.basisArgumentsIds();
+		const vector_i32& m_basis_args_indices = s.basis_args_indices();
 
 		if (table.size() == 0)
 		{
@@ -194,13 +194,13 @@ namespace sm
 
 		const char separator = ' ';
 
-		const int colom_title_w = 6;
+		const I32 colom_title_w = 6;
 
-		const int colom_w = 12;
+		const I32 colom_w = 12;
 
 		stream << std::left << std::setw(colom_title_w) << std::setfill(separator) << "";
 
-		int i = 0;
+		I32 i = 0;
 
 		for (; i < table.cols_count() - 1; i++)
 		{
@@ -211,9 +211,9 @@ namespace sm
 
 		stream << "\n";
 
-		int row = 0;
+		I32 row = 0;
 
-		for (;row < table.rows_count(); row++)
+		for (; row < table.rows_count(); row++)
 		{
 
 			if (targeFuncMod)
@@ -228,7 +228,7 @@ namespace sm
 				}
 				else
 				{
-					stream << std::left << std::setw(colom_title_w) << std::setfill(separator) << " x " + std::to_string(basisArgsIds[row] + 1);
+					stream << std::left << std::setw(colom_title_w) << std::setfill(separator) << " x " + std::to_string(m_basis_args_indices[row] + 1);
 				}
 			}
 			else
@@ -239,13 +239,13 @@ namespace sm
 				}
 				else
 				{
-					stream << std::left << std::setw(colom_title_w) << std::setfill(separator) << " x " + std::to_string(basisArgsIds[row] + 1);
+					stream << std::left << std::setw(colom_title_w) << std::setfill(separator) << " x " + std::to_string(m_basis_args_indices[row] + 1);
 				}
 			}
 
-			for (int col = 0; col < table.cols_count(); col++)
+			for (I32 col = 0; col < table.cols_count(); col++)
 			{
-				const double value = table.get(row, col);
+				const F64 value = table(row, col);
 				if (value >= 0)
 				{
 					stream << std::left << std::setw(colom_w) << std::setfill(separator) << "| " + rational::rational_str(value);
@@ -261,24 +261,19 @@ namespace sm
 		return stream;
 	}
 
-	bool simplex::                              isPlanOptimal()const
+	bool simplex::is_plan_optimal()const
 	{
 		/// <summary>
 		/// Проверяем значения последней строки сиплекс-разностей
 		/// на положительность. Если все положительны, то план оптимален.
 		/// </summary>
 
-		const int row_index = simplex_t.rows_count() - 2;
-
-		bool opt = true; 
-
-		for (int i = 0; i < simplex_t.cols_count() - 1; i++)
+		const I32 row_index = m_simplex_table.rows_count() - 1;
+		bool optimal = true;
+		for (I32 col = 0; col < m_simplex_table.cols_count() - 1; col++)
 		{
-			if (simplex_t.get(row_index, i) < 0)
-			{
-				opt = false;
-				break;
-			}
+			optimal = m_simplex_table(row_index, col) < 0;
+			if (!optimal) break;
 		}
 
 		/// <summary>
@@ -286,372 +281,292 @@ namespace sm
 		/// агументов проверям на положительнность предпослднюю строку симплекс-разностей 
 		/// </summary>
 
-		if (isTargetFunctionModified())
+		if (is_target_function_modified())
 		{
-			if (!opt) return opt;
-			
-			const int row_index = simplex_t.rows_count() - 2;
-
-			for (const int id : naturalArgsIds.values())
+			const I32 row_index = m_simplex_table.rows_count() - 2;
+			for (const I32 col : m_natural_args_indices.values())
 			{
-				if (simplex_t.get(row_index, id) < 0)
-				{
-					opt = false;
-					break;
-				}
+				optimal &= m_simplex_table(row_index, col) < 0;
+				if (!optimal) break;
 			}
 		}
 
-		return opt;
+		return optimal;
 	}
 
-	int simplex::                                  getMainCol()const
+	I32 simplex::get_main_col()const
 	{
-		const int32_t n_rows = simplex_t.rows_count();
-		const int32_t n_cols = simplex_t.cols_count();
-		// const double_vector& row = simplex_t[simplex_t.size() - 1];
-		double delta = 0;
-		double value = 0;
-		int    index = -1;
+		const int32_t n_rows = m_simplex_table.rows_count();
+		const int32_t n_cols = m_simplex_table.cols_count();
 
-		for (int i = 0; i < n_cols - 1; i++)
+		F64 delta = 0;
+		F64 value = 0;
+		I32    index = -1;
+
+		for (I32 col = 0; col < n_cols - 1; col++)
 		{
-			value = simplex_t.get(n_rows - 1, i);
+			value = m_simplex_table(n_rows - 1, col);
 			if (value >= delta)continue;
 			delta = value;
-			index = i;
+			index = col;
 		}
 
-		if (isTargetFunctionModified() && index == -1)
+		if (is_target_function_modified() && index == -1)
 		{
-			// const double_vector& row_add = simplex_t[simplex_t.size() - 2];
-			for (const int id : naturalArgsIds.values())
+			for (const I32 col : m_natural_args_indices.values())
 			{
-				value = simplex_t.get(n_rows - 2, id);
+				value = m_simplex_table(n_rows - 2, col);
 				if (value >= delta)continue;
 				delta = value;
-				index = id;
+				index = col;
 			}
 		}
 		return index;
 	}
 
-	int simplex::                                  getMainRow(const int simplex_col)const
+	I32 simplex::get_main_row(const I32 simplex_col)const
 	{
-		double delta = 1e12;
+		I32 index = -1;
+		F64 delta = 1e12;
+		F64 a_ik;
+		I32 b_index = m_simplex_table.cols_count() - 1; // m_simplex_table[0].size() - 1;
+		I32 rows_n = is_target_function_modified() ? m_simplex_table.rows_count() - 2 : m_simplex_table.rows_count() - 1;
 
-		int index = -1;
-
-		double a_ik;
-
-		int b_index = simplex_t.cols_count() - 1; // simplex_t[0].size() - 1;
-
-		int cntr = 0;
-
-		int rows_n = isTargetFunctionModified() ? simplex_t.rows_count() - 2 : simplex_t.rows_count() - 1;
-
-		for (int i = 0; i < rows_n; i++)
+		for (I32 row = 0; row < rows_n; row++)
 		{
-			a_ik = simplex_t.get(i, simplex_col);
-
-			if (a_ik < 0)
-			{
-				cntr++;
-				continue;
-			}
-			if (simplex_t.get(i, b_index) / a_ik > delta) continue;
-			delta = simplex_t.get(i, b_index) / a_ik;
-			index = i;
+			a_ik = m_simplex_table(row, simplex_col);
+			if (a_ik < 0)continue;
+			if (m_simplex_table(row, b_index) / a_ik > delta) continue;
+			delta = m_simplex_table(row, b_index) / a_ik;
+			index = row;
 		}
 
 		return index;
 	}
 
-	bool simplex::buildVirtualBasisCol(const int ineq_id, const int _ineq, int& col_index, int& col_index_aditional)
-	{
-		if (_ineq == EQUAL)
+	bool simplex::build_virtual_basis_column(const I32 inequation_id, const I32 inequation_type, I32& col_index, I32& col_index_aditional)
+	{   
+		const I32 n_cols = m_simplex_table.cols_count();
+
+		if (inequation_type == EQUAL)
 		{
-			simplex_t.add_col();
-			simplex_t.get(ineq_id, simplex_t.cols_count() - 1) = 1.0;
-
-			// for (int row = 0; row < simplex_t.size(); row++)
-			// {
-			// 	if (row == ineq_id)
-			// 	{
-			// 		simplex_t[row].push_back(1.0);
-			// 		continue;
-			// 	}
-			// 	simplex_t[row].push_back(0.0);
-			// }
-
-			col_index = simplex_t.cols_count() - 1;// simplex_t[0].size() - 1;
-			col_index_aditional = simplex_t.cols_count() - 1; //simplex_t[0].size() - 1;
+			m_simplex_table.add_col();
+			m_simplex_table(inequation_id, n_cols) = 1.0;
+			col_index = col_index_aditional = n_cols;
 			return true;
 		}
-
-		if (_ineq == MORE_EQUAL)
+		if (inequation_type == MORE_EQUAL)
 		{
-			simplex_t.add_col();
-			simplex_t.add_col();
-			simplex_t.get(ineq_id, simplex_t.cols_count() - 1) = -1.0;
-			simplex_t.get(ineq_id, simplex_t.cols_count() - 1) =  1.0;
-			//for (int row = 0; row < simplex_t.size(); row++)
-			//{
-			//	if (row == ineq_id)
-			//	{
-			//		simplex_t[row].push_back(-1.0);
-			//
-			//		simplex_t[row].push_back(1.0);
-			//
-			//		continue;
-			//	}
-			//
-			//	simplex_t[row].push_back(0.0);
-			//
-			//	simplex_t[row].push_back(0.0);
-			//}
-			col_index_aditional = simplex_t.cols_count() - 1;
-			col_index = simplex_t.cols_count() - 2;
+			m_simplex_table.add_col();
+			m_simplex_table.add_col();
+			m_simplex_table(inequation_id, n_cols - 1) = -1.0;
+			m_simplex_table(inequation_id, n_cols) = 1.0;
+			col_index_aditional = n_cols;
+			col_index = n_cols - 1;
 			return false;
 		}
-
-		simplex_t.add_col();
-		simplex_t.get(ineq_id, simplex_t.cols_count() - 1) = 1.0;
-
-		// for (int row = 0; row < simplex_t.size(); row++)
-		// {
-		// 	if (row == ineq_id)
-		// 	{
-		// 		simplex_t[row].push_back(1.0);
-		// 		continue;
-		// 	}
-		// 	simplex_t[row].push_back(0.0);
-		// }
-
+		m_simplex_table.add_col();
+		m_simplex_table(inequation_id, n_cols) = 1.0;
 		col_index_aditional = -1;
-		col_index = simplex_t.cols_count() - 1; //  simplex_t[0].size() - 1;
+		col_index = n_cols;
 		return true;
 	}
 
-	void simplex::buildSimplexTable()
+	void simplex::build_simplex_table()
 	{
-		simplex_t = bounds_m;
+		m_simplex_table = m_bounds_matrix;
 		///
 		/// Если среди вектора b есть отрицательные значения, то соответствующие строки
 		/// матрицы ограничений умножаем на мину один и меняем знак сравнения
 		///
-		for (int row = 0; row < simplex_t.rows_count(); row++)
+		for (I32 row = 0; row < m_simplex_table.rows_count(); row++)
 		{
-			if (bounds_v[row] >= 0)continue;
-
-			_inequations[row] *= -1;
-
-			bounds_v[row] *= -1;
-
-			simplex_t[row] = simplex_t[row] * (-1.0);
+			if (m_bounds_vector[row] >= 0)continue;
+			m_inequations[row] *= -1;
+			m_bounds_vector[row] *= -1;
+			m_simplex_table.get_row(row) *= -1.0;
 		}
 
+		for (I32 index = 0; index < m_prices_vector.size(); index++)
+			m_natural_args_indices.push_back(index);
 
-		for (int i = 0; i < prices_v.size(); i++)
-		{
-			naturalArgsIds.push_back(i);
-		}
 		/// <summary>
 		/// построение искуственного базиса
 		/// </summary>
-		int basis_arg_id;
-		int basis_arg_id_add;
-		for (int ineq_id = 0; ineq_id < _inequations.size(); ineq_id++)
+		I32 basis_arg_id;
+		I32 basis_arg_id_add;
+		for (I32 inequality_id = 0; inequality_id < m_inequations.size(); inequality_id++)
 		{
-			buildVirtualBasisCol(ineq_id, _inequations[ineq_id], basis_arg_id, basis_arg_id_add);
+			build_virtual_basis_column(inequality_id, m_inequations[inequality_id], basis_arg_id, basis_arg_id_add);
 
-			naturalArgsIds.push_back(basis_arg_id);
+			m_natural_args_indices.push_back(basis_arg_id);
 
 			if (basis_arg_id_add != -1)
 			{
-				basisArgsIds.push_back(basis_arg_id_add);
-				virtualArgsIds.push_back(basis_arg_id_add);
+				m_basis_args_indices.push_back(basis_arg_id_add);
+				m_virtual_args_indices.push_back(basis_arg_id_add);
 				continue;
 			}
-
-			basisArgsIds.push_back(basis_arg_id);
+			m_basis_args_indices.push_back(basis_arg_id);
 		}
 
 		/// <summary>
 		/// добавим столбец ограницений
 		/// </summary>
-		simplex_t.add_col(bounds_v);
-		// for (int row = 0; row < simplex_t.size(); row++)
-		// {
-		// 	simplex_t[row].push_back(bounds_v[row]);
-		// }
+		m_simplex_table.add_col(m_bounds_vector);
 
 		/// <summary>
 		/// Построение симплекс разностей
 		/// </summary>
+		vector_f64 s_deltas(m_simplex_table.cols_count());/// [0] .size());
 
-		double_vector s_deltas(simplex_t.cols_count());/// [0] .size());
+		s_deltas.apply_enumerate(m_prices_vector, [&](const I32 index, const F64 value) {return index < m_prices_vector.size() ? -value : 0.0; });
 
-		if (mode == SIMPLEX_MAX)
-		{
-			for (int j = 0; j < s_deltas.size(); j++) s_deltas[j] = j < prices_v.size() ? -prices_v[j] : 0.0;
-		}
+		if (m_problem_type == SIMPLEX_MAX)
+			s_deltas.apply_enumerate(m_prices_vector, [&](const I32 index, const F64 value) {return index < m_prices_vector.size() ? -value : 0.0; });
 		else
-		{
-			for (int j = 0; j < s_deltas.size(); j++) s_deltas[j] = j < prices_v.size() ? prices_v[j] : 0.0;
-		}
+			s_deltas.apply_enumerate(m_prices_vector, [&](const I32 index, const F64 value) {return index < m_prices_vector.size() ? value : 0.0; });
 
-		simplex_t.add_row(s_deltas);
+		m_simplex_table.add_row(s_deltas);
 
 		/// <summary>
 		/// Если целевая функуция не была модифицирована
 		/// </summary>
-
-		if (!isTargetFunctionModified()) return;
+		if (!is_target_function_modified()) return;
 
 		/// <summary>
 		/// Если всё же была...
 		/// </summary>
-		double_vector s_deltas_add(simplex_t.cols_count()); //  simplex_t[0].size());
+		vector_f64 s_deltas_add(m_simplex_table.cols_count()); //  m_simplex_table[0].size());
 
-		for (int j = 0; j < virtualArgsIds.size(); j++) s_deltas_add[virtualArgsIds[j]] = 1.0;
+		for (const I32 index : m_virtual_args_indices.values()) s_deltas_add[index] = 1.0;
 
-		simplex_t.add_row(s_deltas_add);
+		m_simplex_table.add_row(s_deltas_add);
 	}
 
-	bool simplex::excludeVirtualArgs()
+	bool simplex::exclude_virtual_args()
 	{
-		if (!isTargetFunctionModified()) return false;
+		if (!is_target_function_modified()) return false;
 
-		int last_row_id = simplex_t.size() - 1;
+		const I32 last_row_id = m_simplex_table.rows_count() - 1;
 
-		for (int i = 0; i < virtualArgsIds.size(); i++)
+		vector_f64 last_row = m_simplex_table.get_row(last_row_id);
+
+		for (const I32 index : m_virtual_args_indices.values())
 		{
-			for (int row = 0; row < simplex_t.size(); row++)
+			for (I32 row = 0; row < m_simplex_table.rows_count(); row++)
 			{
-				if (simplex_t.get(row,virtualArgsIds[i]) != 0)
-				{
-					double arg = simplex_t.get(last_row_id, virtualArgsIds[i]) / simplex_t.get(row, virtualArgsIds[i]);
-
-					simplex_t[last_row_id] = simplex_t[last_row_id] - arg * simplex_t[row];
-
-					break;
-				}
+				if (m_simplex_table(row, index) == 0) continue;
+				const F64 arg = m_simplex_table(last_row_id, index) / m_simplex_table(row, index);
+				last_row -= arg * m_simplex_table.get_row(row);
+				break;
 			}
 		}
-
 		return true;
 	}
 
-	bool simplex::validateSolution()const
+	bool simplex::validate_solution()const
 	{
-		double val = 0;
+		F64 val = 0;
 
-		int n_rows = isTargetFunctionModified() ? simplex_t.rows_count() - 2 : simplex_t.rows_count() - 1;
+		I32 n_rows = is_target_function_modified() ? m_simplex_table.rows_count() - 2 : m_simplex_table.rows_count() - 1;
 
-		int n_cols = simplex_t.cols_count() - 1;
+		I32 n_cols = m_simplex_table.cols_count() - 1;
 
-		for (int i = 0; i < basisArgsIds.size(); i++)
+		for (I32 index = 0; index < m_basis_args_indices.size(); index++)
 		{
-			if (basisArgsIds[i] < naturalArgsN())
-			{
-				val += simplex_t.get(i, n_cols) * prices_v[basisArgsIds[i]];
-			}
+			if (m_basis_args_indices[index] >= natural_args_count())continue;
+			val += m_simplex_table(index, n_cols) * m_prices_vector[m_basis_args_indices[index]];
 		}
-		if (mode == SIMPLEX_MAX)
+		if (m_problem_type == SIMPLEX_MAX)
 		{
-			if (abs(val - simplex_t.get(n_rows, n_cols)) < N_DIM_ACCURACY)
+			if (abs(val - m_simplex_table(n_rows, n_cols)) < N_DIM_ACCURACY)
 			{
-				if (isTargetFunctionModified())
-				{
-					return (abs(simplex_t.get(simplex_t.rows_count() - 1, n_cols)) < N_DIM_ACCURACY);
-				}
-
+				if (is_target_function_modified())
+					return (abs(m_simplex_table(m_simplex_table.rows_count() - 1, n_cols)) < N_DIM_ACCURACY);
 				return true;
 			}
 		}
-		if (abs(val + simplex_t.get(n_rows, n_cols)) < N_DIM_ACCURACY)
+		if (abs(val + m_simplex_table(n_rows, n_cols)) < N_DIM_ACCURACY)
 		{
-			if (isTargetFunctionModified())
-			{
-				return (abs(simplex_t.get(simplex_t.rows_count() - 1, n_cols)) < N_DIM_ACCURACY);
-			}
+			if (is_target_function_modified())
+				return (abs(m_simplex_table(m_simplex_table.rows_count() - 1, n_cols)) < N_DIM_ACCURACY);
 			return true;
 		}
 		return false;
 	}
 
-	int simplex::naturalArgsN()const
+	I32 simplex::natural_args_count()const
 	{
-		return prices_v.size();
+		return m_prices_vector.size();
 	}
 
-	inline const double_matrix& simplex::boundsMatrix()const
+	inline const matrix_f64& simplex::bounds_matrix()const
 	{
-		return bounds_m;
+		return m_bounds_matrix;
 	}
 
-	inline const double_vector& simplex::boundsCoeffs()const
+	inline const vector_f64& simplex::bounds_vector()const
 	{
-		return bounds_v;
+		return m_bounds_vector;
 	}
 
-	inline const double_vector& simplex::pricesCoeffs()const
+	inline const vector_f64& simplex::prices_vector()const
 	{
-		return prices_v;
+		return m_prices_vector;
 	}
 
-	inline const int_vector & simplex::inequations()const
+	inline const vector_i32& simplex::inequations()const
 	{
-		return _inequations;
+		return m_inequations;
 	};
 
-	inline const int_vector& simplex::basisArgumentsIds()const
+	inline const vector_i32& simplex::basis_args_indices()const
 	{
-		return basisArgsIds;
+		return m_basis_args_indices;
 	};
 
-	inline const double_matrix& simplex::table() const { return simplex_t; };
+	inline const matrix_f64& simplex::simplex_table() const { return m_simplex_table; };
 
-	inline bool simplex::isTargetFunctionModified()const
+	inline bool simplex::is_target_function_modified()const
 	{
-		return virtualArgsIds.size() != 0;
+		return m_virtual_args_indices.size() != 0;
 	}
 
-	double_vector simplex::currentSimplexSolution(const bool only_natural_args)const
+	vector_f64 simplex::current_simplex_solution(const bool only_natural_args)const
 	{
-		double_vector solution(only_natural_args ? naturalArgsN() : simplex_t.cols_count() - 1);
+		vector_f64 solution(only_natural_args ? natural_args_count() : m_simplex_table.cols_count() - 1);
 
-		for (int i = 0; i < basisArgsIds.size(); i++)
+		for (I32 index = 0; index < m_basis_args_indices.size(); index++)
 		{
-			if (basisArgsIds[i] >= solution.size()) continue;
+			if (m_basis_args_indices[index] >= solution.size()) continue;
 
-			solution[basisArgsIds[i]] = simplex_t.get(i, simplex_t.cols_count() - 1);
+			solution[m_basis_args_indices[index]] = m_simplex_table(index, m_simplex_table.cols_count() - 1);
 		}
 		return solution;
 	}
 
-	double_vector simplex::solve(const int mode)
+	vector_f64 simplex::solve(const I32 problem_type)
 	{
-		this->mode = mode;
+		m_problem_type = problem_type;
 
-		std::cout << "Simplex problem type: " << ((mode == SIMPLEX_MAX) ? "max\n" : "min\n");
+		std::cout << "Simplex problem type: " << ((m_problem_type == SIMPLEX_MAX) ? "max\n" : "min\n");
 
-		buildSimplexTable();
+		build_simplex_table();
 
-		double_vector solution;
+		vector_f64 solution;
 
-		double a_ik;
+		F64 a_ik;
 
-		int main_row;
+		I32 main_row;
 
-		int main_col;
+		I32 main_col;
 
 		std::cout << "Start simplex table:" << "\n";
 
 		std::cout << *this;
 
-		if (excludeVirtualArgs())
+		if (exclude_virtual_args())
 		{
 			// второй этап, если задача должна решаться двух проходным(двух этапным) алгоритмом
 			std::cout << "Simplex table after args exclude:" << "\n";
@@ -659,13 +574,13 @@ namespace sm
 			std::cout << *this;
 		}
 
-		while (!isPlanOptimal())
+		while (!is_plan_optimal())
 		{
-			main_col = getMainCol();
+			main_col = get_main_col();
 
 			if (main_col == -1) break;
 
-			main_row = getMainRow(main_col);
+			main_row = get_main_row(main_col);
 
 			if (main_row == -1)
 			{
@@ -675,18 +590,18 @@ namespace sm
 				return solution;
 			}
 
-			basisArgsIds[main_row] = main_col;
+			m_basis_args_indices[main_row] = main_col;
 
-			a_ik = simplex_t.get(main_row, main_col);
+			a_ik = m_simplex_table(main_row, main_col);
 
-			double_vector main_row_vector = simplex_t.get_row(main_row) *= 1.0 / a_ik;
-			// simplex_t[main_row] = simplex_t[main_row] * (1.0 / a_ik);
- 			for (int i = 0; i < simplex_t.rows_count(); i++)
+			vector_f64 main_row_vector = m_simplex_table.get_row(main_row) *= 1.0 / a_ik;
+			// m_simplex_table[main_row] = m_simplex_table[main_row] * (1.0 / a_ik);
+			for (I32 i = 0; i < m_simplex_table.rows_count(); i++)
 			{
 				if (i == main_row)continue;
-				simplex_t.get_row(i) -= (simplex_t.get(i, main_col) * main_row_vector);
+				m_simplex_table.get_row(i) -= (m_simplex_table(i, main_col) * main_row_vector);
 			}
-			solution = currentSimplexSolution();
+			solution = current_simplex_solution();
 #if _DEBUG
 			std::cout << "a_main { " << main_row + 1 << ", " << main_col + 1 << " } = " << rational::rational_str(a_ik) << "\n";
 			std::cout << *this;
@@ -694,9 +609,9 @@ namespace sm
 			std::cout << "\n";
 #endif
 		}
-		if (validateSolution())
+		if (validate_solution())
 		{
-			solution = currentSimplexSolution(true);
+			solution = current_simplex_solution(true);
 			/// формирование ответа
 			std::cout << "solution : " << solution << "\n";
 			return solution;
@@ -707,57 +622,56 @@ namespace sm
 		return solution;
 	}
 
-	simplex::simplex(const double_matrix& a, const double_vector& c, const int_vector& _ineq, const double_vector& b)
+	simplex::simplex(const matrix_f64& bounds_matrix, const vector_f64& prices_vector, const vector_i32& inequations, const vector_f64& bounds_vector)
 	{
-		if (b.size() != _ineq.size())
-		{
+		if (bounds_vector.size() != inequations.size())
 			throw std::runtime_error("Error simplex creation :: b.size() != inequalities.size()");
-		}
-		if (a.rows_count() != _ineq.size())
-		{
+		if (bounds_matrix.rows_count() != inequations.size())
 			throw std::runtime_error("Error simplex creation :: A.rows_number() != inequalities.size()");
-		}
-
-		if (a.cols_count() != c.size())
-		{
+		if (bounds_matrix.cols_count() != prices_vector.size())
 			throw std::runtime_error("Error simplex creation :: A.cols_number() != price_coeffs.size()");
-		}
-
-		bounds_v = b;
-
-		bounds_m = a;
-
-		prices_v = c;
-
-		_inequations = int_vector(_ineq);
+		m_bounds_vector = bounds_vector;
+		m_bounds_matrix = bounds_matrix;
+		m_prices_vector = prices_vector;
+		m_inequations = inequations;
 	}
 
-	simplex::simplex(const double_matrix& a, const double_vector& c, const double_vector& b)
+	simplex::simplex(const matrix_f64& bounds_matrix, const vector_f64& prices_vector, const vector_f64& bounds_vector)
 	{
-		if (a.rows_count() != b.size())
-		{
+		if (bounds_matrix.rows_count() != bounds_vector.size())
 			throw std::runtime_error("Error simplex creation :: A.rows_number() != bouns_coeffs.size()");
-		}
-
-		if (a.cols_count() != c.size())
-		{
+		if (bounds_matrix.cols_count() != prices_vector.size())
 			throw std::runtime_error("Error simplex creation :: A.cols_number() != price_coeffs.size()");
-		}
-
-		int_vector _ineq;
-
-		for (int i = 0; i < b.size(); i++)
-		{
-			_ineq.push_back(LESS_EQUAL);
-		}
-
-		bounds_v = b;
-
-		bounds_m = a;
-
-		prices_v = c;
-
-		_inequations = _ineq;
+		m_bounds_vector = bounds_vector;
+		m_bounds_matrix = bounds_matrix;
+		m_prices_vector = prices_vector;
+		m_inequations = vector_i32(bounds_vector.size());
+		m_inequations.fill([](const I32) {return LESS_EQUAL; });
 	}
 
+	simplex::simplex(matrix_f64&& bounds_matrix, vector_f64&& prices_vector, vector_i32&& inequations, vector_f64&& bounds_vector) 
+	{
+		if (bounds_vector.size() != inequations.size())
+			throw std::runtime_error("Error simplex creation :: b.size() != inequalities.size()");
+		if (bounds_matrix.rows_count() != inequations.size())
+			throw std::runtime_error("Error simplex creation :: A.rows_number() != inequalities.size()");
+		if (bounds_matrix.cols_count() != prices_vector.size())
+			throw std::runtime_error("Error simplex creation :: A.cols_number() != price_coeffs.size()");
+		m_bounds_vector = std::move(bounds_vector);
+		m_bounds_matrix = std::move(bounds_matrix);
+		m_prices_vector = std::move(prices_vector);
+		m_inequations   = std::move(inequations  );
+	}
+	simplex::simplex(matrix_f64&& bounds_matrix, vector_f64&& prices_vector, vector_f64&& bounds_vector)
+	{
+		if (bounds_matrix.rows_count() != bounds_vector.size())
+			throw std::runtime_error("Error simplex creation :: A.rows_number() != bouns_coeffs.size()");
+		if (bounds_matrix.cols_count() != prices_vector.size())
+			throw std::runtime_error("Error simplex creation :: A.cols_number() != price_coeffs.size()");
+		m_bounds_vector = std::move(bounds_vector);
+		m_bounds_matrix = std::move(bounds_matrix);
+		m_prices_vector = std::move(prices_vector);
+		m_inequations = vector_i32(bounds_vector.size());
+		m_inequations.fill([](const I32) {return LESS_EQUAL; });
+	}
 }

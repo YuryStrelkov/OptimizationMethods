@@ -1,30 +1,30 @@
 #pragma once
 #include "numeric_vector.h"
 
-static int get_factorial(const int32_t number) {
+static int get_factorial(const I32 number) {
 	int result = 1;
 	for (int i = 1; i <= number; i++) result = result * i;
 	return result;
 };
 
-static int_vector calculate_factorials()
+static vector_i32 calculate_factorials(const I32 number = 128)
 {
-	int_vector factorials(128);
-	factorials.fill([&](const int32_t index) {return get_factorial(index); });
+	vector_i32 factorials(number);
+	factorials.fill([&](const I32 index) {return get_factorial(index); });
 	return factorials;
 };
 
-static int_vector fibonacci_numbers(const int32_t index) {
-	if (index < 1) return int_vector({ 0 });
-	if (index < 2) return int_vector({ 0, 1 });
-	int_vector res = int_vector(index);
+static vector_i32 fibonacci_numbers(const I32 index) {
+	if (index < 1) return vector_i32({ 0 });
+	if (index < 2) return vector_i32({ 0, 1 });
+	vector_i32 res = vector_i32(index);
 	res[0] = 0;
 	res[1] = 1;
 	for (int i = 2; i < index; i++) res[i] = res[i - 1] + res[i - 2];
 	return res;
 };
 
-static void closest_fibonacci_pair(const double value, int32_t& fib_n, int32_t& fib_n_1) {
+static void closest_fibonacci_pair(const F64 value, I32& fib_n, I32& fib_n_1) {
 	fib_n = 0;
 	fib_n_1 = 0;
 	if (value < 1) return;

@@ -117,6 +117,17 @@ public final class DoubleMatrix extends TemplateVector<DoubleVector> {
     }
 
     /**
+     * Добавляет новый столбец к матрице.
+     *
+     * @param col новый стобец.
+     * @return обновлённая матрица.
+     */
+    public DoubleMatrix addCol() {
+        applyEnumerate((index, row) -> { row.pushBack(0.0); return row;});
+        return this;
+    }
+
+    /**
      * Добавляет новую строку к матрице.
      *
      * @param row новая строка.
@@ -126,6 +137,10 @@ public final class DoubleMatrix extends TemplateVector<DoubleVector> {
         if (row == null) return this;
         if (row.size() != colsCount()) throw new RuntimeException("Error::AddRow::row.Size != NCols");
         pushBack(row);
+        return this;
+    }
+    public DoubleMatrix addRow() {
+        pushBack(new DoubleVector(colsCount()));
         return this;
     }
 

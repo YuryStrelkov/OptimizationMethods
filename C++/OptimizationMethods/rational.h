@@ -2,7 +2,7 @@
 namespace rational
 {
 	struct lmat{
-		long m00, m01,
+		I64 m00, m01,
 			 m10, m11;
 		lmat() : m00(1), m01(0), m10(0), m11(1) {}
 	};
@@ -14,14 +14,14 @@ namespace rational
 	/// <param name="numerator">числитель</param>
 	/// <param name="denominator">знаменатель</param>
 	/// <param name="max_den">максимально допустимый знаменатель</param>
-	static void decimal_to_rational(const double& value, int32_t& rational_part, int32_t& numerator, int32_t& denominator, const int32_t max_den = MAX_DENOMINATOR)
+	static void decimal_to_rational(const F64& value, I32& rational_part, I32& numerator, I32& denominator, const I32 max_den = MAX_DENOMINATOR)
 	{
 		lmat mat;
-		long ai;
-		long t;
-		double x = abs(value), startx;
-		int32_t sign = value >= 0 ? 1 : -1;
-		while (mat.m10 * (ai = (long)x) + mat.m11 <= max_den) {
+		I64 ai;
+		I64 t;
+		F64 x = abs(value);
+		I32 sign = value >= 0 ? 1 : -1;
+		while (mat.m10 * (ai = (I64)x) + mat.m11 <= max_den) {
 
 			t = mat.m00 * ai + mat.m01;
 			mat.m01 = mat.m00;
@@ -31,9 +31,9 @@ namespace rational
 			mat.m11 = mat.m10;
 			mat.m10 = t;
 
-			if (x == (double)ai) break; // AF: division by zero
-			x = 1.0 / (x - (double)ai);
-			if (x > (double)0x7FFFFFFF) break;// AF: representation failure
+			if (x == (F64)ai) break; // AF: division by zero
+			x = 1.0 / (x - (F64)ai);
+			if (x > (F64)0x7FFFFFFF) break;// AF: representation failure
 		}
 
 		if ((rational_part = mat.m00 / mat.m10) != 0)
@@ -48,9 +48,9 @@ namespace rational
 		denominator = mat.m10;
 	};
 
-	static std::string rational_str(const int32_t int_part,
-		const int32_t numerator,
-		const int32_t denomerator,
+	static std::string rational_str(const I32 int_part,
+		const I32 numerator,
+		const I32 denomerator,
 		const bool& full_rational = true)
 	{
 		if (numerator == 0) return std::to_string(int_part);
@@ -61,38 +61,20 @@ namespace rational
 		return std::to_string(int_part) + " " + std::to_string(numerator) + "/" + std::to_string(denomerator);
 	};
 
-	static std::string rational_str(const double val, const bool full_rational = true)
+	static std::string rational_str(const F64 val, const bool full_rational = true)
 	{
-		int32_t int_part;
-		int32_t numerator;
-		int32_t denomerator;
+		I32 int_part;
+		I32 numerator;
+		I32 denomerator;
 		decimal_to_rational(val, int_part, numerator, denomerator);
 		return rational_str(int_part, numerator, denomerator, full_rational);
 	}
 
-	static std::string rational_str(const vec_n& val, const bool full_rational = true)
-	{
-		if (val.size() == 0)
-		{
-			return "{ \"error\": \"empty vector\" }";
-		}
-		std::string str = "{ ";
-		for (int i = 0; i < val.size() - 1; i++)
-		{
-			str += rational_str(val[i], full_rational);
-			str += ", ";
-		}
-		str += rational_str(val[val.size() - 1], full_rational);
-
-		str += " }";
-		return str;
-	};
-
 	struct rational_number {
 	private:
-		int32_t m_numerator;
-		int32_t m_denominator;
-		int32_t m_int_part;
+		I32 m_numerator;
+		I32 m_denominator;
+		I32 m_int_part;
 	public:
 
 		bool operator==(const rational_number& number)const
@@ -105,25 +87,25 @@ namespace rational
 
 		friend std::ostream& operator<<(std::ostream& stream, const rational_number& number);
 
-		int32_t numerator() const {
+		I32 numerator() const {
 			return m_numerator;
 		}
 
-		int32_t denominator() const {
+		I32 denominator() const {
 			return m_denominator;
 		}
 
-		int32_t int_part() const {
+		I32 int_part() const {
 			return m_int_part;
 		}
 
-		double double_value()const
+		F64 double_value()const
 		{
 			return int_part() >= 0 ? int_part() + (1.0 * numerator()) / denominator() :
 				int_part() - (1.0 * numerator()) / denominator();
 		}
 
-		rational_number(const int32_t numerator, const int32_t denominator, const int32_t intPart) {
+		rational_number(const I32 numerator, const I32 denominator, const I32 intPart) {
 			m_numerator = numerator;
 			m_denominator = denominator;
 			m_int_part = intPart;
@@ -133,7 +115,7 @@ namespace rational
 			:rational_number(other.numerator(), other.denominator(), other.int_part()) {
 		}
 
-		rational_number(const double value) {
+		rational_number(const F64 value) {
 			decimal_to_rational(value, m_int_part, m_numerator, m_denominator);
 		}
 	};

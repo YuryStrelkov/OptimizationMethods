@@ -30,13 +30,13 @@ public class Simplex {
     private final TemplateVector<Sign> inequalities;
 
     // список индексов переменных которые войдут в целевую функию, модифицируя ее
-    private final TemplateVector<Integer> fModArgs;
+    private final TemplateVector<Integer> virtualArgsIndices;
 
     // индексы естественных переменных
-    private final TemplateVector<Integer> naturalArgsIds;
+    private final TemplateVector<Integer> naturalArgsIndices;
 
     // список индексов текущих базисных переменных
-    private final TemplateVector<Integer> basisArgs;
+    private final TemplateVector<Integer> basisArgsIndices;
 
     // Симплекс таблица
     private DoubleMatrix simplexTable;
@@ -53,41 +53,41 @@ public class Simplex {
     /// режим поиска решения
     SimplexProblemType mode = SimplexProblemType.Max;
 
-    public int naturalArgsN() {
+    public int naturalArgsCount() {
         return pricesVector.size();
     }
 
-    public DoubleMatrix boundsMatrix() {
+    public final DoubleMatrix boundsMatrix() {
         return boundsMatrix;
     }
 
-    public DoubleVector boundsCoefficients() {
+    public final  DoubleVector boundsVector() {
         return boundsVector;
     }
 
-    public DoubleVector pricesCoefficients() {
+    public final DoubleVector pricesVector() {
         return pricesVector;
     }
 
-    public TemplateVector<Sign> inequalities() {
+    public final TemplateVector<Sign> inequalities() {
         return inequalities;
     }
 
-    public TemplateVector<Integer> basisArguments() {
-        return basisArgs;
+    public final TemplateVector<Integer> basisArgsIndices() {
+        return basisArgsIndices;
     }
 
-    public DoubleMatrix simplexTable() {
+    public final DoubleMatrix simplexTable() {
         return simplexTable;
     }
 
     public DoubleVector currentSimplexSolution(boolean onlyNaturalArgs) {
-        DoubleVector solution = new DoubleVector(onlyNaturalArgs ? naturalArgsN() : simplexTable.colsCount() - 1);
+        DoubleVector solution = new DoubleVector(onlyNaturalArgs ? naturalArgsCount() : simplexTable.colsCount() - 1);
 
-        for (int i = 0; i < basisArgs.size(); i++) {
-            if (basisArgs.get(i) >= solution.size()) continue;
+        for (int i = 0; i < basisArgsIndices.size(); i++) {
+            if (basisArgsIndices.get(i) >= solution.size()) continue;
 
-            solution.set(basisArgs.get(i), simplexTable.get(i, simplexTable.colsCount() - 1));
+            solution.set(basisArgsIndices.get(i), simplexTable.get(i, simplexTable.colsCount() - 1));
         }
         return solution;
     }
@@ -97,7 +97,7 @@ public class Simplex {
     }
 
     public boolean isTargetFuncModified() {
-        return fModArgs.size() != 0;
+        return virtualArgsIndices.size() != 0;
     }
 
     /**
@@ -122,7 +122,7 @@ public class Simplex {
         // если мы модифицировали целевую функцию, то среди списка естественнхых
         // агументов проверям на положительнность предпослднюю строку симплекс-разностей
         DoubleVector row_ = simplexTable.row(simplexTable.rowsCount() - 2);
-        for (int id : naturalArgsIds) {
+        for (int id : naturalArgsIndices) {
             optimal &= row_.get(id) < 0;
             if (!optimal) break;
         }
@@ -154,7 +154,7 @@ public class Simplex {
 
         row = simplexTable.row(simplexTable.rowsCount() - 2);
 
-        for (int id : naturalArgsIds) {
+        for (int id : naturalArgsIndices) {
             if (row.get(id) >= delta) continue;
             delta = row.get(id);
             index = id;
@@ -200,36 +200,20 @@ public class Simplex {
      */
     private int[] buildVirtualBasisCol(int inequalityId, Sign inequalitySign) {
         if (inequalitySign == Sign.Equal) {
-            for (int row = 0; row < simplexTable.rowsCount(); row++) {
-                if (row == inequalityId) {
-                    simplexTable.row(row).pushBack(1.0);
-                    continue;
-                }
-                simplexTable.row(row).pushBack(0.0);
-            }
+            simplexTable.addCol();
+            simplexTable.set(inequalityId, simplexTable.colsCount() - 1, 1.0);
             return new int[]{simplexTable.colsCount() - 1, simplexTable.colsCount() - 1};
         }
 
         if (inequalitySign == Sign.More) {
-            for (int row = 0; row < simplexTable.rowsCount(); row++) {
-                if (row == inequalityId) {
-                    simplexTable.row(row).pushBack(-1.0);
-                    simplexTable.row(row).pushBack(1.0);
-                    continue;
-                }
-                simplexTable.row(row).pushBack(0.0);
-                simplexTable.row(row).pushBack(0.0);
-            }
+            simplexTable.addCol();
+            simplexTable.addCol();
+            simplexTable.set(inequalityId, simplexTable.colsCount() - 2, -1.0);
+            simplexTable.set(inequalityId, simplexTable.colsCount() - 1, 1.0);
             return new int[]{simplexTable.colsCount() - 2, simplexTable.colsCount() - 1};
         }
-
-        for (int row = 0; row < simplexTable.rowsCount(); row++) {
-            if (row == inequalityId) {
-                simplexTable.row(row).pushBack(1.0);
-                continue;
-            }
-            simplexTable.row(row).pushBack(0.0);
-        }
+        simplexTable.addCol();
+        simplexTable.set(inequalityId, simplexTable.colsCount() - 1, 1.0);
         return new int[]{simplexTable.colsCount() - 1, -1};
     }
 
@@ -252,9 +236,9 @@ public class Simplex {
      */
     private void buildSimplexTable() {
         simplexTable = new DoubleMatrix(boundsMatrix);
-        naturalArgsIds.clear(); // (индексы) x1, x2, x3 - те переменные, котоыре были в постановке задачи
-        basisArgs.clear();      // (индексы) xi, xi+1, ..., xn - те переменные, которые вошли в базис
-        fModArgs.clear();       // (индексы) xi, xi+1, ..., xn - те переменные, которые модифицировали целевую функцию
+        naturalArgsIndices.clear(); // (индексы) x1, x2, x3 - те переменные, котоыре были в постановке задачи
+        basisArgsIndices.clear();      // (индексы) xi, xi+1, ..., xn - те переменные, которые вошли в базис
+        virtualArgsIndices.clear();       // (индексы) xi, xi+1, ..., xn - те переменные, которые модифицировали целевую функцию
         // Если среди вектора b есть отрицательные значения, то соответствующие строки
         // матрицы ограничений умножаем на мину один и меняем знак сравнения
         for (int row = 0; row < simplexTable.rowsCount(); row++) {
@@ -264,42 +248,38 @@ public class Simplex {
             simplexTable.row(row).mul(-1.0);
         }
         // построение списка индексов естественных переменных(те, что не искусственные)
-        for (int i = 0; i < pricesVector.size(); i++) naturalArgsIds.pushBack(i);
+        for (int i = 0; i < pricesVector.size(); i++) naturalArgsIndices.pushBack(i);
         // построение искуственного базиса
         int[] basisArgsInfo;
 
         for (int inequalityId = 0; inequalityId < inequalities.size(); inequalityId++) {
             basisArgsInfo = buildVirtualBasisCol(inequalityId, inequalities.get(inequalityId));
 
-            naturalArgsIds.pushBack(basisArgsInfo[0]);
+            naturalArgsIndices.pushBack(basisArgsInfo[0]);
 
             if (basisArgsInfo[1] != -1) {
-                basisArgs.pushBack(basisArgsInfo[1]);
-                fModArgs.pushBack(basisArgsInfo[1]);
+                basisArgsIndices.pushBack(basisArgsInfo[1]);
+                virtualArgsIndices.pushBack(basisArgsInfo[1]);
                 continue;
             }
-            basisArgs.pushBack(basisArgsInfo[0]);
+            basisArgsIndices.pushBack(basisArgsInfo[0]);
         }
         // добавим столбец ограницений
-        // for (int row = 0; row < simplexTable.rows(); row++) simplexTable.row(row).pushBack(boundsVector.get(row));
-        simplexTable.applyEnumerate((i, v) -> {v.pushBack(boundsVector.get(i)); return v;});
+        simplexTable.addCol(boundsVector);
         // Построение симплекс разностей
         DoubleVector simD = new DoubleVector(simplexTable.colsCount());
 
         if (mode == SimplexProblemType.Max) {
             simD.applyEnumerate(pricesVector, (i, v) -> i < pricesVector.size() ? -v : 0.0);
-            // for (int j = 0; j < simD.size(); j++) simD.set(j, j < pricesVector.size() ? -pricesVector.get(j) : 0.0);
         } else {
             simD.applyEnumerate(pricesVector, (i, v)-> i < pricesVector.size() ? v : 0.0);
-            // for (int j = 0; j < simD.size(); j++) simD.set(j, j < pricesVector.size() ? pricesVector.get(j) : 0.0);
         }
-
         simplexTable.addRow(simD);
         // Если целевая функуция не была модифицирована
         if (!isTargetFuncModified()) return;
         // Если всё же была...
         DoubleVector sDeltasAdd = new DoubleVector(simplexTable.colsCount());
-        for (Integer fModArgId : fModArgs) sDeltasAdd.set(fModArgId, 1.0);
+        for (Integer fModArgId : virtualArgsIndices) sDeltasAdd.set(fModArgId, 1.0);
         simplexTable.addRow(sDeltasAdd);
     }
 
@@ -308,7 +288,7 @@ public class Simplex {
 
         int lastRowId = simplexTable.rowsCount() - 1;
 
-        for (Integer fModArgId : fModArgs) {
+        for (Integer fModArgId : virtualArgsIndices) {
             for (int row = 0; row < simplexTable.rowsCount(); row++) {
                 if (simplexTable.get(row, fModArgId) == 0) continue;
                 double arg = simplexTable.get(lastRowId, fModArgId) / simplexTable.get(row, fModArgId);
@@ -326,21 +306,21 @@ public class Simplex {
 
         int nCols = simplexTable.colsCount() - 1;
 
-        for (int i = 0; i < basisArgs.size(); i++) {
-            if (basisArgs.get(i) >= naturalArgsN()) continue;
-            val += simplexTable.get(i, nCols) * pricesVector.get(basisArgs.get(i));
+        for (int i = 0; i < basisArgsIndices.size(); i++) {
+            if (basisArgsIndices.get(i) >= naturalArgsCount()) continue;
+            val += simplexTable.get(i, nCols) * pricesVector.get(basisArgsIndices.get(i));
         }
         if (mode == SimplexProblemType.Max) {
             if (Math.abs(val - simplexTable.get(nRows, nCols)) < NumericCommon.NUMERIC_ACCURACY_MIDDLE) {
                 if (isTargetFuncModified()) {
-                    return (Math.abs(simplexTable.get(simplexTable.rowsCount() - 1, simplexTable.colsCount() - 1)) < NumericCommon.NUMERIC_ACCURACY_MIDDLE);
+                    return (Math.abs(simplexTable.get(simplexTable.rowsCount() - 1, nCols)) < NumericCommon.NUMERIC_ACCURACY_MIDDLE);
                 }
                 return true;
             }
         }
         if (Math.abs(val + simplexTable.get(nRows, nCols)) < NumericCommon.NUMERIC_ACCURACY_MIDDLE) {
             if (isTargetFuncModified()) {
-                return (Math.abs(simplexTable.get(simplexTable.rowsCount() - 1, simplexTable.colsCount() - 1)) < NumericCommon.NUMERIC_ACCURACY_MIDDLE);
+                return (Math.abs(simplexTable.get(simplexTable.rowsCount() - 1, nCols)) < NumericCommon.NUMERIC_ACCURACY_MIDDLE);
             }
             return true;
         }
@@ -373,13 +353,13 @@ public class Simplex {
                 } else if (nRow == simplexTable.rowsCount() - 1) {
                     sb.append(String.format("%-6s", " d1"));
                 } else {
-                    sb.append(String.format("%-6s", String.format(" x %s", basisArgs.get(nRow) + 1)));
+                    sb.append(String.format("%-6s", String.format(" x %s", basisArgsIndices.get(nRow) + 1)));
                 }
             } else {
                 if (nRow == simplexTable.rowsCount() - 1) {
                     sb.append(String.format("%-6s", " d"));
                 } else {
-                    sb.append(String.format("%-6s", String.format(" x %s", basisArgs.get(nRow) + 1)));
+                    sb.append(String.format("%-6s", String.format(" x %s", basisArgsIndices.get(nRow) + 1)));
                 }
             }
             for (int col = 0; col < row.size(); col++) {
@@ -438,15 +418,15 @@ public class Simplex {
                 return null;
             }
 
-            basisArgs.set(mainRow, mainCol);
+            basisArgsIndices.set(mainRow, mainCol);
 
             aik = simplexTable.get(mainRow, mainCol);
 
-            simplexTable.row(mainRow).mul(1.0 / aik);
+            final DoubleVector mainRowVector = simplexTable.row(mainRow).mul(1.0 / aik);
 
             for (int i = 0; i < simplexTable.rowsCount(); i++) {
                 if (i == mainRow) continue;
-                simplexTable.row(i).sub(DoubleVector.mul(simplexTable.get(i, mainCol), simplexTable.row(mainRow)));
+                simplexTable.row(i).sub(DoubleVector.mul(simplexTable.get(i, mainCol), mainRowVector));
             }
             // solution = currentSimplexSolution();
             if (NumericCommon.SHOW_SIMPLEX_DEBUG_LOG) {
@@ -483,9 +463,9 @@ public class Simplex {
             throw new RuntimeException("Error simplex creation :: A.cols_number() != price coefficients.size()");
         }
 
-        naturalArgsIds = new TemplateVector<>();
-        basisArgs = new TemplateVector<>();
-        fModArgs = new TemplateVector<>();
+        naturalArgsIndices = new TemplateVector<>();
+        basisArgsIndices = new TemplateVector<>();
+        virtualArgsIndices = new TemplateVector<>();
 
         boundsVector = new DoubleVector(b);
         boundsMatrix = new DoubleMatrix(a);
@@ -502,13 +482,12 @@ public class Simplex {
             throw new RuntimeException("Error simplex creation :: A.cols_number() != price coefficients.size()");
         }
 
-        inequalities = new TemplateVector<>();
+        inequalities = new TemplateVector<>(b.size());
+        inequalities.fill(v->Sign.Less);
 
-        for (int i = 0; i < b.size(); i++) inequalities.pushBack(Sign.Less);
-
-        naturalArgsIds = new TemplateVector<>();
-        basisArgs = new TemplateVector<>();
-        fModArgs = new TemplateVector<>();
+        naturalArgsIndices = new TemplateVector<>();
+        basisArgsIndices = new TemplateVector<>();
+        virtualArgsIndices = new TemplateVector<>();
 
         boundsVector = new DoubleVector(b);
         boundsMatrix = new DoubleMatrix(a);

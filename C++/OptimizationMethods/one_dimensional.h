@@ -2,13 +2,13 @@
 #include "numeric_utils.h"
 #include "common.h"
 
-typedef double(*function_1d)(const double);
+typedef F64(*function_1d)(const F64);
 
-static double bisect(function_1d function, const double x_0, const double x_1, const double eps = ACCURACY, const int max_iters = ITERS_MAX)
+static F64 bisect(function_1d function, const F64 x_0, const F64 x_1, const F64 eps = ACCURACY, const I32 max_iters = ITERS_MAX)
 {
-	double x_l = x_0 , x_r = x_1, x_c = 0.0;
+	F64 x_l = x_0 , x_r = x_1, x_c = 0.0;
 	if (x_l > x_r) std::swap(x_l, x_r);
-	int cntr = 0;
+	I32 cntr = 0;
 	for (;cntr != max_iters; cntr++)
 	{
 		if (x_r - x_l < eps) break;
@@ -24,12 +24,12 @@ static double bisect(function_1d function, const double x_0, const double x_1, c
 	return x_c;
 }
 
-static double golden_ratio(function_1d function, const double x_0, const double x_1, const double eps = ACCURACY, const int max_iters = ITERS_MAX)
+static F64 golden_ratio(function_1d function, const F64 x_0, const F64 x_1, const F64 eps = ACCURACY, const I32 max_iters = ITERS_MAX)
 {
-	double a = x_0, b = x_1;
+	F64 a = x_0, b = x_1;
 	if (a > b) std::swap(a, b);
-	double x_l = a, x_r = b, dx;
-	int cntr = 0;
+	F64 x_l = a, x_r = b, dx;
+	I32 cntr = 0;
 	for (; cntr != max_iters; cntr++)
 	{
 		if (x_r - x_l < eps) break;
@@ -47,12 +47,12 @@ static double golden_ratio(function_1d function, const double x_0, const double 
 	return (x_r + x_l) * 0.5;
 }
 
-static double fibonacci(function_1d function, const double x_0, const double x_1, const double eps = ACCURACY)
+static F64 fibonacci(function_1d function, const F64 x_0, const F64 x_1, const F64 eps = ACCURACY)
 {
-	double a = x_0, b = x_1;
+	F64 a = x_0, b = x_1;
 	if (a > b) std::swap(a, b);
-	double x_l = a, x_r = b,  dx;
-	int f_n, f_n_1, f_tmp, cntr = 0;
+	F64 x_l = a, x_r = b,  dx;
+	I32 f_n, f_n_1, f_tmp, cntr = 0;
 	closest_fibonacci_pair((b - a) / eps, f_n, f_n_1);
 	while(f_n != f_n_1)
 	{
@@ -60,8 +60,8 @@ static double fibonacci(function_1d function, const double x_0, const double x_1
 		cntr++;
 		dx    = (b - a);
 		f_tmp = f_n_1 - f_n;
-		x_l   = a + dx * ((double)f_tmp / f_n_1);
-		x_r   = a + dx * ((double)f_n   / f_n_1);
+		x_l   = a + dx * ((F64)f_tmp / f_n_1);
+		x_r   = a + dx * ((F64)f_n   / f_n_1);
 		f_n_1 = f_n;
 		f_n   = f_tmp;
 		if(function(x_l) < function(x_r))

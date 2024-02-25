@@ -4,30 +4,30 @@
 struct slice 
 {
 private:
-	int32_t m_end;
-	int32_t m_begin;
-	int32_t m_step;
+	I32 m_end;
+	I32 m_begin;
+	I32 m_step;
 	//exclusive index
 public:
-	int32_t end()const {
+	I32 end()const {
 		return m_end;
 	}
 	//inclusive index
-	int32_t begin()const {
+	I32 begin()const {
 		return m_begin;
 	}
 
-	int32_t step()const {
+	I32 step()const {
 		return m_step;
 	}
 
 	slice(): slice(0,0,1) {
 	}
 
-	slice(const int32_t begin, const int32_t end) : slice(begin, end, 1) {
+	slice(const I32 begin, const I32 end) : slice(begin, end, 1) {
 	}
 
-	slice(const int32_t begin, const int32_t end, const int32_t step) {
+	slice(const I32 begin, const I32 end, const I32 step) {
 		m_step = step;
 		m_begin = begin;
 		m_end = end;
