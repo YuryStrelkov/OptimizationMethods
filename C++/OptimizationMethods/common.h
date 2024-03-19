@@ -13,8 +13,6 @@ class matrix_type {};
 class vector_type {};
 #define PHI 1.61803398874989484820
 #define ONE_OVER_PHI 0.6180339887498948
-typedef std::vector<double>   vec_n;
-typedef std::vector<vec_n>    mat_mn;
 #define DOUBLE_PRECISION      1
 #define N_DIM_ACCURACY        1e-5
 #define N_DIM_DERIVATIVE_STEP 1e-6

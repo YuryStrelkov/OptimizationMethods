@@ -140,8 +140,8 @@ static void numeric_tests()
 static int test_all()
 {
 	// numeric_tests();
-	// one_dimensional_methods_test();
+	one_dimensional_methods_test();
 	// multi_dimensional_methods_test();
-	simplex_method_test();
+	// simplex_method_test();
 	return 0;
 }
