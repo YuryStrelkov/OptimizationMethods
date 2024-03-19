@@ -10,7 +10,7 @@
 #include <iomanip>
 #include <cassert>
 #define PHI 1.61803398874989484820
-#define ONE_OVER_PHI 0.6180339887498948
+#define PSI 0.6180339887498948
 typedef int32_t I32;
 typedef uint8_t UI8;
 typedef long I64;

@@ -103,10 +103,10 @@ static void  lab_4(function_nd function)
 
 int main()
 {
-	// test_all();
-	lab_1(  test_func);
-	lab_2(test_func_2);
-	lab_3(test_func_2);
-	lab_4(test_func_2);
+	test_all();
+	// lab_1(  test_func);
+	// lab_2(test_func_2);
+	// lab_3(test_func_2);
+	// lab_4(test_func_2);
 	return 0;
 }

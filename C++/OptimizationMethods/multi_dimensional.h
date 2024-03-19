@@ -33,7 +33,7 @@ static vector_f64 golden_ratio(function_nd function, const vector_f64& x_0, cons
 	for (; cntr != max_iters; cntr++)
 	{
 		if ((x_r - x_l).magnitude() < eps) break;
-		dx  = (b - a) * ONE_OVER_PHI;
+		dx  = (b - a) * PSI;
 		x_l =  b - dx;
 		x_r =  a + dx;
 		if (function(x_l) >= function(x_r))
