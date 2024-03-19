@@ -23,16 +23,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="matrix_utils.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
     <ClInclude Include="multi_dimensional.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="one_dimensional.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="vector_utils.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="test.h">
@@ -49,9 +43,6 @@
     </ClInclude>
     <ClInclude Include="vector_itaretors.h">
       <Filter>NumericUtils</Filter>
-    </ClInclude>
-    <ClInclude Include="main.h">
-      <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="numeric_vector.h">
       <Filter>NumericUtils</Filter>

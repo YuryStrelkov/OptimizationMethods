@@ -3,9 +3,10 @@
 #include "rational.h"
 
 template<typename T>class        numeric_vector_;
-typedef numeric_vector_<double>  double_vector;
-typedef numeric_vector_<float>   float_vector;
-typedef numeric_vector_<int32_t> int_vector;
+// typedef numeric_vector_<F64> vector_f64;
+typedef numeric_vector_<F64> vector_f64;
+typedef numeric_vector_<F32> vector_f32;
+typedef numeric_vector_<I32> vector_i32;
 
 template<typename T>
 class numeric_vector_: public template_vector_<T>
@@ -17,8 +18,8 @@ public:
 	static T                 dot       (const numeric_vector_<T>& lhs, const numeric_vector_<T>& rhs);
 	static numeric_vector_<T>direction (const numeric_vector_<T>& lhs, const numeric_vector_<T>& rhs);
 	static numeric_vector_<T>gradient  (std::function<T(const numeric_vector_<T>&)> func, numeric_vector_<T>& x, const T&   accuracy);
-	static T                 partial   (std::function<T(const numeric_vector_<T>&)> func, numeric_vector_<T>& x, const int32_t index, const T& accuracy);
-	static T                 partial2  (std::function<T(const numeric_vector_<T>&)> func, numeric_vector_<T>& x, const int32_t index1, const int32_t index2, const T& accuracy);
+	static T                 partial   (std::function<T(const numeric_vector_<T>&)> func, numeric_vector_<T>& x, const I32 index, const T& accuracy);
+	static T                 partial2  (std::function<T(const numeric_vector_<T>&)> func, numeric_vector_<T>& x, const I32 index1, const I32 index2, const T& accuracy);
 
 	numeric_vector_<T>& operator+=(const numeric_vector_<T>& rhs);
 	numeric_vector_<T>& operator-=(const numeric_vector_<T>& rhs);
@@ -32,8 +33,8 @@ public:
 
 	numeric_vector_<T> operator[](const slice& slc);
 	const numeric_vector_<T> operator[](const slice& slc)const;
-	const T& operator[](const int32_t index)const;
-	T& operator[](const int32_t index);
+	const T& operator[](const I32 index)const;
+	T& operator[](const I32 index);
 
 	numeric_vector_<T>& operator=(const numeric_vector_<T>& lhs);
 	numeric_vector_<T>& operator=(numeric_vector_<T>&& lhs)noexcept;
@@ -89,8 +90,8 @@ public:
 	numeric_vector_(const numeric_vector_<T>& vector) : template_vector_<T>(vector) {
 	};
 
-	numeric_vector_(const int32_t cap, const bool default_fill = true) : template_vector_<T>(cap) {
-		if(default_fill)template_vector_<T>::fill([](const int32_t n) {return T{ 0 }; });
+	numeric_vector_(const I32 cap, const bool default_fill = true) : template_vector_<T>(cap) {
+		if(default_fill)template_vector_<T>::fill([](const I32 n) {return T{ 0 }; });
 	};
 
 	numeric_vector_(const initializer_list<T>& values) : template_vector_<T>(values) {
@@ -149,14 +150,14 @@ template<typename T>
 inline numeric_vector_<T> numeric_vector_<T>::gradient(std::function<T(const numeric_vector_<T>&)> func, numeric_vector_<T>& x, const T& accuracy)
 {
 	numeric_vector_<T> grad(x.filling());
-	grad.apply_enumerate([&](const int32_t index, const T& value) {return numeric_vector_<T>::partial(func, x, index, accuracy); });
+	grad.apply_enumerate([&](const I32 index, const T& value) {return numeric_vector_<T>::partial(func, x, index, accuracy); });
 	return grad;
 }
 
 template<typename T>
-inline T numeric_vector_<T>::partial(std::function<T(const numeric_vector_<T>&)> func, numeric_vector_<T>& x, const int32_t index, const T& accuracy)
+inline T numeric_vector_<T>::partial(std::function<T(const numeric_vector_<T>&)> func, numeric_vector_<T>& x, const I32 index, const T& accuracy)
 {
-	assert(x.in_range(index), "index value out of vector indices rannge");
+	assert(x.in_range(index) && "index value out of vector indices rannge");
 	x.unchecked_access(index) = x.unchecked_access(index) + accuracy;
 	const T f_r               = func(x);
 	x.unchecked_access(index) = x.unchecked_access(index) - T{ 2.0 } * accuracy;
@@ -166,9 +167,9 @@ inline T numeric_vector_<T>::partial(std::function<T(const numeric_vector_<T>&)>
 }
 
 template<typename T>
-inline T numeric_vector_<T>::partial2(std::function<T(const numeric_vector_<T>&)> func, numeric_vector_<T>& x, const int32_t index1, const int32_t index2, const T& accuracy)
+inline T numeric_vector_<T>::partial2(std::function<T(const numeric_vector_<T>&)> func, numeric_vector_<T>& x, const I32 index1, const I32 index2, const T& accuracy)
 {
-	assert(x.in_range(index2), "index value out of vector indices rannge");
+	assert(x.in_range(index2) && "index value out of vector indices rannge");
 	// return partial([&](const numeric_vector_<T>& v) {return partial(func, x, index1);}, x, index1);
 	x.unchecked_access(index2) = x.unchecked_access(index2) + accuracy;
 	const T f_r                = numeric_vector_<T>::partial(func, x, index1, accuracy);
@@ -181,7 +182,7 @@ inline T numeric_vector_<T>::partial2(std::function<T(const numeric_vector_<T>&)
 template<typename T>
 inline numeric_vector_<T>& numeric_vector_<T>::operator+=(const numeric_vector_<T>& rhs)
 {
-	assert(this->filling() == rhs.filling(), "operator += :: vector with not equal sizes");
+	assert(this->filling() == rhs.filling() && "operator += :: vector with not equal sizes");
 	template_vector_<T>::apply(combine_values<T, T>(this->values(), rhs.values(), sum_f));
 	return (*this);
 }
@@ -189,7 +190,7 @@ inline numeric_vector_<T>& numeric_vector_<T>::operator+=(const numeric_vector_<
 template<typename T>
 inline numeric_vector_<T>& numeric_vector_<T>::operator-=(const numeric_vector_<T>& rhs)
 {
-	assert(this->filling() == rhs.filling(), "operator -= :: vector with not equal sizes");
+	assert(this->filling() == rhs.filling() && "operator -= :: vector with not equal sizes");
 	template_vector_<T>::apply(combine_values<T, T>(this->values(), rhs.values(), dif_f));
 	return (*this);
 }
@@ -197,7 +198,7 @@ inline numeric_vector_<T>& numeric_vector_<T>::operator-=(const numeric_vector_<
 template<typename T>
 inline numeric_vector_<T>& numeric_vector_<T>::operator*=(const numeric_vector_<T>& rhs)
 {
-	assert(this->filling() == rhs.filling(), "operator *= :: vector with not equal sizes");
+	assert(this->filling() == rhs.filling() && "operator *= :: vector with not equal sizes");
 	template_vector_<T>::apply(combine_values<T, T>(this->values(), rhs.values(), mul_f));
 	return (*this);
 }
@@ -205,7 +206,7 @@ inline numeric_vector_<T>& numeric_vector_<T>::operator*=(const numeric_vector_<
 template<typename T>
 inline numeric_vector_<T>& numeric_vector_<T>::operator/=(const numeric_vector_<T>& rhs)
 {
-	assert(this->filling() == rhs.filling(), "operator /= :: vector with not equal sizes");
+	assert(this->filling() == rhs.filling() && "operator /= :: vector with not equal sizes");
 	template_vector_<T>::apply(combine_values<T, T>(this->values(), rhs.values(), div_f));
 	return (*this);
 }
@@ -251,13 +252,13 @@ inline const numeric_vector_<T> numeric_vector_<T>::operator[](const slice& slc)
 }
 
 template<typename T>
-inline const T& numeric_vector_<T>::operator[](const int32_t index) const
+inline const T& numeric_vector_<T>::operator[](const I32 index) const
 {
 	return template_vector_<T>::operator[](index);
 }
 
 template<typename T>
-inline T& numeric_vector_<T>::operator[](const int32_t index)
+inline T& numeric_vector_<T>::operator[](const I32 index)
 {
 	return template_vector_<T>::operator[](index);
 }
@@ -279,7 +280,7 @@ inline numeric_vector_<T>& numeric_vector_<T>::operator=(numeric_vector_<T>&& lh
 template<typename T>
 inline bool operator==(const numeric_vector_<T>& lhs, const numeric_vector_<T>& rhs)
 {
-	assert(lhs.filling() == rhs.filling(), "compare operator :: vector with not equal sizes");
+	assert(lhs.filling() == rhs.filling() && "compare operator :: vector with not equal sizes");
 	const zip_values<T, T> zip_vals = zip_values<T, T>(lhs.values(), rhs.values());
 	for (const pair_<T, T>& pair : zip_vals) if (pair.first != pair.second) return false;
 	return true;
@@ -294,7 +295,7 @@ inline bool operator!=(const numeric_vector_<T>& lhs, const numeric_vector_<T>& 
 template<typename T>
 inline bool operator>(const numeric_vector_<T>& lhs, const numeric_vector_<T>& rhs)
 {
-	assert(lhs.filling() == rhs.filling(), "operator > :: vector with not equal sizes");
+	assert(lhs.filling() == rhs.filling() && "operator > :: vector with not equal sizes");
 	const zip_values<T, T> zip_vals = zip_values<T, T>(lhs.values(), rhs.values());
 	for (const pair_<T, T>& pair : zip_vals) if (pair.first <= pair.second) return false;
 	return true;
@@ -303,7 +304,7 @@ inline bool operator>(const numeric_vector_<T>& lhs, const numeric_vector_<T>& r
 template<typename T>
 inline bool operator<(const numeric_vector_<T>& lhs, const numeric_vector_<T>& rhs)
 {
-	assert(lhs.filling() == rhs.filling(), "operator < :: vector with not equal sizes");
+	assert(lhs.filling() == rhs.filling() && "operator < :: vector with not equal sizes");
 	const zip_values<T, T> zip_vals = zip_values<T, T>(lhs.values(), rhs.values());
 	for (const pair_<T, T>& pair : zip_vals) if (pair.first >= pair.second) return false;
 	return true;
@@ -376,7 +377,7 @@ inline bool operator<=(const numeric_vector_<T>& lhs, const T& rhs)
 template<typename T>
 inline numeric_vector_<T> operator+(const numeric_vector_<T>& lhs, const numeric_vector_<T>& rhs)
 {
-	assert(lhs.filling() == rhs.filling(), "operator + :: vector with not equal sizes");
+	assert(lhs.filling() == rhs.filling() && "operator + :: vector with not equal sizes");
 	const combine_values<T, T> combine_vals = combine_values<T, T>(lhs.values(), rhs.values(), sum_f);
 	return numeric_vector_<T>(combine_vals);
 }
@@ -384,7 +385,7 @@ inline numeric_vector_<T> operator+(const numeric_vector_<T>& lhs, const numeric
 template<typename T>
 inline numeric_vector_<T> operator-(const numeric_vector_<T>& lhs, const numeric_vector_<T>& rhs)
 {
-	assert(lhs.filling() == rhs.filling(), "operator - :: vector with not equal sizes");
+	assert(lhs.filling() == rhs.filling() && "operator - :: vector with not equal sizes");
 	const combine_values<T, T> combine_vals = combine_values<T, T>(lhs.values(), rhs.values(), dif_f);
 	return numeric_vector_<T>(combine_vals);
 }
@@ -392,7 +393,7 @@ inline numeric_vector_<T> operator-(const numeric_vector_<T>& lhs, const numeric
 template<typename T>
 inline numeric_vector_<T> operator*(const numeric_vector_<T>& lhs, const numeric_vector_<T>& rhs)
 {
-	assert(lhs.filling() == rhs.filling(), "operator * :: vector with not equal sizes");
+	assert(lhs.filling() == rhs.filling() && "operator * :: vector with not equal sizes");
 	const combine_values<T, T> combine_vals = combine_values<T, T>(lhs.values(), rhs.values(), mul_f);
 	return numeric_vector_<T>(combine_vals);
 }
@@ -400,7 +401,7 @@ inline numeric_vector_<T> operator*(const numeric_vector_<T>& lhs, const numeric
 template<typename T>
 inline numeric_vector_<T> operator/(const numeric_vector_<T>& lhs, const numeric_vector_<T>& rhs)
 {
-	assert(lhs.filling() == rhs.filling(), "operator / :: vector with not equal sizes");
+	assert(lhs.filling() == rhs.filling() && "operator / :: vector with not equal sizes");
 	const combine_values<T, T> combine_vals = combine_values<T, T>(lhs.values(), rhs.values(), div_f);
 	return numeric_vector_<T>(combine_vals);
 }
@@ -458,13 +459,13 @@ inline std::ostream& operator << (std::ostream& stream, const numeric_vector_<T>
 {
 	stream << "[";
 #ifdef RATIONAL_NUMBERS_REPRESNTATION
-	for (int32_t index = 0; index < rhs.size(); index++)
+	for (I32 index = 0; index < rhs.size(); index++)
 	{
 		stream << std::setw(NUMBER_CHARS_COUNT) << rational::rational_str(rhs.unchecked_access(index), false);
 		stream << (index == rhs.size() - 1 ? "" : ",");
 	}
 #else
-	for (int32_t index = 0; index < rhs.size(); index++)
+	for (I32 index = 0; index < rhs.size(); index++)
 	{
 		stream << std::setw(NUMBER_CHARS_COUNT) << rhs.unchecked_access(index);
 		stream << (index == rhs.size() - 1 ? "" : ",");
@@ -474,10 +475,10 @@ inline std::ostream& operator << (std::ostream& stream, const numeric_vector_<T>
 	return stream;
 }
 
-auto test_f = [&](const double_vector& vector)
+auto test_f = [&](const vector_f64& vector)
 {
-	double result = 0.0;
-	int32_t index = 1;
+	F64 result = 0.0;
+	I32 index = 1;
 	for (auto v : vector.values())
 	{
 		result += index * (v - index - 1) * (v - index - 1);
@@ -489,12 +490,12 @@ void numeric_vector_test();
 
 void numeric_vector_test()
 {
-	double_vector lhs({ 1.0, 2.0, 3.0, 4.0, 9.0, 8.0, 7.0, 6.0 });
-	double_vector rhs({ 9.0, 8.0, 7.0, 6.0, 1.0, 2.0, 3.0, 4.0 });
+	vector_f64 lhs({ 1.0, 2.0, 3.0, 4.0, 9.0, 8.0, 7.0, 6.0 });
+	vector_f64 rhs({ 9.0, 8.0, 7.0, 6.0, 1.0, 2.0, 3.0, 4.0 });
 	// rhs.push_back(9.0).push_back(8.0).push_back(7.0).push_back(6.0);
 	std::cout << "lhs            : " << lhs << "\n";
 	std::cout << "rhs            : " << rhs << "\n";
-	std::cout << "rhs - copy     : " << double_vector(rhs) << "\n";
+	std::cout << "rhs - copy     : " << vector_f64(rhs) << "\n";
 	std::cout << "lhs + rhs      : " << lhs + rhs << "\n";
 	std::cout << "lhs - rhs      : " << lhs - rhs << "\n";
 	std::cout << "lhs * rhs      : " << lhs * rhs << "\n";
@@ -520,12 +521,12 @@ void numeric_vector_test()
 	std::cout << "lhs *= 2.0     : " << (lhs *= 2.0) << "\n";
 	std::cout << "lhs /= 2.0     : " << (lhs /= 2.0) << "\n";
 	std::cout << "mag(lhs)       : " << rational::rational_number(lhs.magnitude()) << "\n";
-	std::cout << "dot(lhs, rhs)  : " << rational::rational_number(double_vector::dot(lhs, rhs)) << "\n";
-	std::cout << "dir(lhs, rhs)  : " << double_vector::direction(lhs, rhs) << "\n";
+	std::cout << "dot(lhs, rhs)  : " << rational::rational_number(vector_f64::dot(lhs, rhs)) << "\n";
+	std::cout << "dir(lhs, rhs)  : " << vector_f64::direction(lhs, rhs) << "\n";
 	std::cout << "normalized(lhs): " << lhs.normalized() << "\n";
 	std::cout << "normalize (lhs): " << lhs.normalize() << "\n";
-	std::cout << "gradient  (lhs): " << double_vector::gradient(test_f, lhs, 1e-9) << "\n";
-	std::cout << "partial2  (lhs): " << rational::rational_number(double_vector::partial2(test_f, lhs,0,0, 1e-9)) << "\n";
+	std::cout << "gradient  (lhs): " << vector_f64::gradient(test_f, lhs, 1e-9) << "\n";
+	std::cout << "partial2  (lhs): " << rational::rational_number(vector_f64::partial2(test_f, lhs,0,0, 1e-9)) << "\n";
 	std::cout << "lhs == rhs     : " << (lhs == rhs) << "\n";
 	std::cout << "lhs != rhs     : " << (lhs != rhs) << "\n";
 	std::cout << "lhs > rhs      : " << (lhs > rhs) << "\n";
@@ -535,7 +536,7 @@ void numeric_vector_test()
 	std::cout << "lhs >= 100     : " << (lhs >= 100.0) << "\n";
 	std::cout << "lhs <= 100     : " << (lhs <= 100.0) << "\n";
 	std::cout << "lhs            : "  << lhs << "\n";
-	lhs[slice(3, 6)] = double_vector({ 13.0, 13.0, 13.0 });
+	lhs[slice(3, 6)] = vector_f64({ 13.0, 13.0, 13.0 });
 	std::cout << "lhs            : " << lhs << "\n";
 
 }

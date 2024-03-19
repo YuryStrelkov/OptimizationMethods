@@ -13,53 +13,53 @@ private:
 	struct slice_object
 	{
 	private:
-		static int32_t calc_index(const int32_t index, const int32_t stride, const int32_t step) {
+		static I32 calc_index(const I32 index, const I32 stride, const I32 step) {
 			return index % (stride + step);
 		};
 	private:
-		int32_t m_begin;
-		int32_t m_end;
-		int32_t m_step;
+		I32 m_begin;
+		I32 m_end;
+		I32 m_step;
 		template_vector_<T>* m_source = nullptr;
 
 	public:
-		int32_t begin()const { return m_begin; };
+		I32 begin()const { return m_begin; };
 
-		int32_t end()const { return m_end; };
+		I32 end()const { return m_end; };
 
-		int32_t step()const { return m_step; };
+		I32 step()const { return m_step; };
 
 		const template_vector_<T>& source()const { return *m_source; };
 		
 		template_vector_<T>& source(){ return *m_source; };
 
-		bool shift_begin(const int32_t amount)
+		bool shift_begin(const I32 amount)
 		{
-			const int32_t value = begin() + amount;
+			const I32 value = begin() + amount;
 			if (value > source().filling()) return false;
 			if (value < 0) return false;
 			m_begin = value;
 			return true;
 		}
 
-		bool shift_end(const int32_t amount) {
-			const int32_t value = end() + amount;
+		bool shift_end(const I32 amount) {
+			const I32 value = end() + amount;
 			if (value > source().filling()) return false;
 			if (value < 0) return false;
 			m_end = value;
 			return true;
 		}
 
-		int32_t length() const {
-			const int32_t total = std::abs(end() - begin());
+		I32 length() const {
+			const I32 total = std::abs(end() - begin());
 			return std::abs(total / step() + total % step());
 		}
 
-		int32_t source_index(const int32_t index)const {
+		I32 source_index(const I32 index)const {
 			return begin() + index * step();
 		}
 
-		int32_t slice_index(const int32_t index)const {
+		I32 slice_index(const I32 index)const {
 			return (index - begin()) / step();
 		}
 
@@ -90,7 +90,7 @@ private:
 		};
 	};
 
-	T* alloc(const int32_t cap)
+	T* alloc(const I32 cap)
 	{
 		return (T*)(malloc(cap * sizeof(T)));
 	}
@@ -101,12 +101,12 @@ private:
 	void upscale()
 	{
 		if (filling() != capacity())return;
-		resize(int32_t(m_capacity * VECTOR_SIZE_UPSCALE));
+		resize(I32(m_capacity * VECTOR_SIZE_UPSCALE));
 	}
 	slice_object* m_slice = nullptr;
 	T*            m_data;
-	uint32_t      m_capacity;
-	uint32_t      m_filling;
+	I32           m_capacity;
+	I32           m_filling;
 	bool          m_is_silce = false;
 protected:
 	void exchange_data(template_vector_<T>&& other)noexcept
@@ -196,13 +196,13 @@ public:
 		return template_vector_::any((*this), condition_f);
 	}
 
-	void fill(std::function<T(const int32_t)>  fill_f) {
-		for (int32_t index : indices()) m_data[index] = fill_f(index);
+	void fill(std::function<T(const I32)>  fill_f) {
+		for (I32 index : indices()) m_data[index] = fill_f(index);
 	}
 
 	void apply(const combine_values<T, T> combiner) 
 	{
-		int32_t index = 0;
+		I32 index = 0;
 		for (const T value : combiner)
 		{
 			if (index == filling()) break;
@@ -211,7 +211,7 @@ public:
 	}
 
 	void apply(const template_vector_<T>& vector, std::function<T(const T&)>  apply_f) {
-		int32_t index = 0;
+		I32 index = 0;
 		for(const T& value: vector.values())
 		{
 			if (index == filling()) break;
@@ -224,8 +224,8 @@ public:
 		apply((*this), apply_f);
 	}
 
-	void apply_enumerate(const template_vector_<T>& vector, std::function<T(const int32_t, const T&)>  apply_f) {
-		int32_t index = 0;
+	void apply_enumerate(const template_vector_<T>& vector, std::function<T(const I32, const T&)>  apply_f) {
+		I32 index = 0;
 		for (const T value : vector.values())
 		{
 			if (index == filling()) break;
@@ -234,7 +234,7 @@ public:
 		}
 	}
 
-	void apply_enumerate(std::function<T(const int32_t, const T&)>  apply_f)
+	void apply_enumerate(std::function<T(const I32, const T&)>  apply_f)
 	{
 		apply_enumerate((*this), apply_f);
 	}
@@ -274,23 +274,23 @@ public:
 		return template_vector_::combine((*this), right, combine_f);
 	};
 
-	uint32_t capacity()const { return m_capacity; }
+	I32 capacity()const { return m_capacity; }
 
-	uint32_t filling()const { return m_filling; }
+	I32 filling()const { return m_filling; }
 
-	uint32_t size()const { return m_filling; }
+	I32 size()const { return m_filling; }
 
 	bool is_empty()const { return filling() == 0; }
 
 	bool is_slice()const { return m_slice != nullptr; }
 
-	const T& unchecked_access(const uint32_t index) const { return m_data[is_slice() ? m_slice->source_index(index) : index]; }
+	const T& unchecked_access(const I32 index) const { return m_data[is_slice() ? m_slice->source_index(index) : index]; }
 
-	T& unchecked_access(const uint32_t index) { return m_data[is_slice() ? m_slice->source_index(index) : index]; }
+	T& unchecked_access(const I32 index) { return m_data[is_slice() ? m_slice->source_index(index) : index]; }
 
-	bool in_range(const uint32_t index)const { return (index >= 0) && (index < filling()); }
+	bool in_range(const I32 index)const { return (index >= 0) && (index < filling()); }
 
-	void resize(const uint32_t new_size)
+	void resize(const I32 new_size)
 	{
 		if (capacity() == new_size) return;
 		m_capacity = new_size;
@@ -307,9 +307,9 @@ public:
 		return (*this);
 	}
 
-	int32_t index_of(const T& value)const
+	I32 index_of(const T& value)const
 	{
-		int32_t index = 0;
+		I32 index = 0;
 		for (const T& val: values())
 		{
 			index++;
@@ -325,7 +325,7 @@ public:
 
 	template_vector_<T>& remove(const T& value)
 	{
-		const int32_t index = index_of(value);
+		const I32 index = index_of(value);
 		if (index == -1) return (*this);
 		return remove_at(index);
 	}
@@ -354,7 +354,7 @@ public:
 		return (*this);
 	}
 	
-	template_vector_<T>& remove_at(const int32_t index) 
+	template_vector_<T>& remove_at(const I32 index) 
 	{
 		if (is_slice())
 		{
@@ -364,12 +364,12 @@ public:
 			return (*this);
 		}
 		if (!in_range(index))return (*this);
-		std::memcpy(&m_data[index], &m_data[index + 1], uint32_t(filling() - index) * sizeof(T));
+		std::memcpy(&m_data[index], &m_data[index + 1], I32(filling() - index) * sizeof(T));
 		m_filling--;
 		return (*this);
 	}
 		
-	template_vector_<T>& insert(const int32_t index, const T& value)
+	template_vector_<T>& insert(const I32 index, const T& value)
 	{
 		if (is_slice())
 		{
@@ -381,13 +381,13 @@ public:
 		if (index < 0) return insert(0, value);
 		if (index > filling()) return push_back(value);
 		upscale();
-		std::memcpy(&m_data[index + 1], &m_data[index], uint32_t(filling() - index) * sizeof(T));
+		std::memcpy(&m_data[index + 1], &m_data[index], I32(filling() - index) * sizeof(T));
 		m_data[index] = std::move(value);
 		m_filling++;
 		return (*this);
 	}
 
-	template_vector_<T>& insert(const int32_t index, T&& value)
+	template_vector_<T>& insert(const I32 index, T&& value)
 	{
 		if (is_slice()) 
 		{
@@ -399,7 +399,7 @@ public:
 		if (index < 0) return insert(0, value);
 		if (index > filling()) return push_back(value);
 		upscale();
-		std::memcpy(&m_data[index + 1], &m_data[index], uint32_t(filling() - index) * sizeof(T));
+		std::memcpy(&m_data[index + 1], &m_data[index], I32(filling() - index) * sizeof(T));
 		m_data[index] = std::move(value);
 		m_filling++;
 		return (*this);
@@ -429,7 +429,7 @@ public:
 		return (*this);
 	}
 	
-	T& operator[](const uint32_t index)
+	T& operator[](const I32 index)
 	{
 		if (!in_range(index))
 			throw new std::runtime_error(
@@ -439,7 +439,7 @@ public:
 		return unchecked_access(index);
 	}
 	
-	const T& operator[](const uint32_t index)const
+	const T& operator[](const I32 index)const
 	{
 		if (!in_range(index))
 			throw new std::runtime_error(
@@ -470,10 +470,10 @@ public:
 		exchange_data(other);
 	};
 	
-	template_vector_(const uint32_t cap )
+	template_vector_(const I32 cap )
 	{
 		m_filling  = cap;
-		m_capacity = (int32_t)(cap * VECTOR_SIZE_UPSCALE);
+		m_capacity = (I32)(cap * VECTOR_SIZE_UPSCALE);
 		m_data     = alloc(m_capacity);
 	};
 
@@ -537,7 +537,7 @@ template <typename T>
 inline std::ostream& operator<<(std::ostream& steram, const template_vector_<T>& vector)
 {
 	steram << "{ ";
-	for (const int32_t& index: vector.indices()) steram << vector[index] << (index != vector.filling() - 1 ? ", " : "");
+	for (const I32& index: vector.indices()) steram << vector.unchecked_access(index) << (index != vector.filling() - 1 ? ", " : "");
 	steram << " }";
 	return steram;
 }
@@ -634,10 +634,10 @@ void template_vector_test();
 
 void template_vector_test() 
 {
-	auto first  = template_vector_<int32_t>();
+	auto first  = template_vector_<I32>();
 	first.push_back(11).push_back(22).push_back(33).push_back(44).push_back(55);
 	
-	map_values<int32_t, double> int_to_double = first.map<double>([](const int32_t& i) { return std::sqrt(i); });
+	map_values<I32, double> int_to_double = first.map<double>([](const I32& i) { return std::sqrt(i); });
 
 	for (auto const a: int_to_double) std::cout << "ccc: " << a << "\n";
 
@@ -677,9 +677,10 @@ void template_vector_test()
 	std::cout << "first.remove_at(2)     :" << first.remove_at(2) << "\n";
 	std::cout << "first.remove_at(1)     :" << first.remove_at(1) << "\n";
 	std::cout << "copy_first             :" << copy_first     << "\n";
-	std::cout << "copy_first[slice(3, 6)]:" << copy_first[slice(3, 6)] << "\n";
+	auto val = copy_first[slice(3, 6)];
+	std::cout << "copy_first[slice(3, 6)]:" << val << "\n";
  	// copy_first[slice(3, 6)] = template_vector_<double>({ 0, 0, 0 });
-	auto v = copy_first[slice(3, 6)];
+  	auto v = copy_first[slice(3, 6)];
 	v.apply([](const double v) {return -1.0; });
 	std::cout << "copy_first[slice(3, 6)]:" << copy_first[slice(3, 6)] << "\n";
 	std::cout << "copy_first             :" << copy_first << "\n";

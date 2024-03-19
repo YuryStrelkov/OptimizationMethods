@@ -28,13 +28,13 @@ public:
 //////////////////////////////////////
 ///  Iterator over indices range   ///
 //////////////////////////////////////
-class indices_iterator: public iterator_<int32_t>
+class indices_iterator: public iterator_<I32>
 {
 private:
-	int32_t m_index;
-	int32_t m_step;
+	I32 m_index;
+	I32 m_step;
 public:
-	indices_iterator(const int32_t index, const int32_t step)
+	indices_iterator(const I32 index, const I32 step)
 	{
 		m_index = index;
 		m_step = step;
@@ -51,13 +51,13 @@ public:
 struct vector_indices: iterable_<indices_iterator>
 {
 private:
-	const int32_t m_begin;
-	const int32_t m_end;
-	const int32_t m_step;
+	const I32 m_begin;
+	const I32 m_end;
+	const I32 m_step;
 public:
-	vector_indices(const int32_t start, const int32_t stop, const int32_t step) :m_begin(start), m_end(stop), m_step(step) {}
-	vector_indices(const int32_t start, const int32_t stop) :m_begin(start), m_end(stop), m_step(1) {}
-	vector_indices(const int32_t range) :m_begin(0), m_end(range), m_step(1) {}
+	vector_indices(const I32 start, const I32 stop, const I32 step) :m_begin(start), m_end(stop), m_step(step) {}
+	vector_indices(const I32 start, const I32 stop) :m_begin(start), m_end(stop), m_step(1) {}
+	vector_indices(const I32 range) :m_begin(0), m_end(range), m_step(1) {}
 
 	// Унаследовано через iterable_
 	indices_iterator begin() const override { return indices_iterator(m_begin, m_step); }

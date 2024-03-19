@@ -3,21 +3,21 @@
 #include "numeric_matrix.h"
 #include "numeric_utils.h"
 
-typedef double(*function_nd)(const double_vector&);
+typedef F64(*function_nd)(const vector_f64&);
 
 // Методы n-мерной дихотомии, золотого сечения и Фибоначчи определяют минимум строго вдоль направления из  x_0 в x_1
 // т.е., если истинный минимум функции на этом направлении не лежит, метод всё равно найдёт минимальное значение, но оно 
 // будет отличаться от истинного минимума
-static double_vector bisect(function_nd f, const double_vector& x_0, const double_vector& x_1, const double eps = N_DIM_ACCURACY, const int max_iters = N_DIM_ITERS_MAX)
+static vector_f64 bisect(function_nd function, const vector_f64& x_0, const vector_f64& x_1, const F64 eps = N_DIM_ACCURACY, const I32 max_iters = N_DIM_ITERS_MAX)
 {
-	double_vector x_l = x_0, x_r = x_1, x_c, dir;
-	dir = double_vector::direction(x_0, x_1) * eps;
-	int cntr = 0;
+	vector_f64 x_l = x_0, x_r = x_1, x_c, dir;
+	dir = vector_f64::direction(x_0, x_1) * eps;
+	I32 cntr = 0;
 	for (; cntr != max_iters; cntr++)
 	{
 		if ((x_r - x_l).magnitude() < eps) break;
 		x_c = (x_r + x_l) * 0.5;
-		if (f(x_c + dir) > f(x_c - dir))
+		if (function(x_c + dir) > function(x_c - dir))
 			x_r = x_c;
 		else
 			x_l = x_c;
@@ -25,11 +25,11 @@ static double_vector bisect(function_nd f, const double_vector& x_0, const doubl
 	return x_c;
 }
 
-static double_vector golden_ratio(function_nd function, const double_vector& x_0, const double_vector& x_1, const double eps = N_DIM_ACCURACY, const int max_iters = N_DIM_ITERS_MAX)
+static vector_f64 golden_ratio(function_nd function, const vector_f64& x_0, const vector_f64& x_1, const F64 eps = N_DIM_ACCURACY, const I32 max_iters = N_DIM_ITERS_MAX)
 {
-	double_vector  a = x_0, b = x_1;
-	double_vector x_l(a), x_r(b), dx;
-	int cntr = 0;
+	vector_f64  a = x_0, b = x_1;
+	vector_f64 x_l(a), x_r(b), dx;
+	I32 cntr = 0;
 	for (; cntr != max_iters; cntr++)
 	{
 		if ((x_r - x_l).magnitude() < eps) break;
@@ -44,19 +44,19 @@ static double_vector golden_ratio(function_nd function, const double_vector& x_0
 	return (a + b) * 0.5;
 }
 
-static double_vector fibonacci(function_nd function, const double_vector& x_0, const double_vector& x_1, const double eps = N_DIM_ACCURACY)
+static vector_f64 fibonacci(function_nd function, const vector_f64& x_0, const vector_f64& x_1, const F64 eps = N_DIM_ACCURACY)
 {
-	double_vector a(x_0), b(x_1);
-	double_vector x_l(x_0), x_r(x_1), dx;
-	int f_n, f_n_1, f_tmp, cntr = 0;
+	vector_f64 a(x_0), b(x_1);
+	vector_f64 x_l(x_0), x_r(x_1), dx;
+	I32 f_n, f_n_1, f_tmp, cntr = 0;
 	closest_fibonacci_pair((b - a).magnitude() / eps, f_n, f_n_1);
 	while (f_n != f_n_1)
 	{
 		if ((x_r - x_l).magnitude() < eps) break;
 		dx = (b - a);
 		f_tmp = f_n_1 - f_n;
-		x_l = a + dx * ((double)f_tmp / f_n_1);
-		x_r = a + dx * ((double)f_n   / f_n_1);
+		x_l = a + dx * ((F64)f_tmp / f_n_1);
+		x_r = a + dx * ((F64)f_n   / f_n_1);
 		f_n_1 = f_n;
 		f_n = f_tmp;
 		if (function(x_l) < function(x_r))
@@ -70,14 +70,14 @@ static double_vector fibonacci(function_nd function, const double_vector& x_0, c
 // Покоординатный спуск, градиентный спуск и спуск с помощью сопряжённых градиентов, определяют
 // минимальное значение функции только по одной начальной точке x_start.
 // Поэтому не зависят от выбора направления.
-static double_vector per_coord_descend(function_nd function, const double_vector& x_start, const double eps = N_DIM_ACCURACY, const int max_iters = N_DIM_ITERS_MAX)
+static vector_f64 per_coord_descend(function_nd function, const vector_f64& x_start, const F64 eps = N_DIM_ACCURACY, const I32 max_iters = N_DIM_ITERS_MAX)
 {
-	double_vector x_0(x_start);
-	double_vector x_1(x_start);
-	double step = 1.0;
-	double x_i, y_1, y_0;
-	int opt_coord_n = 0, coord_id;
-	for (int i = 0; i < max_iters; i++)
+	vector_f64 x_0(x_start);
+	vector_f64 x_1(x_start);
+	F64 step = 1.0;
+	F64 x_i, y_1, y_0;
+	I32 opt_coord_n = 0, coord_id;
+	for (I32 i = 0; i < max_iters; i++)
 	{
 		coord_id = i % x_0.size();
 		x_1[coord_id] -= eps;
@@ -110,15 +110,15 @@ static double_vector per_coord_descend(function_nd function, const double_vector
 	return x_0;
 }
 //
-static double_vector gradient_descend(function_nd function, const double_vector& x_start, const double eps = N_DIM_ACCURACY, const int max_iters = N_DIM_ITERS_MAX)
+static vector_f64 gradient_descend(function_nd function, const vector_f64& x_start, const F64 eps = N_DIM_ACCURACY, const I32 max_iters = N_DIM_ITERS_MAX)
 {
-	double_vector x_i(x_start);
-	double_vector x_i_1;
-	double_vector grad;
-	int cntr = 0;
+	vector_f64 x_i(x_start);
+	vector_f64 x_i_1;
+	vector_f64 grad;
+	I32 cntr = 0;
 	for(; cntr <= max_iters; cntr++)
 	{
-		grad  = double_vector::gradient(function, x_i, eps);
+		grad  = vector_f64::gradient(function, x_i, eps);
 		x_i_1 = x_i - grad;
 		x_i_1 = bisect(function, x_i, x_i_1, eps, max_iters);
 		if ((x_i_1 - x_i).magnitude() < eps) break;
@@ -130,19 +130,19 @@ static double_vector gradient_descend(function_nd function, const double_vector&
 	return (x_i_1 + x_i) * 0.5;
 }
 
-static double_vector conj_gradient_descend(function_nd f, const double_vector& x_start, const double eps = N_DIM_ACCURACY, const int max_iters = N_DIM_ITERS_MAX)
+static vector_f64 conj_gradient_descend(function_nd function, const vector_f64& x_start, const F64 eps = N_DIM_ACCURACY, const I32 max_iters = N_DIM_ITERS_MAX)
 {
-	double_vector x_i(x_start);
-	double_vector x_i_1;
-	double_vector s_i = double_vector::gradient(f, x_i, eps)*(-1.0), s_i_1;
-	double omega;
-	int cntr = 0;
+	vector_f64 x_i(x_start);
+	vector_f64 x_i_1;
+	vector_f64 s_i = vector_f64::gradient(function, x_i, eps)*(-1.0), s_i_1;
+	F64 omega;
+	I32 cntr = 0;
 	for (; cntr <= max_iters; cntr++)
 	{
 		x_i_1 = x_i + s_i;
 		if ((x_i_1 - x_i).magnitude() < eps) break;
-		x_i_1 = bisect(f, x_i, x_i_1, eps, max_iters);
-		s_i_1 = double_vector::gradient(f, x_i_1, eps);
+		x_i_1 = bisect(function, x_i, x_i_1, eps, max_iters);
+		s_i_1 = vector_f64::gradient(function, x_i_1, eps);
 		omega = pow(s_i_1.magnitude(), 2) / pow(s_i.magnitude(), 2);
 		s_i = s_i * omega - s_i_1;
 		x_i = x_i_1;
@@ -153,17 +153,17 @@ static double_vector conj_gradient_descend(function_nd f, const double_vector& x
 	return (x_i_1 + x_i) * 0.5;
 }
 
-static double_vector newtone_raphson (function_nd f, const double_vector& x_start, const double eps = N_DIM_ACCURACY, const int max_iters = N_DIM_ITERS_MAX)
+static vector_f64 newtone_raphson (function_nd function, const vector_f64& x_start, const F64 eps = N_DIM_ACCURACY, const I32 max_iters = N_DIM_ITERS_MAX)
 {
-	double_vector x_i(x_start);
-	double_vector x_i_1;
-	double_vector grad ;
-	double_matrix hess(1, 1);
-	int cntr = 0;
+	vector_f64 x_i(x_start);
+	vector_f64 x_i_1;
+	vector_f64 grad ;
+	matrix_f64 hess(1, 1);
+	I32 cntr = 0;
 	for (; cntr <= max_iters; cntr++)
 	{
-		grad = double_vector::gradient(f, x_i, eps);
-		hess = double_matrix::invert(double_matrix::hessian(f, x_i, eps));
+		grad = vector_f64::gradient(function, x_i, eps);
+		hess = matrix_f64::invert(matrix_f64::hessian(function, x_i, eps));
 		x_i_1 = x_i - (hess * grad);
 		if ((x_i_1 - x_i).magnitude() < eps) break;
 		x_i = x_i_1;
