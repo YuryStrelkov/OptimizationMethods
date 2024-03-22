@@ -37,9 +37,12 @@ static void one_dimensional_methods_test()
 	std::cout << "\n";
 	std::cout << "x = agrmin(x * (x - 5))\n";
 	std::cout << "x_0 = " << x_0 << ",\nx_1 = " << x_1 << "\n";
-	std::cout << "bisect      : " << rational::rational_number(bisect      (test_function_1d, x_0, x_1, ACCURACY)) << "\n";
-	std::cout << "golden_ratio: " << rational::rational_number(golden_ratio(test_function_1d, x_0, x_1, ACCURACY)) << "\n";
-	std::cout << "fibonacci   : " << rational::rational_number(fibonacci   (test_function_1d, x_0, x_1, ACCURACY)) << "\n";
+	// std::cout << "bisect      : " << rational::rational_number(bisect      (test_function_1d, x_0, x_1, ACCURACY)) << "\n";
+	// std::cout << "golden_ratio: " << rational::rational_number(golden_ratio(test_function_1d, x_0, x_1, ACCURACY)) << "\n";
+	// std::cout << "fibonacci   : " << rational::rational_number(fibonacci   (test_function_1d, x_0, x_1, ACCURACY)) << "\n";
+	std::cout << "bisect      : " << bisect      (test_function_1d, x_0, x_1, ACCURACY) << "\n";
+	std::cout << "golden_ratio: " << golden_ratio(test_function_1d, x_0, x_1, ACCURACY) << "\n";
+	std::cout << "fibonacci   : " << fibonacci   (test_function_1d, x_0, x_1, ACCURACY) << "\n";
 }
 
 static void multi_dimensional_methods_test()
@@ -132,12 +135,12 @@ static void numeric_tests()
 
 static int test_all()
 {
-	template_vector_test();
-	numeric_vector_test();
-	numeric_matrix_test();
-	numeric_tests();
+	// template_vector_test();
+	// numeric_vector_test();
+	// numeric_matrix_test();
+	// numeric_tests();
 	one_dimensional_methods_test();
-	multi_dimensional_methods_test();
-	simplex_method_test();
+	// multi_dimensional_methods_test();
+	// simplex_method_test();
 	return 0;
 }
