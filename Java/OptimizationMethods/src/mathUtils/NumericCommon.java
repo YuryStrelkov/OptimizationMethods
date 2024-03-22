@@ -3,7 +3,8 @@ package mathUtils;
 @SuppressWarnings("all")
 public class NumericCommon {
     public static final double PHI = 1.61803398874989484820;
-    public static final double ONE_OVER_PHI = 1.0 / PHI;
+    public static final double ONE_OVER_PHI = 0.6180339887498948;
+    public static final double PSI = 0.6180339887498948;
     public static final double NUMERIC_ACCURACY_MIDDLE = 1e-6;
     public static final double NUMERIC_ACCURACY_LOW    = 1e-3;
     public static final double NUMERIC_ACCURACY_HIGH   = 1e-9;

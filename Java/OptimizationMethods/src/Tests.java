@@ -166,7 +166,7 @@ public class Tests {
         final double x_0 = 10;
         final double x_1 = -1;
 
-        NumericCommon.SHOW_DEBUG_LOG = true;
+        NumericCommon.SHOW_ZERO_ORDER_METHODS_DEBUG_LOG = true;
         System.out.println("x_0 = " + x_0 + ",\nx_1 = " + x_1 + "\n");
         final double biSect   = OneDimensional.biSect      (NumericUtils.testFunc1d, x_0, x_1);
         final double gRatio   = OneDimensional.goldenRatio (NumericUtils.testFunc1d, x_0, x_1);
@@ -196,6 +196,7 @@ public class Tests {
         DoubleVector x_1 = new DoubleVector (0.0, 0.0);
         DoubleVector x   = new DoubleVector (-13.0, 22.0 );
         NumericCommon.SHOW_DEBUG_LOG = true;
+        NumericCommon.SHOW_ZERO_ORDER_METHODS_DEBUG_LOG = true;
         System.out.println("x_0 = "+ x_0 + ",\nx_1 = " + x_1 + "\n") ;
         System.out.printf("biSect                 : %s\n", MultiDimensional.biSect             (NumericUtils.testFunc2d, x_1, x_0));
         System.out.printf("Golden ratio           : %s\n", MultiDimensional.goldenRatio        (NumericUtils.testFunc2d, x_1, x_0));

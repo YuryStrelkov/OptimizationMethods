@@ -4,67 +4,125 @@
 #include "numeric_utils.h"
 
 typedef F64(*function_nd)(const vector_f64&);
+static vector_f64 bisect      (function_nd function, const vector_f64& left, const vector_f64& right, const F64 eps = N_DIM_ACCURACY, const I32 max_iterations = N_DIM_ITERS_MAX);
+static vector_f64 golden_ratio(function_nd function, const vector_f64& left, const vector_f64& right, const F64 eps = N_DIM_ACCURACY, const I32 max_iters = N_DIM_ITERS_MAX);
+static vector_f64 fibonacci   (function_nd function, const vector_f64& left, const vector_f64& right, const F64 eps = N_DIM_ACCURACY);
 
 // ћетоды n-мерной дихотомии, золотого сечени€ и ‘ибоначчи определ€ют минимум строго вдоль направлени€ из  x_0 в x_1
 // т.е., если истинный минимум функции на этом направлении не лежит, метод всЄ равно найдЄт минимальное значение, но оно 
 // будет отличатьс€ от истинного минимума
-static vector_f64 bisect(function_nd function, const vector_f64& x_0, const vector_f64& x_1, const F64 eps = N_DIM_ACCURACY, const I32 max_iters = N_DIM_ITERS_MAX)
+static vector_f64 bisect(function_nd function, const vector_f64& left, const vector_f64& right, const F64 eps, const I32 max_iterations)
 {
-	vector_f64 x_l = x_0, x_r = x_1, x_c, dir;
-	dir = vector_f64::direction(x_0, x_1) * eps;
-	I32 cntr = 0;
-	for (; cntr != max_iters; cntr++)
+	vector_f64 x_c, dir, lhs(left), rhs(right);
+	dir = vector_f64::direction(lhs, rhs) * eps;
+	I32 iteration = 0;
+	for (; iteration != max_iterations; iteration++)
 	{
-		if ((x_r - x_l).magnitude() < eps) break;
-		x_c = (x_r + x_l) * 0.5;
-		if (function(x_c + dir) > function(x_c - dir))
-			x_r = x_c;
+		if ((lhs - rhs).magnitude() < eps) break;
+		x_c = (lhs + rhs) * 0.5;
+		if (function(x_c - dir) > function(x_c + dir))
+			lhs = x_c;
 		else
-			x_l = x_c;
+			rhs = x_c;
 	}
-	return x_c;
+#if _DEBUG
+	std::cout << "bisect::function arg range    : " << (rhs - lhs).magnitude() << "\n";
+	std::cout << "bisect::function probes count : " << iteration * 2 << "\n";
+#endif
+	return (lhs + rhs) * 0.5;
 }
 
-static vector_f64 golden_ratio(function_nd function, const vector_f64& x_0, const vector_f64& x_1, const F64 eps = N_DIM_ACCURACY, const I32 max_iters = N_DIM_ITERS_MAX)
+static vector_f64 golden_ratio(function_nd function, const vector_f64& left, const vector_f64& right, const F64 eps, const I32 max_iterations)
 {
-	vector_f64  a = x_0, b = x_1;
-	vector_f64 x_l(a), x_r(b), dx;
-	I32 cntr = 0;
-	for (; cntr != max_iters; cntr++)
+	vector_f64 lhs(left), rhs(right);
+	vector_f64 x_l, x_r;
+	F32 f_l, f_r;
+	I32 iteration = 0;
+	x_l = rhs - (rhs - lhs) * PSI;
+	x_r = lhs + (rhs - lhs) * PSI;
+	f_l = function(x_l);
+	f_r = function(x_r);
+	for (; iteration != max_iterations; iteration++)
 	{
-		if ((x_r - x_l).magnitude() < eps) break;
-		dx  = (b - a) * PSI;
-		x_l =  b - dx;
-		x_r =  a + dx;
-		if (function(x_l) >= function(x_r))
-			a = x_l;
+		if ((rhs - lhs).magnitude() < 2 * eps) break;
+		if (f_l > f_r)
+		{
+			lhs = x_l;
+			x_l = x_r;
+			f_l = f_r;
+			x_r = lhs + (rhs - lhs) * PSI;
+			f_r = function(x_r);
+		}
 		else
-			b = x_r;
+		{
+			rhs = x_r;
+			x_r = x_l;
+			f_r = f_l;
+			x_l = rhs - (rhs - lhs) * PSI;
+			f_l = function(x_l);
+		}
 	}
-	return (a + b) * 0.5;
+#if _DEBUG
+	std::cout << "golden_ratio::function arg range    : " << (rhs - lhs).magnitude() << "\n";
+	std::cout << "golden_ratio::function probes count : " << iteration + 2 << "\n";
+#endif
+	return (right + left) * 0.5;
 }
 
-static vector_f64 fibonacci(function_nd function, const vector_f64& x_0, const vector_f64& x_1, const F64 eps = N_DIM_ACCURACY)
+static vector_f64 fibonacci(function_nd function, const vector_f64& left, const vector_f64& right, const F64 eps)
 {
-	vector_f64 a(x_0), b(x_1);
-	vector_f64 x_l(x_0), x_r(x_1), dx;
-	I32 f_n, f_n_1, f_tmp, cntr = 0;
-	closest_fibonacci_pair((b - a).magnitude() / eps, f_n, f_n_1);
-	while (f_n != f_n_1)
+	vector_f64 x_l, x_r;
+	vector_f64 lhs(left), rhs(right);
+	F64 f_l, f_r, value, fib_t{ 0.0 }, fib_1{ 1.0 }, fib_2{ 1.0 };
+	I32 iterations{ 0 };
+	value = (right - left).magnitude() / eps;
+	while (fib_2 < value)
 	{
-		if ((x_r - x_l).magnitude() < eps) break;
-		dx = (b - a);
-		f_tmp = f_n_1 - f_n;
-		x_l = a + dx * ((F64)f_tmp / f_n_1);
-		x_r = a + dx * ((F64)f_n   / f_n_1);
-		f_n_1 = f_n;
-		f_n = f_tmp;
-		if (function(x_l) < function(x_r))
-			b = x_r;
-		else
-			a = x_l;
+		iterations++;
+		fib_t = fib_1;
+		fib_1 = fib_2;
+		fib_2 += fib_t;
 	}
-	return (x_r + x_l) * 0.5;
+	x_l = lhs + (rhs - lhs) * ((fib_2 - fib_1) / fib_2);
+	x_r = lhs + (rhs - lhs) * (fib_1 / fib_2);
+
+	f_l = function(x_l);
+	f_r = function(x_r);
+
+	fib_t = fib_2 - fib_1;
+	fib_2 = fib_1;
+	fib_1 = fib_t;
+
+	for (I32 index = iterations; index > 0; index--)
+	{
+		if (f_l > f_r)
+		{
+			lhs = x_l;
+			f_l = f_r;
+			x_l = x_r;
+			x_r = lhs + (rhs - lhs) * (fib_1 / fib_2);
+			f_r = function(x_r);
+		}
+		else
+		{
+			rhs = x_r;
+			x_r = x_l;
+			f_r = f_l;
+			x_l = lhs + (rhs - lhs) * ((fib_2 - fib_1) / fib_2);
+			f_l = function(x_l);
+		}
+		fib_t = fib_2 - fib_1;
+		fib_2 = fib_1;
+		fib_1 = fib_t;
+		// #if _DEBUG
+		// 	   std::cout << "\nfibonacchi [a, b] range: " << (right - left) << "\n";
+		// #endif
+	}
+#if _DEBUG
+	std::cout << "fibonacci::function arg range    : " << (rhs - lhs).magnitude() << "\n";
+	std::cout << "fibonacci::function probes count : " << iterations + 2 << "\n";
+#endif
+	return (rhs + lhs) * 0.5;
 }
 
 // ѕокоординатный спуск, градиентный спуск и спуск с помощью сопр€жЄнных градиентов, определ€ют
