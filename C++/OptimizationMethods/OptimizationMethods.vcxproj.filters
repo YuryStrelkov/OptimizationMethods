@@ -32,6 +32,9 @@
     <ClInclude Include="test.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="numeric_utils.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
     <ClInclude Include="simplex.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
@@ -44,19 +47,13 @@
     <ClInclude Include="vector_itaretors.h">
       <Filter>NumericUtils</Filter>
     </ClInclude>
+    <ClInclude Include="main.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
     <ClInclude Include="numeric_vector.h">
       <Filter>NumericUtils</Filter>
     </ClInclude>
     <ClInclude Include="numeric_matrix.h">
-      <Filter>NumericUtils</Filter>
-    </ClInclude>
-    <ClInclude Include="slice.h">
-      <Filter>NumericUtils</Filter>
-    </ClInclude>
-    <ClInclude Include="numeric_utils.h">
-      <Filter>NumericUtils</Filter>
-    </ClInclude>
-    <ClInclude Include="rational.h">
       <Filter>NumericUtils</Filter>
     </ClInclude>
   </ItemGroup>

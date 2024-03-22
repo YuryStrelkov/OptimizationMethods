@@ -35,7 +35,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -48,7 +48,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -143,14 +143,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common.h" />
+    <ClInclude Include="main.h" />
     <ClInclude Include="multi_dimensional.h" />
     <ClInclude Include="numeric_matrix.h" />
     <ClInclude Include="numeric_utils.h" />
     <ClInclude Include="numeric_vector.h" />
     <ClInclude Include="one_dimensional.h" />
-    <ClInclude Include="rational.h" />
     <ClInclude Include="simplex.h" />
-    <ClInclude Include="slice.h" />
     <ClInclude Include="template_vector.h" />
     <ClInclude Include="test.h" />
     <ClInclude Include="vector_itaretors.h" />

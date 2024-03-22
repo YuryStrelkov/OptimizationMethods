@@ -29,9 +29,9 @@ static F64 test_function_nd(const vector_f64& args)
 
 static void one_dimensional_methods_test()
 {
-	std::cout << "\n///////////////////////////////////////////" << std::endl;
-	std::cout <<   "//////// OneDimensionalMethodsTest ////////" << std::endl;
-	std::cout <<   "///////////////////////////////////////////\n" << std::endl;
+	std::cout << "\n///////////////////////////////////////////"   << "\n";
+	std::cout <<   "//////// OneDimensionalMethodsTest ////////"   << "\n";
+	std::cout <<   "///////////////////////////////////////////\n" << "\n";
 	F64 x_0 = 125;
 	F64 x_1 = -5;
 	std::cout << "\n";
@@ -44,9 +44,9 @@ static void one_dimensional_methods_test()
 
 static void multi_dimensional_methods_test()
 {
-	std::cout << "\n/////////////////////////////////////////////"  << std::endl;
-	std::cout <<   "//////// MultiDimensionalMethodsTest ////////"  << std::endl;
-	std::cout <<   "/////////////////////////////////////////////\n"<< std::endl;
+	std::cout << "\n/////////////////////////////////////////////"  << "\n";
+	std::cout <<   "//////// MultiDimensionalMethodsTest ////////"  << "\n";
+	std::cout <<   "/////////////////////////////////////////////\n"<< "\n";
 
 	vector_f64 x_0 = { 0,0 };
 	vector_f64 x_1 = { 5,3 };
