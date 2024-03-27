@@ -1,12 +1,10 @@
 #pragma once
-#include "numeric_utils.h"
-#include "common.h"
+#include "numerics/common.h"
 
 typedef F64(*function_1d)(const F64);
 static F64 bisect      (function_1d function, F64 left, F64 right, const F64 eps = ACCURACY, const I32 max_iterations = ITERS_MAX);
 static F64 golden_ratio(function_1d function, F64 left, F64 right, const F64 eps = ACCURACY, const I32 max_iterations = ITERS_MAX);
 static F64 fibonacci   (function_1d function, F64 left, F64 right, const F64 eps = ACCURACY);
-
 
 static F64 bisect(function_1d function, F64 left, F64 right, const F64 eps, const I32 max_iterations)
 {

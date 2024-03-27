@@ -1,7 +1,7 @@
 #pragma once
 #include "multi_dimensional.h"
 #include "one_dimensional.h"
-#include "numeric_utils.h"
+#include "numerics\numeric_utils.h"
 #include "simplex.h"
 
 // тестовая унимодальная одномерная функция с минимумом в точке {2} 
@@ -135,12 +135,12 @@ static void numeric_tests()
 
 static int test_all()
 {
-	// template_vector_test();
-	// numeric_vector_test();
-	// numeric_matrix_test();
-	// numeric_tests();
+	template_vector_test();
+	numeric_vector_test();
+	numeric_matrix_test();
+	numeric_tests();
 	one_dimensional_methods_test();
 	multi_dimensional_methods_test();
-	// simplex_method_test();
+	simplex_method_test();
 	return 0;
 }

@@ -32,29 +32,35 @@
     <ClInclude Include="test.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="numeric_utils.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
     <ClInclude Include="simplex.h">
       <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="common.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="template_vector.h">
-      <Filter>NumericUtils</Filter>
-    </ClInclude>
-    <ClInclude Include="vector_itaretors.h">
-      <Filter>NumericUtils</Filter>
     </ClInclude>
     <ClInclude Include="main.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="numeric_vector.h">
+    <ClInclude Include="numerics\common.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="numerics\linalg\template_vector.h">
       <Filter>NumericUtils</Filter>
     </ClInclude>
-    <ClInclude Include="numeric_matrix.h">
+    <ClInclude Include="numerics\linalg\vector_itaretors.h">
       <Filter>NumericUtils</Filter>
+    </ClInclude>
+    <ClInclude Include="numerics\linalg\slice.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="numerics\linalg\numeric_matrix.h">
+      <Filter>NumericUtils</Filter>
+    </ClInclude>
+    <ClInclude Include="numerics\linalg\numeric_vector.h">
+      <Filter>NumericUtils</Filter>
+    </ClInclude>
+    <ClInclude Include="numerics\numeric_utils.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="numerics\rational\rational.h">
+      <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

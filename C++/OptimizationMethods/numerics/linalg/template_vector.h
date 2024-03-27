@@ -1,7 +1,7 @@
 #pragma once
 using namespace std;
+#include "..\common.h"
 #include "vector_itaretors.h"
-#include "common.h"
 #include "slice.h"
 #define MINIMAL_VECTOR_SIZE 8
 #define VECTOR_SIZE_UPSCALE 1.5
@@ -126,9 +126,9 @@ protected:
 			apply(other, [](const T& v) {return v;});
 			return;
 		};
-		m_data     = std::exchange(other.m_data    , nullptr);
-		m_capacity = std::exchange(other.m_capacity, -1);
-		m_filling  = std::exchange(other.m_filling , -1);
+		m_data     = EXCHANGE(other.m_data    , nullptr);
+		m_capacity = EXCHANGE(other.m_capacity, -1);
+		m_filling  = EXCHANGE(other.m_filling , -1);
 	}
 
 	void reassign_data(const template_vector_<T>& other)
@@ -518,11 +518,11 @@ public:
 		dealloc();
 	}
 	
-	template <typename T>
-	friend std::ostream& operator<<(std::ostream& steram, const template_vector_<T>& pair);
+	template <typename U>
+	friend std::ostream& operator<<(std::ostream& steram, const template_vector_<U>& pair);
 
-	template<typename T>
-	friend bool operator == (const template_vector_<T>& lhs, const template_vector_<T>& rhs);
+	template<typename U>
+	friend bool operator == (const template_vector_<U>& lhs, const template_vector_<U>& rhs);
 
 protected:
 	template_vector_(const slice& slice, template_vector_& source){
@@ -533,8 +533,8 @@ protected:
 	};
 };
 
-template <typename T>
-inline std::ostream& operator<<(std::ostream& steram, const template_vector_<T>& vector)
+template <typename U>
+inline std::ostream& operator<<(std::ostream& steram, const template_vector_<U>& vector)
 {
 	steram << "{ ";
 	for (const I32& index: vector.indices()) steram << vector.unchecked_access(index) << (index != vector.filling() - 1 ? ", " : "");
@@ -623,8 +623,8 @@ combine_values<T, T1>template_vector_<T>::combine(const template_vector_<T>& lef
 {
 	return combine_values<T, T1>(zip(left, right), combine_f);
 }
-template<typename T>
-bool operator == (const template_vector_<T>& lhs, const template_vector_<T>& rhs) 
+template<typename U>
+bool operator == (const template_vector_<U>& lhs, const template_vector_<U>& rhs) 
 {
 	return (lhs.filling() == rhs.filling()) && (lhs.m_data == rhs.m_data);
 }

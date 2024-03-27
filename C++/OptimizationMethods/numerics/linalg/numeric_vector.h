@@ -1,9 +1,8 @@
 #pragma once
 #include "template_vector.h"
-#include "rational.h"
+#include "..\rational\rational.h"
 
-template<typename T>class        numeric_vector_;
-// typedef numeric_vector_<F64> vector_f64;
+template<typename T>class numeric_vector_;
 typedef numeric_vector_<F64> vector_f64;
 typedef numeric_vector_<F32> vector_f32;
 typedef numeric_vector_<I32> vector_i32;
@@ -39,44 +38,44 @@ public:
 	numeric_vector_<T>& operator=(const numeric_vector_<T>& lhs);
 	numeric_vector_<T>& operator=(numeric_vector_<T>&& lhs)noexcept;
 
-	template<typename T>friend bool operator==(const numeric_vector_<T>& lhs, const numeric_vector_<T>& rhs);
-	template<typename T>friend bool operator!=(const numeric_vector_<T>& lhs, const numeric_vector_<T>& rhs);
+	template<typename U>friend bool operator==(const numeric_vector_<U>& lhs, const numeric_vector_<U>& rhs);
+	template<typename U>friend bool operator!=(const numeric_vector_<U>& lhs, const numeric_vector_<U>& rhs);
 	
-	template<typename T>friend bool operator>(const numeric_vector_<T>& lhs, const numeric_vector_<T>& rhs);
-	template<typename T>friend bool operator<(const numeric_vector_<T>& lhs, const numeric_vector_<T>& rhs);
+	template<typename U>friend bool operator>(const numeric_vector_<U>& lhs, const numeric_vector_<U>& rhs);
+	template<typename U>friend bool operator<(const numeric_vector_<U>& lhs, const numeric_vector_<U>& rhs);
 
-	template<typename T>friend bool operator>=(const numeric_vector_<T>& lhs, const numeric_vector_<T>& rhs);
-	template<typename T>friend bool operator<=(const numeric_vector_<T>& lhs, const numeric_vector_<T>& rhs);
+	template<typename U>friend bool operator>=(const numeric_vector_<U>& lhs, const numeric_vector_<U>& rhs);
+	template<typename U>friend bool operator<=(const numeric_vector_<U>& lhs, const numeric_vector_<U>& rhs);
 	
-	template<typename T>friend bool operator >(const T& lhs, const numeric_vector_<T>& rhs);
-	template<typename T>friend bool operator <(const T& lhs, const numeric_vector_<T>& rhs);
+	template<typename U>friend bool operator >(const U& lhs, const numeric_vector_<U>& rhs);
+	template<typename U>friend bool operator <(const U& lhs, const numeric_vector_<U>& rhs);
 
-	template<typename T>friend bool operator>=(const T& lhs, const numeric_vector_<T>& rhs);
-	template<typename T>friend bool operator<=(const T& lhs, const numeric_vector_<T>& rhs);
+	template<typename U>friend bool operator>=(const U& lhs, const numeric_vector_<U>& rhs);
+	template<typename U>friend bool operator<=(const U& lhs, const numeric_vector_<U>& rhs);
 
-	template<typename T>friend bool operator>(const numeric_vector_<T>& lhs, const T& rhs);
-	template<typename T>friend bool operator<(const numeric_vector_<T>& lhs, const T& rhs);
+	template<typename U>friend bool operator>(const numeric_vector_<U>& lhs, const U& rhs);
+	template<typename U>friend bool operator<(const numeric_vector_<U>& lhs, const U& rhs);
 
-	template<typename T>friend bool operator>=(const numeric_vector_<T>& lhs, const T& rhs);
-	template<typename T>friend bool operator<=(const numeric_vector_<T>& lhs, const T& rhs);
+	template<typename U>friend bool operator>=(const numeric_vector_<U>& lhs, const U& rhs);
+	template<typename U>friend bool operator<=(const numeric_vector_<U>& lhs, const U& rhs);
 	/*
 	*/
-	template<typename T>friend numeric_vector_<T> operator+(const numeric_vector_<T>& lhs, const numeric_vector_<T>& rhs);
-	template<typename T>friend numeric_vector_<T> operator-(const numeric_vector_<T>& lhs, const numeric_vector_<T>& rhs);
-	template<typename T>friend numeric_vector_<T> operator*(const numeric_vector_<T>& lhs, const numeric_vector_<T>& rhs);
-	template<typename T>friend numeric_vector_<T> operator/(const numeric_vector_<T>& lhs, const numeric_vector_<T>& rhs);
+	template<typename U>friend numeric_vector_<U> operator+(const numeric_vector_<U>& lhs, const numeric_vector_<U>& rhs);
+	template<typename U>friend numeric_vector_<U> operator-(const numeric_vector_<U>& lhs, const numeric_vector_<U>& rhs);
+	template<typename U>friend numeric_vector_<U> operator*(const numeric_vector_<U>& lhs, const numeric_vector_<U>& rhs);
+	template<typename U>friend numeric_vector_<U> operator/(const numeric_vector_<U>& lhs, const numeric_vector_<U>& rhs);
 
-	template<typename T>friend numeric_vector_<T> operator+(const T& lhs, const numeric_vector_<T>& rhs);
-	template<typename T>friend numeric_vector_<T> operator-(const T& lhs, const numeric_vector_<T>& rhs);
-	template<typename T>friend numeric_vector_<T> operator*(const T& lhs, const numeric_vector_<T>& rhs);
-	template<typename T>friend numeric_vector_<T> operator/(const T& lhs, const numeric_vector_<T>& rhs);
+	template<typename U>friend numeric_vector_<U> operator+(const U& lhs, const numeric_vector_<U>& rhs);
+	template<typename U>friend numeric_vector_<U> operator-(const U& lhs, const numeric_vector_<U>& rhs);
+	template<typename U>friend numeric_vector_<U> operator*(const U& lhs, const numeric_vector_<U>& rhs);
+	template<typename U>friend numeric_vector_<U> operator/(const U& lhs, const numeric_vector_<U>& rhs);
 
-	template<typename T>friend numeric_vector_<T> operator+(const numeric_vector_<T>& lhs, const T& rhs);
-	template<typename T>friend numeric_vector_<T> operator-(const numeric_vector_<T>& lhs, const T& rhs);
-	template<typename T>friend numeric_vector_<T> operator*(const numeric_vector_<T>& lhs, const T& rhs);
-	template<typename T>friend numeric_vector_<T> operator/(const numeric_vector_<T>& lhs, const T& rhs);
+	template<typename U>friend numeric_vector_<U> operator+(const numeric_vector_<U>& lhs, const U& rhs);
+	template<typename U>friend numeric_vector_<U> operator-(const numeric_vector_<U>& lhs, const U& rhs);
+	template<typename U>friend numeric_vector_<U> operator*(const numeric_vector_<U>& lhs, const U& rhs);
+	template<typename U>friend numeric_vector_<U> operator/(const numeric_vector_<U>& lhs, const U& rhs);
 
-	template<typename T>friend std::ostream& operator<<(std::ostream& stream, const numeric_vector_<T>& rhs);
+	template<typename U>friend std::ostream& operator<<(std::ostream& stream, const numeric_vector_<U>& rhs);
 
 	numeric_vector_(const template_vector_<T>& src) : template_vector_<T>(src) {
 	};
@@ -277,185 +276,185 @@ inline numeric_vector_<T>& numeric_vector_<T>::operator=(numeric_vector_<T>&& lh
 	return (*this);
 }
 
-template<typename T>
-inline bool operator==(const numeric_vector_<T>& lhs, const numeric_vector_<T>& rhs)
+template<typename U>
+inline bool operator==(const numeric_vector_<U>& lhs, const numeric_vector_<U>& rhs)
 {
 	assert(lhs.filling() == rhs.filling() && "compare operator :: vector with not equal sizes");
-	const zip_values<T, T> zip_vals = zip_values<T, T>(lhs.values(), rhs.values());
-	for (const pair_<T, T>& pair : zip_vals) if (pair.first != pair.second) return false;
+	const zip_values<U, U> zip_vals = zip_values<U, U>(lhs.values(), rhs.values());
+	for (const pair_<U, U>& pair : zip_vals) if (pair.first != pair.second) return false;
 	return true;
 }
 
-template<typename T>
-inline bool operator!=(const numeric_vector_<T>& lhs, const numeric_vector_<T>& rhs)
+template<typename U>
+inline bool operator!=(const numeric_vector_<U>& lhs, const numeric_vector_<U>& rhs)
 {
 	return !(lhs == rhs);
 }
 
-template<typename T>
-inline bool operator>(const numeric_vector_<T>& lhs, const numeric_vector_<T>& rhs)
+template<typename U>
+inline bool operator>(const numeric_vector_<U>& lhs, const numeric_vector_<U>& rhs)
 {
 	assert(lhs.filling() == rhs.filling() && "operator > :: vector with not equal sizes");
-	const zip_values<T, T> zip_vals = zip_values<T, T>(lhs.values(), rhs.values());
-	for (const pair_<T, T>& pair : zip_vals) if (pair.first <= pair.second) return false;
+	const zip_values<U, U> zip_vals = zip_values<U, U>(lhs.values(), rhs.values());
+	for (const pair_<U, U>& pair : zip_vals) if (pair.first <= pair.second) return false;
 	return true;
 }
 
-template<typename T>
-inline bool operator<(const numeric_vector_<T>& lhs, const numeric_vector_<T>& rhs)
+template<typename U>
+inline bool operator<(const numeric_vector_<U>& lhs, const numeric_vector_<U>& rhs)
 {
 	assert(lhs.filling() == rhs.filling() && "operator < :: vector with not equal sizes");
-	const zip_values<T, T> zip_vals = zip_values<T, T>(lhs.values(), rhs.values());
-	for (const pair_<T, T>& pair : zip_vals) if (pair.first >= pair.second) return false;
+	const zip_values<U, U> zip_vals = zip_values<U, U>(lhs.values(), rhs.values());
+	for (const pair_<U, U>& pair : zip_vals) if (pair.first >= pair.second) return false;
 	return true;
 }
 
-template<typename T>
-inline bool operator>=(const numeric_vector_<T>& lhs, const numeric_vector_<T>& rhs)
+template<typename U>
+inline bool operator>=(const numeric_vector_<U>& lhs, const numeric_vector_<U>& rhs)
 {
 	return !(lhs < rhs);
 }
 
-template<typename T>
-inline bool operator<=(const numeric_vector_<T>& lhs, const numeric_vector_<T>& rhs)
+template<typename U>
+inline bool operator<=(const numeric_vector_<U>& lhs, const numeric_vector_<U>& rhs)
 {
 	return !(lhs > rhs);
 }
 
-template<typename T>
-inline bool operator>(const T& lhs, const numeric_vector_<T>& rhs)
+template<typename U>
+inline bool operator>(const U& lhs, const numeric_vector_<U>& rhs)
 {
-	for (const pair_<T, T>& pair : zip_values<T, T>(lhs, rhs.values())) if (pair.first <= pair.second) return false;
+	for (const pair_<U, U>& pair : zip_values<U, U>(lhs, rhs.values())) if (pair.first <= pair.second) return false;
 	return true;
 }
 
-template<typename T>
-inline bool operator<(const T& lhs, const numeric_vector_<T>& rhs)
+template<typename U>
+inline bool operator<(const U& lhs, const numeric_vector_<U>& rhs)
 {
-	for (const pair_<T, T>& pair : zip_values<T, T>(lhs, rhs.values())) if (pair.first >= pair.second) return false;
+	for (const pair_<U, U>& pair : zip_values<U, U>(lhs, rhs.values())) if (pair.first >= pair.second) return false;
 	return true;
 }
 
-template<typename T>
-inline bool operator>=(const T& lhs, const numeric_vector_<T>& rhs)
+template<typename U>
+inline bool operator>=(const U& lhs, const numeric_vector_<U>& rhs)
 {
 	return !(lhs < rhs);
 }
 
-template<typename T>
-inline bool operator<=(const T& lhs, const numeric_vector_<T>& rhs)
+template<typename U>
+inline bool operator<=(const U& lhs, const numeric_vector_<U>& rhs)
 {
 	return !(lhs > rhs);
 }
 
-template<typename T>
-inline bool operator>(const numeric_vector_<T>& lhs, const T& rhs)
+template<typename U>
+inline bool operator>(const numeric_vector_<U>& lhs, const U& rhs)
 {
-	for (const pair_<T, T>& pair : zip_values<T, T>(lhs.values(), rhs)) if (pair.first <= pair.second) return false;
+	for (const pair_<U, U>& pair : zip_values<U, U>(lhs.values(), rhs)) if (pair.first <= pair.second) return false;
 	return true;
 }
 
-template<typename T>
-inline bool operator<(const numeric_vector_<T>& lhs, const T& rhs)
+template<typename U>
+inline bool operator<(const numeric_vector_<U>& lhs, const U& rhs)
 {
-	for (const pair_<T, T>& pair : zip_values<T, T>(lhs.values(), rhs)) if (pair.first >= pair.second) return false;
+	for (const pair_<U, U>& pair : zip_values<U, U>(lhs.values(), rhs)) if (pair.first >= pair.second) return false;
 	return true;
 }
 
-template<typename T>
-inline bool operator>=(const numeric_vector_<T>& lhs, const T& rhs)
+template<typename U>
+inline bool operator>=(const numeric_vector_<U>& lhs, const U& rhs)
 {
 	return !(lhs < rhs);
 }
 
-template<typename T>
-inline bool operator<=(const numeric_vector_<T>& lhs, const T& rhs)
+template<typename U>
+inline bool operator<=(const numeric_vector_<U>& lhs, const U& rhs)
 {
 	return !(lhs > rhs);
 }
 
-template<typename T>
-inline numeric_vector_<T> operator+(const numeric_vector_<T>& lhs, const numeric_vector_<T>& rhs)
+template<typename U>
+inline numeric_vector_<U> operator+(const numeric_vector_<U>& lhs, const numeric_vector_<U>& rhs)
 {
 	assert(lhs.filling() == rhs.filling() && "operator + :: vector with not equal sizes");
-	const combine_values<T, T> combine_vals = combine_values<T, T>(lhs.values(), rhs.values(), sum_f);
-	return numeric_vector_<T>(combine_vals);
+	const combine_values<U, U> combine_vals = combine_values<U, U>(lhs.values(), rhs.values(), sum_f);
+	return numeric_vector_<U>(combine_vals);
 }
 
-template<typename T>
-inline numeric_vector_<T> operator-(const numeric_vector_<T>& lhs, const numeric_vector_<T>& rhs)
+template<typename U>
+inline numeric_vector_<U> operator-(const numeric_vector_<U>& lhs, const numeric_vector_<U>& rhs)
 {
 	assert(lhs.filling() == rhs.filling() && "operator - :: vector with not equal sizes");
-	const combine_values<T, T> combine_vals = combine_values<T, T>(lhs.values(), rhs.values(), dif_f);
-	return numeric_vector_<T>(combine_vals);
+	const combine_values<U, U> combine_vals = combine_values<U, U>(lhs.values(), rhs.values(), dif_f);
+	return numeric_vector_<U>(combine_vals);
 }
 
-template<typename T>
-inline numeric_vector_<T> operator*(const numeric_vector_<T>& lhs, const numeric_vector_<T>& rhs)
+template<typename U>
+inline numeric_vector_<U> operator*(const numeric_vector_<U>& lhs, const numeric_vector_<U>& rhs)
 {
 	assert(lhs.filling() == rhs.filling() && "operator * :: vector with not equal sizes");
-	const combine_values<T, T> combine_vals = combine_values<T, T>(lhs.values(), rhs.values(), mul_f);
-	return numeric_vector_<T>(combine_vals);
+	const combine_values<U, U> combine_vals = combine_values<U, U>(lhs.values(), rhs.values(), mul_f);
+	return numeric_vector_<U>(combine_vals);
 }
 
-template<typename T>
-inline numeric_vector_<T> operator/(const numeric_vector_<T>& lhs, const numeric_vector_<T>& rhs)
+template<typename U>
+inline numeric_vector_<U> operator/(const numeric_vector_<U>& lhs, const numeric_vector_<U>& rhs)
 {
 	assert(lhs.filling() == rhs.filling() && "operator / :: vector with not equal sizes");
-	const combine_values<T, T> combine_vals = combine_values<T, T>(lhs.values(), rhs.values(), div_f);
-	return numeric_vector_<T>(combine_vals);
+	const combine_values<U, U> combine_vals = combine_values<U, U>(lhs.values(), rhs.values(), div_f);
+	return numeric_vector_<U>(combine_vals);
 }
 
-template<typename T>
-inline numeric_vector_<T> operator+(const T& lhs, const numeric_vector_<T>& rhs)
+template<typename U>
+inline numeric_vector_<U> operator+(const U& lhs, const numeric_vector_<U>& rhs)
 {
-	return numeric_vector_<T>(combine_values<T, T>(lhs, rhs.values(), sum_f));
+	return numeric_vector_<U>(combine_values<U, U>(lhs, rhs.values(), sum_f));
 }
 
-template<typename T>
-inline numeric_vector_<T> operator-(const T& lhs, const numeric_vector_<T>& rhs)
+template<typename U>
+inline numeric_vector_<U> operator-(const U& lhs, const numeric_vector_<U>& rhs)
 {
-	return numeric_vector_<T>(combine_values<T, T>(lhs, rhs.values(), dif_f));
+	return numeric_vector_<U>(combine_values<U, U>(lhs, rhs.values(), dif_f));
 }
 
-template<typename T>
-inline numeric_vector_<T> operator*(const T& lhs, const numeric_vector_<T>& rhs)
+template<typename U>
+inline numeric_vector_<U> operator*(const U& lhs, const numeric_vector_<U>& rhs)
 {
-	return numeric_vector_<T>(combine_values<T, T>(lhs, rhs.values(), mul_f));
+	return numeric_vector_<U>(combine_values<U, U>(lhs, rhs.values(), mul_f));
 }
 
-template<typename T>
-inline numeric_vector_<T> operator/(const T& lhs, const numeric_vector_<T>& rhs)
+template<typename U>
+inline numeric_vector_<U> operator/(const U& lhs, const numeric_vector_<U>& rhs)
 {
-	return numeric_vector_<T>(combine_values<T, T>(lhs, rhs.values(), div_f));
+	return numeric_vector_<U>(combine_values<U, U>(lhs, rhs.values(), div_f));
 }
 
-template<typename T>
-inline numeric_vector_<T> operator+(const numeric_vector_<T>& lhs, const T& rhs)
+template<typename U>
+inline numeric_vector_<U> operator+(const numeric_vector_<U>& lhs, const U& rhs)
 {
-	return numeric_vector_<T>(combine_values<T, T>(lhs.values(), rhs, sum_f));
+	return numeric_vector_<U>(combine_values<U, U>(lhs.values(), rhs, sum_f));
 }
 
-template<typename T>
-inline numeric_vector_<T> operator-(const numeric_vector_<T>& lhs, const T& rhs)
+template<typename U>
+inline numeric_vector_<U> operator-(const numeric_vector_<U>& lhs, const U& rhs)
 {
-	return numeric_vector_<T>(combine_values<T, T>(lhs.values(), rhs, dif_f));
+	return numeric_vector_<U>(combine_values<U, U>(lhs.values(), rhs, dif_f));
 }
 
-template<typename T>
-inline numeric_vector_<T> operator*(const numeric_vector_<T>& lhs, const T& rhs)
+template<typename U>
+inline numeric_vector_<U> operator*(const numeric_vector_<U>& lhs, const U& rhs)
 {
-	return numeric_vector_<T>(combine_values<T, T>(lhs.values(), rhs, mul_f));
+	return numeric_vector_<U>(combine_values<U, U>(lhs.values(), rhs, mul_f));
 }
 
-template<typename T>
-inline numeric_vector_<T> operator/(const numeric_vector_<T>& lhs, const T& rhs)
+template<typename U>
+inline numeric_vector_<U> operator/(const numeric_vector_<U>& lhs, const U& rhs)
 {
-	return numeric_vector_<T>(combine_values<T, T>(lhs.values(), rhs, div_f));
+	return numeric_vector_<U>(combine_values<U, U>(lhs.values(), rhs, div_f));
 }
 
-template<typename T>
-inline std::ostream& operator << (std::ostream& stream, const numeric_vector_<T>& rhs)
+template<typename U>
+inline std::ostream& operator << (std::ostream& stream, const numeric_vector_<U>& rhs)
 {
 	stream << "[";
 #ifdef RATIONAL_NUMBERS_REPRESNTATION

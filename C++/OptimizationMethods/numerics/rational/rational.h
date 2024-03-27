@@ -1,9 +1,10 @@
 #pragma once
+#include "..\common.h"
 namespace rational
 {
 	struct lmat{
 		I64 m00, m01,
-			 m10, m11;
+			m10, m11;
 		lmat() : m00(1), m01(0), m10(0), m11(1) {}
 	};
 	/// <summary>

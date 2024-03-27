@@ -1,21 +1,47 @@
 #pragma once
 #include <functional>
-#include <algorithm>
 #include <string>
 #include <iterator>
-#include <initializer_list>
-#include <vector>
-#include <stdio.h>
 #include <iostream>
 #include <iomanip>
 #include <cassert>
+
+
+
+
+#if defined(__APPLE__)
+// copy from STL lib/may be unsafe...
+template <class _Ty, class _Other = _Ty>
+_Ty exchange(_Ty& _Val, _Other&& _New_val) noexcept /* strengthened */ {
+    // assign _New_val to _Val, return previous _Val
+    _Ty _Old_val = static_cast<_Ty&&>(_Val);
+    _Val = static_cast<_Other&&>(_New_val);
+    return _Old_val;
+}
+#elif defined(__unix__)
+#if defined(__linux__)
+#define EXCHANGE std::__exchange
+#endif
+#elif defined(_WIN32) || defined(_WIN64)
+#define EXCHANGE std::exchange
+#else
+#error "Unknown operating system"
+#endif
+
 #define PHI 1.61803398874989484820
-#define PSI 0.6180339887498948
+#define PSI 0.61803398874989484820
+typedef uint8_t  UI8;
+typedef uint16_t UI16;
+typedef uint32_t UI32;
+typedef uint64_t UI64;
+
+typedef int8_t  I8;
+typedef int16_t I16;
 typedef int32_t I32;
-typedef uint8_t UI8;
-typedef long I64;
+typedef int64_t I64;
+
 typedef double F64;
-typedef float F32;
+typedef float  F32;
 #define DOUBLE_PRECISION      1
 #define N_DIM_ACCURACY        1e-5
 #define N_DIM_DERIVATIVE_STEP 1e-6

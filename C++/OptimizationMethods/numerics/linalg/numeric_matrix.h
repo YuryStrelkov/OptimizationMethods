@@ -205,46 +205,46 @@ public:
 	numeric_matrix_<T>& operator*=(const T& rhs);
 	numeric_matrix_<T>& operator/=(const T& rhs);
 	
-	template<typename T>friend numeric_matrix_<T> operator+(const numeric_matrix_<T>& lhs, const numeric_matrix_<T>& rhs);
-	template<typename T>friend numeric_matrix_<T> operator-(const numeric_matrix_<T>& lhs, const numeric_matrix_<T>& rhs);
-	template<typename T>friend numeric_matrix_<T> operator^(const numeric_matrix_<T>& lhs, const numeric_matrix_<T>& rhs);
-	template<typename T>friend numeric_matrix_<T> operator/(const numeric_matrix_<T>& lhs, const numeric_matrix_<T>& rhs);
-	template<typename T>friend numeric_matrix_<T> operator*(const numeric_matrix_<T>& lhs, const numeric_matrix_<T>& rhs);
-	template<typename T>friend numeric_vector_<T> operator*(const numeric_vector_<T>& lhs, const numeric_matrix_<T>& rhs);
-	template<typename T>friend numeric_vector_<T> operator*(const numeric_matrix_<T>& lhs, const numeric_vector_<T>& rhs);
+	template<typename U>friend numeric_matrix_<U> operator+(const numeric_matrix_<U>& lhs, const numeric_matrix_<U>& rhs);
+	template<typename U>friend numeric_matrix_<U> operator-(const numeric_matrix_<U>& lhs, const numeric_matrix_<U>& rhs);
+	template<typename U>friend numeric_matrix_<U> operator^(const numeric_matrix_<U>& lhs, const numeric_matrix_<U>& rhs);
+	template<typename U>friend numeric_matrix_<U> operator/(const numeric_matrix_<U>& lhs, const numeric_matrix_<U>& rhs);
+	template<typename U>friend numeric_matrix_<U> operator*(const numeric_matrix_<U>& lhs, const numeric_matrix_<U>& rhs);
+	template<typename U>friend numeric_vector_<U> operator*(const numeric_vector_<U>& lhs, const numeric_matrix_<U>& rhs);
+	template<typename U>friend numeric_vector_<U> operator*(const numeric_matrix_<U>& lhs, const numeric_vector_<U>& rhs);
 
-	template<typename T>friend numeric_matrix_<T> operator+(const T& lhs, const numeric_matrix_<T>& rhs);
-	template<typename T>friend numeric_matrix_<T> operator-(const T& lhs, const numeric_matrix_<T>& rhs);
-	template<typename T>friend numeric_matrix_<T> operator*(const T& lhs, const numeric_matrix_<T>& rhs);
-	template<typename T>friend numeric_matrix_<T> operator/(const T& lhs, const numeric_matrix_<T>& rhs);
+	template<typename U>friend numeric_matrix_<U> operator+(const U& lhs, const numeric_matrix_<U>& rhs);
+	template<typename U>friend numeric_matrix_<U> operator-(const U& lhs, const numeric_matrix_<U>& rhs);
+	template<typename U>friend numeric_matrix_<U> operator*(const U& lhs, const numeric_matrix_<U>& rhs);
+	template<typename U>friend numeric_matrix_<U> operator/(const U& lhs, const numeric_matrix_<U>& rhs);
 
-	template<typename T>friend numeric_matrix_<T> operator+(const numeric_matrix_<T>& lhs, const T& rhs);
-	template<typename T>friend numeric_matrix_<T> operator-(const numeric_matrix_<T>& lhs, const T& rhs);
-	template<typename T>friend numeric_matrix_<T> operator*(const numeric_matrix_<T>& lhs, const T& rhs);
-	template<typename T>friend numeric_matrix_<T> operator/(const numeric_matrix_<T>& lhs, const T& rhs);
+	template<typename U>friend numeric_matrix_<U> operator+(const numeric_matrix_<U>& lhs, const U& rhs);
+	template<typename U>friend numeric_matrix_<U> operator-(const numeric_matrix_<U>& lhs, const U& rhs);
+	template<typename U>friend numeric_matrix_<U> operator*(const numeric_matrix_<U>& lhs, const U& rhs);
+	template<typename U>friend numeric_matrix_<U> operator/(const numeric_matrix_<U>& lhs, const U& rhs);
 	
-	template<typename T>friend bool operator==(const numeric_matrix_<T>& lhs, const numeric_matrix_<T>& rhs);
-	template<typename T>friend bool operator!=(const numeric_matrix_<T>& lhs, const numeric_matrix_<T>& rhs);
+	template<typename U>friend bool operator==(const numeric_matrix_<U>& lhs, const numeric_matrix_<U>& rhs);
+	template<typename U>friend bool operator!=(const numeric_matrix_<U>& lhs, const numeric_matrix_<U>& rhs);
 
-	template<typename T>friend bool operator>(const numeric_matrix_<T>& lhs, const numeric_matrix_<T>& rhs);
-	template<typename T>friend bool operator<(const numeric_matrix_<T>& lhs, const numeric_matrix_<T>& rhs);
+	template<typename U>friend bool operator>(const numeric_matrix_<U>& lhs, const numeric_matrix_<U>& rhs);
+	template<typename U>friend bool operator<(const numeric_matrix_<U>& lhs, const numeric_matrix_<U>& rhs);
 
-	template<typename T>friend bool operator>=(const numeric_matrix_<T>& lhs, const numeric_matrix_<T>& rhs);
-	template<typename T>friend bool operator<=(const numeric_matrix_<T>& lhs, const numeric_matrix_<T>& rhs);
+	template<typename U>friend bool operator>=(const numeric_matrix_<U>& lhs, const numeric_matrix_<U>& rhs);
+	template<typename U>friend bool operator<=(const numeric_matrix_<U>& lhs, const numeric_matrix_<U>& rhs);
 
-	template<typename T>friend bool operator >(const T& lhs, const numeric_matrix_<T>& rhs);
-	template<typename T>friend bool operator <(const T& lhs, const numeric_matrix_<T>& rhs);
+	template<typename U>friend bool operator >(const U& lhs, const numeric_matrix_<U>& rhs);
+	template<typename U>friend bool operator <(const U& lhs, const numeric_matrix_<U>& rhs);
 
-	template<typename T>friend bool operator>=(const T& lhs, const numeric_matrix_<T>& rhs);
-	template<typename T>friend bool operator<=(const T& lhs, const numeric_matrix_<T>& rhs);
+	template<typename U>friend bool operator>=(const U& lhs, const numeric_matrix_<U>& rhs);
+	template<typename U>friend bool operator<=(const U& lhs, const numeric_matrix_<U>& rhs);
 
-	template<typename T>friend bool operator>(const numeric_matrix_<T>& lhs, const T& rhs);
-	template<typename T>friend bool operator<(const numeric_matrix_<T>& lhs, const T& rhs);
+	template<typename U>friend bool operator>(const numeric_matrix_<U>& lhs, const U& rhs);
+	template<typename U>friend bool operator<(const numeric_matrix_<U>& lhs, const U& rhs);
 
-	template<typename T>friend bool operator>=(const numeric_matrix_<T>& lhs, const T& rhs);
-	template<typename T>friend bool operator<=(const numeric_matrix_<T>& lhs, const T& rhs);
+	template<typename U>friend bool operator>=(const numeric_matrix_<U>& lhs, const U& rhs);
+	template<typename U>friend bool operator<=(const numeric_matrix_<U>& lhs, const U& rhs);
 	
-	template<typename T>friend std::ostream& operator<<(std::ostream& , const numeric_matrix_<T>& rhs);
+	template<typename U>friend std::ostream& operator<<(std::ostream& , const numeric_matrix_<U>& rhs);
 
 	numeric_matrix_(numeric_matrix_<T>&& src)noexcept: numeric_matrix_(src, src.rows_count(), src.cols_count()) {}
 	numeric_matrix_(numeric_vector_<T>&& src)noexcept: numeric_matrix_(src, 1, src.filling()) {}
@@ -455,15 +455,15 @@ inline numeric_matrix_<T>& numeric_matrix_<T>::operator/=(const T& rhs)
 	return *this;
 }
 
-template<typename T>
-inline numeric_vector_<T> operator*(const numeric_vector_<T>& lhs, const numeric_matrix_<T>& rhs)
+template<typename U>
+inline numeric_vector_<U> operator*(const numeric_vector_<U>& lhs, const numeric_matrix_<U>& rhs)
 {
-	assert(numeric_matrix_<T>::size_check(rhs, lhs) && "numeric_matrix::operator * :: matrix multiply by vector sizes mismatch...\n");
-	numeric_vector_<T> result(rhs.cols_count());
-	T value;
+	assert(numeric_matrix_<U>::size_check(rhs, lhs) && "numeric_matrix::operator * :: matrix multiply by vector sizes mismatch...\n");
+	numeric_vector_<U> result(rhs.cols_count());
+	U value;
 	for (I32 col = 0; col < rhs.cols_count(); col++)
 	{
-		value = T{ 0.0 };
+		value = U{ 0.0 };
 		for (I32 row = 0; row < rhs.rows_count(); row++)
 			value += rhs.unchecked_access(row, col) * lhs.unchecked_access(row);
 		result.unchecked_access(col) = value;
@@ -471,15 +471,15 @@ inline numeric_vector_<T> operator*(const numeric_vector_<T>& lhs, const numeric
 	return result;
 }
 
-template<typename T>
-inline numeric_vector_<T> operator * (const numeric_matrix_<T>& lhs, const numeric_vector_<T>& rhs)
+template<typename U>
+inline numeric_vector_<U> operator * (const numeric_matrix_<U>& lhs, const numeric_vector_<U>& rhs)
 {
-	assert(numeric_matrix_<T>::size_check(rhs, lhs) && "numeric_matrix::operator * :: vector multiply by matrix sizes mismatch...\n");
-	numeric_vector_<T> result(lhs.rows_count());
-	T value;
+	assert(numeric_matrix_<U>::size_check(rhs, lhs) && "numeric_matrix::operator * :: vector multiply by matrix sizes mismatch...\n");
+	numeric_vector_<U> result(lhs.rows_count());
+	U value;
 	for (I32 row = 0; row < lhs.rows_count(); row++)
 	{
-		value = T{ 0.0 };
+		value = U{ 0.0 };
 		for (I32 col = 0; col < lhs.rows_count(); col++)
 			value += lhs.unchecked_access(row, col) * rhs.unchecked_access(col);
 		result.unchecked_access(row) = value;
@@ -487,44 +487,44 @@ inline numeric_vector_<T> operator * (const numeric_matrix_<T>& lhs, const numer
 	return result;
 }
 
-template<typename T>
-inline numeric_matrix_<T> operator + (const numeric_matrix_<T>& lhs, const numeric_matrix_<T>& rhs)
+template<typename U>
+inline numeric_matrix_<U> operator + (const numeric_matrix_<U>& lhs, const numeric_matrix_<U>& rhs)
 {	
-	assert(numeric_matrix_<T>::size_check(rhs, lhs) && "numeric_matrix::operator + ::matrices sizes mismatch...\n");
-	const combine_values<T, T> combine_vals = combine_values<T, T>(lhs.values(), rhs.values(), sum_f);
-	return numeric_matrix_<T>(rhs.rows_count(), rhs.cols_count(), combine_vals);
+	assert(numeric_matrix_<U>::size_check(rhs, lhs) && "numeric_matrix::operator + ::matrices sizes mismatch...\n");
+	const combine_values<U, U> combine_vals = combine_values<U, U>(lhs.values(), rhs.values(), sum_f);
+	return numeric_matrix_<U>(rhs.rows_count(), rhs.cols_count(), combine_vals);
 }
 
-template<typename T>
-inline numeric_matrix_<T> operator-(const numeric_matrix_<T>& lhs, const numeric_matrix_<T>& rhs)
+template<typename U>
+inline numeric_matrix_<U> operator-(const numeric_matrix_<U>& lhs, const numeric_matrix_<U>& rhs)
 {
-	assert(numeric_matrix_<T>::size_check(rhs, lhs) && "numeric_matrix::operator - ::matrices sizes mismatch...\n");
-	const combine_values<T, T> combine_vals = combine_values<T, T>(lhs.values(), rhs.values(), dif_f);
-	return numeric_matrix_<T>(rhs.rows_count(), rhs.cols_count(), combine_vals);
+	assert(numeric_matrix_<U>::size_check(rhs, lhs) && "numeric_matrix::operator - ::matrices sizes mismatch...\n");
+	const combine_values<U, U> combine_vals = combine_values<U, U>(lhs.values(), rhs.values(), dif_f);
+	return numeric_matrix_<U>(rhs.rows_count(), rhs.cols_count(), combine_vals);
 }
 
-template<typename T>
-inline numeric_matrix_<T> operator^(const numeric_matrix_<T>& lhs, const numeric_matrix_<T>& rhs)
+template<typename U>
+inline numeric_matrix_<U> operator^(const numeric_matrix_<U>& lhs, const numeric_matrix_<U>& rhs)
 {
-	assert(numeric_matrix_<T>::size_check(rhs, lhs) && "numeric_matrix::operator ^ (per-element multiplication) ::matrices sizes mismatch...\n");
-	const combine_values<T, T> combine_vals = combine_values<T, T>(lhs.values(), rhs.values(), mul_f);
-	return numeric_matrix_<T>(rhs.rows_count(), rhs.cols_count(), combine_vals);
+	assert(numeric_matrix_<U>::size_check(rhs, lhs) && "numeric_matrix::operator ^ (per-element multiplication) ::matrices sizes mismatch...\n");
+	const combine_values<U, U> combine_vals = combine_values<U, U>(lhs.values(), rhs.values(), mul_f);
+	return numeric_matrix_<U>(rhs.rows_count(), rhs.cols_count(), combine_vals);
 }
 
-template<typename T>
-inline numeric_matrix_<T> operator*(const numeric_matrix_<T>& lhs, const numeric_matrix_<T>& rhs)
+template<typename U>
+inline numeric_matrix_<U> operator*(const numeric_matrix_<U>& lhs, const numeric_matrix_<U>& rhs)
 {
-	assert(numeric_matrix_<T>::size_check(rhs, lhs, MAT_MUL_SZIE_CHECK) && "numeric_matrix::operator * ::matrices sizes mismatch...\n");
+	assert(numeric_matrix_<U>::size_check(rhs, lhs, MAT_MUL_SZIE_CHECK) && "numeric_matrix::operator * ::matrices sizes mismatch...\n");
 
-	numeric_matrix_<T> result(lhs.cols_count(), rhs.rows_count(), false);
+	numeric_matrix_<U> result(lhs.cols_count(), rhs.rows_count(), false);
 
 	for (I32 row = 0; row < lhs.rows_count(); row++)
 	{	
-		const T* row_data = &lhs.unchecked_access(row, 0);
+		const U* row_data = &lhs.unchecked_access(row, 0);
 		
 		for (I32 col = 0; col < rhs.cols_count(); col++)
 		{
-			T value = T{ 0 };
+			U value = U{ 0 };
 
 			for (I32 k = 0; k < rhs.rows_count(); k++) 
 			{
@@ -537,161 +537,161 @@ inline numeric_matrix_<T> operator*(const numeric_matrix_<T>& lhs, const numeric
 	return result;
 }
 
-template<typename T>
-inline numeric_matrix_<T> operator/(const numeric_matrix_<T>& lhs, const numeric_matrix_<T>& rhs)
+template<typename U>
+inline numeric_matrix_<U> operator/(const numeric_matrix_<U>& lhs, const numeric_matrix_<U>& rhs)
 {
-	assert(numeric_matrix_<T>::size_check(rhs, lhs, MAT_MUL_SZIE_CHECK) && "numeric_matrix::operator * ::matrices sizes mismatch...\n");
-	return lhs  * numeric_matrix_<T>::invert(rhs);
+	assert(numeric_matrix_<U>::size_check(rhs, lhs, MAT_MUL_SZIE_CHECK) && "numeric_matrix::operator * ::matrices sizes mismatch...\n");
+	return lhs  * numeric_matrix_<U>::invert(rhs);
 }
 
-template<typename T>
-inline numeric_matrix_<T> operator+(const T& lhs, const numeric_matrix_<T>& rhs)
+template<typename U>
+inline numeric_matrix_<U> operator+(const U& lhs, const numeric_matrix_<U>& rhs)
 {
-	const combine_values<T, T> combine_vals = combine_values<T, T>(lhs, rhs.values(), sum_f);
-	return numeric_matrix_<T>(rhs.rows_count(), rhs.cols_count(), combine_vals);
+	const combine_values<U, U> combine_vals = combine_values<U, U>(lhs, rhs.values(), sum_f);
+	return numeric_matrix_<U>(rhs.rows_count(), rhs.cols_count(), combine_vals);
 }
 
-template<typename T>
-inline numeric_matrix_<T> operator-(const T& lhs, const numeric_matrix_<T>& rhs)
+template<typename U>
+inline numeric_matrix_<U> operator-(const U& lhs, const numeric_matrix_<U>& rhs)
 {
-	const combine_values<T, T> combine_vals = combine_values<T, T>(lhs, rhs.values(), dif_f);
-	return numeric_matrix_<T>(rhs.rows_count(), rhs.cols_count(), combine_vals);
+	const combine_values<U, U> combine_vals = combine_values<U, U>(lhs, rhs.values(), dif_f);
+	return numeric_matrix_<U>(rhs.rows_count(), rhs.cols_count(), combine_vals);
 }
 
-template<typename T>
-inline numeric_matrix_<T> operator*(const T& lhs, const numeric_matrix_<T>& rhs)
+template<typename U>
+inline numeric_matrix_<U> operator*(const U& lhs, const numeric_matrix_<U>& rhs)
 {
-	const combine_values<T, T> combine_vals = combine_values<T, T>(lhs, rhs.values(), mul_f);
-	return numeric_matrix_<T>(rhs.rows_count(), rhs.cols_count(), combine_vals);
+	const combine_values<U, U> combine_vals = combine_values<U, U>(lhs, rhs.values(), mul_f);
+	return numeric_matrix_<U>(rhs.rows_count(), rhs.cols_count(), combine_vals);
 }
 
-template<typename T>
-inline numeric_matrix_<T> operator/(const T& lhs, const numeric_matrix_<T>& rhs)
+template<typename U>
+inline numeric_matrix_<U> operator/(const U& lhs, const numeric_matrix_<U>& rhs)
 {
-	const combine_values<T, T> combine_vals = combine_values<T, T>(lhs, rhs.values(), div_f);
-	return numeric_matrix_<T>(rhs.rows_count(), rhs.cols_count(), combine_vals);
+	const combine_values<U, U> combine_vals = combine_values<U, U>(lhs, rhs.values(), div_f);
+	return numeric_matrix_<U>(rhs.rows_count(), rhs.cols_count(), combine_vals);
 }
 
-template<typename T>
-inline numeric_matrix_<T> operator+(const numeric_matrix_<T>& lhs, const T& rhs)
+template<typename U>
+inline numeric_matrix_<U> operator+(const numeric_matrix_<U>& lhs, const U& rhs)
 {
-	const combine_values<T, T> combine_vals = combine_values<T, T>(lhs.values(), rhs, sum_f);
-	return numeric_matrix_<T>(lhs.rows_count(), lhs.cols_count(), combine_vals);
+	const combine_values<U, U> combine_vals = combine_values<U, U>(lhs.values(), rhs, sum_f);
+	return numeric_matrix_<U>(lhs.rows_count(), lhs.cols_count(), combine_vals);
 }
 
-template<typename T>
-inline numeric_matrix_<T> operator-(const numeric_matrix_<T>& lhs, const T& rhs)
+template<typename U>
+inline numeric_matrix_<U> operator-(const numeric_matrix_<U>& lhs, const U& rhs)
 {
-	const combine_values<T, T> combine_vals = combine_values<T, T>(lhs.values(), rhs, dif_f);
-	return numeric_matrix_<T>(lhs.rows_count(), lhs.cols_count(), combine_vals);
+	const combine_values<U, U> combine_vals = combine_values<U, U>(lhs.values(), rhs, dif_f);
+	return numeric_matrix_<U>(lhs.rows_count(), lhs.cols_count(), combine_vals);
 }
 
-template<typename T>
-inline numeric_matrix_<T> operator*(const numeric_matrix_<T>& lhs, const T& rhs)
+template<typename U>
+inline numeric_matrix_<U> operator*(const numeric_matrix_<U>& lhs, const U& rhs)
 {
-	const combine_values<T, T> combine_vals = combine_values<T, T>(lhs.values(), rhs, mul_f);
-	return numeric_matrix_<T>(lhs.rows_count(), lhs.cols_count(), combine_vals);
+	const combine_values<U, U> combine_vals = combine_values<U, U>(lhs.values(), rhs, mul_f);
+	return numeric_matrix_<U>(lhs.rows_count(), lhs.cols_count(), combine_vals);
 }
 
-template<typename T>
-inline numeric_matrix_<T> operator/(const numeric_matrix_<T>& lhs, const T& rhs)
+template<typename U>
+inline numeric_matrix_<U> operator/(const numeric_matrix_<U>& lhs, const U& rhs)
 {
-	const combine_values<T, T> combine_vals = combine_values<T, T>(lhs.values(), rhs, div_f);
-	return numeric_matrix_<T>(lhs.rows_count(), lhs.cols_count(), combine_vals);
+	const combine_values<U, U> combine_vals = combine_values<U, U>(lhs.values(), rhs, div_f);
+	return numeric_matrix_<U>(lhs.rows_count(), lhs.cols_count(), combine_vals);
 }
 
-template<typename T>
-inline bool operator==(const numeric_matrix_<T>& lhs, const numeric_matrix_<T>& rhs)
+template<typename U>
+inline bool operator==(const numeric_matrix_<U>& lhs, const numeric_matrix_<U>& rhs)
 {
-	assert(numeric_matrix_<T>::size_check(rhs, lhs) && "numeric_matrix::operator == ::matrices sizes mismatch...\n");
-	return (const numeric_vector_<T>&)lhs == (const numeric_vector_<T>&)rhs;
+	assert(numeric_matrix_<U>::size_check(rhs, lhs) && "numeric_matrix::operator == ::matrices sizes mismatch...\n");
+	return (const numeric_vector_<U>&)lhs == (const numeric_vector_<U>&)rhs;
 }
 
-template<typename T>
-inline bool operator!=(const numeric_matrix_<T>& lhs, const numeric_matrix_<T>& rhs)
+template<typename U>
+inline bool operator!=(const numeric_matrix_<U>& lhs, const numeric_matrix_<U>& rhs)
 {
-	assert(numeric_matrix_<T>::size_check(rhs, lhs) && "numeric_matrix::operator != ::matrices sizes mismatch...\n");
-	return (const numeric_vector_<T>&)lhs != (const numeric_vector_<T>&)rhs;
+	assert(numeric_matrix_<U>::size_check(rhs, lhs) && "numeric_matrix::operator != ::matrices sizes mismatch...\n");
+	return (const numeric_vector_<U>&)lhs != (const numeric_vector_<U>&)rhs;
 }
 
-template<typename T>
-inline bool operator>(const numeric_matrix_<T>& lhs, const numeric_matrix_<T>& rhs)
+template<typename U>
+inline bool operator>(const numeric_matrix_<U>& lhs, const numeric_matrix_<U>& rhs)
 {
-	assert(numeric_matrix_<T>::size_check(rhs, lhs) && "numeric_matrix::operator > ::matrices sizes mismatch...\n");
-	return (const numeric_vector_<T>&)lhs > (const numeric_vector_<T>&)rhs;
+	assert(numeric_matrix_<U>::size_check(rhs, lhs) && "numeric_matrix::operator > ::matrices sizes mismatch...\n");
+	return (const numeric_vector_<U>&)lhs > (const numeric_vector_<U>&)rhs;
 }
 
-template<typename T>
-inline bool operator<(const numeric_matrix_<T>& lhs, const numeric_matrix_<T>& rhs)
+template<typename U>
+inline bool operator<(const numeric_matrix_<U>& lhs, const numeric_matrix_<U>& rhs)
 {
-	assert(numeric_matrix_<T>::size_check(rhs, lhs) && "numeric_matrix::operator < ::matrices sizes mismatch...\n");
-	return (const numeric_vector_<T>&)lhs < (const numeric_vector_<T>&)rhs;
+	assert(numeric_matrix_<U>::size_check(rhs, lhs) && "numeric_matrix::operator < ::matrices sizes mismatch...\n");
+	return (const numeric_vector_<U>&)lhs < (const numeric_vector_<U>&)rhs;
 }
 
-template<typename T>
-inline bool operator>=(const numeric_matrix_<T>& lhs, const numeric_matrix_<T>& rhs)
+template<typename U>
+inline bool operator>=(const numeric_matrix_<U>& lhs, const numeric_matrix_<U>& rhs)
 {
-	assert(numeric_matrix_<T>::size_check(rhs, lhs) && "numeric_matrix::operator >= ::matrices sizes mismatch...\n");
-	return (const numeric_vector_<T>&)lhs >= (const numeric_vector_<T>&)rhs;
+	assert(numeric_matrix_<U>::size_check(rhs, lhs) && "numeric_matrix::operator >= ::matrices sizes mismatch...\n");
+	return (const numeric_vector_<U>&)lhs >= (const numeric_vector_<U>&)rhs;
 }
 
-template<typename T>
-inline bool operator<=(const numeric_matrix_<T>& lhs, const numeric_matrix_<T>& rhs)
+template<typename U>
+inline bool operator<=(const numeric_matrix_<U>& lhs, const numeric_matrix_<U>& rhs)
 {
-	assert(numeric_matrix_<T>::size_check(rhs, lhs) && "numeric_matrix::operator <= ::matrices sizes mismatch...\n");
-	return (const numeric_vector_<T>&)lhs <= (const numeric_vector_<T>&)rhs;
+	assert(numeric_matrix_<U>::size_check(rhs, lhs) && "numeric_matrix::operator <= ::matrices sizes mismatch...\n");
+	return (const numeric_vector_<U>&)lhs <= (const numeric_vector_<U>&)rhs;
 }
 
-template<typename T>
-inline bool operator>(const T& lhs, const numeric_matrix_<T>& rhs)
+template<typename U>
+inline bool operator>(const U& lhs, const numeric_matrix_<U>& rhs)
 {
-	return lhs > (const numeric_vector_<T>&)rhs;
+	return lhs > (const numeric_vector_<U>&)rhs;
 }
 
-template<typename T>
-inline bool operator<(const T& lhs, const numeric_matrix_<T>& rhs)
+template<typename U>
+inline bool operator<(const U& lhs, const numeric_matrix_<U>& rhs)
 {
-	return lhs < (const numeric_vector_<T>&)rhs;
+	return lhs < (const numeric_vector_<U>&)rhs;
 }
 
-template<typename T>
-inline bool operator>=(const T& lhs, const numeric_matrix_<T>& rhs)
+template<typename U>
+inline bool operator>=(const U& lhs, const numeric_matrix_<U>& rhs)
 {
-	return lhs >= (const numeric_vector_<T>&)rhs;
+	return lhs >= (const numeric_vector_<U>&)rhs;
 }
 
-template<typename T>
-inline bool operator<=(const T& lhs, const numeric_matrix_<T>& rhs)
+template<typename U>
+inline bool operator<=(const U& lhs, const numeric_matrix_<U>& rhs)
 {
-	return lhs <= (const numeric_vector_<T>&)rhs;
+	return lhs <= (const numeric_vector_<U>&)rhs;
 }
 
-template<typename T>
-inline bool operator>(const numeric_matrix_<T>& lhs, const T& rhs)
+template<typename U>
+inline bool operator>(const numeric_matrix_<U>& lhs, const U& rhs)
 {
-	return (const numeric_vector_<T>&)lhs > rhs;
+	return (const numeric_vector_<U>&)lhs > rhs;
 }
 
-template<typename T>
-inline bool operator<(const numeric_matrix_<T>& lhs, const T& rhs)
+template<typename U>
+inline bool operator<(const numeric_matrix_<U>& lhs, const U& rhs)
 {
-	return (const numeric_vector_<T>&)lhs < rhs;
+	return (const numeric_vector_<U>&)lhs < rhs;
 }
 
-template<typename T>
-inline bool operator>=(const numeric_matrix_<T>& lhs, const T& rhs)
+template<typename U>
+inline bool operator>=(const numeric_matrix_<U>& lhs, const U& rhs)
 {
-	return (const numeric_vector_<T>&)lhs >= rhs;
+	return (const numeric_vector_<U>&)lhs >= rhs;
 }
 
-template<typename T>
-inline bool operator<=(const numeric_matrix_<T>& lhs, const T& rhs)
+template<typename U>
+inline bool operator<=(const numeric_matrix_<U>& lhs, const U& rhs)
 {
-	return (const numeric_vector_<T>&)lhs <= rhs;
+	return (const numeric_vector_<U>&)lhs <= rhs;
 }
 
-template<typename T>
-inline std::ostream& operator<<(std::ostream& stream, const numeric_matrix_<T>& rhs)
+template<typename U>
+inline std::ostream& operator<<(std::ostream& stream, const numeric_matrix_<U>& rhs)
 {
 	I32  index    = 0;
 	I32  col      = 0;
