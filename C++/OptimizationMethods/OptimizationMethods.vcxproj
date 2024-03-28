@@ -154,7 +154,7 @@
     <ClInclude Include="numerics\linalg\slice.h" />
     <ClInclude Include="numerics\linalg\template_vector.h" />
     <ClInclude Include="test.h" />
-    <ClInclude Include="numerics\linalg\vector_itaretors.h" />
+    <ClInclude Include="numerics\linalg\vector_iterators.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

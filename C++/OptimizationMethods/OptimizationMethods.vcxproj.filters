@@ -44,9 +44,6 @@
     <ClInclude Include="numerics\linalg\template_vector.h">
       <Filter>NumericUtils</Filter>
     </ClInclude>
-    <ClInclude Include="numerics\linalg\vector_itaretors.h">
-      <Filter>NumericUtils</Filter>
-    </ClInclude>
     <ClInclude Include="numerics\linalg\slice.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
@@ -61,6 +58,9 @@
     </ClInclude>
     <ClInclude Include="numerics\rational\rational.h">
       <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="numerics\linalg\vector_iterators.h">
+      <Filter>NumericUtils</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

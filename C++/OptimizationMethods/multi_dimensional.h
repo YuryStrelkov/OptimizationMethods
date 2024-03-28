@@ -24,7 +24,7 @@ static vector_f64 bisect(function_nd function, const vector_f64& left, const vec
 	I32 iteration = 0;
 	for (; iteration != max_iterations; iteration++)
 	{
-		if ((lhs - rhs).magnitude() < eps) break;
+		if ((lhs - rhs).magnitude() < 2 * eps) break;
 		x_c = (lhs + rhs) * 0.5;
 		if (function(x_c - dir) > function(x_c + dir))
 			lhs = x_c;

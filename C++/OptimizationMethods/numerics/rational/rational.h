@@ -1,9 +1,9 @@
 #pragma once
-#include "..\common.h"
+#include "../common.h"
 namespace rational
 {
 	struct lmat{
-		I64 m00, m01,
+		I32 m00, m01,
 			m10, m11;
 		lmat() : m00(1), m01(0), m10(0), m11(1) {}
 	};
@@ -18,11 +18,11 @@ namespace rational
 	static void decimal_to_rational(const F64& value, I32& rational_part, I32& numerator, I32& denominator, const I32 max_den = MAX_DENOMINATOR)
 	{
 		lmat mat;
-		I64 ai;
-		I64 t;
+		I32 ai;
+		I32 t;
 		F64 x = abs(value);
 		I32 sign = value >= 0 ? 1 : -1;
-		while (mat.m10 * (ai = (I64)x) + mat.m11 <= max_den) {
+		while (mat.m10 * (ai = (I32)x) + mat.m11 <= max_den) {
 
 			t = mat.m00 * ai + mat.m01;
 			mat.m01 = mat.m00;

@@ -927,7 +927,7 @@ inline numeric_matrix_<T> numeric_matrix_<T>::zeros(const I32 n_rows, const I32 
 template<typename T>
 inline numeric_matrix_<T> numeric_matrix_<T>::identity(const I32 n_rows, const I32 n_cols)
 {
-	numeric_matrix_<T> matrix = numeric_matrix_<T>::zeros(n_rows, m_cols);
+	numeric_matrix_<T> matrix = numeric_matrix_<T>::zeros(n_rows, n_cols);
 	for (I32 index = 0; index < MIN(n_rows, n_cols); index++)matrix.unchecked_access(index, index) = T{ 1.0 };
 	return matrix;
 }

@@ -1,7 +1,8 @@
 #pragma once
 using namespace std;
-#include "..\common.h"
-#include "vector_itaretors.h"
+#include "../common.h"
+#include <cstring>
+#include "vector_iterators.h"
 #include "slice.h"
 #define MINIMAL_VECTOR_SIZE 8
 #define VECTOR_SIZE_UPSCALE 1.5
@@ -246,7 +247,7 @@ public:
 
 	vector_indices indices() const{
 		if(is_slice())
-			return vector_indices(m_slice->begin(), m_slice->end(), m_slice->step());
+			return vector_indices((*m_slice).begin(), (*m_slice).end(), (*m_slice).step());
 		return vector_indices(0, this->filling(), 1);
 	};
 
@@ -284,9 +285,9 @@ public:
 
 	bool is_slice()const { return m_slice != nullptr; }
 
-	const T& unchecked_access(const I32 index) const { return m_data[is_slice() ? m_slice->source_index(index) : index]; }
+	const T& unchecked_access(const I32 index) const { return m_data[is_slice() ? (*m_slice).source_index(index) : index]; }
 
-	T& unchecked_access(const I32 index) { return m_data[is_slice() ? m_slice->source_index(index) : index]; }
+	T& unchecked_access(const I32 index) { return m_data[is_slice() ? (*m_slice).source_index(index) : index]; }
 
 	bool in_range(const I32 index)const { return (index >= 0) && (index < filling()); }
 
@@ -315,7 +316,7 @@ public:
 			index++;
 			if (val == value)break;
 		}
-		return index == filling() ? -1 : is_slice() ? m_slice->slice_index(index - 1) : index - 1;
+		return index == filling() ? -1 : is_slice() ? (*m_slice).slice_index(index - 1) : index - 1;
 	}
 
 	bool contans(const T& value)const
@@ -333,7 +334,7 @@ public:
 	template_vector_<T>& push_back(const T& value)
 	{
 		if (is_slice()) {
-			m_slice->source().insert(m_slice->source_index(filling()), value);
+			(*m_slice).source().insert((*m_slice).source_index(filling()), value);
 			m_filling++;
 			return (*this);
 		}
@@ -345,7 +346,7 @@ public:
 	template_vector_<T>& push_back(T&& value)
 	{
 		if (is_slice()) {
-			m_slice->source().insert(m_slice->source_index(filling()), std::move(value));
+			(*m_slice).source().insert((*m_slice).source_index(filling()), std::move(value));
 			m_filling++;
 			return (*this);
 		}
@@ -358,13 +359,13 @@ public:
 	{
 		if (is_slice())
 		{
-			m_slice->source().remove_at(m_slice->source_index(index));
+			(*m_slice).source().remove_at((*m_slice).source_index(index));
 			m_filling--;
-			m_slice->shift_end(-1);
+			(*m_slice).shift_end(-1);
 			return (*this);
 		}
 		if (!in_range(index))return (*this);
-		std::memcpy(&m_data[index], &m_data[index + 1], I32(filling() - index) * sizeof(T));
+		std::memcpy(&m_data[index], &m_data[index + 1], (static_cast<UI64>(filling()) - index) * sizeof(T));
 		m_filling--;
 		return (*this);
 	}
@@ -373,15 +374,15 @@ public:
 	{
 		if (is_slice())
 		{
-			m_slice->source().insert(m_slice->source_index(index), value);
-			m_slice->shift_end(1);
+			(*m_slice).source().insert((*m_slice).source_index(index), value);
+			(*m_slice).shift_end(1);
 			m_filling++;
 			return (*this);
 		}
 		if (index < 0) return insert(0, value);
 		if (index > filling()) return push_back(value);
 		upscale();
-		std::memcpy(&m_data[index + 1], &m_data[index], I32(filling() - index) * sizeof(T));
+		std::memcpy(&m_data[index + 1], &m_data[index], (static_cast<UI64>(filling()) - index) * sizeof(T));
 		m_data[index] = std::move(value);
 		m_filling++;
 		return (*this);
@@ -391,15 +392,15 @@ public:
 	{
 		if (is_slice()) 
 		{
-			m_slice->source().insert(m_slice->source_index(index), std::move(value));
-			m_slice->shift_end(1);
+			(*m_slice).source().insert((*m_slice).source_index(index), std::move(value));
+			(*m_slice).shift_end(1);
 			m_filling++;
 			return (*this);
 		}
 		if (index < 0) return insert(0, value);
 		if (index > filling()) return push_back(value);
 		upscale();
-		std::memcpy(&m_data[index + 1], &m_data[index], I32(filling() - index) * sizeof(T));
+		std::memcpy(&m_data[index + 1], &m_data[index], (static_cast<UI64>(filling()) - index) * sizeof(T));
 		m_data[index] = std::move(value);
 		m_filling++;
 		return (*this);
@@ -527,9 +528,9 @@ public:
 protected:
 	template_vector_(const slice& slice, template_vector_& source){
 		m_slice    = new slice_object(slice, source.is_slice() ? source.m_slice->source() : source);
-		m_filling  = m_slice->length();
+		m_filling  = (*m_slice).length();
 		m_capacity = source.capacity();
-		m_data     = m_slice->source().m_data;
+		m_data     = (*m_slice).source().m_data;
 	};
 };
 
@@ -550,14 +551,14 @@ inline T template_vector_<T>::reduce(const template_vector_<T>& vector, std::fun
 }
 
 template<typename T>
-static bool template_vector_<T>::all(const template_vector_<T>& vector, std::function<bool(const T&)> condition_f)
+bool template_vector_<T>::all(const template_vector_<T>& vector, std::function<bool(const T&)> condition_f)
 {
 	for (const T& item : vector.values()) if (!condition_f(item)) return false;
 	return true;
 }
 
 template<typename T>
-static bool template_vector_<T>::any(const template_vector_<T>& vector, std::function<bool(const T&)> condition_f)
+bool template_vector_<T>::any(const template_vector_<T>& vector, std::function<bool(const T&)> condition_f)
 {
 	for (const T& item : vector.values()) if (condition_f(item)) return true;
 	return false;

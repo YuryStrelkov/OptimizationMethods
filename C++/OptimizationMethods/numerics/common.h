@@ -7,8 +7,6 @@
 #include <cassert>
 
 
-
-
 #if defined(__APPLE__)
 // copy from STL lib/may be unsafe...
 template <class _Ty, class _Other = _Ty>
@@ -56,7 +54,7 @@ typedef float  F32;
 #define MIN(A, B) (A < B ? A : B)
 #define DISPLAY_PROGRES (_DEBUG? 1 : 0)
 
-auto sum_f = [&](const auto& lhs, const auto& rhs) { return lhs + rhs; };
-auto dif_f = [&](const auto& lhs, const auto& rhs) { return lhs - rhs; };
-auto div_f = [&](const auto& lhs, const auto& rhs) { return lhs / rhs; };
-auto mul_f = [&](const auto& lhs, const auto& rhs) { return lhs * rhs; };
+auto sum_f = [](const auto& lhs, const auto& rhs) { return lhs + rhs; };
+auto dif_f = [](const auto& lhs, const auto& rhs) { return lhs - rhs; };
+auto div_f = [](const auto& lhs, const auto& rhs) { return lhs / rhs; };
+auto mul_f = [](const auto& lhs, const auto& rhs) { return lhs * rhs; };

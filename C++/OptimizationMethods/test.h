@@ -1,7 +1,7 @@
 #pragma once
 #include "multi_dimensional.h"
 #include "one_dimensional.h"
-#include "numerics\numeric_utils.h"
+#include "numerics/numeric_utils.h"
 #include "simplex.h"
 
 // тестовая унимодальная одномерная функция с минимумом в точке {2} 

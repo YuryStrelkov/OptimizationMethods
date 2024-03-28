@@ -1,6 +1,7 @@
 #pragma once
+#include <cmath>
 #include "template_vector.h"
-#include "..\rational\rational.h"
+#include "../rational/rational.h"
 
 template<typename T>class numeric_vector_;
 typedef numeric_vector_<F64> vector_f64;
