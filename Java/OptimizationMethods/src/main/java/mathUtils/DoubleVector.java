@@ -1,5 +1,4 @@
 package mathUtils;
-
 import functionalInterfaces.IFunctionND;
 
 

@@ -2,7 +2,7 @@ import functionalInterfaces.IFunctionND;
 import mathUtils.NumericCommon;
 import mathUtils.DoubleVector;
 import mathUtils.DoubleMatrix;
-import mathUtils.NumericUtils;
+
 
 import java.util.Objects;
 
@@ -18,7 +18,7 @@ public class MultiDimensional {
         DoubleVector x_c, dir = DoubleVector.direction(lhs, rhs).mul(eps);
         int iteration = 0;
         for (; iteration != maxIterations; iteration++) {
-            if (DoubleVector.sub(rhs, lhs).magnitude() < eps)
+            if (DoubleVector.sub(rhs, lhs).magnitude() < 2 * eps)
                 break;
             x_c = DoubleVector.add(rhs, lhs).mul(0.5);
             if (function.call(DoubleVector.add(x_c, dir)) > function.call(DoubleVector.sub(x_c, dir)))
@@ -26,8 +26,7 @@ public class MultiDimensional {
             else
                 lhs = x_c;
         }
-        if (NumericCommon.SHOW_ZERO_ORDER_METHODS_DEBUG_LOG)
-        {
+        if (NumericCommon.SHOW_ZERO_ORDER_METHODS_DEBUG_LOG) {
             System.out.printf("biSect::function arg range    : %s\n", DoubleVector.sub(rhs, lhs).magnitude());
             System.out.printf("biSect::function probes count : %s\n", 2 * iteration);
         }
@@ -51,28 +50,23 @@ public class MultiDimensional {
         double f_l = function.call(x_l);
         double f_r = function.call(x_r);
         int iteration = 0;
-        for (; iteration != maxIterations; iteration++)
-        {
+        for (; iteration != maxIterations; iteration++) {
             if (DoubleVector.sub(rhs, lhs).magnitude() < 2 * eps) break;
-            if (f_l > f_r)
-            {
+            if (f_l > f_r) {
                 lhs = x_l;
                 x_l = x_r;
                 f_l = f_r;
                 x_r = DoubleVector.add(lhs, DoubleVector.mul(DoubleVector.sub(rhs, lhs), NumericCommon.PSI));
                 f_r = function.call(x_r);
-            }
-            else
-            {
+            } else {
                 rhs = x_r;
                 x_r = x_l;
                 f_r = f_l;
-                x_l =  DoubleVector.sub(rhs, DoubleVector.mul(DoubleVector.sub(rhs, lhs), NumericCommon.PSI));
+                x_l = DoubleVector.sub(rhs, DoubleVector.mul(DoubleVector.sub(rhs, lhs), NumericCommon.PSI));
                 f_l = function.call(x_l);
             }
         }
-        if (NumericCommon.SHOW_ZERO_ORDER_METHODS_DEBUG_LOG)
-        {
+        if (NumericCommon.SHOW_ZERO_ORDER_METHODS_DEBUG_LOG) {
             System.out.printf("goldenRatio::function arg range    : %s\n", DoubleVector.sub(rhs, lhs).magnitude());
             System.out.printf("goldenRatio::function probes count : %s\n", 2 + iteration);
         }
@@ -93,32 +87,27 @@ public class MultiDimensional {
         double value, fib_t, fib_1 = 1.0, fib_2 = 1.0;
         int iterations = 0;
         value = DoubleVector.sub(right, left).magnitude() / eps;
-        while (fib_2 < value)
-        {
+        while (fib_2 < value) {
             iterations++;
             fib_t = fib_1;
             fib_1 = fib_2;
             fib_2 += fib_t;
         }
         DoubleVector x_l = DoubleVector.add(lhs, DoubleVector.mul(DoubleVector.sub(rhs, lhs), (fib_2 - fib_1) / fib_2));
-        DoubleVector x_r = DoubleVector.add(lhs, DoubleVector.mul(DoubleVector.sub(rhs, lhs),  fib_1 / fib_2));
+        DoubleVector x_r = DoubleVector.add(lhs, DoubleVector.mul(DoubleVector.sub(rhs, lhs), fib_1 / fib_2));
         double f_l = function.call(x_l);
         double f_r = function.call(x_r);
         fib_t = fib_2 - fib_1;
         fib_2 = fib_1;
         fib_1 = fib_t;
-        for (int index = iterations; index > 0; index--)
-        {
-            if (f_l > f_r)
-            {
+        for (int index = iterations; index > 0; index--) {
+            if (f_l > f_r) {
                 lhs = x_l;
                 x_l = x_r;
                 f_l = f_r;
-                x_r = DoubleVector.add(lhs, DoubleVector.mul(DoubleVector.sub(rhs, lhs),  fib_1 / fib_2));
+                x_r = DoubleVector.add(lhs, DoubleVector.mul(DoubleVector.sub(rhs, lhs), fib_1 / fib_2));
                 f_r = function.call(x_r);
-            }
-            else
-            {
+            } else {
                 rhs = x_r;
                 x_r = x_l;
                 f_r = f_l;
@@ -129,8 +118,7 @@ public class MultiDimensional {
             fib_2 = fib_1;
             fib_1 = fib_t;
         }
-        if (NumericCommon.SHOW_ZERO_ORDER_METHODS_DEBUG_LOG)
-        {
+        if (NumericCommon.SHOW_ZERO_ORDER_METHODS_DEBUG_LOG) {
             System.out.printf("goldenRatio::function arg range    : %s\n", DoubleVector.sub(rhs, lhs).magnitude());
             System.out.printf("goldenRatio::function probes count : %s\n", 2 + iterations);
         }
@@ -158,7 +146,7 @@ public class MultiDimensional {
             x_i = x_0.get(coordinateId);
             x_1 = biSect(function, x_0, x_1, eps, maxIterations);
             x_0 = new DoubleVector(x_1);
-            if (Math.abs(x_1.get(coordinateId) - x_i) < eps) {
+            if (Math.abs(x_1.get(coordinateId) - x_i) < 2 * eps) {
                 optCoordinatesCount++;
                 if (optCoordinatesCount == x_1.size()) {
                     if (NumericCommon.SHOW_DEBUG_LOG)
@@ -224,7 +212,8 @@ public class MultiDimensional {
             x_i = x_i_1;
         }
 
-        if (NumericCommon.SHOW_DEBUG_LOG) System.out.printf("Conj gradient descend iterations number : %s\n", iteration + 1);
+        if (NumericCommon.SHOW_DEBUG_LOG)
+            System.out.printf("Conj gradient descend iterations number : %s\n", iteration + 1);
         return DoubleVector.add(x_i_1, x_i).mul(0.5);
     }
 
@@ -251,7 +240,8 @@ public class MultiDimensional {
             x_i = x_i_1;
         }
 
-        if (NumericCommon.SHOW_DEBUG_LOG) System.out.printf("Newtone - Raphson iterations number : %s\n", iteration + 1);
+        if (NumericCommon.SHOW_DEBUG_LOG)
+            System.out.printf("Newtone - Raphson iterations number : %s\n", iteration + 1);
         return DoubleVector.add(x_i_1, x_i).mul(0.5);
     }
 

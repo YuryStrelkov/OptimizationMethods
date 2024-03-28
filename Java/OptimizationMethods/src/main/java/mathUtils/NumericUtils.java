@@ -1,12 +1,10 @@
 package mathUtils;
-
 import functionalInterfaces.IFunction1D;
 import functionalInterfaces.IFunctionND;
 
-import java.util.Arrays;
 
-public class NumericUtils
-{
+@SuppressWarnings("all")
+public class NumericUtils {
 
     private static int getFactorial(int f) {
         int result = 1;
@@ -16,12 +14,10 @@ public class NumericUtils
         return result;
     }
 
-    private static int[] calculateFactorials()
-    {
-        int[] factorials =  new int[128];
-        for(int i = 0; i < 128; i++)
-        {
-            factorials[i] = getFactorial(i  + 1);
+    private static int[] calculateFactorials() {
+        int[] factorials = new int[128];
+        for (int i = 0; i < 128; i++) {
+            factorials[i] = getFactorial(i + 1);
         }
         return factorials;
     }
@@ -34,25 +30,16 @@ public class NumericUtils
 
     public static final IFunctionND testFuncNd = NumericUtils::_testFuncND;
 
-    public static int clamp(int value, int min, int max)
-    {
-        if (value < min) return min;
-        if (value > max) return max;
-        return value;
+    public static int clamp(int value, int min, int max) {
+        return Math.min(Math.max(min, value), max);
     }
 
-    public static float clamp(float value, float min, float max)
-    {
-        if (value < min) return min;
-        if (value > max) return max;
-        return value;
+    public static float clamp(float value, float min, float max) {
+        return Math.min(Math.max(min, value), max);
     }
 
-    public static double clamp(double value, double min, double max)
-    {
-        if (value < min) return min;
-        if (value > max) return max;
-        return value;
+    public static double clamp(double value, double min, double max) {
+        return Math.min(Math.max(min, value), max);
     }
 
     public static double testFunc1D(double x) {
@@ -84,7 +71,7 @@ public class NumericUtils
 
     public static int[] closestFibonacciPair(double value) {
         int f_n = 0;
-        int f_n_1 = 0;
+        int f_n_1;
         if (value < 1) return new int[]{0};
         f_n_1 = 1;
         if (value < 2) return new int[]{0, 1};
@@ -96,23 +83,23 @@ public class NumericUtils
         }
         return new int[]{f_n, f_n_1};
     }
+
     /**
      * Конвертирует десятичную запись числа в рациональную,
      * например, 1.666 -> [1, 2, 3]
-     *
+     * <p>
      * Converts decimal representation of number into rational,
      * ex. 1.666 -> [1, 2, 3]
      *
-     * @param value исходное число | original number
+     * @param value   исходное число | original number
      * @param max_den максимально допустимый знаменатель | max denominator of number
      * @return int[]{integer_part, numerator, denominator}
      */
-    public static int[] decimalToRational(double value, int max_den)
-    {
-         long m00 = 1;
-         long m01 = 0;
-         long m10 = 0;
-         long m11 = 1;
+    public static int[] decimalToRational(double value, int max_den) {
+        long m00 = 1;
+        long m01 = 0;
+        long m10 = 0;
+        long m11 = 1;
 
         int[] number = new int[3];
 
@@ -126,9 +113,8 @@ public class NumericUtils
 
         long t;
 
-        while (m10 * (ai = (long)x) + m11 <= max_den)
-        {
-            t =m00 * ai + m01;
+        while (m10 * (ai = (long) x) + m11 <= max_den) {
+            t = m00 * ai + m01;
 
             m01 = m00;
             m00 = t;
@@ -137,125 +123,116 @@ public class NumericUtils
 
             m11 = m10;
             m10 = t;
-            if (x == (double)ai)
-            {
+            if (x == (double) ai) {
                 break;
             }   // AF: division by zero
-            x = 1 / (x - (double)ai);
-            if (x > (double)0x7FFFFFFF)
-            {
+            x = 1 / (x - (double) ai);
+            if (x > (double) 0x7FFFFFFF) {
                 break;
             }  // AF: representation failure
         }
 
-        if ((number[0] = (int)(m00 / m10)) != 0)
-        {
-            number[1] = (int)(m00 - number[0] * m10);
+        if ((number[0] = (int) (m00 / m10)) != 0) {
+            number[1] = (int) (m00 - number[0] * m10);
 
             number[0] *= sign;
 
-            number[2] = (int)m10;
+            number[2] = (int) m10;
 
             return number;
         }
-        number[1]  = (int)(sign * m00);
+        number[1] = (int) (sign * m00);
 
-        number[2]  = (int)m10;
+        number[2] = (int) m10;
 
         return number;
     }
 
-    public static int[] decimalToRational(double value)
-    {
+    public static int[] decimalToRational(double value) {
         return decimalToRational(value, NumericCommon.ITERATIONS_COUNT_HIGH);
     }
 
-    private static String toRationalStr(int _int, int _num, int _den, boolean fullRational)
-    {
+    private static String toRationalStr(int _int, int _num, int _den, boolean fullRational) {
         // 0 _int number[0]
         // 1 _num number[1]
         // 2 _den number[2]
         if (_num == 0) return String.valueOf(_int);
         if (_int == 0) return String.format("%s/%s", _num, _den);
-        if (fullRational)
-        {
+        if (fullRational) {
             return String.format("%s/%s",
                     (_num + Math.abs(_int) * _den) * (_int >= 0 ? 1 : -1), _den);
         }
         return String.format("%s %s/%s", _int, _num, _den);
     }
 
-    public static String toRationalStr(double value, boolean fullRational)
-    {
-        int[] number =  NumericUtils.decimalToRational(value);
+    public static String toRationalStr(double value, boolean fullRational) {
+        int[] number = NumericUtils.decimalToRational(value);
         return toRationalStr(number[0], number[1], number[2], fullRational);
     }
 
-    public static String toRationalStr(double value)
-    {
+    public static String toRationalStr(double value) {
         return toRationalStr(value, true);
     }
 
-    public static String toRationalStr(DoubleVector value, boolean fullRational)
-    {
+    public static String toRationalStr(DoubleVector value, boolean fullRational) {
         return String.format("{ %s }",
-                String.join("; ", DoubleVector.map(value, v->toRationalStr(v, fullRational))));
+                String.join("; ", DoubleVector.map(value, v -> toRationalStr(v, fullRational))));
     }
 
-    public static String toRationalStr(DoubleVector value)
-    {
-        return toRationalStr( value,  false);
+    public static String toRationalStr(DoubleVector value) {
+        return toRationalStr(value, false);
     }
 
-    public static class RationalNumber{
-        private final int _numerator  ;
+    public static class RationalNumber {
+        private final int _numerator;
         private final int _denominator;
-        private final int _intPart    ;
+        private final int _intPart;
+
         @Override
-        public boolean equals(Object other)
-        {
+        public boolean equals(Object other) {
             if (this == other) return true;
             if (other == null || getClass() != other.getClass()) return false;
             return equals((RationalNumber) other);
         }
-        public boolean equals(RationalNumber number)
-        {
-            if(number.numerator() != numerator())return false;
-            if(number.denominator() != denominator())return false;
-            if(number.intPart() != intPart())return false;
+
+        public boolean equals(RationalNumber number) {
+            if (number.numerator() != numerator()) return false;
+            if (number.denominator() != denominator()) return false;
+            if (number.intPart() != intPart()) return false;
             return true;
         }
+
         @Override
-        public String toString(){
+        public String toString() {
             return toRationalStr(intPart(), numerator(), denominator(), false);
         }
 
-        public int numerator  (){
-            return _numerator  ;
+        public int numerator() {
+            return _numerator;
         }
 
-        public int denominator(){
+        public int denominator() {
             return _denominator;
         }
 
-        public int intPart    (){
-            return _intPart    ;
+        public int intPart() {
+            return _intPart;
         }
 
-        public RationalNumber(final int numerator, final int denominator, final int intPart){
-            this._numerator   = numerator;
+        public RationalNumber(final int numerator, final int denominator, final int intPart) {
+            this._numerator = numerator;
             this._denominator = denominator;
-            this._intPart     = intPart;
+            this._intPart = intPart;
         }
 
-        public RationalNumber(final RationalNumber other){
+        public RationalNumber(final RationalNumber other) {
             this(other.numerator(), other.denominator(), other.intPart());
         }
 
-        public RationalNumber(final double value){
+        public RationalNumber(final double value) {
             int[] number = decimalToRational(value);
-            this._intPart     = number[0];
-            this._numerator   = number[1];
+            this._intPart = number[0];
+            this._numerator = number[1];
             this._denominator = number[2];
         }
     }
