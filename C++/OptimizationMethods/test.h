@@ -69,9 +69,9 @@ static void multi_dimensional_methods_test()
 
 static void simplex_method_test()
 {
-	std::cout << "\n/////////////////////////////"  << std::endl;
-	std::cout <<   "//////// SimplexTest ////////"  << std::endl;
-	std::cout <<   "/////////////////////////////\n"<< std::endl;
+	std::cout << "\n/////////////////////////////\n";
+	std::cout <<   "//////// SimplexTest ////////\n";
+	std::cout <<   "/////////////////////////////\n";
 	std::cout << " f(x,c) =  2x1 + 3x2;\n arg_max = {4, 8}, f(arg_max) = 32\n";
 	std::cout << " |-2x1 + 6x2 <= 40\n";
 	std::cout << " | 3x1 + 2x2 <= 28\n";
@@ -112,14 +112,14 @@ static void simplex_method_test()
 
 	sym_5.solve();
 
-	std::cout << "/////////////////////////////\n" << std::endl;
+	std::cout << "/////////////////////////////\n";
 }
 
 static void numeric_tests()
 {
-	std::cout << "\n//////////////////////////////"  << std::endl;
-	std::cout <<   "//////// NumericTests ////////"  << std::endl;
-	std::cout <<   "//////////////////////////////\n"<< std::endl;
+	std::cout << "\n//////////////////////////////\n";
+	std::cout <<   "//////// NumericTests ////////\n";
+	std::cout <<   "//////////////////////////////\n";
 	std::cout << "1.6666       = " << rational_number(1.6666     ) << "\n";
 	std::cout << "0.6666       = " << rational_number(0.6666     ) << "\n";
 	std::cout << "-3.0         = " << rational_number(-3.0       ) << "\n";

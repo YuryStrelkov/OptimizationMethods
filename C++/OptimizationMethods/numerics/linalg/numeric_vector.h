@@ -475,7 +475,7 @@ inline std::ostream& operator << (std::ostream& stream, const numeric_vector_<U>
 	return stream;
 }
 
-auto test_f = [&](const vector_f64& vector)
+static auto test_f = [](const vector_f64& vector)
 {
 	F64 result = 0.0;
 	I32 index = 1;
