@@ -120,17 +120,17 @@ static void numeric_tests()
 	std::cout << "\n//////////////////////////////"  << std::endl;
 	std::cout <<   "//////// NumericTests ////////"  << std::endl;
 	std::cout <<   "//////////////////////////////\n"<< std::endl;
-	std::cout << "1.6666       = " << rational::rational_number(1.6666     ) << "\n";
-	std::cout << "0.6666       = " << rational::rational_number(0.6666     ) << "\n";
-	std::cout << "-3.0         = " << rational::rational_number(-3.0       ) << "\n";
-	std::cout << "-0.125       = " << rational::rational_number(-0.125     ) << "\n";
-	std::cout << "3.769230769  = " << rational::rational_number(3.769230769) << "\n";
+	std::cout << "1.6666       = " << rational_number(1.6666     ) << "\n";
+	std::cout << "0.6666       = " << rational_number(0.6666     ) << "\n";
+	std::cout << "-3.0         = " << rational_number(-3.0       ) << "\n";
+	std::cout << "-0.125       = " << rational_number(-0.125     ) << "\n";
+	std::cout << "3.769230769  = " << rational_number(3.769230769) << "\n";
 
-	std::cout << "-1.6666      = " << rational::rational_number(-1.6666     ) << "\n";
-	std::cout << "-0.6666      = " << rational::rational_number(-0.6666     ) << "\n";
-	std::cout << "3.0          = " << rational::rational_number(3.0         ) << "\n";
-	std::cout << "0.125        = " << rational::rational_number(0.125       ) << "\n";
-	std::cout << "-3.769230769 = " << rational::rational_number(-3.769230769) << "\n";
+	std::cout << "-1.6666      = " << rational_number(-1.6666     ) << "\n";
+	std::cout << "-0.6666      = " << rational_number(-0.6666     ) << "\n";
+	std::cout << "3.0          = " << rational_number(3.0         ) << "\n";
+	std::cout << "0.125        = " << rational_number(0.125       ) << "\n";
+	std::cout << "-3.769230769 = " << rational_number(-3.769230769) << "\n";
 }
 
 static int test_all()

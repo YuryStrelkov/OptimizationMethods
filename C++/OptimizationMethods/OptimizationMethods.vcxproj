@@ -140,6 +140,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="numerics\linalg\implementation.cpp" />
+    <ClCompile Include="numerics\rational\rational.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="numerics\common.h" />

@@ -248,10 +248,10 @@ namespace sm
 				const F64 value = table(row, col);
 				if (value >= 0)
 				{
-					stream << std::left << std::setw(colom_w) << std::setfill(separator) << "| " + rational::rational_str(value);
+					stream << std::left << std::setw(colom_w) << std::setfill(separator) << "| " + rational_str(value);
 					continue;
 				}
-				stream << std::left << std::setw(colom_w) << std::setfill(separator) << "|" + rational::rational_str(value);
+				stream << std::left << std::setw(colom_w) << std::setfill(separator) << "|" + rational_str(value);
 			}
 
 			stream << "\n";
@@ -603,7 +603,7 @@ namespace sm
 			}
 			solution = current_simplex_solution();
 #if _DEBUG
-			std::cout << "a_main { " << main_row + 1 << ", " << main_col + 1 << " } = " << rational::rational_str(a_ik) << "\n";
+			std::cout << "a_main { " << main_row + 1 << ", " << main_col + 1 << " } = " << rational_str(a_ik) << "\n";
 			std::cout << *this;
 			std::cout << "current_solution" << solution << "\n";
 			std::cout << "\n";

@@ -1,7 +1,5 @@
 #pragma once
 #include "../common.h"
-namespace rational
-{
 	struct lmat{
 		I32 m00, m01,
 			m10, m11;
@@ -120,10 +118,3 @@ namespace rational
 			decimal_to_rational(value, m_int_part, m_numerator, m_denominator);
 		}
 	};
-
-	std::ostream& operator<<(std::ostream& stream, const rational_number& number)
-	{
-		return stream << rational_str(number.int_part(), number.numerator(), number.denominator(), false);
-	}
-};
-

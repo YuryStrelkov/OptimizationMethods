@@ -461,7 +461,7 @@ inline std::ostream& operator << (std::ostream& stream, const numeric_vector_<U>
 #ifdef RATIONAL_NUMBERS_REPRESNTATION
 	for (I32 index = 0; index < rhs.size(); index++)
 	{
-		stream << std::setw(NUMBER_CHARS_COUNT) << rational::rational_str(rhs.unchecked_access(index), false);
+		stream << std::setw(NUMBER_CHARS_COUNT) << rational_str(rhs.unchecked_access(index), false);
 		stream << (index == rhs.size() - 1 ? "" : ",");
 	}
 #else
@@ -487,56 +487,3 @@ auto test_f = [&](const vector_f64& vector)
 };
 
 void numeric_vector_test();
-
-void numeric_vector_test()
-{
-	vector_f64 lhs({ 1.0, 2.0, 3.0, 4.0, 9.0, 8.0, 7.0, 6.0 });
-	vector_f64 rhs({ 9.0, 8.0, 7.0, 6.0, 1.0, 2.0, 3.0, 4.0 });
-	// rhs.push_back(9.0).push_back(8.0).push_back(7.0).push_back(6.0);
-	std::cout << "lhs            : " << lhs << "\n";
-	std::cout << "rhs            : " << rhs << "\n";
-	std::cout << "rhs - copy     : " << vector_f64(rhs) << "\n";
-	std::cout << "lhs + rhs      : " << lhs + rhs << "\n";
-	std::cout << "lhs - rhs      : " << lhs - rhs << "\n";
-	std::cout << "lhs * rhs      : " << lhs * rhs << "\n";
-	std::cout << "lhs / rhs      : " << lhs / rhs << "\n";
-
-	std::cout << "2 + rhs        : " << 2.0 + rhs << "\n";
-	std::cout << "2 - rhs        : " << 2.0 - rhs << "\n";
-	std::cout << "2 * rhs        : " << 2.0 * rhs << "\n";
-	std::cout << "2 / rhs        : " << 2.0 / rhs << "\n";
-							     
-	std::cout << "rhs + 2        : " << rhs + 2.0 << "\n";
-	std::cout << "rhs - 2        : " << rhs - 2.0 << "\n";
-	std::cout << "rhs * 2        : " << rhs * 2.0 << "\n";
-	std::cout << "rhs / 2        : " << rhs / 2.0 << "\n";
-								 
-	std::cout << "lhs += rhs     : " << (lhs += rhs) << "\n";
-	std::cout << "lhs -= rhs     : " << (lhs -= rhs) << "\n";
-	std::cout << "lhs *= rhs     : " << (lhs *= rhs) << "\n";
-	std::cout << "lhs /= rhs     : " << (lhs /= rhs) << "\n";
-								 
-	std::cout << "lhs += 2.0     : " << (lhs += 2.0) << "\n";
-	std::cout << "lhs -= 2.0     : " << (lhs -= 2.0) << "\n";
-	std::cout << "lhs *= 2.0     : " << (lhs *= 2.0) << "\n";
-	std::cout << "lhs /= 2.0     : " << (lhs /= 2.0) << "\n";
-	std::cout << "mag(lhs)       : " << rational::rational_number(lhs.magnitude()) << "\n";
-	std::cout << "dot(lhs, rhs)  : " << rational::rational_number(vector_f64::dot(lhs, rhs)) << "\n";
-	std::cout << "dir(lhs, rhs)  : " << vector_f64::direction(lhs, rhs) << "\n";
-	std::cout << "normalized(lhs): " << lhs.normalized() << "\n";
-	std::cout << "normalize (lhs): " << lhs.normalize() << "\n";
-	std::cout << "gradient  (lhs): " << vector_f64::gradient(test_f, lhs, 1e-9) << "\n";
-	std::cout << "partial2  (lhs): " << rational::rational_number(vector_f64::partial2(test_f, lhs,0,0, 1e-9)) << "\n";
-	std::cout << "lhs == rhs     : " << (lhs == rhs) << "\n";
-	std::cout << "lhs != rhs     : " << (lhs != rhs) << "\n";
-	std::cout << "lhs > rhs      : " << (lhs > rhs) << "\n";
-	std::cout << "lhs < rhs      : " << (lhs < rhs) << "\n";
-	std::cout << "lhs >= rhs     : " << (lhs >= rhs) << "\n";
-	std::cout << "lhs <= rhs     : " << (lhs <= rhs) << "\n";
-	std::cout << "lhs >= 100     : " << (lhs >= 100.0) << "\n";
-	std::cout << "lhs <= 100     : " << (lhs <= 100.0) << "\n";
-	std::cout << "lhs            : "  << lhs << "\n";
-	lhs[slice(3, 6)] = vector_f64({ 13.0, 13.0, 13.0 });
-	std::cout << "lhs            : " << lhs << "\n";
-
-}
