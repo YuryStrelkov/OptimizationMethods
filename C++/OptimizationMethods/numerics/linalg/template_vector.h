@@ -1,5 +1,4 @@
 #pragma once
-using namespace std;
 #include "../common.h"
 #include <cstring>
 #include "vector_iterators.h"
@@ -299,7 +298,7 @@ public:
 		T* _new_values = alloc(new_size);
 		std::memcpy(_new_values, m_data, filling() * sizeof(T));
 		dealloc();
-		m_data = std::move(_new_values);
+		m_data = _new_values;
 	}
 
 	template_vector_<T>& clear() 

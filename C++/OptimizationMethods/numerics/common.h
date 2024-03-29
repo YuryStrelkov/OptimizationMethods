@@ -5,7 +5,7 @@
 #include <iostream>
 #include <iomanip>
 #include <cassert>
-
+using namespace std;
 
 #if defined(__APPLE__)
 // copy from STL lib/may be unsafe...
