@@ -20,7 +20,7 @@ typedef float F32;
 #define N_DIM_ACCURACY        1e-5
 #define N_DIM_DERIVATIVE_STEP 1e-6
 #define N_DIM_ITERS_MAX       1000
-#define ACCURACY              1e-5
+#define ACCURACY              1e-6
 #define ITERS_MAX             50
 #define MAX_DENOMINATOR       1000
 #define NUMBER_CHARS_COUNT    11

@@ -90,7 +90,7 @@ static F64 fibonacci(function_1d function, F64 left, F64 right, const F64 eps)
 	fib_2 = fib_1;
 	fib_1 = fib_t;
 	
-	for(I32 index = iterations; index > 0; index--)
+	for(I32 index = iterations; index; index--)
 	{
 		if (f_l > f_r)
 		{
@@ -111,9 +111,9 @@ static F64 fibonacci(function_1d function, F64 left, F64 right, const F64 eps)
 		fib_t = fib_2 - fib_1;
 		fib_2 = fib_1;
 		fib_1 = fib_t;
-// #if _DEBUG
-// 	   std::cout << "\nfibonacchi [a, b] range: " << (right - left) << "\n";
-// #endif
+#if _DEBUG
+	   std::cout << "\nfibonacchi [a, b] range: " << (right - left) << "\n";
+#endif
 	}
 #if _DEBUG
 	std::cout << "fibonacci::function arg range    : " << right - left << "\n";

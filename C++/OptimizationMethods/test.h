@@ -7,7 +7,7 @@
 // тестовая унимодальная одномерная функция с минимумом в точке {2} 
 static F64 test_function_1d(const F64 x)
 {
-	return  (x - 2) * (x - 5);
+	return  x * (x - 5);
 }
 
 // тестовая унимодальная двумерная функция с минимумом в точке {2,2} 
@@ -40,9 +40,9 @@ static void one_dimensional_methods_test()
 	// std::cout << "bisect      : " << rational::rational_number(bisect      (test_function_1d, x_0, x_1, ACCURACY)) << "\n";
 	// std::cout << "golden_ratio: " << rational::rational_number(golden_ratio(test_function_1d, x_0, x_1, ACCURACY)) << "\n";
 	// std::cout << "fibonacci   : " << rational::rational_number(fibonacci   (test_function_1d, x_0, x_1, ACCURACY)) << "\n";
-	std::cout << "bisect      : " << 3.5 - bisect      (test_function_1d, x_0, x_1, ACCURACY) << "\n";
-	std::cout << "golden_ratio: " << 3.5 - golden_ratio(test_function_1d, x_0, x_1, ACCURACY * 0.75) << "\n";
-	std::cout << "fibonacci   : " << 3.5 - fibonacci   (test_function_1d, x_0, x_1, ACCURACY) << "\n";
+	std::cout << "bisect      : " << bisect      (test_function_1d, x_0, x_1, ACCURACY) << "\n";
+	std::cout << "golden_ratio: " << golden_ratio(test_function_1d, x_0, x_1, ACCURACY * 0.7) << "\n";
+	std::cout << "fibonacci   : " << fibonacci   (test_function_1d, x_0, x_1, ACCURACY) << "\n";
 }
 
 static void multi_dimensional_methods_test()
@@ -140,7 +140,7 @@ static int test_all()
 	// numeric_matrix_test();
 	// numeric_tests();
 	one_dimensional_methods_test();
-	multi_dimensional_methods_test();
+	// multi_dimensional_methods_test();
 	// simplex_method_test();
 	return 0;
 }
