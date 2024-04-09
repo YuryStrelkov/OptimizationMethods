@@ -1,5 +1,6 @@
 package mathUtils;
 
+@SuppressWarnings("all")
 public final class Slice {
     private final int _end;
     private final int _begin;

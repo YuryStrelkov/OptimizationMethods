@@ -1,6 +1,5 @@
 import functionalInterfaces.IFunction1D;
 import mathUtils.NumericCommon;
-import mathUtils.NumericUtils;
 
 public final class OneDimensional {
     ////////////////////
@@ -8,23 +7,22 @@ public final class OneDimensional {
     ////////////////////
     public static double biSect(IFunction1D function, double left, double right, final double eps, final int maxIterations) {
         if (left > right) {
-            double tmp = left;
+            final double tmp = left;
             left = right;
             right = tmp;
         }
-        double x_c = 0.0;
+        double center;
         int iteration = 0;
         for (; iteration != maxIterations; iteration++) {
             if (Math.abs(right - left) < 2 * eps)
                 break;
-            x_c = (right + left) * 0.5;
-            if (function.call(x_c + eps) > function.call(x_c - eps))
-                right = x_c;
+            center = (right + left) * 0.5;
+            if (function.call(center + 1e-1 * eps) > function.call(center - 1e-1 * eps))
+                right = center;
             else
-                left = x_c;
+                left = center;
         }
-        if (NumericCommon.SHOW_ZERO_ORDER_METHODS_DEBUG_LOG)
-        {
+        if (NumericCommon.SHOW_ZERO_ORDER_METHODS_DEBUG_LOG) {
             System.out.printf("BiSect::function probes count : %s\n", 2 * iteration);
             System.out.printf("BiSect::function arg range    : %s\n", right - left);
         }
@@ -41,39 +39,35 @@ public final class OneDimensional {
 
     public static double goldenRatio(IFunction1D function, double left, double right, double eps, int maxIterations) {
         if (left > right) {
-            double tmp = left;
+            final double tmp = left;
             left = right;
             right = tmp;
         }
         double x_l, x_r, f_l, f_r;
         int iteration = 0;
-        x_l = right - (right - left) * NumericCommon.ONE_OVER_PHI;
-        x_r = left  + (right - left) * NumericCommon.ONE_OVER_PHI;
+        x_l = right - (right - left) * NumericCommon.PSI;
+        x_r = left + (right - left) * NumericCommon.PSI;
         f_l = function.call(x_l);
         f_r = function.call(x_r);
         for (; iteration != maxIterations; iteration++) {
             if (Math.abs(right - left) < 2 * eps)
                 break;
-            if (f_l > f_r)
-            {
+            if (f_l > f_r) {
                 left = x_l;
                 x_l = x_r;
                 f_l = f_r;
-                x_r = left + (right - left) * NumericCommon.ONE_OVER_PHI;
+                x_r = left + (right - left) * NumericCommon.PSI;
                 f_r = function.call(x_r);
-            }
-            else
-            {
+            } else {
                 right = x_r;
                 x_r = x_l;
                 f_r = f_l;
-                x_l = right - (right - left) * NumericCommon.ONE_OVER_PHI;
+                x_l = right - (right - left) * NumericCommon.PSI;
                 f_l = function.call(x_l);
             }
         }
 
-        if (NumericCommon.SHOW_ZERO_ORDER_METHODS_DEBUG_LOG)
-        {
+        if (NumericCommon.SHOW_ZERO_ORDER_METHODS_DEBUG_LOG) {
             System.out.printf("goldenRatio::function probes count : %s\n", 2 + iteration);
             System.out.printf("goldenRatio::function arg range    : %s\n", right - left);
         }
@@ -90,22 +84,21 @@ public final class OneDimensional {
 
     public static double fibonacci(IFunction1D function, double left, double right, double eps) {
         if (left > right) {
-            double tmp = left;
+            final double tmp = left;
             left = right;
             right = tmp;
         }
         double x_l, x_r, f_l, f_r, value, fib_t, fib_1 = 1.0, fib_2 = 1.0;
         int iterations = 0;
         value = (right - left) / eps;
-        while (fib_2 < value)
-        {
+        while (fib_2 < value) {
             iterations++;
             fib_t = fib_1;
             fib_1 = fib_2;
             fib_2 += fib_t;
         }
         x_l = left + (right - left) * ((fib_2 - fib_1) / fib_2);
-        x_r = left + (right - left) * (          fib_1 / fib_2);
+        x_r = left + (right - left) * (fib_1 / fib_2);
 
         f_l = function.call(x_l);
         f_r = function.call(x_r);
@@ -114,18 +107,14 @@ public final class OneDimensional {
         fib_2 = fib_1;
         fib_1 = fib_t;
 
-        for(int index = iterations; index > 0; index--)
-        {
-            if (f_l > f_r)
-            {
+        for (int index = iterations; index > 0; index--) {
+            if (f_l > f_r) {
                 left = x_l;
                 f_l = f_r;
                 x_l = x_r;
                 x_r = left + (right - left) * (fib_1 / fib_2);
                 f_r = function.call(x_r);
-            }
-            else
-            {
+            } else {
                 right = x_r;
                 x_r = x_l;
                 f_r = f_l;
@@ -136,8 +125,7 @@ public final class OneDimensional {
             fib_2 = fib_1;
             fib_1 = fib_t;
         }
-        if (NumericCommon.SHOW_ZERO_ORDER_METHODS_DEBUG_LOG)
-        {
+        if (NumericCommon.SHOW_ZERO_ORDER_METHODS_DEBUG_LOG) {
             System.out.printf("fibonacci::function probes count : %s\n", 2 + iterations);
             System.out.printf("fibonacci::function arg range    : %s\n", right - left);
         }

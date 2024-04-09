@@ -140,19 +140,23 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="numerics\linalg\implementation.cpp" />
+    <ClCompile Include="numerics\rational\rational.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="common.h" />
+    <ClInclude Include="numerics\common.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="multi_dimensional.h" />
-    <ClInclude Include="numeric_matrix.h" />
-    <ClInclude Include="numeric_utils.h" />
-    <ClInclude Include="numeric_vector.h" />
+    <ClInclude Include="numerics\linalg\numeric_matrix.h" />
+    <ClInclude Include="numerics\numeric_utils.h" />
+    <ClInclude Include="numerics\linalg\numeric_vector.h" />
     <ClInclude Include="one_dimensional.h" />
+    <ClInclude Include="numerics\rational\rational.h" />
     <ClInclude Include="simplex.h" />
-    <ClInclude Include="template_vector.h" />
+    <ClInclude Include="numerics\linalg\slice.h" />
+    <ClInclude Include="numerics\linalg\template_vector.h" />
     <ClInclude Include="test.h" />
-    <ClInclude Include="vector_itaretors.h" />
+    <ClInclude Include="numerics\linalg\vector_iterators.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,7 +1,5 @@
 package mathUtils;
-
 import functionalInterfaces.*;
-
 import java.util.Iterator;
 import java.util.Arrays;
 
@@ -174,7 +172,7 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
 
         @Override
         public boolean hasNext() {
-            _begin+=_step;
+            _begin += _step;
             return _begin != _end;
         }
 
@@ -405,10 +403,6 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
 
     public void clear(){
         _filling = 0;
-    }
-
-    public boolean isEmpty(){
-        return size() == 0;
     }
 
     public T get(final int index) {

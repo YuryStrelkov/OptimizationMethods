@@ -1,7 +1,5 @@
 import mathUtils.*;
 import mathUtils.NumericUtils.RationalNumber;
-
-import java.util.ArrayList;
 import java.util.Objects;
 
 public class Tests {
@@ -12,7 +10,6 @@ public class Tests {
         System.out.print("///////////////////////////////////////////\n\n");
         double[] numbers = { 1.666, 0.666, -3.0, -0.125, 3.769, -1.666, -0.666, 3.0, 0.125, -3.769 };
         for(double number: numbers) System.out.printf("number = %15s = %15s\n", number, new RationalNumber(number));
-        System.out.println("");
     }
 
     public static void VectorTest()

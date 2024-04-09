@@ -1,7 +1,7 @@
 #pragma once
-using namespace std;
-#include "vector_itaretors.h"
-#include "common.h"
+#include "../common.h"
+#include <cstring>
+#include "vector_iterators.h"
 #include "slice.h"
 #define MINIMAL_VECTOR_SIZE 8
 #define VECTOR_SIZE_UPSCALE 1.5
@@ -126,9 +126,9 @@ protected:
 			apply(other, [](const T& v) {return v;});
 			return;
 		};
-		m_data     = std::exchange(other.m_data    , nullptr);
-		m_capacity = std::exchange(other.m_capacity, -1);
-		m_filling  = std::exchange(other.m_filling , -1);
+		m_data     = EXCHANGE(other.m_data    , nullptr);
+		m_capacity = EXCHANGE(other.m_capacity, -1);
+		m_filling  = EXCHANGE(other.m_filling , -1);
 	}
 
 	void reassign_data(const template_vector_<T>& other)
@@ -246,7 +246,7 @@ public:
 
 	vector_indices indices() const{
 		if(is_slice())
-			return vector_indices(m_slice->begin(), m_slice->end(), m_slice->step());
+			return vector_indices((*m_slice).begin(), (*m_slice).end(), (*m_slice).step());
 		return vector_indices(0, this->filling(), 1);
 	};
 
@@ -284,9 +284,9 @@ public:
 
 	bool is_slice()const { return m_slice != nullptr; }
 
-	const T& unchecked_access(const I32 index) const { return m_data[is_slice() ? m_slice->source_index(index) : index]; }
+	const T& unchecked_access(const I32 index) const { return m_data[is_slice() ? (*m_slice).source_index(index) : index]; }
 
-	T& unchecked_access(const I32 index) { return m_data[is_slice() ? m_slice->source_index(index) : index]; }
+	T& unchecked_access(const I32 index) { return m_data[is_slice() ? (*m_slice).source_index(index) : index]; }
 
 	bool in_range(const I32 index)const { return (index >= 0) && (index < filling()); }
 
@@ -298,7 +298,7 @@ public:
 		T* _new_values = alloc(new_size);
 		std::memcpy(_new_values, m_data, filling() * sizeof(T));
 		dealloc();
-		m_data = std::move(_new_values);
+		m_data = _new_values;
 	}
 
 	template_vector_<T>& clear() 
@@ -315,7 +315,7 @@ public:
 			index++;
 			if (val == value)break;
 		}
-		return index == filling() ? -1 : is_slice() ? m_slice->slice_index(index - 1) : index - 1;
+		return index == filling() ? -1 : is_slice() ? (*m_slice).slice_index(index - 1) : index - 1;
 	}
 
 	bool contans(const T& value)const
@@ -333,7 +333,7 @@ public:
 	template_vector_<T>& push_back(const T& value)
 	{
 		if (is_slice()) {
-			m_slice->source().insert(m_slice->source_index(filling()), value);
+			(*m_slice).source().insert((*m_slice).source_index(filling()), value);
 			m_filling++;
 			return (*this);
 		}
@@ -345,7 +345,7 @@ public:
 	template_vector_<T>& push_back(T&& value)
 	{
 		if (is_slice()) {
-			m_slice->source().insert(m_slice->source_index(filling()), std::move(value));
+			(*m_slice).source().insert((*m_slice).source_index(filling()), std::move(value));
 			m_filling++;
 			return (*this);
 		}
@@ -358,13 +358,13 @@ public:
 	{
 		if (is_slice())
 		{
-			m_slice->source().remove_at(m_slice->source_index(index));
+			(*m_slice).source().remove_at((*m_slice).source_index(index));
 			m_filling--;
-			m_slice->shift_end(-1);
+			(*m_slice).shift_end(-1);
 			return (*this);
 		}
 		if (!in_range(index))return (*this);
-		std::memcpy(&m_data[index], &m_data[index + 1], I32(filling() - index) * sizeof(T));
+		std::memcpy(&m_data[index], &m_data[index + 1], (static_cast<UI64>(filling()) - index) * sizeof(T));
 		m_filling--;
 		return (*this);
 	}
@@ -373,15 +373,15 @@ public:
 	{
 		if (is_slice())
 		{
-			m_slice->source().insert(m_slice->source_index(index), value);
-			m_slice->shift_end(1);
+			(*m_slice).source().insert((*m_slice).source_index(index), value);
+			(*m_slice).shift_end(1);
 			m_filling++;
 			return (*this);
 		}
 		if (index < 0) return insert(0, value);
 		if (index > filling()) return push_back(value);
 		upscale();
-		std::memcpy(&m_data[index + 1], &m_data[index], I32(filling() - index) * sizeof(T));
+		std::memcpy(&m_data[index + 1], &m_data[index], (static_cast<UI64>(filling()) - index) * sizeof(T));
 		m_data[index] = std::move(value);
 		m_filling++;
 		return (*this);
@@ -391,15 +391,15 @@ public:
 	{
 		if (is_slice()) 
 		{
-			m_slice->source().insert(m_slice->source_index(index), std::move(value));
-			m_slice->shift_end(1);
+			(*m_slice).source().insert((*m_slice).source_index(index), std::move(value));
+			(*m_slice).shift_end(1);
 			m_filling++;
 			return (*this);
 		}
 		if (index < 0) return insert(0, value);
 		if (index > filling()) return push_back(value);
 		upscale();
-		std::memcpy(&m_data[index + 1], &m_data[index], I32(filling() - index) * sizeof(T));
+		std::memcpy(&m_data[index + 1], &m_data[index], (static_cast<UI64>(filling()) - index) * sizeof(T));
 		m_data[index] = std::move(value);
 		m_filling++;
 		return (*this);
@@ -518,23 +518,23 @@ public:
 		dealloc();
 	}
 	
-	template <typename T>
-	friend std::ostream& operator<<(std::ostream& steram, const template_vector_<T>& pair);
+	template <typename U>
+	friend std::ostream& operator<<(std::ostream& steram, const template_vector_<U>& pair);
 
-	template<typename T>
-	friend bool operator == (const template_vector_<T>& lhs, const template_vector_<T>& rhs);
+	template<typename U>
+	friend bool operator == (const template_vector_<U>& lhs, const template_vector_<U>& rhs);
 
 protected:
 	template_vector_(const slice& slice, template_vector_& source){
 		m_slice    = new slice_object(slice, source.is_slice() ? source.m_slice->source() : source);
-		m_filling  = m_slice->length();
+		m_filling  = (*m_slice).length();
 		m_capacity = source.capacity();
-		m_data     = m_slice->source().m_data;
+		m_data     = (*m_slice).source().m_data;
 	};
 };
 
-template <typename T>
-inline std::ostream& operator<<(std::ostream& steram, const template_vector_<T>& vector)
+template <typename U>
+inline std::ostream& operator<<(std::ostream& steram, const template_vector_<U>& vector)
 {
 	steram << "{ ";
 	for (const I32& index: vector.indices()) steram << vector.unchecked_access(index) << (index != vector.filling() - 1 ? ", " : "");
@@ -550,14 +550,14 @@ inline T template_vector_<T>::reduce(const template_vector_<T>& vector, std::fun
 }
 
 template<typename T>
-static bool template_vector_<T>::all(const template_vector_<T>& vector, std::function<bool(const T&)> condition_f)
+bool template_vector_<T>::all(const template_vector_<T>& vector, std::function<bool(const T&)> condition_f)
 {
 	for (const T& item : vector.values()) if (!condition_f(item)) return false;
 	return true;
 }
 
 template<typename T>
-static bool template_vector_<T>::any(const template_vector_<T>& vector, std::function<bool(const T&)> condition_f)
+bool template_vector_<T>::any(const template_vector_<T>& vector, std::function<bool(const T&)> condition_f)
 {
 	for (const T& item : vector.values()) if (condition_f(item)) return true;
 	return false;
@@ -623,66 +623,10 @@ combine_values<T, T1>template_vector_<T>::combine(const template_vector_<T>& lef
 {
 	return combine_values<T, T1>(zip(left, right), combine_f);
 }
-template<typename T>
-bool operator == (const template_vector_<T>& lhs, const template_vector_<T>& rhs) 
+template<typename U>
+bool operator == (const template_vector_<U>& lhs, const template_vector_<U>& rhs) 
 {
 	return (lhs.filling() == rhs.filling()) && (lhs.m_data == rhs.m_data);
 }
 
-
 void template_vector_test();
-
-void template_vector_test() 
-{
-	auto first  = template_vector_<I32>();
-	first.push_back(11).push_back(22).push_back(33).push_back(44).push_back(55);
-	
-	map_values<I32, double> int_to_double = first.map<double>([](const I32& i) { return std::sqrt(i); });
-
-	for (auto const a: int_to_double) std::cout << "ccc: " << a << "\n";
-
-	auto second = template_vector_<double>(int_to_double);
-	
-	auto copy_first = template_vector_<double>(int_to_double);
-
-	copy_first.push_back(11).
-			   push_back(22).
-			   push_back(33).
-			   push_back(55);
-
-	auto copy_of_first = template_vector_<double>(second);
-
-	auto zip_vals = zip_values<double, double>(copy_of_first.values(), copy_of_first.values());
-
-	auto diff = [](const double& a, const double& b) { return a - b; };
-	auto summ = [](const double& a, const double& b) { return a + b; };
-
-	// combine_values<double, double> combine_vals = combine_values<double, double>(zip_values<double, double>(copy_of_first.values(), copy_of_first.values()), summ);	combine_values<double, double> combine_vals = combine_values<double, double>(zip_values<double, double>(copy_of_first.values(), copy_of_first.values()), summ);
-	// combine_values<double, double> combine_vals = combine_values<double, double>(copy_of_first.values(), copy_of_first.values(), summ);	
-	combine_values<double, double> combine_vals = combine_values<double, double>(100000.0, copy_of_first.values(), summ);
-	//combine_values<double, double> combine_vals = combine_values<double, double>(zip_values<double, double>(copy_of_first.values(), copy_of_first.values()), summ);
-
-	template_vector_<double> combines = template_vector_<double>(combine_vals);
-
-	std::cout << "first                  :" << first         << "\n";
-	std::cout << "copy_first             :" << copy_first    << "\n";
-	std::cout << "copy_of_first          :" << copy_of_first << "\n";
-	std::cout << "combines               :" << combines << "\n";
-	std::cout << "combines               :" << template_vector_<double>(combines.combine<double>(combines, diff)) << "\n";
-	std::cout << "first.insert(0, 13)    :" << first.insert(0, 13)  << "\n";
-	std::cout << "first.insert(2, 13)    :" << first.insert(2, 13)  << "\n";
-	std::cout << "first.insert(13,13)    :" << first.insert(13, 13) << "\n";
-									     
-	std::cout << "first.remove_at(0)     :" << first.remove_at(0) << "\n";
-	std::cout << "first.remove_at(2)     :" << first.remove_at(2) << "\n";
-	std::cout << "first.remove_at(1)     :" << first.remove_at(1) << "\n";
-	std::cout << "copy_first             :" << copy_first     << "\n";
-	auto val = copy_first[slice(3, 6)];
-	std::cout << "copy_first[slice(3, 6)]:" << val << "\n";
- 	// copy_first[slice(3, 6)] = template_vector_<double>({ 0, 0, 0 });
-  	auto v = copy_first[slice(3, 6)];
-	v.apply([](const double v) {return -1.0; });
-	std::cout << "copy_first[slice(3, 6)]:" << copy_first[slice(3, 6)] << "\n";
-	std::cout << "copy_first             :" << copy_first << "\n";
-}
-

@@ -1,5 +1,5 @@
 #pragma once
-#include "common.h"
+#include "../common.h"
 
 template <typename Type>
 struct iterator_ : public std::iterator<
@@ -112,8 +112,11 @@ public:
 	bool                         operator!=(const map_values_iterator<T1, T2>& other) const { return !(*this == other); }
 	map_values_iterator<T1, T2>& operator++()                                               { m_values++; return *this; }
 	map_values_iterator<T1, T2>  operator++(int)                                            { map_values_iterator retval = *this; ++(*this); return retval; }
-	const T2&                    operator* ()                                         const {return m_map_function(*m_values);}
-	const T2*                    operator& ()                                         const {return m_map_function(*m_values);}
+	const T2 operator* ()                                         const { return m_map_function(*m_values); }
+	const T2 operator& ()                                         const { return m_map_function(*m_values); }
+
+	// const T2&                    operator* ()                                         const {return m_map_function(*m_values);}
+	// const T2*                    operator& ()                                         const {return m_map_function(*m_values);}
 };
 
 template<typename T1, typename T2>
@@ -139,12 +142,12 @@ public:
 	const T1& first;
 	const T2& second;
 	pair_<T1, T2>(const T1& first, const T2& second) : first(first), second(second) {}
-	template <typename T1, typename T2>
-	friend std::ostream& operator<<(std::ostream& steram, const pair_<T1, T2>& pair);
+	template <typename T_1, typename T_2>
+	friend std::ostream& operator<<(std::ostream& steram, const pair_<T_1, T_2>& pair);
 };
 
-template<typename T1, typename T2>
-inline std::ostream& operator<<(std::ostream& steram, const pair_<T1, T2>& pair)
+template <typename T_1, typename T_2>
+inline std::ostream& operator<<(std::ostream& steram, const pair_<T_1, T_2>& pair)
 {
 	// TODO: вставьте здесь оператор return
 	steram << "{ \"first\" : " << pair.first << ", \"second\": " << pair.second << " }";
@@ -163,8 +166,8 @@ public:
 	bool                         operator!=(const zip_values_iterator<T1, T2>& other) const { return !(*this == other); }
 	zip_values_iterator<T1, T2>& operator++()                                               { m_iterable1++; m_iterable2++; return *this; }
 	zip_values_iterator<T1, T2>  operator++(int)                                            { zip_values_iterator retval = *this; ++(*this); return retval; }
-	const pair_<T1, T2>&         operator*()                                          const { return pair_<T1, T2>(*m_iterable1, *m_iterable2); }
-	const pair_<T1, T2>*         operator&()                                          const { return pair_<T1, T2>(*m_iterable1, *m_iterable2); }
+	const pair_<T1, T2>          operator*()                                          const { return pair_<T1, T2>(*m_iterable1, *m_iterable2); }
+	const pair_<T1, T2>          operator&()                                          const { return pair_<T1, T2>(*m_iterable1, *m_iterable2); }
 };
 
 template<typename T1, typename T2>
@@ -198,8 +201,8 @@ public:
 	bool                             operator!=(const combine_values_iterator<T1, T2>& other) const { return !(*this == other); }
 	combine_values_iterator<T1, T2>& operator++()                                                   { m_iterables++; return *this; }
 	combine_values_iterator<T1, T2>  operator++(int)                                                { combine_values_iterator retval = *this; ++(*this); return retval; }
-	const T2&                        operator*() const                                              { return m_combine_function((*m_iterables).first, (*m_iterables).second); }
-	const T2*                        operator&() const                                              { return m_combine_function((*m_iterables).first, (*m_iterables).second);}
+	const T2                         operator*() const                                              { return m_combine_function((*m_iterables).first, (*m_iterables).second); }
+	const T2                         operator&() const                                              { return m_combine_function((*m_iterables).first, (*m_iterables).second);}
 };
 
 template<typename T1, typename T2>

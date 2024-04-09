@@ -3,7 +3,6 @@ package mathUtils;
 @SuppressWarnings("all")
 public class NumericCommon {
     public static final double PHI = 1.61803398874989484820;
-    public static final double ONE_OVER_PHI = 0.6180339887498948;
     public static final double PSI = 0.6180339887498948;
     public static final double NUMERIC_ACCURACY_MIDDLE = 1e-6;
     public static final double NUMERIC_ACCURACY_LOW    = 1e-3;
@@ -17,6 +16,5 @@ public class NumericCommon {
     public static boolean      SHOW_SIMPLEX_DEBUG_LOG = false;
     public static boolean      SHOW_MATRIX_DEBUG_LOG  = false;
     public static boolean      NUMBER_RATIONAL_FORMAT = true;
-
-    // public static boolean      ITERATOR_BASED_IMPLEMENTATION = true;
+    // public static boolean   ITERATOR_BASED_IMPLEMENTATION = true;
 }

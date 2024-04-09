@@ -1,5 +1,5 @@
 #pragma once
-#include "common.h"
+#include "../common.h"
 
 struct slice 
 {
@@ -34,13 +34,4 @@ public:
 	}
 
 	friend std::ostream& operator<<(std::ostream& stream, const slice& slice);
-};
-
-std::ostream& operator<<(std::ostream& stream, const slice& slice)
-{
-	if (slice.step() != 1)
-		stream << slice.begin() << ":" << slice.end() << ":" << slice.step();
-	else
-		stream << slice.begin() << ":" << slice.end();
-	return stream;
 };

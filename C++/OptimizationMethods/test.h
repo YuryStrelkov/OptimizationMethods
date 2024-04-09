@@ -1,7 +1,7 @@
 #pragma once
 #include "multi_dimensional.h"
 #include "one_dimensional.h"
-#include "numeric_utils.h"
+#include "numerics/numeric_utils.h"
 #include "simplex.h"
 
 // тестовая унимодальная одномерная функция с минимумом в точке {2} 
@@ -69,9 +69,9 @@ static void multi_dimensional_methods_test()
 
 static void simplex_method_test()
 {
-	std::cout << "\n/////////////////////////////"  << std::endl;
-	std::cout <<   "//////// SimplexTest ////////"  << std::endl;
-	std::cout <<   "/////////////////////////////\n"<< std::endl;
+	std::cout << "\n/////////////////////////////\n";
+	std::cout <<   "//////// SimplexTest ////////\n";
+	std::cout <<   "/////////////////////////////\n";
 	std::cout << " f(x,c) =  2x1 + 3x2;\n arg_max = {4, 8}, f(arg_max) = 32\n";
 	std::cout << " |-2x1 + 6x2 <= 40\n";
 	std::cout << " | 3x1 + 2x2 <= 28\n";
@@ -112,35 +112,35 @@ static void simplex_method_test()
 
 	sym_5.solve();
 
-	std::cout << "/////////////////////////////\n" << std::endl;
+	std::cout << "/////////////////////////////\n";
 }
 
 static void numeric_tests()
 {
-	std::cout << "\n//////////////////////////////"  << std::endl;
-	std::cout <<   "//////// NumericTests ////////"  << std::endl;
-	std::cout <<   "//////////////////////////////\n"<< std::endl;
-	std::cout << "1.6666       = " << rational::rational_number(1.6666     ) << "\n";
-	std::cout << "0.6666       = " << rational::rational_number(0.6666     ) << "\n";
-	std::cout << "-3.0         = " << rational::rational_number(-3.0       ) << "\n";
-	std::cout << "-0.125       = " << rational::rational_number(-0.125     ) << "\n";
-	std::cout << "3.769230769  = " << rational::rational_number(3.769230769) << "\n";
+	std::cout << "\n//////////////////////////////\n";
+	std::cout <<   "//////// NumericTests ////////\n";
+	std::cout <<   "//////////////////////////////\n";
+	std::cout << "1.6666       = " << rational_number(1.6666     ) << "\n";
+	std::cout << "0.6666       = " << rational_number(0.6666     ) << "\n";
+	std::cout << "-3.0         = " << rational_number(-3.0       ) << "\n";
+	std::cout << "-0.125       = " << rational_number(-0.125     ) << "\n";
+	std::cout << "3.769230769  = " << rational_number(3.769230769) << "\n";
 
-	std::cout << "-1.6666      = " << rational::rational_number(-1.6666     ) << "\n";
-	std::cout << "-0.6666      = " << rational::rational_number(-0.6666     ) << "\n";
-	std::cout << "3.0          = " << rational::rational_number(3.0         ) << "\n";
-	std::cout << "0.125        = " << rational::rational_number(0.125       ) << "\n";
-	std::cout << "-3.769230769 = " << rational::rational_number(-3.769230769) << "\n";
+	std::cout << "-1.6666      = " << rational_number(-1.6666     ) << "\n";
+	std::cout << "-0.6666      = " << rational_number(-0.6666     ) << "\n";
+	std::cout << "3.0          = " << rational_number(3.0         ) << "\n";
+	std::cout << "0.125        = " << rational_number(0.125       ) << "\n";
+	std::cout << "-3.769230769 = " << rational_number(-3.769230769) << "\n";
 }
 
 static int test_all()
 {
-	// template_vector_test();
-	// numeric_vector_test();
-	// numeric_matrix_test();
-	// numeric_tests();
+	template_vector_test();
+	numeric_vector_test();
+	numeric_matrix_test();
+	numeric_tests();
 	one_dimensional_methods_test();
 	// multi_dimensional_methods_test();
-	// simplex_method_test();
+	simplex_method_test();
 	return 0;
 }

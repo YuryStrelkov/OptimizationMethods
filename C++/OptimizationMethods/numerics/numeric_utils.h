@@ -1,5 +1,5 @@
 #pragma once
-#include "numeric_vector.h"
+#include "linalg/numeric_vector.h"
 
 static int get_factorial(const I32 number) {
 	int result = 1;

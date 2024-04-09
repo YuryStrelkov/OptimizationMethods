@@ -1,12 +1,18 @@
 #pragma once
-#include "numeric_vector.h"
-#include "numeric_matrix.h"
-#include "numeric_utils.h"
+#include "numerics/linalg/numeric_vector.h"
+#include "numerics/linalg/numeric_matrix.h"
+#include "numerics/numeric_utils.h"
 
 typedef F64(*function_nd)(const vector_f64&);
 static vector_f64 bisect      (function_nd function, const vector_f64& left, const vector_f64& right, const F64 eps = N_DIM_ACCURACY, const I32 max_iterations = N_DIM_ITERS_MAX);
 static vector_f64 golden_ratio(function_nd function, const vector_f64& left, const vector_f64& right, const F64 eps = N_DIM_ACCURACY, const I32 max_iters = N_DIM_ITERS_MAX);
 static vector_f64 fibonacci   (function_nd function, const vector_f64& left, const vector_f64& right, const F64 eps = N_DIM_ACCURACY);
+
+static vector_f64 per_coord_descend    (function_nd function, const vector_f64& x_start, const F64 eps = N_DIM_ACCURACY, const I32 max_iters = N_DIM_ITERS_MAX);
+static vector_f64 gradient_descend     (function_nd function, const vector_f64& x_start, const F64 eps = N_DIM_ACCURACY, const I32 max_iters = N_DIM_ITERS_MAX);
+static vector_f64 conj_gradient_descend(function_nd function, const vector_f64& x_start, const F64 eps = N_DIM_ACCURACY, const I32 max_iters = N_DIM_ITERS_MAX);
+static vector_f64 newtone_raphson      (function_nd function, const vector_f64& x_start, const F64 eps = N_DIM_ACCURACY, const I32 max_iters = N_DIM_ITERS_MAX);
+
 
 // Методы n-мерной дихотомии, золотого сечения и Фибоначчи определяют минимум строго вдоль направления из  x_0 в x_1
 // т.е., если истинный минимум функции на этом направлении не лежит, метод всё равно найдёт минимальное значение, но оно 
@@ -18,7 +24,7 @@ static vector_f64 bisect(function_nd function, const vector_f64& left, const vec
 	I32 iteration = 0;
 	for (; iteration != max_iterations; iteration++)
 	{
-		if ((lhs - rhs).magnitude() < eps) break;
+		if ((lhs - rhs).magnitude() < 2 * eps) break;
 		x_c = (lhs + rhs) * 0.5;
 		if (function(x_c - dir) > function(x_c + dir))
 			lhs = x_c;
@@ -36,7 +42,7 @@ static vector_f64 golden_ratio(function_nd function, const vector_f64& left, con
 {
 	vector_f64 lhs(left), rhs(right);
 	vector_f64 x_l, x_r;
-	F32 f_l, f_r;
+	F64 f_l, f_r;
 	I32 iteration = 0;
 	x_l = rhs - (rhs - lhs) * PSI;
 	x_r = lhs + (rhs - lhs) * PSI;
@@ -128,7 +134,7 @@ static vector_f64 fibonacci(function_nd function, const vector_f64& left, const 
 // Покоординатный спуск, градиентный спуск и спуск с помощью сопряжённых градиентов, определяют
 // минимальное значение функции только по одной начальной точке x_start.
 // Поэтому не зависят от выбора направления.
-static vector_f64 per_coord_descend(function_nd function, const vector_f64& x_start, const F64 eps = N_DIM_ACCURACY, const I32 max_iters = N_DIM_ITERS_MAX)
+static vector_f64 per_coord_descend(function_nd function, const vector_f64& x_start, const F64 eps, const I32 max_iters)
 {
 	vector_f64 x_0(x_start);
 	vector_f64 x_1(x_start);
@@ -167,8 +173,8 @@ static vector_f64 per_coord_descend(function_nd function, const vector_f64& x_st
 #endif
 	return x_0;
 }
-//
-static vector_f64 gradient_descend(function_nd function, const vector_f64& x_start, const F64 eps = N_DIM_ACCURACY, const I32 max_iters = N_DIM_ITERS_MAX)
+
+static vector_f64 gradient_descend(function_nd function, const vector_f64& x_start, const F64 eps, const I32 max_iters)
 {
 	vector_f64 x_i(x_start);
 	vector_f64 x_i_1;
@@ -188,7 +194,7 @@ static vector_f64 gradient_descend(function_nd function, const vector_f64& x_sta
 	return (x_i_1 + x_i) * 0.5;
 }
 
-static vector_f64 conj_gradient_descend(function_nd function, const vector_f64& x_start, const F64 eps = N_DIM_ACCURACY, const I32 max_iters = N_DIM_ITERS_MAX)
+static vector_f64 conj_gradient_descend(function_nd function, const vector_f64& x_start, const F64 eps, const I32 max_iters)
 {
 	vector_f64 x_i(x_start);
 	vector_f64 x_i_1;
@@ -211,7 +217,7 @@ static vector_f64 conj_gradient_descend(function_nd function, const vector_f64& 
 	return (x_i_1 + x_i) * 0.5;
 }
 
-static vector_f64 newtone_raphson (function_nd function, const vector_f64& x_start, const F64 eps = N_DIM_ACCURACY, const I32 max_iters = N_DIM_ITERS_MAX)
+static vector_f64 newtone_raphson (function_nd function, const vector_f64& x_start, const F64 eps, const I32 max_iters)
 {
 	vector_f64 x_i(x_start);
 	vector_f64 x_i_1;
