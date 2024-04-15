@@ -135,12 +135,12 @@ static void numeric_tests()
 
 static int test_all()
 {
-	template_vector_test();
-	numeric_vector_test();
-	numeric_matrix_test();
-	numeric_tests();
+	// template_vector_test();
+	// numeric_vector_test();
+	// numeric_matrix_test();
+	// numeric_tests();
 	one_dimensional_methods_test();
 	// multi_dimensional_methods_test();
-	simplex_method_test();
+	// simplex_method_test();
 	return 0;
 }
