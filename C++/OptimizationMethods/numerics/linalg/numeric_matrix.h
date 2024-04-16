@@ -246,8 +246,8 @@ public:
 	
 	template<typename U>friend std::ostream& operator<<(std::ostream& , const numeric_matrix_<U>& rhs);
 
-	numeric_matrix_(numeric_matrix_<T>&& src)noexcept: numeric_matrix_(src, src.rows_count(), src.cols_count()) {}
-	numeric_matrix_(numeric_vector_<T>&& src)noexcept: numeric_matrix_(src, 1, src.filling()) {}
+	numeric_matrix_(numeric_matrix_<T>&& src) noexcept: numeric_matrix_(src, src.rows_count(), src.cols_count()) {}
+	numeric_matrix_(numeric_vector_<T>&& src) noexcept: numeric_matrix_(src, 1, src.filling()) {}
 	numeric_matrix_(numeric_vector_<T>&& src, const I32 rows, const I32 cols)noexcept
 	{
 		assert(rows * cols == src.filling());
@@ -264,7 +264,7 @@ public:
 		m_cols = cols;
 		template_vector_<T>::operator=((const template_vector_<T>&)src);
 	}
-	numeric_matrix_(const initializer_list<T>& values, const I32 rows, const I32 cols) : template_vector_<T>(values)
+	numeric_matrix_(const std::initializer_list<T>& values, const I32 rows, const I32 cols) : template_vector_<T>(values)
 	{
 		m_rows = rows;
 		m_cols = cols;
@@ -697,7 +697,7 @@ inline std::ostream& operator<<(std::ostream& stream, const numeric_matrix_<U>& 
 	I32  col      = 0;
 	I32  row      = 0;
 	stream << "[\n";
-#ifdef RATIONAL_NUMBERS_REPRESNTATION
+#if RATIONAL_NUMBERS_REPRESNTATION
 	for (row = 0; row < rhs.rows_count(); row++)
 	{
 		stream << "  [";
@@ -719,9 +719,8 @@ inline std::ostream& operator<<(std::ostream& stream, const numeric_matrix_<U>& 
 			stream << (col < rhs.cols_count() - 1 ? "," : "]");
 		}
 		stream << (col == rhs.cols_count() - 1 ? "]\n" : ",\n");
-}
-	stream << "]";
 	}
+	stream << "]";
 #endif
 	return stream;
 }

@@ -5,16 +5,15 @@
 #include <iostream>
 #include <iomanip>
 #include <cassert>
-using namespace std;
 
 #if defined(__APPLE__)
 // copy from STL lib/may be unsafe...
 template <class _Ty, class _Other = _Ty>
 _Ty exchange(_Ty& _Val, _Other&& _New_val) noexcept /* strengthened */ {
-    // assign _New_val to _Val, return previous _Val
-    _Ty _Old_val = static_cast<_Ty&&>(_Val);
-    _Val = static_cast<_Other&&>(_New_val);
-    return _Old_val;
+	// assign _New_val to _Val, return previous _Val
+	_Ty _Old_val = static_cast<_Ty&&>(_Val);
+	_Val = static_cast<_Other&&>(_New_val);
+	return _Old_val;
 }
 #elif defined(__unix__)
 #if defined(__linux__)

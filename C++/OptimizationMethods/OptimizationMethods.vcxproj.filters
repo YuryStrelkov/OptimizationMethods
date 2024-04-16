@@ -68,5 +68,8 @@
     <ClInclude Include="numerics\linalg\vector_iterators.h">
       <Filter>NumericUtils</Filter>
     </ClInclude>
+    <ClInclude Include="numerics\numerics.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

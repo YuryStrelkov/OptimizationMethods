@@ -28,12 +28,17 @@ public:
 //////////////////////////////////////
 ///  Iterator over indices range   ///
 //////////////////////////////////////
-class indices_iterator: public iterator_<I32>
+struct indices_iterator: public iterator_<I32>
 {
 private:
 	I32 m_index;
 	I32 m_step;
 public:
+	indices_iterator(const indices_iterator& other)
+	{
+		m_index = other.m_index;
+		m_step = other.m_step;
+	}
 	indices_iterator(const I32 index, const I32 step)
 	{
 		m_index = index;

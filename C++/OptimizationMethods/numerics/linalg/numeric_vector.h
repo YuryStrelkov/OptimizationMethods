@@ -94,7 +94,7 @@ public:
 		if(default_fill)template_vector_<T>::fill([](const I32 n) {return T{ 0 }; });
 	};
 
-	numeric_vector_(const initializer_list<T>& values) : template_vector_<T>(values) {
+	numeric_vector_(const std::initializer_list<T>& values) : template_vector_<T>(values) {
 	};
 
 	// template< typename... Args>
@@ -458,7 +458,7 @@ template<typename U>
 inline std::ostream& operator << (std::ostream& stream, const numeric_vector_<U>& rhs)
 {
 	stream << "[";
-#ifdef RATIONAL_NUMBERS_REPRESNTATION
+#if RATIONAL_NUMBERS_REPRESNTATION
 	for (I32 index = 0; index < rhs.size(); index++)
 	{
 		stream << std::setw(NUMBER_CHARS_COUNT) << rational_str(rhs.unchecked_access(index), false);

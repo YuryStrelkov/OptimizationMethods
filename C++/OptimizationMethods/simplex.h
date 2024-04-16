@@ -1,7 +1,5 @@
 #pragma once
-#include "numerics/linalg/numeric_matrix.h"
-#include "numerics/linalg/numeric_vector.h"
-#include "numerics/rational/rational.h"
+#include "numerics/numerics.h"
 
 ////////////////////
 /// Lab. work #5 ///

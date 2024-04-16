@@ -1,7 +1,5 @@
 #pragma once
-#include "numerics/linalg/numeric_vector.h"
-#include "numerics/linalg/numeric_matrix.h"
-#include "numerics/numeric_utils.h"
+#include "numerics/numerics.h"
 
 typedef F64(*function_nd)(const vector_f64&);
 static vector_f64 bisect      (function_nd function, const vector_f64& left, const vector_f64& right, const F64 eps = N_DIM_ACCURACY, const I32 max_iterations = N_DIM_ITERS_MAX);

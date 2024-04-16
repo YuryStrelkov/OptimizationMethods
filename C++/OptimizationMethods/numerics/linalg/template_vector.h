@@ -103,6 +103,12 @@ private:
 		if (filling() != capacity())return;
 		resize(I32(m_capacity * VECTOR_SIZE_UPSCALE));
 	}
+
+	T* allocate(const UI64 amount)
+	{
+		return new T[amount];
+	}
+
 	slice_object* m_slice = nullptr;
 	T*            m_data;
 	I32           m_capacity;
@@ -364,6 +370,9 @@ public:
 			return (*this);
 		}
 		if (!in_range(index))return (*this);
+		{
+			m_data[index].~T();
+		}
 		std::memcpy(&m_data[index], &m_data[index + 1], (static_cast<UI64>(filling()) - index) * sizeof(T));
 		m_filling--;
 		return (*this);
@@ -371,6 +380,8 @@ public:
 		
 	template_vector_<T>& insert(const I32 index, const T& value)
 	{
+		// todo corret using of remove references
+		// todo safty zero memory 
 		if (is_slice())
 		{
 			(*m_slice).source().insert((*m_slice).source_index(index), value);
@@ -382,6 +393,12 @@ public:
 		if (index > filling()) return push_back(value);
 		upscale();
 		std::memcpy(&m_data[index + 1], &m_data[index], (static_cast<UI64>(filling()) - index) * sizeof(T));
+		{
+			//ZERO MEMORY
+			char* data_ptr = reinterpret_cast<char*>(m_data + index);
+			for (size_t i = 0; i < sizeof(T); i++)
+				*(data_ptr++) = '\0';
+		}
 		m_data[index] = std::move(value);
 		m_filling++;
 		return (*this);
@@ -484,7 +501,7 @@ public:
 		m_data     = alloc(m_capacity);
 	};
 
-	template_vector_(const initializer_list<T>& values) :template_vector_()
+	template_vector_(const std::initializer_list<T>& values) :template_vector_()
 	{
 		for (auto v : values) push_back(v);
 	};
