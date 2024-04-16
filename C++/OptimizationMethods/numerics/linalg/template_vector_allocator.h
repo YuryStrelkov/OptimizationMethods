@@ -21,19 +21,19 @@ public:
 	{
 		return (T*)malloc(sizeof(T) * amount);
 	}
-	UI8 deallocate(T* block, const size_t amount) noexcept
+	UI8 deallocate(T** block, const size_t amount) noexcept
 	{
 		if(!amount) return FALSE;
-		if (!block) return FALSE;
-		T* start = block;
-		T* end = block + amount;
+		if (!*block) return FALSE;
+		T* start = *block;
+		T* end   = *block + amount;
 		while (start != end)
 		{
 			start->~T();
 			start++;
 		}
-		free(block);
-		block = nullptr;
+		free(*block);
+		*block = nullptr;
 		return TRUE;
 	}
 	void move_copy(T* src, T* dst, const size_t amount) noexcept

@@ -101,7 +101,7 @@ private:
 	}
 	void dealloc() 
 	{
-		m_allocator.deallocate(m_data, size());
+		m_allocator.deallocate(&m_data, size());
 	}
 	void upscale()
 	{
