@@ -19,42 +19,42 @@ namespace sm
 		/// <summary>
 		/// список знаков в неравенств в системе ограничений
 		/// </summary>
-		vector_i32 m_inequations;
+		numerics::vector_i32 m_inequations;
 
 		/// <summary>
 		/// список индексов переменных которые войдут в целевую функию, модифицируя ее
 		/// </summary>
-		vector_i32 m_virtual_args_indices;
+		numerics::vector_i32 m_virtual_args_indices;
 
 		/// <summary>
 		///индексы естественных переменных
 		/// </summary>
-		vector_i32 m_natural_args_indices;
+		numerics::vector_i32 m_natural_args_indices;
 
 		/// <summary>
 		/// список индексов текущих базисных переменных 
 		/// </summary>
-		vector_i32 m_basis_args_indices;
+		numerics::vector_i32 m_basis_args_indices;
 
 		/// <summary>
 		/// Симплекс таблица
 		/// </summary>
-		matrix_f64 m_simplex_table;
+		numerics::matrix_f64 m_simplex_table;
 
 		/// <summary>
 		/// матрица ограничений
 		/// </summary>
-		matrix_f64 m_bounds_matrix;
+		numerics::matrix_f64 m_bounds_matrix;
 
 		/// <summary>
 		/// вектор ограничений
 		/// </summary>
-		vector_f64 m_bounds_vector;
+		numerics::vector_f64 m_bounds_vector;
 
 		/// <summary>
 		/// вектор стоимостей
 		/// </summary>
-		vector_f64 m_prices_vector;
+		numerics::vector_f64 m_prices_vector;
 
 		/// <summary>
 		/// режим поиска решения
@@ -137,17 +137,17 @@ namespace sm
 		/// </summary>
 		I32 natural_args_count()const;
 
-		inline const matrix_f64& bounds_matrix()const;
+		inline const numerics::matrix_f64& bounds_matrix()const;
 
-		inline const vector_f64& bounds_vector()const;
+		inline const numerics::vector_f64& bounds_vector()const;
 
-		inline const vector_f64& prices_vector()const;
+		inline const numerics::vector_f64& prices_vector()const;
 
-		inline const vector_i32& inequations()const;
+		inline const numerics::vector_i32& inequations()const;
 
-		inline const vector_i32& basis_args_indices()const;
+		inline const numerics::vector_i32& basis_args_indices()const;
 
-		inline const matrix_f64& simplex_table()const;
+		inline const numerics::matrix_f64& simplex_table()const;
 
 		inline bool is_target_function_modified()const;
 		/// <summary>
@@ -157,13 +157,13 @@ namespace sm
 		/// <param name="basis">список базисных параметров</param>
 		/// <param name="n_agrs">количество исходных переменных</param>
 		/// <returns></returns>
-		vector_f64 current_simplex_solution(const bool only_natural_args = false)const;
-		vector_f64 solve(const I32 m_problem_type = SIMPLEX_MAX);
-		simplex(const matrix_f64& bounds_matrix, const vector_f64& prices_vector, const vector_i32& inequations, const vector_f64& bounds_vector);
-		simplex(const matrix_f64& bounds_matrix, const vector_f64& prices_vector, const vector_f64& bounds_vector);
+		numerics::vector_f64 current_simplex_solution(const bool only_natural_args = false)const;
+		numerics::vector_f64 solve(const I32 m_problem_type = SIMPLEX_MAX);
+		simplex(const numerics::matrix_f64& bounds_matrix, const numerics::vector_f64& prices_vector, const numerics::vector_i32& inequations, const numerics::vector_f64& bounds_vector);
+		simplex(const numerics::matrix_f64& bounds_matrix, const numerics::vector_f64& prices_vector, const numerics::vector_f64& bounds_vector);
 
-		simplex(matrix_f64&& bounds_matrix, vector_f64&& prices_vector, vector_i32&& inequations, vector_f64&& bounds_vector);
-		simplex(matrix_f64&& bounds_matrix, vector_f64&& prices_vector, vector_f64&& bounds_vector);
+		simplex(numerics::matrix_f64&& bounds_matrix, numerics::vector_f64&& prices_vector, numerics::vector_i32&& inequations, numerics::vector_f64&& bounds_vector);
+		simplex(numerics::matrix_f64&& bounds_matrix, numerics::vector_f64&& prices_vector, numerics::vector_f64&& bounds_vector);
 
 		friend std::ostream& operator<<(std::ostream& stream, const simplex& s);
 	};
@@ -179,11 +179,11 @@ namespace sm
 		/// <param name="b"></param>
 		/// <param name="c"></param>
 
-		const  matrix_f64& table = s.simplex_table();
+		const  numerics::matrix_f64& table = s.simplex_table();
 
 		const bool targeFuncMod = s.is_target_function_modified();
 
-		const vector_i32& m_basis_args_indices = s.basis_args_indices();
+		const numerics::vector_i32& m_basis_args_indices = s.basis_args_indices();
 
 		if (table.size() == 0)
 		{
@@ -246,10 +246,10 @@ namespace sm
 				const F64 value = table(row, col);
 				if (value >= 0)
 				{
-					stream << std::left << std::setw(colom_w) << std::setfill(separator) << "| " + rational_str(value);
+					stream << std::left << std::setw(colom_w) << std::setfill(separator) << "| " + numerics::rational_str(value);
 					continue;
 				}
-				stream << std::left << std::setw(colom_w) << std::setfill(separator) << "|" + rational_str(value);
+				stream << std::left << std::setw(colom_w) << std::setfill(separator) << "|" + numerics::rational_str(value);
 			}
 
 			stream << "\n";
@@ -416,7 +416,7 @@ namespace sm
 		/// <summary>
 		/// Построение симплекс разностей
 		/// </summary>
-		vector_f64 s_deltas(m_simplex_table.cols_count());/// [0] .size());
+		numerics::vector_f64 s_deltas(m_simplex_table.cols_count());/// [0] .size());
 
 		s_deltas.apply_enumerate(m_prices_vector, [&](const I32 index, const F64 value) {return index < m_prices_vector.size() ? -value : 0.0; });
 
@@ -435,7 +435,7 @@ namespace sm
 		/// <summary>
 		/// Если всё же была...
 		/// </summary>
-		vector_f64 s_deltas_add(m_simplex_table.cols_count()); //  m_simplex_table[0].size());
+		numerics::vector_f64 s_deltas_add(m_simplex_table.cols_count()); //  m_simplex_table[0].size());
 
 		for (const I32 index : m_virtual_args_indices.values()) s_deltas_add[index] = 1.0;
 
@@ -448,7 +448,7 @@ namespace sm
 
 		const I32 last_row_id = m_simplex_table.rows_count() - 1;
 
-		vector_f64 last_row = m_simplex_table.get_row(last_row_id);
+		numerics::vector_f64 last_row = m_simplex_table.get_row(last_row_id);
 
 		for (const I32 index : m_virtual_args_indices.values())
 		{
@@ -499,41 +499,41 @@ namespace sm
 		return m_prices_vector.size();
 	}
 
-	inline const matrix_f64& simplex::bounds_matrix()const
+	inline const numerics::matrix_f64& simplex::bounds_matrix()const
 	{
 		return m_bounds_matrix;
 	}
 
-	inline const vector_f64& simplex::bounds_vector()const
+	inline const numerics::vector_f64& simplex::bounds_vector()const
 	{
 		return m_bounds_vector;
 	}
 
-	inline const vector_f64& simplex::prices_vector()const
+	inline const numerics::vector_f64& simplex::prices_vector()const
 	{
 		return m_prices_vector;
 	}
 
-	inline const vector_i32& simplex::inequations()const
+	inline const numerics::vector_i32& simplex::inequations()const
 	{
 		return m_inequations;
 	};
 
-	inline const vector_i32& simplex::basis_args_indices()const
+	inline const numerics::vector_i32& simplex::basis_args_indices()const
 	{
 		return m_basis_args_indices;
 	};
 
-	inline const matrix_f64& simplex::simplex_table() const { return m_simplex_table; };
+	inline const numerics::matrix_f64& simplex::simplex_table() const { return m_simplex_table; };
 
 	inline bool simplex::is_target_function_modified()const
 	{
 		return m_virtual_args_indices.size() != 0;
 	}
 
-	vector_f64 simplex::current_simplex_solution(const bool only_natural_args)const
+	numerics::vector_f64 simplex::current_simplex_solution(const bool only_natural_args)const
 	{
-		vector_f64 solution(only_natural_args ? natural_args_count() : m_simplex_table.cols_count() - 1);
+		numerics::vector_f64 solution(only_natural_args ? natural_args_count() : m_simplex_table.cols_count() - 1);
 
 		for (I32 index = 0; index < m_basis_args_indices.size(); index++)
 		{
@@ -544,7 +544,7 @@ namespace sm
 		return solution;
 	}
 
-	vector_f64 simplex::solve(const I32 problem_type)
+	numerics::vector_f64 simplex::solve(const I32 problem_type)
 	{
 		m_problem_type = problem_type;
 
@@ -552,7 +552,7 @@ namespace sm
 
 		build_simplex_table();
 
-		vector_f64 solution;
+		numerics::vector_f64 solution;
 
 		F64 a_ik;
 
@@ -592,7 +592,7 @@ namespace sm
 
 			a_ik = m_simplex_table(main_row, main_col);
 
-			vector_f64 main_row_vector = m_simplex_table.get_row(main_row) *= 1.0 / a_ik;
+			numerics::vector_f64 main_row_vector = m_simplex_table.get_row(main_row) *= 1.0 / a_ik;
 			// m_simplex_table[main_row] = m_simplex_table[main_row] * (1.0 / a_ik);
 			for (I32 i = 0; i < m_simplex_table.rows_count(); i++)
 			{
@@ -601,7 +601,7 @@ namespace sm
 			}
 			solution = current_simplex_solution();
 #if _DEBUG
-			std::cout << "a_main { " << main_row + 1 << ", " << main_col + 1 << " } = " << rational_str(a_ik) << "\n";
+			std::cout << "a_main { " << main_row + 1 << ", " << main_col + 1 << " } = " << numerics::rational_str(a_ik) << "\n";
 			std::cout << *this;
 			std::cout << "current_solution" << solution << "\n";
 			std::cout << "\n";
@@ -620,7 +620,7 @@ namespace sm
 		return solution;
 	}
 
-	simplex::simplex(const matrix_f64& bounds_matrix, const vector_f64& prices_vector, const vector_i32& inequations, const vector_f64& bounds_vector)
+	simplex::simplex(const numerics::matrix_f64& bounds_matrix, const numerics::vector_f64& prices_vector, const numerics::vector_i32& inequations, const numerics::vector_f64& bounds_vector)
 	{
 		if (bounds_vector.size() != inequations.size())
 			throw std::runtime_error("Error simplex creation :: b.size() != inequalities.size()");
@@ -634,7 +634,7 @@ namespace sm
 		m_inequations = inequations;
 	}
 
-	simplex::simplex(const matrix_f64& bounds_matrix, const vector_f64& prices_vector, const vector_f64& bounds_vector)
+	simplex::simplex(const numerics::matrix_f64& bounds_matrix, const numerics::vector_f64& prices_vector, const numerics::vector_f64& bounds_vector)
 	{
 		if (bounds_matrix.rows_count() != bounds_vector.size())
 			throw std::runtime_error("Error simplex creation :: A.rows_number() != bouns_coeffs.size()");
@@ -643,11 +643,11 @@ namespace sm
 		m_bounds_vector = bounds_vector;
 		m_bounds_matrix = bounds_matrix;
 		m_prices_vector = prices_vector;
-		m_inequations = vector_i32(bounds_vector.size());
+		m_inequations = numerics::vector_i32(bounds_vector.size());
 		m_inequations.fill([](const I32) {return LESS_EQUAL; });
 	}
 
-	simplex::simplex(matrix_f64&& bounds_matrix, vector_f64&& prices_vector, vector_i32&& inequations, vector_f64&& bounds_vector) 
+	simplex::simplex(numerics::matrix_f64&& bounds_matrix, numerics::vector_f64&& prices_vector, numerics::vector_i32&& inequations, numerics::vector_f64&& bounds_vector) 
 	{
 		if (bounds_vector.size() != inequations.size())
 			throw std::runtime_error("Error simplex creation :: b.size() != inequalities.size()");
@@ -660,7 +660,7 @@ namespace sm
 		m_prices_vector = std::move(prices_vector);
 		m_inequations   = std::move(inequations  );
 	}
-	simplex::simplex(matrix_f64&& bounds_matrix, vector_f64&& prices_vector, vector_f64&& bounds_vector)
+	simplex::simplex(numerics::matrix_f64&& bounds_matrix, numerics::vector_f64&& prices_vector, numerics::vector_f64&& bounds_vector)
 	{
 		if (bounds_matrix.rows_count() != bounds_vector.size())
 			throw std::runtime_error("Error simplex creation :: A.rows_number() != bouns_coeffs.size()");
@@ -669,7 +669,7 @@ namespace sm
 		m_bounds_vector = std::move(bounds_vector);
 		m_bounds_matrix = std::move(bounds_matrix);
 		m_prices_vector = std::move(prices_vector);
-		m_inequations = vector_i32(bounds_vector.size());
+		m_inequations = numerics::vector_i32(bounds_vector.size());
 		m_inequations.fill([](const I32) {return LESS_EQUAL; });
 	}
 }

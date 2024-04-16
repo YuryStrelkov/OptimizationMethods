@@ -1,8 +1,13 @@
 #pragma once
+#ifndef __TEMPLATE_VECTOR_H__
+#define __TEMPLATE_VECTOR_H__
 #include "../common.h"
 #include <cstring>
+#include "template_vector_allocator.h"
 #include "vector_iterators.h"
 #include "slice.h"
+
+NUMERICS_NAMESPACE_BEGIN
 #define MINIMAL_VECTOR_SIZE 8
 #define VECTOR_SIZE_UPSCALE 1.5
 
@@ -92,25 +97,20 @@ private:
 
 	T* alloc(const I32 cap)
 	{
-		return (T*)(malloc(cap * sizeof(T)));
+		return m_allocator.allocate(cap);
 	}
 	void dealloc() 
 	{
-		if (m_data != nullptr) free(m_data);
+		m_allocator.deallocate(m_data, size());
 	}
 	void upscale()
 	{
 		if (filling() != capacity())return;
 		resize(I32(m_capacity * VECTOR_SIZE_UPSCALE));
 	}
-
-	T* allocate(const UI64 amount)
-	{
-		return new T[amount];
-	}
-
 	slice_object* m_slice = nullptr;
-	T*            m_data;
+	template_vector_allocator<T> m_allocator;
+	T*            m_data = nullptr;
 	I32           m_capacity;
 	I32           m_filling;
 	bool          m_is_silce = false;
@@ -154,7 +154,8 @@ protected:
 		if (other.is_slice())
 			apply(other, [](const T& v) {return v; });
 		else
-			memcpy(m_data, other.m_data, filling() * sizeof(T));
+			m_allocator.const_copy(other.m_data, m_data, filling());
+			// memcpy(m_data, other.m_data, filling() * sizeof(T));
 	}
 public:
 	static T reduce(const template_vector_<T>& vector, std::function<T(const T&, const T&)> reduce_f, T init_value = T{ 0 });
@@ -299,11 +300,11 @@ public:
 	void resize(const I32 new_size)
 	{
 		if (capacity() == new_size) return;
-		m_capacity = new_size;
-		m_filling  = capacity() > filling() ? filling() : capacity();
 		T* _new_values = alloc(new_size);
-		std::memcpy(_new_values, m_data, filling() * sizeof(T));
+		m_allocator.move_copy(m_data, _new_values, MIN(new_size, filling()));
 		dealloc();
+		m_capacity = new_size;
+		m_filling = MIN(new_size, filling());
 		m_data = _new_values;
 	}
 
@@ -344,7 +345,7 @@ public:
 			return (*this);
 		}
 		upscale();
-		m_data[m_filling++] = value;
+		m_data[m_filling++] = T(value);
 		return (*this);
 	}
 
@@ -370,18 +371,15 @@ public:
 			return (*this);
 		}
 		if (!in_range(index))return (*this);
-		{
-			m_data[index].~T();
-		}
-		std::memcpy(&m_data[index], &m_data[index + 1], (static_cast<UI64>(filling()) - index) * sizeof(T));
+		T* remove_item = m_data + index;
+		remove_item->~T(); // release item memory
+		m_allocator.move_copy(remove_item + 1, remove_item, static_cast<UI64>(filling()) - index);
 		m_filling--;
 		return (*this);
 	}
 		
 	template_vector_<T>& insert(const I32 index, const T& value)
 	{
-		// todo corret using of remove references
-		// todo safty zero memory 
 		if (is_slice())
 		{
 			(*m_slice).source().insert((*m_slice).source_index(index), value);
@@ -392,14 +390,12 @@ public:
 		if (index < 0) return insert(0, value);
 		if (index > filling()) return push_back(value);
 		upscale();
-		std::memcpy(&m_data[index + 1], &m_data[index], (static_cast<UI64>(filling()) - index) * sizeof(T));
-		{
-			//ZERO MEMORY
-			char* data_ptr = reinterpret_cast<char*>(m_data + index);
-			for (size_t i = 0; i < sizeof(T); i++)
-				*(data_ptr++) = '\0';
-		}
-		m_data[index] = std::move(value);
+		T* insert_item = m_data + index;
+		T* last_item = m_data + filling() - 1;
+		T* last_last_item = last_item + 1;
+		UI32 last_elements_count = static_cast<UI64>(filling()) - index;
+		m_allocator.move_copy_reverced(last_item, last_last_item, last_elements_count);
+		*insert_item = T(value);
 		m_filling++;
 		return (*this);
 	}
@@ -416,8 +412,12 @@ public:
 		if (index < 0) return insert(0, value);
 		if (index > filling()) return push_back(value);
 		upscale();
-		std::memcpy(&m_data[index + 1], &m_data[index], (static_cast<UI64>(filling()) - index) * sizeof(T));
-		m_data[index] = std::move(value);
+		T* insert_item = m_data + index;
+		T* last_item = m_data + filling() - 1;
+		T* last_last_item = last_item + 1;
+		UI32 last_elements_count = static_cast<UI64>(filling()) - index;
+		m_allocator.move_copy_reverced(last_item, last_last_item, last_elements_count);
+		*insert_item = std::move(value);
 		m_filling++;
 		return (*this);
 	}
@@ -476,18 +476,17 @@ public:
 		return template_vector_(indices, *this);
 	}
 
-	template_vector_<T>(const template_vector_<T>& other)
+	template_vector_(const template_vector_<T>& other)
 	{
-		m_data = alloc(other.capacity());
 		reassign_data(other);
 	};
 	
 	template_vector_(template_vector_&& other)
 	{
-		exchange_data(other);
+		exchange_data(std::move(other));
 	};
 	
-	template_vector_(const I32 cap )
+	template_vector_(const I32 cap)
 	{
 		m_filling  = cap;
 		m_capacity = (I32)(cap * VECTOR_SIZE_UPSCALE);
@@ -645,5 +644,6 @@ bool operator == (const template_vector_<U>& lhs, const template_vector_<U>& rhs
 {
 	return (lhs.filling() == rhs.filling()) && (lhs.m_data == rhs.m_data);
 }
-
 void template_vector_test();
+NUMERICS_NAMESPACE_END
+#endif

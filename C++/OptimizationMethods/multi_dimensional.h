@@ -1,24 +1,24 @@
 #pragma once
 #include "numerics/numerics.h"
 
-typedef F64(*function_nd)(const vector_f64&);
-static vector_f64 bisect      (function_nd function, const vector_f64& left, const vector_f64& right, const F64 eps = N_DIM_ACCURACY, const I32 max_iterations = N_DIM_ITERS_MAX);
-static vector_f64 golden_ratio(function_nd function, const vector_f64& left, const vector_f64& right, const F64 eps = N_DIM_ACCURACY, const I32 max_iters = N_DIM_ITERS_MAX);
-static vector_f64 fibonacci   (function_nd function, const vector_f64& left, const vector_f64& right, const F64 eps = N_DIM_ACCURACY);
+typedef F64(*function_nd)(const numerics::vector_f64&);
+static numerics::vector_f64 bisect      (function_nd function, const numerics::vector_f64& left, const numerics::vector_f64& right, const F64 eps = N_DIM_ACCURACY, const I32 max_iterations = N_DIM_ITERS_MAX);
+static numerics::vector_f64 golden_ratio(function_nd function, const numerics::vector_f64& left, const numerics::vector_f64& right, const F64 eps = N_DIM_ACCURACY, const I32 max_iters = N_DIM_ITERS_MAX);
+static numerics::vector_f64 fibonacci   (function_nd function, const numerics::vector_f64& left, const numerics::vector_f64& right, const F64 eps = N_DIM_ACCURACY);
 
-static vector_f64 per_coord_descend    (function_nd function, const vector_f64& x_start, const F64 eps = N_DIM_ACCURACY, const I32 max_iters = N_DIM_ITERS_MAX);
-static vector_f64 gradient_descend     (function_nd function, const vector_f64& x_start, const F64 eps = N_DIM_ACCURACY, const I32 max_iters = N_DIM_ITERS_MAX);
-static vector_f64 conj_gradient_descend(function_nd function, const vector_f64& x_start, const F64 eps = N_DIM_ACCURACY, const I32 max_iters = N_DIM_ITERS_MAX);
-static vector_f64 newtone_raphson      (function_nd function, const vector_f64& x_start, const F64 eps = N_DIM_ACCURACY, const I32 max_iters = N_DIM_ITERS_MAX);
+static numerics::vector_f64 per_coord_descend    (function_nd function, const numerics::vector_f64& x_start, const F64 eps = N_DIM_ACCURACY, const I32 max_iters = N_DIM_ITERS_MAX);
+static numerics::vector_f64 gradient_descend     (function_nd function, const numerics::vector_f64& x_start, const F64 eps = N_DIM_ACCURACY, const I32 max_iters = N_DIM_ITERS_MAX);
+static numerics::vector_f64 conj_gradient_descend(function_nd function, const numerics::vector_f64& x_start, const F64 eps = N_DIM_ACCURACY, const I32 max_iters = N_DIM_ITERS_MAX);
+static numerics::vector_f64 newtone_raphson      (function_nd function, const numerics::vector_f64& x_start, const F64 eps = N_DIM_ACCURACY, const I32 max_iters = N_DIM_ITERS_MAX);
 
 
 // Методы n-мерной дихотомии, золотого сечения и Фибоначчи определяют минимум строго вдоль направления из  x_0 в x_1
 // т.е., если истинный минимум функции на этом направлении не лежит, метод всё равно найдёт минимальное значение, но оно 
 // будет отличаться от истинного минимума
-static vector_f64 bisect(function_nd function, const vector_f64& left, const vector_f64& right, const F64 eps, const I32 max_iterations)
+static numerics::vector_f64 bisect(function_nd function, const numerics::vector_f64& left, const numerics::vector_f64& right, const F64 eps, const I32 max_iterations)
 {
-	vector_f64 x_c, dir, lhs(left), rhs(right);
-	dir = vector_f64::direction(lhs, rhs) * eps;
+	numerics::vector_f64 x_c, dir, lhs(left), rhs(right);
+	dir = numerics::vector_f64::direction(lhs, rhs) * eps;
 	I32 iteration = 0;
 	for (; iteration != max_iterations; iteration++)
 	{
@@ -36,10 +36,10 @@ static vector_f64 bisect(function_nd function, const vector_f64& left, const vec
 	return (lhs + rhs) * 0.5;
 }
 
-static vector_f64 golden_ratio(function_nd function, const vector_f64& left, const vector_f64& right, const F64 eps, const I32 max_iterations)
+static numerics::vector_f64 golden_ratio(function_nd function, const numerics::vector_f64& left, const numerics::vector_f64& right, const F64 eps, const I32 max_iterations)
 {
-	vector_f64 lhs(left), rhs(right);
-	vector_f64 x_l, x_r;
+	numerics::vector_f64 lhs(left), rhs(right);
+	numerics::vector_f64 x_l, x_r;
 	F64 f_l, f_r;
 	I32 iteration = 0;
 	x_l = rhs - (rhs - lhs) * PSI;
@@ -73,10 +73,10 @@ static vector_f64 golden_ratio(function_nd function, const vector_f64& left, con
 	return (right + left) * 0.5;
 }
 
-static vector_f64 fibonacci(function_nd function, const vector_f64& left, const vector_f64& right, const F64 eps)
+static numerics::vector_f64 fibonacci(function_nd function, const numerics::vector_f64& left, const numerics::vector_f64& right, const F64 eps)
 {
-	vector_f64 x_l, x_r;
-	vector_f64 lhs(left), rhs(right);
+	numerics::vector_f64 x_l, x_r;
+	numerics::vector_f64 lhs(left), rhs(right);
 	F64 f_l, f_r, value, fib_t{ 0.0 }, fib_1{ 1.0 }, fib_2{ 1.0 };
 	I32 iterations{ 0 };
 	value = (right - left).magnitude() / eps;
@@ -132,10 +132,10 @@ static vector_f64 fibonacci(function_nd function, const vector_f64& left, const 
 // Покоординатный спуск, градиентный спуск и спуск с помощью сопряжённых градиентов, определяют
 // минимальное значение функции только по одной начальной точке x_start.
 // Поэтому не зависят от выбора направления.
-static vector_f64 per_coord_descend(function_nd function, const vector_f64& x_start, const F64 eps, const I32 max_iters)
+static numerics::vector_f64 per_coord_descend(function_nd function, const numerics::vector_f64& x_start, const F64 eps, const I32 max_iters)
 {
-	vector_f64 x_0(x_start);
-	vector_f64 x_1(x_start);
+	numerics::vector_f64 x_0(x_start);
+	numerics::vector_f64 x_1(x_start);
 	F64 step = 1.0;
 	F64 x_i, y_1, y_0;
 	I32 opt_coord_n = 0, coord_id;
@@ -172,15 +172,15 @@ static vector_f64 per_coord_descend(function_nd function, const vector_f64& x_st
 	return x_0;
 }
 
-static vector_f64 gradient_descend(function_nd function, const vector_f64& x_start, const F64 eps, const I32 max_iters)
+static numerics::vector_f64 gradient_descend(function_nd function, const numerics::vector_f64& x_start, const F64 eps, const I32 max_iters)
 {
-	vector_f64 x_i(x_start);
-	vector_f64 x_i_1;
-	vector_f64 grad;
+	numerics::vector_f64 x_i(x_start);
+	numerics::vector_f64 x_i_1;
+	numerics::vector_f64 grad;
 	I32 cntr = 0;
 	for(; cntr <= max_iters; cntr++)
 	{
-		grad  = vector_f64::gradient(function, x_i, eps);
+		grad  = numerics::vector_f64::gradient(function, x_i, eps);
 		x_i_1 = x_i - grad;
 		x_i_1 = bisect(function, x_i, x_i_1, eps, max_iters);
 		if ((x_i_1 - x_i).magnitude() < eps) break;
@@ -192,11 +192,11 @@ static vector_f64 gradient_descend(function_nd function, const vector_f64& x_sta
 	return (x_i_1 + x_i) * 0.5;
 }
 
-static vector_f64 conj_gradient_descend(function_nd function, const vector_f64& x_start, const F64 eps, const I32 max_iters)
+static numerics::vector_f64 conj_gradient_descend(function_nd function, const numerics::vector_f64& x_start, const F64 eps, const I32 max_iters)
 {
-	vector_f64 x_i(x_start);
-	vector_f64 x_i_1;
-	vector_f64 s_i = vector_f64::gradient(function, x_i, eps)*(-1.0), s_i_1;
+	numerics::vector_f64 x_i(x_start);
+	numerics::vector_f64 x_i_1;
+	numerics::vector_f64 s_i = numerics::vector_f64::gradient(function, x_i, eps)*(-1.0), s_i_1;
 	F64 omega;
 	I32 cntr = 0;
 	for (; cntr <= max_iters; cntr++)
@@ -204,7 +204,7 @@ static vector_f64 conj_gradient_descend(function_nd function, const vector_f64& 
 		x_i_1 = x_i + s_i;
 		if ((x_i_1 - x_i).magnitude() < eps) break;
 		x_i_1 = bisect(function, x_i, x_i_1, eps, max_iters);
-		s_i_1 = vector_f64::gradient(function, x_i_1, eps);
+		s_i_1 = numerics::vector_f64::gradient(function, x_i_1, eps);
 		omega = pow(s_i_1.magnitude(), 2) / pow(s_i.magnitude(), 2);
 		s_i = s_i * omega - s_i_1;
 		x_i = x_i_1;
@@ -215,17 +215,17 @@ static vector_f64 conj_gradient_descend(function_nd function, const vector_f64& 
 	return (x_i_1 + x_i) * 0.5;
 }
 
-static vector_f64 newtone_raphson (function_nd function, const vector_f64& x_start, const F64 eps, const I32 max_iters)
+static numerics::vector_f64 newtone_raphson (function_nd function, const numerics::vector_f64& x_start, const F64 eps, const I32 max_iters)
 {
-	vector_f64 x_i(x_start);
-	vector_f64 x_i_1;
-	vector_f64 grad ;
-	matrix_f64 hess(1, 1);
+	numerics::vector_f64 x_i(x_start);
+	numerics::vector_f64 x_i_1;
+	numerics::vector_f64 grad ;
+	numerics::matrix_f64 hess(1, 1);
 	I32 cntr = 0;
 	for (; cntr <= max_iters; cntr++)
 	{
-		grad = vector_f64::gradient(function, x_i, eps);
-		hess = matrix_f64::invert(matrix_f64::hessian(function, x_i, eps));
+		grad = numerics::vector_f64::gradient(function, x_i, eps);
+		hess = numerics::matrix_f64::invert(numerics::matrix_f64::hessian(function, x_i, eps));
 		x_i_1 = x_i - (hess * grad);
 		if ((x_i_1 - x_i).magnitude() < eps) break;
 		x_i = x_i_1;

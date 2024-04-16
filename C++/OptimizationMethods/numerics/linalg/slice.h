@@ -1,7 +1,9 @@
 #pragma once
+#ifndef __SLICE_H__
+#define __SLICE_H__
 #include "../common.h"
-
-struct slice 
+NUMERICS_NAMESPACE_BEGIN
+struct slice
 {
 private:
 	I32 m_end;
@@ -21,7 +23,7 @@ public:
 		return m_step;
 	}
 
-	slice(): slice(0,0,1) {
+	slice() : slice(0, 0, 1) {
 	}
 
 	slice(const I32 begin, const I32 end) : slice(begin, end, 1) {
@@ -35,3 +37,5 @@ public:
 
 	friend std::ostream& operator<<(std::ostream& stream, const slice& slice);
 };
+NUMERICS_NAMESPACE_END
+#endif

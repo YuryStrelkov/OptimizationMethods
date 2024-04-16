@@ -144,6 +144,7 @@
     <ClCompile Include="numerics\rational\rational.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="numerics\linalg\template_vector_allocator.h" />
     <ClInclude Include="numerics\numerics.h" />
     <ClInclude Include="numerics\common.h" />
     <ClInclude Include="main.h" />

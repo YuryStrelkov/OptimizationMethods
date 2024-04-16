@@ -1,8 +1,124 @@
 #include "numeric_matrix.h"
 #include "numeric_vector.h"
-#include "template_vector.h"
 #include "slice.h"
+#include "../rational/rational.h"
+NUMERICS_NAMESPACE_BEGIN
+std::ostream& operator<<(std::ostream& stream, const slice& slice)
+{
+	if (slice.step() != 1)
+		stream << slice.begin() << ":" << slice.end() << ":" << slice.step();
+	else
+		stream << slice.begin() << ":" << slice.end();
+	return stream;
+};
 
+
+void template_vector_test()
+{
+	auto first = template_vector_<I32>();
+	first.push_back(11).push_back(22).push_back(33).push_back(44).push_back(55);
+
+	map_values<I32, double> int_to_double = first.map<double>([](const I32& i) { return std::sqrt(i); });
+
+	for (auto const a : int_to_double) std::cout << "ccc: " << a << "\n";
+
+	auto second = template_vector_<double>(int_to_double);
+
+	auto copy_first = template_vector_<double>(int_to_double);
+
+	copy_first.push_back(11).
+		push_back(22).
+		push_back(33).
+		push_back(55);
+
+	auto copy_of_first = template_vector_<double>(second);
+
+	auto zip_vals = zip_values<double, double>(copy_of_first.values(), copy_of_first.values());
+
+	auto diff = [](const double& a, const double& b) { return a - b; };
+	auto summ = [](const double& a, const double& b) { return a + b; };
+
+	// combine_values<double, double> combine_vals = combine_values<double, double>(zip_values<double, double>(copy_of_first.values(), copy_of_first.values()), summ);	combine_values<double, double> combine_vals = combine_values<double, double>(zip_values<double, double>(copy_of_first.values(), copy_of_first.values()), summ);
+	// combine_values<double, double> combine_vals = combine_values<double, double>(copy_of_first.values(), copy_of_first.values(), summ);	
+	combine_values<double, double> combine_vals = combine_values<double, double>(100000.0, copy_of_first.values(), summ);
+	//combine_values<double, double> combine_vals = combine_values<double, double>(zip_values<double, double>(copy_of_first.values(), copy_of_first.values()), summ);
+
+	template_vector_<double> combines = template_vector_<double>(combine_vals);
+
+	std::cout << "first                  :" << first << "\n";
+	std::cout << "copy_first             :" << copy_first << "\n";
+	std::cout << "copy_of_first          :" << copy_of_first << "\n";
+	std::cout << "combines               :" << combines << "\n";
+	std::cout << "combines               :" << template_vector_<double>(combines.combine<double>(combines, diff)) << "\n";
+	std::cout << "first.insert(0, 13)    :" << first.insert(0, 13) << "\n";
+	std::cout << "first.insert(2, 13)    :" << first.insert(2, 13) << "\n";
+	std::cout << "first.insert(13,13)    :" << first.insert(13, 13) << "\n";
+
+	std::cout << "first.remove_at(0)     :" << first.remove_at(0) << "\n";
+	std::cout << "first.remove_at(2)     :" << first.remove_at(2) << "\n";
+	std::cout << "first.remove_at(1)     :" << first.remove_at(1) << "\n";
+	std::cout << "copy_first             :" << copy_first << "\n";
+	auto val = copy_first[slice(3, 6)];
+	std::cout << "copy_first[slice(3, 6)]:" << val << "\n";
+	// copy_first[slice(3, 6)] = template_vector_<double>({ 0, 0, 0 });
+	auto v = copy_first[slice(3, 6)];
+	v.apply([](const double v) {return -1.0; });
+	std::cout << "copy_first[slice(3, 6)]:" << copy_first[slice(3, 6)] << "\n";
+	std::cout << "copy_first             :" << copy_first << "\n";
+}
+
+
+void numeric_vector_test()
+{
+	vector_f64 lhs({ 1.0, 2.0, 3.0, 4.0, 9.0, 8.0, 7.0, 6.0 });
+	vector_f64 rhs({ 9.0, 8.0, 7.0, 6.0, 1.0, 2.0, 3.0, 4.0 });
+	// rhs.push_back(9.0).push_back(8.0).push_back(7.0).push_back(6.0);
+	std::cout << "lhs            : " << lhs << "\n";
+	std::cout << "rhs            : " << rhs << "\n";
+	std::cout << "rhs - copy     : " << vector_f64(rhs) << "\n";
+	std::cout << "lhs + rhs      : " << lhs + rhs << "\n";
+	std::cout << "lhs - rhs      : " << lhs - rhs << "\n";
+	std::cout << "lhs * rhs      : " << lhs * rhs << "\n";
+	std::cout << "lhs / rhs      : " << lhs / rhs << "\n";
+
+	std::cout << "2 + rhs        : " << 2.0 + rhs << "\n";
+	std::cout << "2 - rhs        : " << 2.0 - rhs << "\n";
+	std::cout << "2 * rhs        : " << 2.0 * rhs << "\n";
+	std::cout << "2 / rhs        : " << 2.0 / rhs << "\n";
+
+	std::cout << "rhs + 2        : " << rhs + 2.0 << "\n";
+	std::cout << "rhs - 2        : " << rhs - 2.0 << "\n";
+	std::cout << "rhs * 2        : " << rhs * 2.0 << "\n";
+	std::cout << "rhs / 2        : " << rhs / 2.0 << "\n";
+
+	std::cout << "lhs += rhs     : " << (lhs += rhs) << "\n";
+	std::cout << "lhs -= rhs     : " << (lhs -= rhs) << "\n";
+	std::cout << "lhs *= rhs     : " << (lhs *= rhs) << "\n";
+	std::cout << "lhs /= rhs     : " << (lhs /= rhs) << "\n";
+
+	std::cout << "lhs += 2.0     : " << (lhs += 2.0) << "\n";
+	std::cout << "lhs -= 2.0     : " << (lhs -= 2.0) << "\n";
+	std::cout << "lhs *= 2.0     : " << (lhs *= 2.0) << "\n";
+	std::cout << "lhs /= 2.0     : " << (lhs /= 2.0) << "\n";
+	std::cout << "mag(lhs)       : " << rational_number(lhs.magnitude()) << "\n";
+	std::cout << "dot(lhs, rhs)  : " << rational_number(vector_f64::dot(lhs, rhs)) << "\n";
+	std::cout << "dir(lhs, rhs)  : " << vector_f64::direction(lhs, rhs) << "\n";
+	std::cout << "normalized(lhs): " << lhs.normalized() << "\n";
+	std::cout << "normalize (lhs): " << lhs.normalize() << "\n";
+	std::cout << "gradient  (lhs): " << vector_f64::gradient(test_f, lhs, 1e-9) << "\n";
+	std::cout << "partial2  (lhs): " << rational_number(vector_f64::partial2(test_f, lhs, 0, 0, 1e-9)) << "\n";
+	std::cout << "lhs == rhs     : " << (lhs == rhs) << "\n";
+	std::cout << "lhs != rhs     : " << (lhs != rhs) << "\n";
+	std::cout << "lhs > rhs      : " << (lhs > rhs) << "\n";
+	std::cout << "lhs < rhs      : " << (lhs < rhs) << "\n";
+	std::cout << "lhs >= rhs     : " << (lhs >= rhs) << "\n";
+	std::cout << "lhs <= rhs     : " << (lhs <= rhs) << "\n";
+	std::cout << "lhs >= 100     : " << (lhs >= 100.0) << "\n";
+	std::cout << "lhs <= 100     : " << (lhs <= 100.0) << "\n";
+	std::cout << "lhs            : " << lhs << "\n";
+	lhs[slice(3, 6)] = vector_f64({ 13.0, 13.0, 13.0 });
+	std::cout << "lhs            : " << lhs << "\n";
+}
 
 void numeric_matrix_test()
 {
@@ -130,118 +246,4 @@ void numeric_matrix_test()
 	rhs.get_row(3) -= row;
 	std::cout << "rhs - rhs[3:]:\n" << rhs << "\n";
 }
-
-void numeric_vector_test()
-{
-	vector_f64 lhs({ 1.0, 2.0, 3.0, 4.0, 9.0, 8.0, 7.0, 6.0 });
-	vector_f64 rhs({ 9.0, 8.0, 7.0, 6.0, 1.0, 2.0, 3.0, 4.0 });
-	// rhs.push_back(9.0).push_back(8.0).push_back(7.0).push_back(6.0);
-	std::cout << "lhs            : " << lhs << "\n";
-	std::cout << "rhs            : " << rhs << "\n";
-	std::cout << "rhs - copy     : " << vector_f64(rhs) << "\n";
-	std::cout << "lhs + rhs      : " << lhs + rhs << "\n";
-	std::cout << "lhs - rhs      : " << lhs - rhs << "\n";
-	std::cout << "lhs * rhs      : " << lhs * rhs << "\n";
-	std::cout << "lhs / rhs      : " << lhs / rhs << "\n";
-
-	std::cout << "2 + rhs        : " << 2.0 + rhs << "\n";
-	std::cout << "2 - rhs        : " << 2.0 - rhs << "\n";
-	std::cout << "2 * rhs        : " << 2.0 * rhs << "\n";
-	std::cout << "2 / rhs        : " << 2.0 / rhs << "\n";
-
-	std::cout << "rhs + 2        : " << rhs + 2.0 << "\n";
-	std::cout << "rhs - 2        : " << rhs - 2.0 << "\n";
-	std::cout << "rhs * 2        : " << rhs * 2.0 << "\n";
-	std::cout << "rhs / 2        : " << rhs / 2.0 << "\n";
-
-	std::cout << "lhs += rhs     : " << (lhs += rhs) << "\n";
-	std::cout << "lhs -= rhs     : " << (lhs -= rhs) << "\n";
-	std::cout << "lhs *= rhs     : " << (lhs *= rhs) << "\n";
-	std::cout << "lhs /= rhs     : " << (lhs /= rhs) << "\n";
-
-	std::cout << "lhs += 2.0     : " << (lhs += 2.0) << "\n";
-	std::cout << "lhs -= 2.0     : " << (lhs -= 2.0) << "\n";
-	std::cout << "lhs *= 2.0     : " << (lhs *= 2.0) << "\n";
-	std::cout << "lhs /= 2.0     : " << (lhs /= 2.0) << "\n";
-	std::cout << "mag(lhs)       : " << rational_number(lhs.magnitude()) << "\n";
-	std::cout << "dot(lhs, rhs)  : " << rational_number(vector_f64::dot(lhs, rhs)) << "\n";
-	std::cout << "dir(lhs, rhs)  : " << vector_f64::direction(lhs, rhs) << "\n";
-	std::cout << "normalized(lhs): " << lhs.normalized() << "\n";
-	std::cout << "normalize (lhs): " << lhs.normalize() << "\n";
-	std::cout << "gradient  (lhs): " << vector_f64::gradient(test_f, lhs, 1e-9) << "\n";
-	std::cout << "partial2  (lhs): " << rational_number(vector_f64::partial2(test_f, lhs, 0, 0, 1e-9)) << "\n";
-	std::cout << "lhs == rhs     : " << (lhs == rhs) << "\n";
-	std::cout << "lhs != rhs     : " << (lhs != rhs) << "\n";
-	std::cout << "lhs > rhs      : " << (lhs > rhs) << "\n";
-	std::cout << "lhs < rhs      : " << (lhs < rhs) << "\n";
-	std::cout << "lhs >= rhs     : " << (lhs >= rhs) << "\n";
-	std::cout << "lhs <= rhs     : " << (lhs <= rhs) << "\n";
-	std::cout << "lhs >= 100     : " << (lhs >= 100.0) << "\n";
-	std::cout << "lhs <= 100     : " << (lhs <= 100.0) << "\n";
-	std::cout << "lhs            : " << lhs << "\n";
-	lhs[slice(3, 6)] = vector_f64({ 13.0, 13.0, 13.0 });
-	std::cout << "lhs            : " << lhs << "\n";
-}
-
-void template_vector_test()
-{
-	auto first = template_vector_<I32>();
-	first.push_back(11).push_back(22).push_back(33).push_back(44).push_back(55);
-
-	map_values<I32, double> int_to_double = first.map<double>([](const I32& i) { return std::sqrt(i); });
-
-	for (auto const a : int_to_double) std::cout << "ccc: " << a << "\n";
-
-	auto second = template_vector_<double>(int_to_double);
-
-	auto copy_first = template_vector_<double>(int_to_double);
-
-	copy_first.push_back(11).
-		push_back(22).
-		push_back(33).
-		push_back(55);
-
-	auto copy_of_first = template_vector_<double>(second);
-
-	auto zip_vals = zip_values<double, double>(copy_of_first.values(), copy_of_first.values());
-
-	auto diff = [](const double& a, const double& b) { return a - b; };
-	auto summ = [](const double& a, const double& b) { return a + b; };
-
-	// combine_values<double, double> combine_vals = combine_values<double, double>(zip_values<double, double>(copy_of_first.values(), copy_of_first.values()), summ);	combine_values<double, double> combine_vals = combine_values<double, double>(zip_values<double, double>(copy_of_first.values(), copy_of_first.values()), summ);
-	// combine_values<double, double> combine_vals = combine_values<double, double>(copy_of_first.values(), copy_of_first.values(), summ);	
-	combine_values<double, double> combine_vals = combine_values<double, double>(100000.0, copy_of_first.values(), summ);
-	//combine_values<double, double> combine_vals = combine_values<double, double>(zip_values<double, double>(copy_of_first.values(), copy_of_first.values()), summ);
-
-	template_vector_<double> combines = template_vector_<double>(combine_vals);
-
-	std::cout << "first                  :" << first << "\n";
-	std::cout << "copy_first             :" << copy_first << "\n";
-	std::cout << "copy_of_first          :" << copy_of_first << "\n";
-	std::cout << "combines               :" << combines << "\n";
-	std::cout << "combines               :" << template_vector_<double>(combines.combine<double>(combines, diff)) << "\n";
-	std::cout << "first.insert(0, 13)    :" << first.insert(0, 13) << "\n";
-	std::cout << "first.insert(2, 13)    :" << first.insert(2, 13) << "\n";
-	std::cout << "first.insert(13,13)    :" << first.insert(13, 13) << "\n";
-
-	std::cout << "first.remove_at(0)     :" << first.remove_at(0) << "\n";
-	std::cout << "first.remove_at(2)     :" << first.remove_at(2) << "\n";
-	std::cout << "first.remove_at(1)     :" << first.remove_at(1) << "\n";
-	std::cout << "copy_first             :" << copy_first << "\n";
-	auto val = copy_first[slice(3, 6)];
-	std::cout << "copy_first[slice(3, 6)]:" << val << "\n";
-	// copy_first[slice(3, 6)] = template_vector_<double>({ 0, 0, 0 });
-	auto v = copy_first[slice(3, 6)];
-	v.apply([](const double v) {return -1.0; });
-	std::cout << "copy_first[slice(3, 6)]:" << copy_first[slice(3, 6)] << "\n";
-	std::cout << "copy_first             :" << copy_first << "\n";
-}
-
-std::ostream& operator<<(std::ostream& stream, const slice& slice)
-{
-	if (slice.step() != 1)
-		stream << slice.begin() << ":" << slice.end() << ":" << slice.step();
-	else
-		stream << slice.begin() << ":" << slice.end();
-	return stream;
-};
+NUMERICS_NAMESPACE_END

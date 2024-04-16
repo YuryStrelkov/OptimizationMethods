@@ -1,25 +1,27 @@
 #pragma once
+#ifndef __NUMERIC_VECTOR_H__
+#define __NUMERIC_VECTOR_H__
 #include <cmath>
 #include "template_vector.h"
 #include "../rational/rational.h"
-
+NUMERICS_NAMESPACE_BEGIN
 template<typename T>class numeric_vector_;
 typedef numeric_vector_<F64> vector_f64;
 typedef numeric_vector_<F32> vector_f32;
 typedef numeric_vector_<I32> vector_i32;
 
 template<typename T>
-class numeric_vector_: public template_vector_<T>
+class numeric_vector_ : public template_vector_<T>
 {
 public:
-	numeric_vector_<T>&      normalize ();
+	numeric_vector_<T>& normalize();
 	numeric_vector_<T>       normalized()const;
-	T                        magnitude ()const;
-	static T                 dot       (const numeric_vector_<T>& lhs, const numeric_vector_<T>& rhs);
-	static numeric_vector_<T>direction (const numeric_vector_<T>& lhs, const numeric_vector_<T>& rhs);
-	static numeric_vector_<T>gradient  (std::function<T(const numeric_vector_<T>&)> func, numeric_vector_<T>& x, const T&   accuracy);
-	static T                 partial   (std::function<T(const numeric_vector_<T>&)> func, numeric_vector_<T>& x, const I32 index, const T& accuracy);
-	static T                 partial2  (std::function<T(const numeric_vector_<T>&)> func, numeric_vector_<T>& x, const I32 index1, const I32 index2, const T& accuracy);
+	T                        magnitude()const;
+	static T                 dot(const numeric_vector_<T>& lhs, const numeric_vector_<T>& rhs);
+	static numeric_vector_<T>direction(const numeric_vector_<T>& lhs, const numeric_vector_<T>& rhs);
+	static numeric_vector_<T>gradient(std::function<T(const numeric_vector_<T>&)> func, numeric_vector_<T>& x, const T& accuracy);
+	static T                 partial(std::function<T(const numeric_vector_<T>&)> func, numeric_vector_<T>& x, const I32 index, const T& accuracy);
+	static T                 partial2(std::function<T(const numeric_vector_<T>&)> func, numeric_vector_<T>& x, const I32 index1, const I32 index2, const T& accuracy);
 
 	numeric_vector_<T>& operator+=(const numeric_vector_<T>& rhs);
 	numeric_vector_<T>& operator-=(const numeric_vector_<T>& rhs);
@@ -41,13 +43,13 @@ public:
 
 	template<typename U>friend bool operator==(const numeric_vector_<U>& lhs, const numeric_vector_<U>& rhs);
 	template<typename U>friend bool operator!=(const numeric_vector_<U>& lhs, const numeric_vector_<U>& rhs);
-	
+
 	template<typename U>friend bool operator>(const numeric_vector_<U>& lhs, const numeric_vector_<U>& rhs);
 	template<typename U>friend bool operator<(const numeric_vector_<U>& lhs, const numeric_vector_<U>& rhs);
 
 	template<typename U>friend bool operator>=(const numeric_vector_<U>& lhs, const numeric_vector_<U>& rhs);
 	template<typename U>friend bool operator<=(const numeric_vector_<U>& lhs, const numeric_vector_<U>& rhs);
-	
+
 	template<typename U>friend bool operator >(const U& lhs, const numeric_vector_<U>& rhs);
 	template<typename U>friend bool operator <(const U& lhs, const numeric_vector_<U>& rhs);
 
@@ -81,17 +83,17 @@ public:
 	numeric_vector_(const template_vector_<T>& src) : template_vector_<T>(src) {
 	};
 
-	numeric_vector_(template_vector_<T>&& src) : template_vector_<T>(src) {
+	numeric_vector_(template_vector_<T>&& src) : template_vector_<T>(std::move(src)) {
 	};
 
-	numeric_vector_(numeric_vector_<T>&& vector)noexcept : template_vector_<T>(vector) {
+	numeric_vector_(numeric_vector_<T>&& vector)noexcept : template_vector_<T>(std::move(vector)) {
 	};
 
 	numeric_vector_(const numeric_vector_<T>& vector) : template_vector_<T>(vector) {
 	};
 
 	numeric_vector_(const I32 cap, const bool default_fill = true) : template_vector_<T>(cap) {
-		if(default_fill)template_vector_<T>::fill([](const I32 n) {return T{ 0 }; });
+		if (default_fill)template_vector_<T>::fill([](const I32 n) {return T{ 0 }; });
 	};
 
 	numeric_vector_(const std::initializer_list<T>& values) : template_vector_<T>(values) {
@@ -123,7 +125,7 @@ inline numeric_vector_<T>& numeric_vector_<T>::normalize()
 template<typename T>
 inline numeric_vector_<T> numeric_vector_<T>::normalized() const
 {
-	return numeric_vector_<T>(combine_values<T, T>(this->values(), T{1.0} / magnitude(), mul_f));
+	return numeric_vector_<T>(combine_values<T, T>(this->values(), T{ 1.0 } / magnitude(), mul_f));
 }
 
 template<typename T>
@@ -159,9 +161,9 @@ inline T numeric_vector_<T>::partial(std::function<T(const numeric_vector_<T>&)>
 {
 	assert(x.in_range(index) && "index value out of vector indices rannge");
 	x.unchecked_access(index) = x.unchecked_access(index) + accuracy;
-	const T f_r               = func(x);
-	x.unchecked_access(index) = x.unchecked_access(index) - T{ 2.0 } * accuracy;
-	const T f_l               = func(x);
+	const T f_r = func(x);
+	x.unchecked_access(index) = x.unchecked_access(index) - T{ 2.0 } *accuracy;
+	const T f_l = func(x);
 	x.unchecked_access(index) = x.unchecked_access(index) + accuracy;
 	return (f_r - f_l) / accuracy * T{ 0.5 };
 }
@@ -172,9 +174,9 @@ inline T numeric_vector_<T>::partial2(std::function<T(const numeric_vector_<T>&)
 	assert(x.in_range(index2) && "index value out of vector indices rannge");
 	// return partial([&](const numeric_vector_<T>& v) {return partial(func, x, index1);}, x, index1);
 	x.unchecked_access(index2) = x.unchecked_access(index2) + accuracy;
-	const T f_r                = numeric_vector_<T>::partial(func, x, index1, accuracy);
-	x.unchecked_access(index2) = x.unchecked_access(index2) - T{ 2.0 } * accuracy;
-	const T f_l                = numeric_vector_<T>::partial(func, x, index1, accuracy);
+	const T f_r = numeric_vector_<T>::partial(func, x, index1, accuracy);
+	x.unchecked_access(index2) = x.unchecked_access(index2) - T{ 2.0 } *accuracy;
+	const T f_l = numeric_vector_<T>::partial(func, x, index1, accuracy);
 	x.unchecked_access(index2) = x.unchecked_access(index2) + accuracy;
 	return (f_r - f_l) / accuracy * T{ 0.5 };
 }
@@ -485,5 +487,6 @@ static auto test_f = [](const vector_f64& vector)
 	}
 	return result;
 };
-
 void numeric_vector_test();
+NUMERICS_NAMESPACE_END
+#endif

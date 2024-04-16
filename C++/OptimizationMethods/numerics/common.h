@@ -47,12 +47,17 @@ typedef float  F32;
 #define ITERS_MAX             50
 #define MAX_DENOMINATOR       1000
 #define NUMBER_CHARS_COUNT    11
-#define DECIMAL_NUMBERS_REPRESNTATION 1
+#define DECIMAL_NUMBERS_REPRESNTATION 0
 #define RATIONAL_NUMBERS_REPRESNTATION (!DECIMAL_NUMBERS_REPRESNTATION)
 #define MAX(A, B) (A > B ? A : B)
 #define MIN(A, B) (A < B ? A : B)
 #define DISPLAY_PROGRES (_DEBUG? 1 : 0)
-
+#define NUMERICS_NAMESPACE_BEGIN namespace numerics { 
+#define NUMERICS_NAMESPACE_END   } 
+#define STR char*
+#define CSTR const char*
+#define TRUE  1
+#define FALSE 0
 static auto sum_f = [](const auto& lhs, const auto& rhs) { return lhs + rhs; };
 static auto dif_f = [](const auto& lhs, const auto& rhs) { return lhs - rhs; };
 static auto div_f = [](const auto& lhs, const auto& rhs) { return lhs / rhs; };

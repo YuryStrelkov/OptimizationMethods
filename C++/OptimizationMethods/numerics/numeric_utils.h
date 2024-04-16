@@ -7,17 +7,17 @@ static int get_factorial(const I32 number) {
 	return result;
 };
 
-static vector_i32 calculate_factorials(const I32 number = 128)
+static numerics::vector_i32 calculate_factorials(const I32 number = 128)
 {
-	vector_i32 factorials(number);
+	numerics::vector_i32 factorials(number);
 	factorials.fill([&](const I32 index) {return get_factorial(index); });
 	return factorials;
 };
 
-static vector_i32 fibonacci_numbers(const I32 index) {
-	if (index < 1) return vector_i32({ 0 });
-	if (index < 2) return vector_i32({ 0, 1 });
-	vector_i32 res = vector_i32(index);
+static numerics::vector_i32 fibonacci_numbers(const I32 index) {
+	if (index < 1) return numerics::vector_i32({ 0 });
+	if (index < 2) return numerics::vector_i32({ 0, 1 });
+	numerics::vector_i32 res = numerics::vector_i32(index);
 	res[0] = 0;
 	res[1] = 1;
 	for (int i = 2; i < index; i++) res[i] = res[i - 1] + res[i - 2];
