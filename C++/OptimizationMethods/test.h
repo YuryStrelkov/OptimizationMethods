@@ -135,6 +135,9 @@ static void numeric_tests()
 
 static int test_all()
 {
+	// numerics::vector_f32 a = { 1, 2, 3, 4 };
+	// numerics::vector_f32 b = { 2, 3, 4, 5 };
+	// std::cout << "numerics::vector_f32::distance(a, b)" << numerics::vector_f32::distance(a, b);;
 	numerics::template_vector_test();
 	numerics::numeric_vector_test();
 	numerics::numeric_matrix_test();

@@ -18,6 +18,7 @@ public:
 	numeric_vector_<T>       normalized()const;
 	T                        magnitude()const;
 	static T                 dot(const numeric_vector_<T>& lhs, const numeric_vector_<T>& rhs);
+	static T                 distance (const numeric_vector_<T>& lhs, const numeric_vector_<T>& rhs);
 	static numeric_vector_<T>direction(const numeric_vector_<T>& lhs, const numeric_vector_<T>& rhs);
 	static numeric_vector_<T>gradient(std::function<T(const numeric_vector_<T>&)> func, numeric_vector_<T>& x, const T& accuracy);
 	static T                 partial(std::function<T(const numeric_vector_<T>&)> func, numeric_vector_<T>& x, const I32 index, const T& accuracy);
@@ -119,13 +120,13 @@ protected:
 template<typename T>
 inline numeric_vector_<T>& numeric_vector_<T>::normalize()
 {
-	return  ((*this) *= (T{ 1.0 } / magnitude()));
+	return  ((*this) *= (T{ 1 } / magnitude()));
 }
 
 template<typename T>
 inline numeric_vector_<T> numeric_vector_<T>::normalized() const
 {
-	return numeric_vector_<T>(combine_values<T, T>(this->values(), T{ 1.0 } / magnitude(), mul_f));
+	return numeric_vector_<T>(combine_values<T, T>(this->values(), T{ 1 } / magnitude(), mul_f));
 }
 
 template<typename T>
@@ -143,6 +144,15 @@ inline T numeric_vector_<T>::dot(const numeric_vector_<T>& lhs, const numeric_ve
 }
 
 template<typename T>
+inline T numeric_vector_<T>::distance(const numeric_vector_<T>& lhs, const numeric_vector_<T>& rhs)
+{
+	auto vzip = numeric_vector_<T>::zip<T>(lhs, rhs);
+	T accum{ 0 };
+	for (auto const pair : vzip) accum += (pair.first - pair.second) * (pair.first - pair.second);
+	return std::sqrt(accum);
+}
+
+template<typename T>
 inline numeric_vector_<T> numeric_vector_<T>::direction(const numeric_vector_<T>& lhs, const numeric_vector_<T>& rhs)
 {
 	return (rhs - lhs).normalize();
@@ -152,7 +162,7 @@ template<typename T>
 inline numeric_vector_<T> numeric_vector_<T>::gradient(std::function<T(const numeric_vector_<T>&)> func, numeric_vector_<T>& x, const T& accuracy)
 {
 	numeric_vector_<T> grad(x.filling());
-	grad.apply_enumerate([&](const I32 index, const T& value) {return numeric_vector_<T>::partial(func, x, index, accuracy); });
+	grad.apply_enumerate([&func, &x, &accuracy](const I32 index, const T& value) {return numeric_vector_<T>::partial(func, x, index, accuracy); });
 	return grad;
 }
 
@@ -162,10 +172,10 @@ inline T numeric_vector_<T>::partial(std::function<T(const numeric_vector_<T>&)>
 	assert(x.in_range(index) && "index value out of vector indices rannge");
 	x.unchecked_access(index) = x.unchecked_access(index) + accuracy;
 	const T f_r = func(x);
-	x.unchecked_access(index) = x.unchecked_access(index) - T{ 2.0 } *accuracy;
+	x.unchecked_access(index) = x.unchecked_access(index) - T{ 2 } *accuracy;
 	const T f_l = func(x);
 	x.unchecked_access(index) = x.unchecked_access(index) + accuracy;
-	return (f_r - f_l) / accuracy * T{ 0.5 };
+	return (f_r - f_l) / (accuracy * T{ 2 });
 }
 
 template<typename T>
@@ -175,10 +185,10 @@ inline T numeric_vector_<T>::partial2(std::function<T(const numeric_vector_<T>&)
 	// return partial([&](const numeric_vector_<T>& v) {return partial(func, x, index1);}, x, index1);
 	x.unchecked_access(index2) = x.unchecked_access(index2) + accuracy;
 	const T f_r = numeric_vector_<T>::partial(func, x, index1, accuracy);
-	x.unchecked_access(index2) = x.unchecked_access(index2) - T{ 2.0 } *accuracy;
+	x.unchecked_access(index2) = x.unchecked_access(index2) - T{ 2 } *accuracy;
 	const T f_l = numeric_vector_<T>::partial(func, x, index1, accuracy);
 	x.unchecked_access(index2) = x.unchecked_access(index2) + accuracy;
-	return (f_r - f_l) / accuracy * T{ 0.5 };
+	return (f_r - f_l) / (accuracy * T{ 2 });
 }
 
 template<typename T>
@@ -237,7 +247,7 @@ inline numeric_vector_<T>& numeric_vector_<T>::operator*=(const T& rhs)
 template<typename T>
 inline numeric_vector_<T>& numeric_vector_<T>::operator/=(const T& rhs)
 {
-	template_vector_<T>::apply(combine_values<T, T>(this->values(), T{ 1.0 } / rhs, mul_f));
+	template_vector_<T>::apply(combine_values<T, T>(this->values(), T{ 1 } / rhs, mul_f));
 	return (*this);
 }
 

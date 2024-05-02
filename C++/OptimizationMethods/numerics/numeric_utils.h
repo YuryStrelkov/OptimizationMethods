@@ -10,7 +10,7 @@ static int get_factorial(const I32 number) {
 static numerics::vector_i32 calculate_factorials(const I32 number = 128)
 {
 	numerics::vector_i32 factorials(number);
-	factorials.fill([&](const I32 index) {return get_factorial(index); });
+	factorials.fill([](const I32 index) {return get_factorial(index); });
 	return factorials;
 };
 

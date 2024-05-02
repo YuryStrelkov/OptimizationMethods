@@ -22,7 +22,7 @@ static void decimal_to_rational(const F64& value, I32& rational_part, I32& numer
 	lmat mat;
 	I64 ai;
 	I64 t;
-	F64 x = abs(value);
+	F64 x = std::abs(value);
 	I32 sign = value >= 0 ? 1 : -1;
 	while (mat.m10 * (ai = (I64)x) + mat.m11 <= max_den) {
 

@@ -12,7 +12,6 @@ std::ostream& operator<<(std::ostream& stream, const slice& slice)
 	return stream;
 };
 
-
 void template_vector_test()
 {
 	auto first = template_vector_<I32>();
@@ -66,7 +65,6 @@ void template_vector_test()
 	std::cout << "copy_first[slice(3, 6)]:" << copy_first[slice(3, 6)] << "\n";
 	std::cout << "copy_first             :" << copy_first << "\n";
 }
-
 
 void numeric_vector_test()
 {

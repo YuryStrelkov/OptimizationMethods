@@ -22,7 +22,7 @@ static numerics::vector_f64 bisect(function_nd function, const numerics::vector_
 	I32 iteration = 0;
 	for (; iteration != max_iterations; iteration++)
 	{
-		if ((lhs - rhs).magnitude() < 2 * eps) break;
+		if (numerics::vector_f64::distance(lhs, rhs) < 2 * eps) break;
 		x_c = (lhs + rhs) * 0.5;
 		if (function(x_c - dir) > function(x_c + dir))
 			lhs = x_c;
@@ -48,7 +48,7 @@ static numerics::vector_f64 golden_ratio(function_nd function, const numerics::v
 	f_r = function(x_r);
 	for (; iteration != max_iterations; iteration++)
 	{
-		if ((rhs - lhs).magnitude() < 2 * eps) break;
+		if (numerics::vector_f64::distance(lhs, rhs) < 2 * eps) break;
 		if (f_l > f_r)
 		{
 			lhs = x_l;
@@ -79,7 +79,7 @@ static numerics::vector_f64 fibonacci(function_nd function, const numerics::vect
 	numerics::vector_f64 lhs(left), rhs(right);
 	F64 f_l, f_r, value, fib_t{ 0.0 }, fib_1{ 1.0 }, fib_2{ 1.0 };
 	I32 iterations{ 0 };
-	value = (right - left).magnitude() / eps;
+	value = numerics::vector_f64::distance(lhs, rhs) / eps;
 	while (fib_2 < value)
 	{
 		iterations++;
@@ -149,9 +149,9 @@ static numerics::vector_f64 per_coord_descend(function_nd function, const numeri
 		x_1[coord_id] -= eps;
 		x_1[coord_id] = y_0 > y_1 ? x_1[coord_id] += step : x_1[coord_id] -= step;
 		x_i = x_0[coord_id];
-		x_1 = bisect(function, x_0, x_1, eps, max_iters);
+		x_1 = fibonacci(function, x_0, x_1, eps);
 		x_0 = x_1;
-		if (abs(x_1[coord_id] - x_i) < eps)
+		if (std::abs(x_1[coord_id] - x_i) < 2 * eps)
 		{
 			opt_coord_n++;
 
@@ -182,8 +182,8 @@ static numerics::vector_f64 gradient_descend(function_nd function, const numeric
 	{
 		grad  = numerics::vector_f64::gradient(function, x_i, eps);
 		x_i_1 = x_i - grad;
-		x_i_1 = bisect(function, x_i, x_i_1, eps, max_iters);
-		if ((x_i_1 - x_i).magnitude() < eps) break;
+		x_i_1 = fibonacci(function, x_i, x_i_1, eps);
+		if (numerics::vector_f64::distance(x_i_1, x_i) < 2 * eps) break;
 		x_i = x_i_1;
 	}
 #if DISPLAY_PROGRES
@@ -202,10 +202,10 @@ static numerics::vector_f64 conj_gradient_descend(function_nd function, const nu
 	for (; cntr <= max_iters; cntr++)
 	{
 		x_i_1 = x_i + s_i;
-		if ((x_i_1 - x_i).magnitude() < eps) break;
-		x_i_1 = bisect(function, x_i, x_i_1, eps, max_iters);
+		if (numerics::vector_f64::distance(x_i_1, x_i) < 2 * eps) break;
+		x_i_1 = fibonacci(function, x_i, x_i_1, eps);
 		s_i_1 = numerics::vector_f64::gradient(function, x_i_1, eps);
-		omega = pow(s_i_1.magnitude(), 2) / pow(s_i.magnitude(), 2);
+		omega = std::pow(s_i_1.magnitude(), 2) / std::pow(s_i.magnitude(), 2);
 		s_i = s_i * omega - s_i_1;
 		x_i = x_i_1;
 	}
@@ -227,7 +227,7 @@ static numerics::vector_f64 newtone_raphson (function_nd function, const numeric
 		grad = numerics::vector_f64::gradient(function, x_i, eps);
 		hess = numerics::matrix_f64::invert(numerics::matrix_f64::hessian(function, x_i, eps));
 		x_i_1 = x_i - (hess * grad);
-		if ((x_i_1 - x_i).magnitude() < eps) break;
+		if (numerics::vector_f64::distance(x_i_1, x_i) < 2 * eps) break;
 		x_i = x_i_1;
 	}
 #if DISPLAY_PROGRES

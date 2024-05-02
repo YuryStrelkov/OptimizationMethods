@@ -417,13 +417,15 @@ namespace sm
 		/// Построение симплекс разностей
 		/// </summary>
 		numerics::vector_f64 s_deltas(m_simplex_table.cols_count());/// [0] .size());
+		
+		const UI32 prices_count = m_prices_vector.size();
 
-		s_deltas.apply_enumerate(m_prices_vector, [&](const I32 index, const F64 value) {return index < m_prices_vector.size() ? -value : 0.0; });
+		s_deltas.apply_enumerate(m_prices_vector, [&prices_count](const I32 index, const F64 value) {return index < prices_count ? -value : 0.0; });
 
 		if (m_problem_type == SIMPLEX_MAX)
-			s_deltas.apply_enumerate(m_prices_vector, [&](const I32 index, const F64 value) {return index < m_prices_vector.size() ? -value : 0.0; });
+			s_deltas.apply_enumerate(m_prices_vector, [&prices_count](const I32 index, const F64 value) {return index < prices_count ? -value : 0.0; });
 		else
-			s_deltas.apply_enumerate(m_prices_vector, [&](const I32 index, const F64 value) {return index < m_prices_vector.size() ? value : 0.0; });
+			s_deltas.apply_enumerate(m_prices_vector, [&prices_count](const I32 index, const F64 value) {return index < prices_count ? value : 0.0; });
 
 		m_simplex_table.add_row(s_deltas);
 

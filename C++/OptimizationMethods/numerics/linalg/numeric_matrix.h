@@ -274,7 +274,7 @@ public:
 	numeric_matrix_(const I32 rows, const I32 cols, const bool fill_by_default_value = true) : template_vector_<T>(rows * cols)
 	{
 		if (fill_by_default_value)
-			template_vector_<T>::fill([](const T& v) {return T{ 0.0f }; });
+			template_vector_<T>::fill([](const T& v) {return T{ 0 }; });
 		m_rows = rows;
 		m_cols = cols;
 	}
@@ -345,7 +345,7 @@ inline void numeric_matrix_<T>::lu(const numeric_matrix_<T>& matrix, numeric_mat
 			if (col < row) continue;
 			if (col == row)
 			{
-				up.unchecked_access(row, col) = T{ 1.0 };
+				up.unchecked_access(row, col) = T{ 1 };
 				continue;
 			}
 			up.unchecked_access(row, col) = matrix.unchecked_access(row, col) / low.unchecked_access(row, row);
@@ -465,7 +465,7 @@ inline numeric_vector_<U> operator*(const numeric_vector_<U>& lhs, const numeric
 	U value;
 	for (I32 col = 0; col < rhs.cols_count(); col++)
 	{
-		value = U{ 0.0 };
+		value = U{ 0 };
 		for (I32 row = 0; row < rhs.rows_count(); row++)
 			value += rhs.unchecked_access(row, col) * lhs.unchecked_access(row);
 		result.unchecked_access(col) = value;
@@ -481,7 +481,7 @@ inline numeric_vector_<U> operator * (const numeric_matrix_<U>& lhs, const numer
 	U value;
 	for (I32 row = 0; row < lhs.rows_count(); row++)
 	{
-		value = U{ 0.0 };
+		value = U{ 0 };
 		for (I32 col = 0; col < lhs.rows_count(); col++)
 			value += lhs.unchecked_access(row, col) * rhs.unchecked_access(col);
 		result.unchecked_access(row) = value;
@@ -757,7 +757,7 @@ inline numeric_matrix_<T>& numeric_matrix_<T>::add_col()
 	I32 insert_index = cols_count();
 	for (I32 index = 0; index < rows_count(); index++)
 	{
-		template_vector_<T>::insert(insert_index, T{ 0.0 });
+		template_vector_<T>::insert(insert_index, T{ 0 });
 		insert_index += cols_count() + 1;
 	}
 	this->m_cols += 1;
@@ -768,7 +768,7 @@ template<typename T>
 inline numeric_matrix_<T>& numeric_matrix_<T>::add_row()
 {
 	for (I32 index = 0; index < cols_count(); index++)
-		template_vector_<T>::push_back(T{ 0.0 });
+		template_vector_<T>::push_back(T{ 0 });
 	this->m_rows += 1;
 	return *this;
 }
@@ -776,7 +776,7 @@ inline numeric_matrix_<T>& numeric_matrix_<T>::add_row()
 template<typename T>
 inline T numeric_matrix_<T>::trace() const
 {
-	T tr = T{ 0.0 };
+	T tr = T{ 0 };
 	for (I32 index = 0; index < MIN(rows_count(), cols_count()); index++)tr += unchecked_access(index, index);
 	return tr;
 }
@@ -785,7 +785,7 @@ template<typename T>
 inline T numeric_matrix_<T>::determinant() const
 {
 	numeric_matrix_<T> copy(*this);
-	T det = { 1.0 };
+	T det = { 1 };
 	I32 row, col, pivot;
 	for (row = 0; row < copy.rows_count(); row++) {
 		pivot = row;
@@ -798,10 +798,10 @@ inline T numeric_matrix_<T>::determinant() const
 			T tmp = copy.unchecked_access(pivot, col);
 			copy.unchecked_access(pivot, col) = copy.unchecked_access(row, col);
 			copy.unchecked_access(row, col) = tmp;
-			det *= T{-1.0};
+			det *= T{ -1 };
 		}
 		if (std::abs(copy.unchecked_access(row, row)) < ACCURACY) {
-			return T{0.0};
+			return T{ 0 };
 		}
 		det *= copy.unchecked_access(row, row);
 		for (I32 j = row + 1; j < copy.rows_count(); j++) {
@@ -833,7 +833,7 @@ inline numeric_matrix_<T>& numeric_matrix_<T>::invert()
 template<typename T>
 inline numeric_vector_<T> numeric_matrix_<T>::linsolve(const numeric_matrix_<T>& low, const numeric_matrix_<T>& up, const numeric_vector_<T>& b)
 {
-	T det = T{ 1.0 };
+	T det = T{ 1 };
 
 	for (I32 row = 0; row < up.rows_count(); row++)
 		det *= (up.unchecked_access(row, row) * up.unchecked_access(row, row));
@@ -847,7 +847,7 @@ inline numeric_vector_<T> numeric_matrix_<T>::linsolve(const numeric_matrix_<T>&
 	I32 row, col;
 	for (row = 0; row < z.filling(); row++)
 	{
-		tmp = T{ 0.0f };
+		tmp = T{ 0 };
 		for (col = 0; col < row; col++)
 			tmp += z.unchecked_access(col) * low.unchecked_access(row, col);
 		z.unchecked_access(row) = (b.unchecked_access(row) - tmp) / low.unchecked_access(row, row);
@@ -855,7 +855,7 @@ inline numeric_vector_<T> numeric_matrix_<T>::linsolve(const numeric_matrix_<T>&
 
 	for (row = z.filling() - 1; row >= 0; row--)
 	{
-		tmp = T{ 0.0f };
+		tmp = T{ 0 };
 		for (col = row + 1; col < z.filling(); col++)
 			tmp += x.unchecked_access(col) * up.unchecked_access(row, col);
 		x.unchecked_access(row) = (z.unchecked_access(row) - tmp);
@@ -896,7 +896,7 @@ inline numeric_matrix_<T> numeric_matrix_<T>::invert(const numeric_matrix_<T>& m
 
 	lu(matrix, low, up);
 
-	T det = T{ 1.0 };
+	T det = T{ 1 };
 	for (I32 rows = 0; rows < low.rows_count(); rows++)
 		det *= (low.unchecked_access(rows, rows) * low.unchecked_access(rows, rows));
 
@@ -909,11 +909,11 @@ inline numeric_matrix_<T> numeric_matrix_<T>::invert(const numeric_matrix_<T>& m
 
 	for (I32 col = 0; col < matrix.cols_count(); col++)
 	{
-		b.unchecked_access(col) = T{ 1.0 };
+		b.unchecked_access(col) = T{ 1 };
 		column = numeric_matrix_<T>::linsolve(low, up, b);
 		if (column.filling() != b.filling())
 			throw std::runtime_error("error :: unable to find matrix inversion");
-		b.unchecked_access(col) = T{ 0.0 };
+		b.unchecked_access(col) = T{ 0 };
 		for (I32 row = 0; row < matrix.rows_count(); row++)
 			inv.unchecked_access(row, col) = column.unchecked_access(row);
 	}
@@ -930,7 +930,7 @@ template<typename T>
 inline numeric_matrix_<T> numeric_matrix_<T>::identity(const I32 n_rows, const I32 n_cols)
 {
 	numeric_matrix_<T> matrix = numeric_matrix_<T>::zeros(n_rows, n_cols);
-	for (I32 index = 0; index < MIN(n_rows, n_cols); index++)matrix.unchecked_access(index, index) = T{ 1.0 };
+	for (I32 index = 0; index < MIN(n_rows, n_cols); index++)matrix.unchecked_access(index, index) = T{ 1 };
 	return matrix;
 }
 
