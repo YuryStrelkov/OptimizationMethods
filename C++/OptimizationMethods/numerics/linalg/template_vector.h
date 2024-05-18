@@ -95,6 +95,64 @@ private:
 		};
 	};
 
+	void destroy_objects(const UI64 begin = 0, const UI64 end = 0)
+	{
+		UI64 _end = (end ? end : size());
+		for (UI64 index = begin; index < _end; ++index)
+			m_data[index].~T();
+	}
+	
+	void zero_memory(T* block, const UI64 amount = 0) noexcept
+	{
+		STR mem_block = reinterpret_cast<STR> (block);
+		const UI64 block_size = amount ? amount * sizeof(T) : sizeof(T);
+		for (UI64 index = 0; index < block_size; index++) *(mem_block++) = '\0';
+	}
+
+	void deallocate_memory()
+	{
+		::operator delete(m_data, capacity() * sizeof(T));
+		m_data = nullptr;
+		m_capacity = 0;
+		m_filling  = 0;
+	}
+
+	// UI8 realloc_memory(UI64 new_capacity)
+	// {
+	// 	// 1. can't resize slice
+	// 	// 2. allocate new memory block
+	// 	// 3. copy by moving each element into new memory block
+	// 	// 4. delete raminig elements from old memory block
+	// 	// 5. delete old memory block
+	// 	// 6. swap memory blocks and update size and capacity
+	// 	// if (is_slice()) return FALSE;
+	// 
+	// 	if (!new_capacity)
+	// 	{
+	// 		clear_buffer();
+	// 		return TRUE;
+	// 	}
+	// 
+	// 	if (new_capacity == capacity()) return TRUE;
+	// 
+	// 	T* new_block = (T*)::operator new(new_capacity * sizeof(T));
+	// 
+	// 	UI64 old_buffer_size = size();
+	// 
+	// 	m_filling = MIN(size(), new_capacity);
+	// 
+	// 	if (m_buffer)
+	// 	{
+	// 		for (UI64 index = 0; index < m_filling; ++index)
+	// 			new_block[index] = std::move(m_data[index]);
+	// 		destroy_objects(m_capacity, old_buffer_size);
+	// 		deallocate_memory();
+	// 	}
+	// 	m_data = new_block;
+	// 	m_capacity = new_capacity;
+	// 	return TRUE;
+	// }
+
 	T* alloc(const I32 cap)
 	{
 		return m_allocator.allocate(cap);
@@ -111,8 +169,8 @@ private:
 	slice_object* m_slice = nullptr;
 	template_vector_allocator<T> m_allocator;
 	T*            m_data = nullptr;
-	I32           m_capacity;
-	I32           m_filling;
+	UI64          m_capacity;
+	UI64          m_filling;
 	bool          m_is_silce = false;
 protected:
 	void exchange_data(template_vector_<T>&& other)noexcept
