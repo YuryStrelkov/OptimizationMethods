@@ -56,6 +56,13 @@ static std::string rational_str(const I32 int_part,
 	const I32 denomerator,
 	const bool& full_rational = true)
 {
+	// if (numerator == 0) return std::to_string(int_part);
+	// if (denomerator / numerator > 1000) return std::to_string(int_part);
+	// if (int_part == 0) return std::string(fstring("%i/%i", numerator, denomerator));//; std::to_string(numerator) + "/" + std::to_string(denomerator);
+	// if (full_rational)
+	// 	return std::string(fstring("%i/%i", (numerator + std::abs(int_part) * denomerator) * (int_part >= 0 ? 1 : -1), std::to_string(denomerator)));
+	// return std::string(fstring("%i %i/%i", int_part, numerator, denomerator));// std::to_string(int_part) + " " + std::to_string(numerator) + "/" + std::to_string(denomerator);
+
 	if (numerator == 0) return std::to_string(int_part);
 	if (int_part == 0) return std::to_string(numerator) + "/" + std::to_string(denomerator);
 	if (full_rational)

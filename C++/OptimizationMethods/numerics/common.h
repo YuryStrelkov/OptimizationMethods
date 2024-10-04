@@ -62,3 +62,11 @@ static auto sum_f = [](const auto& lhs, const auto& rhs) { return lhs + rhs; };
 static auto dif_f = [](const auto& lhs, const auto& rhs) { return lhs - rhs; };
 static auto div_f = [](const auto& lhs, const auto& rhs) { return lhs / rhs; };
 static auto mul_f = [](const auto& lhs, const auto& rhs) { return lhs * rhs; };
+
+#define FORMATTED_STRING_BUFFER_SIZE 2048
+template<typename... Args>
+CSTR fstring(CSTR formatter, Args... args) {
+	static char FORMATTED_STRING_BUFFER[FORMATTED_STRING_BUFFER_SIZE];
+	sprintf_s(FORMATTED_STRING_BUFFER, FORMATTED_STRING_BUFFER_SIZE, formatter, args...);
+	return FORMATTED_STRING_BUFFER;
+}
