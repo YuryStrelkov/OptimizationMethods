@@ -46,9 +46,8 @@ static numerics::vector_f64 golden_ratio(function_nd function, const numerics::v
 	x_r = lhs + (rhs - lhs) * PSI;
 	f_l = function(x_l);
 	f_r = function(x_r);
-	for (; iteration != max_iterations; iteration++)
+	for (; iteration != max_iterations && numerics::vector_f64::distance(lhs, rhs) > 2 * eps; iteration++)
 	{
-		if (numerics::vector_f64::distance(lhs, rhs) < 2 * eps) break;
 		if (f_l > f_r)
 		{
 			lhs = x_l;

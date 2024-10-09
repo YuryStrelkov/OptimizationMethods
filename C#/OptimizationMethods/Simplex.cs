@@ -78,10 +78,7 @@ namespace OptimizationMethods
         /// </summary>
         private SimplexProblemType mode = SimplexProblemType.Max;
 
-        public bool IsTargetFuncModified()
-        {
-            return _fModArgs.Count != 0;
-        }
+        public bool IsTargetFuncModified() => _fModArgs.Count != 0;
 
         /// <summary>
         /// Проверяет оптимальность текущего опорного плана. Исследуется положительность 

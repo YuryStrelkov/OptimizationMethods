@@ -8,10 +8,7 @@ namespace OptimizationMethods
         ////////////////////
         /// Lab. work #1 ///
         ////////////////////
-        static double Testf1(double arg)
-        {
-            return arg * (arg - 5.0);
-        }
+        static double Testf1(double arg) => arg * (arg - 5.0);
         static void Lab1()
         {
             Console.WriteLine("\n////////////////////\n");
@@ -28,10 +25,7 @@ namespace OptimizationMethods
         ////////////////////
         /// Lab. work #2 ///
         ////////////////////
-        static double Testf2(Vector args)
-        {
-            return (args[0] - 2.0) *(args[0] - 2.0) + (args[1] - 2.0) * (args[1] - 2.0);
-        }
+        static double Testf2(Vector args) => (args[0] - 2.0) * (args[0] - 2.0) + (args[1] - 2.0) * (args[1] - 2.0);
         static void Lab2()
         {
             Console.WriteLine("\n////////////////////\n");
@@ -72,20 +66,11 @@ namespace OptimizationMethods
         ////////////////////
         /// Пример применения функций штрафа
         /// Уловие 1
-        static double Psi1(Vector args)
-        {
-            return 1.0 / (5.0 - args[0] * 2.0 + args[1] * 3.0);
-        }
+        static double Psi1(Vector args) => 1.0 / (5.0 - args[0] * 2.0 + args[1] * 3.0);
         /// Уловие 1
-        static double Psi2(Vector args)
-        {
-            return 1.0 / (6.0 + args[0] * 3.0 - args[1]);
-        }
+        static double Psi2(Vector args) => 1.0 / (6.0 + args[0] * 3.0 - args[1]);
         ///Ишем минимум функции  Testf2 при условии Psi1 и Psi2(Это внутренний штраф)
-        static double Func(Vector args)
-        {
-            return Testf2(args) + Psi2(args) + Psi1(args);
-        }
+        static double Func(Vector args) => Testf2(args) + Psi2(args) + Psi1(args);
         static void Lab4()
         {
             Console.WriteLine("\n////////////////////\n");
@@ -97,8 +82,6 @@ namespace OptimizationMethods
             Console.WriteLine($"NewtoneRaphson         : {MultiDimensional.NewtoneRaphson(Testf2, x_1)}");
             Console.WriteLine($"NewtoneRaphson         : {MultiDimensional.NewtoneRaphson(Func, x_1)}\n");
         }
-
-
         static void Main(string[] args)
         {
                 Tests.TestAll();

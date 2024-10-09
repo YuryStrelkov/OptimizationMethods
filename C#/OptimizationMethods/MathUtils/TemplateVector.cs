@@ -13,7 +13,6 @@ namespace MathUtils
     public delegate T    ApplyEnumerateFunction <T>            (int index, T value);
     public delegate T    ApplyFunction          <T>            (T value);
     public delegate bool Predicate              <T>            (T item);
-
     public readonly struct TemplatePair<T, K> : IEquatable<TemplatePair<T, K>> where T: IEquatable<T> where K: IEquatable<K>
     {
         public readonly T First;
@@ -77,7 +76,7 @@ namespace MathUtils
     {
         public static readonly uint    MINIMAL_VECTOR_SIZE = 5;
         public static readonly double VECTOR_SIZE_UPSCALE = 1.5;
-        private class SliceObject
+        private sealed class SliceObject
         {
             private Slice _slice;
             private TemplateVector<T> _source;
@@ -226,10 +225,7 @@ namespace MathUtils
         protected int Filling
         {
             get => _filling;
-            set
-            {
-                _filling = Math.Max(0, Math.Min(Capacity, value));
-            }
+            set => _filling = Math.Max(0, Math.Min(Capacity, value));
         }
         /// <summary>
         /// Размерность вектора
@@ -260,8 +256,6 @@ namespace MathUtils
                 _data[index] = value;
             }
         }
-
-
         #endregion
 
         #region Object class methods, IEquatable<TemplateVector<T>>
@@ -348,10 +342,7 @@ namespace MathUtils
             Array.Copy(_data, array, Count);
         }
 
-        public bool Remove(T item)
-        {
-            return RemoveAt(IndexOf(item));
-        }
+        public bool Remove(T item) => RemoveAt(IndexOf(item));
 
         public bool RemoveAt(int index)
         {

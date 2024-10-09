@@ -8,7 +8,6 @@ namespace OptimizationMethods.MathUtils
         private readonly int _end;
         private readonly int _begin;
         private readonly int _step;
-
         //exclusive index
         public int End => _end;
         //inclusive index
@@ -25,16 +24,12 @@ namespace OptimizationMethods.MathUtils
             }
         }
 
-        private static int CalcIndex(int index, int stride)
-        {
-            return ((index % stride) + stride) % stride;
-        }
+        private static int CalcIndex(int index, int stride) => ((index % stride) + stride) % stride;
         public Slice Rebuild(int targetLength)
         {
             int begin = Begin == 0 ? 0 : CalcIndex(Begin, targetLength);
             int end = End == 0 ? targetLength : CalcIndex(End, targetLength);
-            return Step > 0 ? new Slice(begin, end == 0 ? targetLength : end, Step):
-                    new Slice(end == 0 ? targetLength : end, begin, Step);
+            return Step > 0 ? new Slice(begin, end == 0 ? targetLength : end, Step): new Slice(end == 0 ? targetLength : end, begin, Step);
         }
 
         public bool Equals([AllowNull] Slice other)
@@ -46,7 +41,6 @@ namespace OptimizationMethods.MathUtils
         }
 
         public override string ToString() => Step == 1 ? $"{Begin}:{End}" : $"{Begin}:{End}:{Step}";
-        // public Slice() : this(0, 0, 1){}
 
         public Slice(int begin, int end) : this(begin, end, 1){}
 

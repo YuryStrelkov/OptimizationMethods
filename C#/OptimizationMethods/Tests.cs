@@ -7,7 +7,6 @@ namespace OptimizationMethods
 {
    public static class Tests
     {
-
         public static void VectorTest() 
         {
             Vector b = new Vector(5.0, 6.0, 8.0);
@@ -27,7 +26,6 @@ namespace OptimizationMethods
             Console.Write($"{2} / {b} = {NumericUtils.ToRationalStr(2 / b, false)}\n");
             Console.Write($"{b} / {2} = {NumericUtils.ToRationalStr(b / 2, false)}\n");
         }
-
         public static void OneDimensionalMethodsTest()
         {
             Console.WriteLine("\n///////////////////////////////////////////");

@@ -48,7 +48,7 @@ public final class DoubleVector extends TemplateVector<Double>{
         return new DoubleVector(this).normalize();
     }
 
-    public double dot(DoubleVector other) {
+    public double dot(final DoubleVector other) {
         if (size() != other.size()) throw new RuntimeException("Dot product :: this.Size()!= other.Size()");
         return reduce(combine(this, other, (l, r) -> l * r), Double::sum, 0.0);
     }
@@ -73,7 +73,7 @@ public final class DoubleVector extends TemplateVector<Double>{
         return this;
     }
 
-    public DoubleVector add(DoubleVector other) {
+    public DoubleVector add(final DoubleVector other) {
         if (size() != other.size()) throw new RuntimeException("Vectors add :: this.Size()!= other.Size()");
         combine(other, Double::sum);
         return this;
@@ -87,7 +87,7 @@ public final class DoubleVector extends TemplateVector<Double>{
         return this;
     }
 
-    public DoubleVector sub(DoubleVector other) {
+    public DoubleVector sub(final DoubleVector other) {
         if (size() != other.size()) throw new RuntimeException("Vectors sub :: this.Size()!= other.Size()");
         combine(other, (l, r) -> l - r);
         return this;
@@ -101,7 +101,7 @@ public final class DoubleVector extends TemplateVector<Double>{
         return this;
     }
 
-    public DoubleVector mul(DoubleVector other) {
+    public DoubleVector mul(final DoubleVector other) {
         if (size() != other.size()) throw new RuntimeException("Vectors add :: this.Size()!= other.Size()");
         combine(other, (l, r) -> l * r);
         return this;
@@ -115,7 +115,7 @@ public final class DoubleVector extends TemplateVector<Double>{
         return this;
     }
 
-    public DoubleVector div(DoubleVector other) {
+    public DoubleVector div(final DoubleVector other) {
         if (size() != other.size()) throw new RuntimeException("Vectors sub :: this.Size()!= other.Size()");
         combine(other, (l, r) -> l / r);
         return this;
@@ -124,15 +124,15 @@ public final class DoubleVector extends TemplateVector<Double>{
     /**
      * Эквивалент left + right, где left и right могут иметь типы double или DoubleVector
      */
-    public static DoubleVector add(DoubleVector left, double right) {
+    public static DoubleVector add(final DoubleVector left, double right) {
         return new DoubleVector(combine(left, right, Double::sum));
     }
 
-    public static DoubleVector add(double left, DoubleVector right) {
+    public static DoubleVector add(double left, final DoubleVector right) {
         return new DoubleVector(combine(left, right, Double::sum));
     }
 
-    public static DoubleVector add(DoubleVector left, DoubleVector right) {
+    public static DoubleVector add(final DoubleVector left, final DoubleVector right) {
         if (left.size() != right.size()) throw new RuntimeException("Vectors sum :: this.Size()!= other.Size()");
         return new DoubleVector(combine(left, right, Double::sum));
     }
@@ -140,15 +140,15 @@ public final class DoubleVector extends TemplateVector<Double>{
     /**
      * Эквивалент left - right, где left и right могут иметь типы double или DoubleVector
      */
-    public static DoubleVector sub(DoubleVector left, double right) {
+    public static DoubleVector sub(final DoubleVector left, double right) {
         return new DoubleVector(combine(left, right, (l, r) -> l - r));
     }
 
-    public static DoubleVector sub(double left, DoubleVector right) {
+    public static DoubleVector sub(double left, final DoubleVector right) {
         return new DoubleVector(combine(left, right, (l, r) -> l - r));
     }
 
-    public static DoubleVector sub(DoubleVector left, DoubleVector right) {
+    public static DoubleVector sub(final DoubleVector left, final DoubleVector right) {
         if (left.size() != right.size()) throw new RuntimeException("Vectors sub :: this.Size()!= other.Size()");
         return new DoubleVector(combine(left, right, (l, r) -> l - r));
     }
@@ -156,15 +156,15 @@ public final class DoubleVector extends TemplateVector<Double>{
     /**
      * Эквивалент left * right, где left и right могут иметь типы double или DoubleVector
      */
-    public static DoubleVector mul(DoubleVector left, double right) {
+    public static DoubleVector mul(final DoubleVector left, double right) {
         return new DoubleVector(combine(left, right, (l, r) -> l * r));
     }
 
-    public static DoubleVector mul(double left, DoubleVector right) {
+    public static DoubleVector mul(double left, final DoubleVector right) {
         return new DoubleVector(combine(left, right, (l, r) -> l * r));
     }
 
-    public static DoubleVector mul(DoubleVector left, DoubleVector right) {
+    public static DoubleVector mul(final DoubleVector left, final DoubleVector right) {
         if (left.size() != right.size()) throw new RuntimeException("Vectors sub :: this.Size()!= other.Size()");
         return new DoubleVector(combine(left, right, (l, r) -> l * r));
     }
@@ -172,25 +172,25 @@ public final class DoubleVector extends TemplateVector<Double>{
     /**
      * Эквивалент left / right, где left и right могут иметь типы double или DoubleVector
      */
-    public static DoubleVector div(DoubleVector left, double right) {
+    public static DoubleVector div(final DoubleVector left, double right) {
         return new DoubleVector(combine(left, right, (l, r) -> l / r));
     }
 
-    public static DoubleVector div(double left, DoubleVector right) {
+    public static DoubleVector div(double left, final DoubleVector right) {
         return new DoubleVector(combine(left, right, (l, r) -> l / r));
     }
 
-    public static DoubleVector div(DoubleVector left, DoubleVector right) {
+    public static DoubleVector div(final DoubleVector left, final DoubleVector right) {
         if (left.size() != right.size()) throw new RuntimeException("Vectors sub :: this.Size()!= other.Size()");
         return new DoubleVector(combine(left, right, (l, r) -> l / r));
     }
 
-    public static DoubleVector direction(DoubleVector left, DoubleVector right) {
+    public static DoubleVector direction(final DoubleVector left, final DoubleVector right) {
         if (left.size() != right.size()) throw new RuntimeException("Vectors direction :: a.Size()!= b.Size()");
         return sub(right, left).normalize();
     }
 
-    public static double dot(DoubleVector left, DoubleVector right) {
+    public static double dot(final DoubleVector left, final DoubleVector right) {
         return left.dot(right);
     }
 
@@ -212,17 +212,22 @@ public final class DoubleVector extends TemplateVector<Double>{
        return partial((arg)->partial(func, arg, index_1, eps), x, index_2, eps);
     }
 
-    public static DoubleVector gradient(IFunctionND func, DoubleVector x, double eps) {
+    public static DoubleVector gradient(IFunctionND func, final DoubleVector x, double eps) {
         DoubleVector df = new DoubleVector(x.size());
         df.applyEnumerate((i, v) -> partial(func, x, i, eps));
         return df;
     }
 
-    public static double partial2(IFunctionND func, DoubleVector x, int index_1, int index_2) {
+    public static double partial2(IFunctionND func, final DoubleVector x, int index_1, int index_2) {
         return partial2(func, x, index_1, index_2, NumericCommon.NUMERIC_ACCURACY_MIDDLE);
     }
 
-    public static DoubleVector gradient(IFunctionND func, DoubleVector x) {
+    public static DoubleVector gradient(IFunctionND func, final DoubleVector x) {
         return  gradient(func, x, NumericCommon.NUMERIC_ACCURACY_MIDDLE);
+    }
+
+    public static double distance(final DoubleVector lhs, final DoubleVector rhs) {
+        if (lhs.size() != rhs.size()) throw new RuntimeException("Distance :: this.Size()!= other.Size()");
+        return Math.sqrt(reduce(DoubleVector.combine(lhs, rhs, (l, r) -> (l - r) * (l - r)), Double::sum, 0.0));
     }
 }

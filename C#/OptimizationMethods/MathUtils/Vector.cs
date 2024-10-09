@@ -6,7 +6,7 @@ using System;
 namespace MathUtils
 {
     public delegate double FunctionND(Vector x);
-    public class Vector: TemplateVector<double>, IEquatable<Vector>
+    public sealed class Vector: TemplateVector<double>, IEquatable<Vector>
     {
         /// <summary>
         /// Длина вектра
@@ -105,7 +105,6 @@ namespace MathUtils
         public static Vector operator + (Vector left, Vector right)
         {
             if (left.Count != right.Count) throw new Exception("error:: operator + :: vectors of different dimensions");
-
             return new Vector(left.Combine(right, (l, r) => l + r));
         }
         public static Vector operator + (Vector left, double right) => new Vector(left.Combine(right, (l, r) => l + r));
@@ -154,6 +153,12 @@ namespace MathUtils
         {
             if (left.Count != right.Count) throw new Exception("error :: dirction :: vectors of different dimensions");
             return (right - left).Normalize();
+        }
+
+        public static double Distance(Vector left, Vector right)
+        {
+            if (left.Count != right.Count) throw new Exception("error :: dirction :: vectors of different dimensions");
+            return right.Combine(left, (l, r) => r - l).Reduce((accum, itеm) => accum + itеm * itеm);
         }
 
         /// <summary>

@@ -8,102 +8,25 @@ import java.util.Arrays;
 public class TemplateVector<T> implements Iterable<T>, Cloneable {
     // later :: parallel ops...
     // https://raygun.com/blog/java-performance-optimization-tips/
-    private final static class SliceObject<T> {
-        private final TemplateVector<T> _source;
-        private int _begin;
-        private int _end;
-        private final int _step;
-        //exclusive index
-        public int end() {
-            return _end;
-        }
-        //inclusive index
-        public int begin() {
-            return _begin;
-        }
-
-        public int step() {
-            return _step;
-        }
-
-        public boolean shiftBegin(final int amount) {
-            final int value = _begin + amount;
-            if (value > source().size()) return false;
-            if (value < 0) return false;
-            _begin = value;
-            return true;
-        }
-
-        public boolean shiftEnd(final int amount) {
-            final int value = _end + amount;
-            if (value > source().size()) return false;
-            if (value < 0) return false;
-            _end = value;
-            return true;
-        }
-
-        public int length() {
-            int total = Math.abs(end() - begin());
-            return Math.abs(total / step() + total % step());
-        }
-
-        private static int calcIndex(final int index, final int stride, final int step) {
-            // return index == stride ? stride : (stride + index) % stride;
-            // return index == stride ? stride : index % (stride + step);
-            return index % (stride + step);
-        }
-
-        public int sourceIndex(final int index) {
-            return begin() + index * step();
-        }
-
-        public int sliceIndex(final int index) {
-            return (index - begin()) / step();
-        }
-
-        public TemplateVector<T> source() {
-            return _source;
-        }
-
-        public SliceObject(SliceObject<T> other) {
-            _begin = other.begin();
-            _end = other.end();
-            _step = other.step();
-            _source = other.source();
-        }
-
-        public SliceObject(Slice slice, TemplateVector<T> source) {
-            _begin = calcIndex(slice.begin(), source.size(), slice.step());
-            _end = calcIndex(slice.end(), source.size(), slice.step());
-            _step = slice.step();
-            if (_begin < 0) throw
-                    new RuntimeException(String.format("Unable to take slice with begin border of value %s," +
-                            " while total length is %s", _begin, source.size()));
-            if (_end < 0) throw
-                    new RuntimeException(String.format("Unable to take slice with end border of value %s," +
-                            " while total length is %s", _end, source.size()));
-            if (_end == _begin) throw new RuntimeException("Empty slice!");
-            if ((_begin > _end) && (_step > 0)) {
-                final int t = _end;
-                _end = _begin;
-                _begin = t;
-            }
-            _source = source;
-        }
-    }
     public static final int MINIMAL_VECTOR_SIZE = 8;
     public static final double VECTOR_SIZE_UPSCALE = 1.5;
     private T[] _data; // данные (размер 1.5N, где N исходный размер вектора)
     private int _filling; // Заполнение данными от левого края
-    private SliceObject<T> _slice = null;
+    private int _begin;
+    private int _end;
+    private int _step;
+    private boolean _is_slice;
+
+    // private SliceObject<T> _slice = null;
 
     private static <T> T[] alloc(int capacity) {
         return (T[]) (new Object[capacity]);
     }
 
-    private int sourceIndex(final int index)
+    private int elementIndex(final int index)
     {
-        return isSlice() ? _slice.sourceIndex(index) : index;
+        return _begin + index * _step;
+        // return isSlice() ? _slice.sourceIndex(index) : index;
     }
 
     public final static class Pair<T1, T2> {
@@ -145,29 +68,32 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
         private int _begin;
 
         public IndicesIterator(final TemplateVector<Type> vector) {
-            this(vector, 0, vector.size() - 1);
+            this(vector, vector._begin, vector._end);
         }
 
         public IndicesIterator(final TemplateVector<Type> vector, final int rangeBegin, final int rangeEnd) {
-            if(!vector.inRange(rangeBegin))throw
-                    new RuntimeException(
-                            String.format("IndicesIterator::rangeBegin {%s} is out of range vector indices...",
-                                    rangeBegin));
-            if(!vector.inRange(rangeEnd))throw
-                    new RuntimeException(
-                            String.format("IndicesIterator::rangeEnd {%s} is out of range vector indices...",
-                                    rangeEnd));
-            if (vector.isSlice()) {
-                // final int beginShift = (rangeBegin - 1) * vector._slice.step();
-                // final int endShift   = (rangeEnd + 1 - rangeBegin) * vector._slice.step();
-                this._begin = vector._slice.begin() - vector._slice.step(); // + beginShift;
-                this._end   = vector._slice.end();
-                this._step  = vector._slice.step();
-                return;
-            }
-            this._begin = rangeBegin - 1;
-            this._step  = 1;
-            this._end   = rangeEnd + 1;
+            this._begin = vector._begin - vector._step; // + beginShift;
+            this._end   = vector.elementIndex(vector._filling)  ;
+            this._step  = vector._step ;
+            // if(!vector.inRange(rangeBegin))throw
+            //         new RuntimeException(
+            //                 String.format("IndicesIterator::rangeBegin {%s} is out of range vector indices...",
+            //                         rangeBegin));
+            // if(!vector.inRange(rangeEnd))throw
+            //         new RuntimeException(
+            //                 String.format("IndicesIterator::rangeEnd {%s} is out of range vector indices...",
+            //                         rangeEnd));
+            // if (vector.isSlice()) {
+            //     // final int beginShift = (rangeBegin - 1) * vector._slice.step();
+            //     // final int endShift   = (rangeEnd + 1 - rangeBegin) * vector._slice.step();
+            //     this._begin = vector._begin; // + beginShift;
+            //     this._end   = vector._end  ;
+            //     this._step  = vector._step ;
+            //     return;
+            // }
+            // this._begin = rangeBegin - 1;
+            // this._step  = 1;
+            // this._end   = rangeEnd + 1;
         }
 
         @Override
@@ -394,7 +320,7 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
     }
 
     public boolean isSlice() {
-        return _slice != null;
+        return _is_slice;
     }
 
     public int capacity() {
@@ -403,10 +329,15 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
 
     public void clear(){
         _filling = 0;
+        _end = 0;
+        _begin = 0;
+        _step = 1;
+        _data = null;
     }
 
     public T get(final int index) {
-        if (notInRange(index)) throw new RuntimeException(String.format("get :: index {%s} out of range", index));
+        if (notInRange(index))
+            throw new RuntimeException(String.format("get :: index {%s} out of range [%i, %i]", index, 0, size()));
         return uncheckedGet(index);
     }
 
@@ -415,7 +346,8 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
     }
 
     public TemplateVector<T> set(final int index, final T value) {
-        if (notInRange(index)) throw new RuntimeException(String.format("get :: index {%s} out of range", index));
+        if (notInRange(index))
+            throw new RuntimeException(String.format("get :: index {%s} out of range [%i, %i]", index, 0, size()));
         uncheckedSet(index, value);
         return this;
     }
@@ -436,34 +368,27 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
     }
 
     protected T uncheckedGet(final int index) {
-        return _data[sourceIndex(index)];
+        return _data[elementIndex(index)];
     }
 
     protected void uncheckedSet(final int index, final T value) {
-        _data[sourceIndex(index)] = value;
+        _data[elementIndex(index)] = value;
     }
 
     private void checkAndIncreaseSize() {
         if (size() != capacity()) return;
-        T[] newData = alloc((int) (size() * VECTOR_SIZE_UPSCALE));
+        T[] newData = alloc((int) (_data.length * VECTOR_SIZE_UPSCALE));
         System.arraycopy(_data, 0, newData, 0, size());
         _data = newData;
     }
 
     public TemplateVector<T> pushBack(final T value) {
-        if (isSlice()) {
-            _slice.source().insert(_slice.sourceIndex(size()), value);
-            _filling++;
-            return this;
-        }
-        checkAndIncreaseSize();
-        _data[_filling++] = value;
-        return this;
+        return insert(size(), value);
     }
 
     public int indexOf(final T item) {
         for (final int index : new IndicesIterator<>(this))
-            if (_data[index].equals(item)) return sourceIndex(index);
+            if (_data[index].equals(item)) return elementIndex(index);
         return -1;
     }
 
@@ -472,36 +397,46 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
     }
 
     public TemplateVector<T> remove(final T item) {
-        return removeAt(indexOf(item));
+        final int index = indexOf(item);
+        return index != -1 ? removeAt(index) : this;
     }
 
     public TemplateVector<T> removeAt(final int index) {
         if(isSlice())
-        {
-            _slice.source().removeAt(_slice.sourceIndex(index));
-            _filling--;
-            _slice.shiftEnd(-1);
-            return this;
-        }
-        if (!inRange(index)) return this;
-        System.arraycopy(_data, index + 1, _data, index, size() - index - 1);
+            throw new RuntimeException(
+                    String.format("removeAt::attempt to remove element at index \"%i\" from silce...", index));
+        if(!inRange(index))
+            throw new IndexOutOfBoundsException(
+                    String.format("removeAt::" +
+                            "attempt to remove element at index \"%i\" while indices range is \"0\" to %i...",
+                            index, size() - 1));
+        final int deletionIndex = index;
+        final int lastElemIndex = size() - 1;
+        if (lastElemIndex != deletionIndex)
+            System.arraycopy(_data, index + 1, _data, index, lastElemIndex - index);
         _filling--;
+        _end--;
         return this;
     }
 
     public TemplateVector<T> insert(final int index, final T value) {
-        if (isSlice()) {
-            _slice.source().insert(_slice.sourceIndex(index), value);
-            _slice.shiftEnd(1);
-            _filling++;
-            return this;
-        }
-        if (index < 0) return this;
-        if (index > size()) return pushBack(value);
+        if(isSlice())
+            throw new RuntimeException(
+                    String.format("insert::attempt to insert/pushBack element" +
+                                  " at index \"%i\" into the silce...", index));
+        if(index < 0 || index > size())
+            throw new IndexOutOfBoundsException(
+                    String.format("insert::insert to insert/pushBack element at index \"%i\"" +
+                                  " while indices range is \"0\" to %i...",
+                            index, size()));
         checkAndIncreaseSize();
-        System.arraycopy(_data, index, _data, index + 1, size() - index);
+        // вставка эдемента не в конец
+        if(size() != index)
+            System.arraycopy(_data, index, _data, index + 1, capacity() - index - 1);
+        // вставка элемента в конец
         _data[index] = value;
         _filling++;
+        _end++;
         return this;
     }
 
@@ -515,6 +450,7 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         TemplateVector<T> vector = (TemplateVector<T>) o;
+        //return any(zip(this, o, (l, r) -> l.equals(r)));
         return Arrays.equals(vector._data, this._data);
     }
 
@@ -529,46 +465,49 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
     }
 
     public TemplateVector(final int cap) {
-        _data = alloc((int) (cap * VECTOR_SIZE_UPSCALE));
+        _data    = alloc((int) (cap * VECTOR_SIZE_UPSCALE));
         _filling = cap;
+        _begin   = 0;
+        _step    = 1;
+        _end     = _filling;
     }
 
     public TemplateVector(final TemplateVector<T> other) {
         this(other.size());
-        _slice = null;
-        if (other.isSlice()) {
-            apply(other, v -> v);
-            return;
-        }
-        if (size() > 0) System.arraycopy(other._data, 0, _data, 0, size());
+        apply(other, v -> v);
     }
 
     @SafeVarargs
     public TemplateVector(final T... other) {
-        if (other.length == 0) {
-            _data = alloc(MINIMAL_VECTOR_SIZE);
-            _filling = 0;
-            _slice = null;
-            return;
-        }
-        _data = alloc((int) (other.length * VECTOR_SIZE_UPSCALE));
         _filling = other.length;
-        _slice = null;
-        System.arraycopy(other, 0, _data, 0, size());
+        _begin   = 0;
+        _step    = 1;
+        _end     = Math.max((int) (other.length * VECTOR_SIZE_UPSCALE), MINIMAL_VECTOR_SIZE);
+        _data    = alloc(_end - _begin);
+        if (other.length != 0)
+            System.arraycopy(other, 0, _data, 0, size());
     }
 
     protected TemplateVector(final Iterable<T> other) {
-        _data = alloc(MINIMAL_VECTOR_SIZE);
+        _data    = alloc(MINIMAL_VECTOR_SIZE);
         _filling = 0;
-        _slice = null;
+        _begin   = 0;
+        _end     = 0;
+        _step    = 1;
         for (final T v : other) pushBack(v);
     }
 
     protected TemplateVector(final Slice slice, final TemplateVector<T> source) {
-        // Нельзя создать срез от среза
-        // Такой срез будет ссылаться на исходный вектор
-        _slice   = new SliceObject<>(slice, source.isSlice() ? source._slice.source() : source);
-        _filling = _slice.length();
-        _data    = _slice.source()._data;
+        _end      = slice.end() <= 0 ? source.size() + slice.end() : slice.end(); // Math.max(Math.min(slice.end() <= 0 ? size() + slice.end() : slice.end(), size() - 1), slice.begin());
+        _end      = Math.max(_end, 0);
+        _end      = Math.min(_end, source.size());
+        _begin    = Math.min(Math.max(0, slice.begin()), _end);
+        _step     = slice.step();
+        _filling  = (_end - _begin) / _step;
+        if(_filling == 0)
+            throw new RuntimeException(String.format("Silce with begin: %d, end: %d and step: %d is empty",
+                    slice.begin(), slice.end(), slice.step()));
+        _data     = source._data;
+        _is_slice = true;
     }
 }

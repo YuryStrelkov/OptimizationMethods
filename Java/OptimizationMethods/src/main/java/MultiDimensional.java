@@ -18,7 +18,7 @@ public class MultiDimensional {
         DoubleVector x_c, dir = DoubleVector.direction(lhs, rhs).mul(eps);
         int iteration = 0;
         for (; iteration != maxIterations; iteration++) {
-            if (DoubleVector.sub(rhs, lhs).magnitude() < 2 * eps)
+            if (DoubleVector.distance(rhs, lhs) < 2 * eps)
                 break;
             x_c = DoubleVector.add(rhs, lhs).mul(0.5);
             if (function.call(DoubleVector.add(x_c, dir)) > function.call(DoubleVector.sub(x_c, dir)))
@@ -51,7 +51,7 @@ public class MultiDimensional {
         double f_r = function.call(x_r);
         int iteration = 0;
         for (; iteration != maxIterations; iteration++) {
-            if (DoubleVector.sub(rhs, lhs).magnitude() < 2 * eps) break;
+            if (DoubleVector.distance(rhs, lhs) < 2 * eps) break;
             if (f_l > f_r) {
                 lhs = x_l;
                 x_l = x_r;
@@ -86,7 +86,7 @@ public class MultiDimensional {
         DoubleVector rhs = new DoubleVector(right);
         double value, fib_t, fib_1 = 1.0, fib_2 = 1.0;
         int iterations = 0;
-        value = DoubleVector.sub(right, left).magnitude() / eps;
+        value = DoubleVector.distance(rhs, lhs) / eps;
         while (fib_2 < value) {
             iterations++;
             fib_t = fib_1;
@@ -179,7 +179,7 @@ public class MultiDimensional {
         for (; cntr != maxIterations; cntr++) {
             x_i_1 = DoubleVector.sub(x_i, DoubleVector.gradient(function, x_i, eps));
             x_i_1 = biSect(function, x_i, x_i_1, eps, maxIterations);
-            if (DoubleVector.sub(x_i_1, x_i).magnitude() < eps) break;
+            if (DoubleVector.distance(x_i_1, x_i) < 2 * eps) break;
             x_i = x_i_1;
         }
 
@@ -205,7 +205,7 @@ public class MultiDimensional {
         for (; iteration != maxIterations; iteration++) {
             x_i_1 = DoubleVector.add(x_i, s_i);
             x_i_1 = biSect(function, x_i, x_i_1, eps, maxIterations);
-            if (DoubleVector.sub(x_i_1, x_i).magnitude() < eps) break;
+            if (DoubleVector.distance(x_i_1, x_i) < 2 * eps) break;
             s_i_1 = DoubleVector.gradient(function, x_i_1, eps);
             omega = Math.pow((s_i_1).magnitude(), 2) / Math.pow((s_i).magnitude(), 2);
             s_i.mul(omega).sub(s_i_1);
@@ -235,8 +235,8 @@ public class MultiDimensional {
         for (; iteration != maxIterations; iteration++) {
             DoubleMatrix invHessian = Objects.requireNonNull(DoubleMatrix.invert(DoubleMatrix.hessian(function, x_i, eps)));
             x_i_1 = DoubleVector.sub(x_i, DoubleMatrix.mul(invHessian, DoubleVector.gradient(function, x_i, eps)));
-            ///Метод работает, но условие снизу не отрабатывает
-            if (DoubleVector.sub(x_i_1, x_i).magnitude() < eps) break;
+            // Метод работает, но условие снизу не отрабатывает
+            if (DoubleVector.distance(x_i_1, x_i) < 2 * eps) break;
             x_i = x_i_1;
         }
 

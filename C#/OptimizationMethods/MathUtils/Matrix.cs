@@ -10,7 +10,7 @@ namespace MathUtils
         Infinite = 1,
         None = 2
     }
-    public class Matrix: TemplateVector<Vector>
+    public sealed class Matrix: TemplateVector<Vector>
     {
         /// <summary>
         /// Массив строк матрицы
@@ -124,13 +124,8 @@ namespace MathUtils
             Matrix res = new Matrix(x.Count, x.Count);
             int row, col;
             for (row = 0; row < res.NRows; row++)
-            {
                 for (col = 0; col <= row; col++)
-                {
-                    res[row][col] = Vector.Partial2(f, x, row, col, eps);
-                    res[col][row] = res[row][col];
-                }
-            }
+                    res[row][col] = res[col][row] = Vector.Partial2(f, x, row, col, eps);
             return res;
         }
 
@@ -170,12 +165,8 @@ namespace MathUtils
                     for (int p = i + 1; p < m; p++) A[j][p] /= A[j][i];
 
                     for (int k = 0; k < n; k++)
-                    {
                         if (k != j && Math.Abs(A[k][i]) > NumericCommon.NUMERIC_ACCURACY_HIGH)
-                        {
                             for (int p = i + 1; p < m; p++) A[k][p] -= A[j][p] * A[k][i];
-                        }
-                    }
                 }
             }
             return rank;
@@ -253,7 +244,6 @@ namespace MathUtils
                         continue;
                     }
                     up[i][j] = src[i][j] / low[i][i];
-
                     for (k = 0; k < i; k++) up[i][j] = up[i][j] - ((low[i][k] * up[k][j]) / low[i][i]);
                 }
             }

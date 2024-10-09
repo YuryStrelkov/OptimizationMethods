@@ -8,110 +8,121 @@ namespace OptimizationMethods
         ////////////////////
         /// Lab. work #2 ///
         ////////////////////
-        public static Vector BiSect(FunctionND f, Vector left, Vector right, double accuracy, int iterations)
+        public static Vector BiSect(FunctionND targetFunction, Vector lhs, Vector rhs, double accuracy, int iterations)
         {
             Vector x_c, dir;
-
-            dir = Vector.Direction(left, right) * accuracy;
-
+            dir = Vector.Direction(lhs, rhs) * accuracy;
             int cntr = 0;
-
-            for (; cntr != iterations; cntr++)
+            for (; cntr != iterations && Vector.Distance(rhs, lhs) > 2 * accuracy; cntr++)
             {
-                if ((right - left).Magnitude < accuracy) break;
-
-                x_c = (right + left) * (0.5);
-
-                if (f(x_c + dir) > f(x_c - dir))
-                {
-                    right = x_c;
-                    continue;
-                }
-                left = x_c;
+                x_c = (rhs + lhs) * 0.5;
+                if (targetFunction(x_c + dir) > targetFunction(x_c - dir))
+                    rhs = x_c;
+                else
+                    lhs = x_c;
             }
 #if DEBUG
-            Console.WriteLine($"dihotomia iterations number : {cntr}");
+            Console.WriteLine($"BiSect iterations number : {cntr}");
+            Console.WriteLine($"BiSect argument range    : {Vector.Distance(rhs, lhs)}");
 #endif
-            return (right + left) * 0.5;
+            return (rhs + lhs) * 0.5;
         }
-        public static Vector BiSect(FunctionND f, Vector left, Vector right, double accuracy) => BiSect(f, left, right, accuracy, NumericCommon.ITERATIONS_COUNT_HIGH);
-        public static Vector BiSect(FunctionND f, Vector left, Vector right) => BiSect(f, left, right, NumericCommon.NUMERIC_ACCURACY_MIDDLE, NumericCommon.ITERATIONS_COUNT_HIGH);
-
-        public static Vector GoldenRatio(FunctionND f, Vector left, Vector right, double accuracy, int iterations)
+        public static Vector BiSect(FunctionND targetFunction, Vector lhs, Vector rhs, double accuracy) => BiSect(targetFunction, lhs, rhs, accuracy, NumericCommon.ITERATIONS_COUNT_HIGH);
+        public static Vector BiSect(FunctionND targetFunction, Vector lhs, Vector rhs) => BiSect(targetFunction, lhs, rhs, NumericCommon.NUMERIC_ACCURACY_MIDDLE, NumericCommon.ITERATIONS_COUNT_HIGH);
+        public static Vector GoldenRatio(FunctionND targetFunction, Vector _lhs, Vector _rhs, double accuracy, int iterations)
         {
-            Vector a = new Vector(left);
-
-            Vector b = new Vector(right);
-
-            Vector dx;
-
-            int cntr = 0;
-
-            for (; cntr != iterations; cntr++)
+            Vector lhs = new Vector(_lhs);
+            Vector rhs = new Vector(_rhs);
+            Vector x_l, x_r;
+            double f_l, f_r;
+            int iteration = 0;
+            x_l = rhs - (rhs - lhs) * NumericCommon.PSI;
+            x_r = lhs + (rhs - lhs) * NumericCommon.PSI;
+            f_l = targetFunction(x_l);
+            f_r = targetFunction(x_r);
+            for (; iteration != iterations && Vector.Distance(rhs, lhs) > 2 * accuracy; iteration++)
             {
-                if ((right - left).Magnitude < accuracy) break;
-
-                dx = (b - a) * NumericCommon.ONE_OVER_PHI;
-                left = b - dx;
-                right = a + dx;
-
-                if (f(left) >= f(right))
+                if (f_l > f_r)
                 {
-                    a = left;
-                    continue;
+                    lhs = x_l;
+                    x_l = x_r;
+                    f_l = f_r;
+                    x_r = lhs + (rhs - lhs) * NumericCommon.PSI;
+                    f_r = targetFunction(x_r);
                 }
-                b = right;
+                else
+                {
+                    rhs = x_r;
+                    x_r = x_l;
+                    f_r = f_l;
+                    x_l = rhs - (rhs - lhs) * NumericCommon.PSI;
+                    f_l = targetFunction(x_l);
+                }
             }
 #if DEBUG
-            Console.WriteLine($"golden ratio iterations number : {cntr}");
+            Console.WriteLine($"GoldenRatio iterations number : {cntr}");
+            Console.WriteLine($"GoldenRatio argument range    : {Vector.Distance(rhs, lhs)}");
 #endif
-            return (a + b) * 0.5;
+            return (rhs + lhs) * 0.5;
         }
-        public static Vector GoldenRatio(FunctionND f, Vector left, Vector right, double accuracy) => GoldenRatio(f, left, right, accuracy, NumericCommon.ITERATIONS_COUNT_HIGH);
-        public static Vector GoldenRatio(FunctionND f, Vector left, Vector right) => GoldenRatio(f, left, right, NumericCommon.NUMERIC_ACCURACY_MIDDLE, NumericCommon.ITERATIONS_COUNT_HIGH);
-
-        public static Vector Fibonacci(FunctionND f, Vector left, Vector right, double accuracy)
+        public static Vector GoldenRatio(FunctionND targetFunction, Vector lhs, Vector rhs, double accuracy) => GoldenRatio(targetFunction, lhs, rhs, accuracy, NumericCommon.ITERATIONS_COUNT_HIGH);
+        public static Vector GoldenRatio(FunctionND targetFunction, Vector lhs, Vector rhs) => GoldenRatio(targetFunction, lhs, rhs, NumericCommon.NUMERIC_ACCURACY_MIDDLE, NumericCommon.ITERATIONS_COUNT_HIGH);
+        public static Vector Fibonacci(FunctionND targetFunction, Vector _lhs, Vector _rhs, double accuracy)
         {
-            int f_n = 0, f_n_1 = 0, f_tmp, cntr = 0;
-
-            NumericUtils.ClosestFibonacciPair((right - left).Magnitude / accuracy, ref f_n, ref f_n_1);
-
-            Vector a = new Vector(left);
-
-            Vector b = new Vector(right);
-
-            Vector dx;
-
-            while (f_n != f_n_1)
+            Vector lhs = new Vector(_lhs);
+            Vector rhs = new Vector(_rhs);
+            Vector x_l, x_r;
+            double f_l, f_r, fib_t = 0.0, fib_1 = 1.0, fib_2 = 1.0;
+            double condition = Vector.Distance(rhs, lhs) / accuracy;
+            int iterations = 0;
+            while (fib_2 < condition)
             {
-                if ((right - left).Magnitude < accuracy) break;
+                iterations++;
+                fib_t = fib_1;
+                fib_1 = fib_2;
+                fib_2 += fib_t;
+            }
+            x_l = lhs + (rhs - lhs) * ((fib_2 - fib_1) / fib_2);
+            x_r = lhs + (rhs - lhs) * (fib_1 / fib_2);
 
-                cntr++;
-                dx = (b - a);
-                f_tmp = f_n_1 - f_n;
-                left = a + dx * ((double)f_tmp / f_n_1);
-                right = a + dx * ((double)f_n   / f_n_1);
-                f_n_1 = f_n;
-                f_n = f_tmp;
-                if (f(left) < f(right))
+            f_l = targetFunction(x_l);
+            f_r = targetFunction(x_r);
+            for (int index = iterations; index > 0; index--)
+            {
+                fib_t = fib_2 - fib_1;
+                fib_2 = fib_1;
+                fib_1 = fib_t;
+
+                if (f_l > f_r)
                 {
-                    b = right;
-                    continue;
+                    lhs = x_l;
+                    f_l = f_r;
+                    x_l = x_r;
+                    x_r = lhs + (rhs - lhs) * (fib_1 / fib_2);
+                    f_r = targetFunction(x_r);
                 }
-                a = left;
+                else
+                {
+                    rhs = x_r;
+                    x_r = x_l;
+                    f_r = f_l;
+                    x_l = lhs + (rhs - lhs) * ((fib_2 - fib_1) / fib_2);
+                    f_l = targetFunction(x_l);
+                }
             }
 #if DEBUG
-            Console.WriteLine($"fibonacci iterations number : {cntr}");
+            Console.WriteLine($"Fibonacci iterations number : {cntr}");
+            Console.WriteLine($"Fibonacci argument range    : {Vector.Distance(rhs, lhs)}");
 #endif
-            return (a + b) * 0.5;
+            return (rhs + lhs) * 0.5;
         }
-        public static Vector Fibonacci(FunctionND f, Vector left, Vector right) => Fibonacci(f, left, right, NumericCommon.NUMERIC_ACCURACY_MIDDLE);
+        public static Vector Fibonacci(FunctionND targetFunction, Vector lhs, Vector rhs) => Fibonacci(targetFunction, lhs, rhs, NumericCommon.NUMERIC_ACCURACY_MIDDLE);
 
-        public static Vector PerCoordDescend(FunctionND f, Vector xStart, double accuracy, int iterations)
+        public static Vector PerCoordDescend(FunctionND targetFunction, Vector xStart, double accuracy, int iterations)
         {
-            Vector left = new Vector(xStart);
+            Vector lhs = new Vector(xStart);
 
-            Vector right = new Vector(xStart);
+            Vector rhs = new Vector(xStart);
 
             double step = 1.0;
 
@@ -123,36 +134,36 @@ namespace OptimizationMethods
 
             for (i = 0; i < iterations; i++)
             {
-                coord_id = i % left.Count;
+                coord_id = i % lhs.Count;
 
-                right[coord_id] -= accuracy;
+                rhs[coord_id] -= accuracy;
 
-                y_0 = f(right);
+                y_0 = targetFunction(rhs);
 
-                right[coord_id] += 2 * accuracy;
+                rhs[coord_id] += 2 * accuracy;
 
-                y_1 = f(right);
+                y_1 = targetFunction(rhs);
 
-                right[coord_id] -= accuracy;
+                rhs[coord_id] -= accuracy;
 
-                right[coord_id] = y_0 > y_1 ? right[coord_id] += step : right[coord_id] -= step;
+                rhs[coord_id] = y_0 > y_1 ? rhs[coord_id] += step : rhs[coord_id] -= step;
 
-                x_i = left[coord_id];
+                x_i = lhs[coord_id];
 
-                right = BiSect(f, left, right, accuracy, iterations);
+                rhs = BiSect(targetFunction, lhs, rhs, accuracy, iterations);
 
-                left = new Vector(right);
+                lhs = new Vector(rhs);
 
-                if (Math.Abs(right[coord_id] - x_i) < accuracy)
+                if (Math.Abs(rhs[coord_id] - x_i) < accuracy)
                 {
                     opt_coord_n++;
 
-                    if (opt_coord_n == right.Count)
+                    if (opt_coord_n == rhs.Count)
                     {
 #if DEBUG
                         Console.WriteLine($"per coord descend iterations number : {i}");
 #endif
-                        return left;
+                        return lhs;
                     }
                     continue;
                 }
@@ -161,15 +172,15 @@ namespace OptimizationMethods
 #if DEBUG
             Console.WriteLine($"per coord descend iterations number : {iterations}");
 #endif
-            return left;
+            return lhs;
         }
-        public static Vector PerCoordDescend(FunctionND f, Vector xStart, double accuracy) => PerCoordDescend(f, xStart, accuracy, NumericCommon.ITERATIONS_COUNT_HIGH);
-        public static Vector PerCoordDescend(FunctionND f, Vector xStart) => PerCoordDescend(f, xStart, NumericCommon.NUMERIC_ACCURACY_MIDDLE, NumericCommon.ITERATIONS_COUNT_HIGH);
+        public static Vector PerCoordDescend(FunctionND targetFunction, Vector xStart, double accuracy) => PerCoordDescend(targetFunction, xStart, accuracy, NumericCommon.ITERATIONS_COUNT_HIGH);
+        public static Vector PerCoordDescend(FunctionND targetFunction, Vector xStart) => PerCoordDescend(targetFunction, xStart, NumericCommon.NUMERIC_ACCURACY_MIDDLE, NumericCommon.ITERATIONS_COUNT_HIGH);
 
         ////////////////////
         /// Lab. work #3 ///
         ////////////////////
-        public static Vector GradientDescend(FunctionND f, Vector xStart, double accuracy, int iterations)
+        public static Vector GradientDescend(FunctionND targetFunction, Vector xStart, double accuracy, int iterations)
         {
             Vector x_i = new Vector(xStart);
 
@@ -179,9 +190,9 @@ namespace OptimizationMethods
 
             for (; cntr <= iterations; cntr++)
             {
-                x_i_1 = x_i - Vector.Gradient(f, x_i, accuracy);
+                x_i_1 = x_i - Vector.Gradient(targetFunction, x_i, accuracy);
 
-                x_i_1 = BiSect(f, x_i, x_i_1, accuracy, iterations);
+                x_i_1 = BiSect(targetFunction, x_i, x_i_1, accuracy, iterations);
 
                 if ((x_i_1 - x_i).Magnitude < accuracy) break;
 
@@ -192,16 +203,16 @@ namespace OptimizationMethods
 #endif
             return (x_i_1 + x_i) * 0.5;
         }
-        public static Vector GradientDescend(FunctionND f, Vector xStart, double accuracy) => GradientDescend(f, xStart, accuracy, NumericCommon.ITERATIONS_COUNT_HIGH);
-        public static Vector GradientDescend(FunctionND f, Vector xStart) => GradientDescend(f, xStart, NumericCommon.NUMERIC_ACCURACY_MIDDLE, NumericCommon.ITERATIONS_COUNT_HIGH);
+        public static Vector GradientDescend(FunctionND targetFunction, Vector xStart, double accuracy) => GradientDescend(targetFunction, xStart, accuracy, NumericCommon.ITERATIONS_COUNT_HIGH);
+        public static Vector GradientDescend(FunctionND targetFunction, Vector xStart) => GradientDescend(targetFunction, xStart, NumericCommon.NUMERIC_ACCURACY_MIDDLE, NumericCommon.ITERATIONS_COUNT_HIGH);
         
-        public static Vector СonjGradientDescend(FunctionND f, Vector xStart, double accuracy, int iterations)
+        public static Vector СonjGradientDescend(FunctionND targetFunction, Vector xStart, double accuracy, int iterations)
         {
             Vector x_i = new Vector(xStart);
 
             Vector x_i_1 = new Vector(xStart);
 
-            Vector s_i = Vector.Gradient(f, xStart, accuracy) * (-1.0), s_i_1;
+            Vector s_i = Vector.Gradient(targetFunction, xStart, accuracy) * (-1.0), s_i_1;
 
             double omega;
 
@@ -211,11 +222,11 @@ namespace OptimizationMethods
             {
                 x_i_1 = x_i + s_i;
 
-                x_i_1 = BiSect(f, x_i, x_i_1, accuracy, iterations);
+                x_i_1 = BiSect(targetFunction, x_i, x_i_1, accuracy, iterations);
 
                 if ((x_i_1 - x_i).Magnitude < accuracy) break;
 
-                s_i_1 = Vector.Gradient(f, x_i_1, accuracy);
+                s_i_1 = Vector.Gradient(targetFunction, x_i_1, accuracy);
 
                 omega = Math.Pow((s_i_1).Magnitude, 2) / Math.Pow((s_i).Magnitude, 2);
 
@@ -228,13 +239,13 @@ namespace OptimizationMethods
 #endif
             return (x_i_1 + x_i) * 0.5;
         }
-        public static Vector СonjGradientDescend(FunctionND f, Vector xStart, double accuracy) => СonjGradientDescend(f, xStart, accuracy, NumericCommon.ITERATIONS_COUNT_HIGH);
-        public static Vector СonjGradientDescend(FunctionND f, Vector xStart) => СonjGradientDescend(f, xStart, NumericCommon.NUMERIC_ACCURACY_MIDDLE, NumericCommon.ITERATIONS_COUNT_HIGH);
+        public static Vector СonjGradientDescend(FunctionND targetFunction, Vector xStart, double accuracy) => СonjGradientDescend(targetFunction, xStart, accuracy, NumericCommon.ITERATIONS_COUNT_HIGH);
+        public static Vector СonjGradientDescend(FunctionND targetFunction, Vector xStart) => СonjGradientDescend(targetFunction, xStart, NumericCommon.NUMERIC_ACCURACY_MIDDLE, NumericCommon.ITERATIONS_COUNT_HIGH);
     
         ////////////////////
         /// Lab. work #4 ///
         ////////////////////
-        public static Vector NewtoneRaphson(FunctionND f, Vector xStart, double accuracy, int iterations)
+        public static Vector NewtoneRaphson(FunctionND targetFunction, Vector xStart, double accuracy, int iterations)
         {
             Vector x_i   = new Vector(xStart);
 
@@ -244,7 +255,7 @@ namespace OptimizationMethods
 
             for (; cntr <= iterations; cntr++)
             { 
-                x_i_1 = x_i - Matrix.Invert(Matrix.Hessian(f, x_i, accuracy)) * Vector.Gradient(f, x_i, accuracy);
+                x_i_1 = x_i - Matrix.Invert(Matrix.Hessian(targetFunction, x_i, accuracy)) * Vector.Gradient(targetFunction, x_i, accuracy);
 
                 if ((x_i_1 - x_i).Magnitude < accuracy) break;
 
@@ -255,8 +266,8 @@ namespace OptimizationMethods
 #endif
             return (x_i_1 + x_i) * 0.5;
         }
-        public static Vector NewtoneRaphson(FunctionND f, Vector xStart, double accuracy) => NewtoneRaphson(f, xStart, accuracy, NumericCommon.ITERATIONS_COUNT_HIGH);
-        public static Vector NewtoneRaphson(FunctionND f, Vector xStart) => NewtoneRaphson(f, xStart, NumericCommon.NUMERIC_ACCURACY_MIDDLE, NumericCommon.ITERATIONS_COUNT_HIGH);
+        public static Vector NewtoneRaphson(FunctionND targetFunction, Vector xStart, double accuracy) => NewtoneRaphson(targetFunction, xStart, accuracy, NumericCommon.ITERATIONS_COUNT_HIGH);
+        public static Vector NewtoneRaphson(FunctionND targetFunction, Vector xStart) => NewtoneRaphson(targetFunction, xStart, NumericCommon.NUMERIC_ACCURACY_MIDDLE, NumericCommon.ITERATIONS_COUNT_HIGH);
 
     }
 }

@@ -20,7 +20,7 @@ public:
 //////////////////////////////////////
 ///   Iterator over matrix rows    ///
 //////////////////////////////////////
-	class rows_iterator : public iterator_<numeric_vector_<T>>
+	class rows_iterator // : public iterator_<numeric_vector_<T>>
 	{
 	private:
 		numeric_matrix_<T>* m_matrix;
@@ -52,7 +52,7 @@ public:
 //////////////////////////////////////
 ///   Iterator over matrix cols    ///
 //////////////////////////////////////
-	class cols_iterator : public iterator_<numeric_vector_<T>>
+	class cols_iterator // : public iterator_<numeric_vector_<T>>
 	{
 	private:
 		numeric_matrix_<T>* m_matrix;

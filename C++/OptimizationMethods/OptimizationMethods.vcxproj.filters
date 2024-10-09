@@ -74,5 +74,8 @@
     <ClInclude Include="numerics\linalg\template_vector_allocator.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="vector_t.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

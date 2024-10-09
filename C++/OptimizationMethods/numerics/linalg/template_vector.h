@@ -35,8 +35,8 @@ private:
 		I32 step()const { return m_step; };
 
 		const template_vector_<T>& source()const { return *m_source; };
-		
-		template_vector_<T>& source(){ return *m_source; };
+
+		template_vector_<T>& source() { return *m_source; };
 
 		bool shift_begin(const I32 amount)
 		{
@@ -69,22 +69,22 @@ private:
 		}
 
 		slice_object(slice_object& other) {
-			m_begin  =   other. m_begin ;
-			m_end    =   other. m_end   ;
-			m_step   =   other. m_step  ;
+			m_begin = other.m_begin;
+			m_end = other.m_end;
+			m_step = other.m_step;
 			m_source = *(other.m_source);
 		}
 
 		slice_object(const slice& _slice, template_vector_<T>& source) {
 			m_begin = calc_index(_slice.begin(), source.filling(), _slice.step());
-			m_end   = calc_index(_slice.end(),   source.filling(), _slice.step());
-			m_step  = _slice.step();
+			m_end = calc_index(_slice.end(), source.filling(), _slice.step());
+			m_step = _slice.step();
 			if (begin() < 0) throw std::runtime_error("Unable to take slice with begin border of value " + std::to_string(m_begin) +
-													  ", while total length is" + std::to_string(source.filling()));
-			
+				", while total length is" + std::to_string(source.filling()));
+
 			if (end() < 0) throw std::runtime_error("Unable to take slice with end border of value " + std::to_string(m_end) +
-												    ", while total length is" + std::to_string(source.filling()));
-			
+				", while total length is" + std::to_string(source.filling()));
+
 			if (end() == begin()) throw std::runtime_error("Empty slice!!!");
 			if ((begin() > end()) && (m_step > 0)) std::swap(m_begin, m_end);
 			m_source = *source;
@@ -101,7 +101,7 @@ private:
 		for (UI64 index = begin; index < _end; ++index)
 			m_data[index].~T();
 	}
-	
+
 	void zero_memory(T* block, const UI64 amount = 0) noexcept
 	{
 		STR mem_block = reinterpret_cast<STR> (block);
@@ -114,50 +114,14 @@ private:
 		::operator delete(m_data, capacity() * sizeof(T));
 		m_data = nullptr;
 		m_capacity = 0;
-		m_filling  = 0;
+		m_filling = 0;
 	}
-
-	// UI8 realloc_memory(UI64 new_capacity)
-	// {
-	// 	// 1. can't resize slice
-	// 	// 2. allocate new memory block
-	// 	// 3. copy by moving each element into new memory block
-	// 	// 4. delete raminig elements from old memory block
-	// 	// 5. delete old memory block
-	// 	// 6. swap memory blocks and update size and capacity
-	// 	// if (is_slice()) return FALSE;
-	// 
-	// 	if (!new_capacity)
-	// 	{
-	// 		clear_buffer();
-	// 		return TRUE;
-	// 	}
-	// 
-	// 	if (new_capacity == capacity()) return TRUE;
-	// 
-	// 	T* new_block = (T*)::operator new(new_capacity * sizeof(T));
-	// 
-	// 	UI64 old_buffer_size = size();
-	// 
-	// 	m_filling = MIN(size(), new_capacity);
-	// 
-	// 	if (m_buffer)
-	// 	{
-	// 		for (UI64 index = 0; index < m_filling; ++index)
-	// 			new_block[index] = std::move(m_data[index]);
-	// 		destroy_objects(m_capacity, old_buffer_size);
-	// 		deallocate_memory();
-	// 	}
-	// 	m_data = new_block;
-	// 	m_capacity = new_capacity;
-	// 	return TRUE;
-	// }
 
 	T* alloc(const I32 cap)
 	{
 		return m_allocator.allocate(cap);
 	}
-	void dealloc() 
+	void dealloc()
 	{
 		m_allocator.deallocate(&m_data, size());
 	}
@@ -168,7 +132,7 @@ private:
 	}
 	slice_object* m_slice = nullptr;
 	template_vector_allocator<T> m_allocator;
-	T*            m_data = nullptr;
+	T* m_data = nullptr;
 	UI64          m_capacity;
 	UI64          m_filling;
 	bool          m_is_silce = false;
@@ -176,23 +140,23 @@ protected:
 	void exchange_data(template_vector_<T>&& other)noexcept
 	{
 		if (*this == other) return;
-		if (is_slice()) 
+		if (is_slice())
 		{
 			apply(other, [](const T& v) {return v; });
 			return;
 		}
 		dealloc();
-		if (other.is_slice()) 
+		if (other.is_slice())
 		{
-			m_data     = alloc(other.capacity());
+			m_data = alloc(other.capacity());
 			m_capacity = other.capacity();
-			m_filling  = other.filling();
-			apply(other, [](const T& v) {return v;});
+			m_filling = other.filling();
+			apply(other, [](const T& v) {return v; });
 			return;
 		};
-		m_data     = EXCHANGE(other.m_data    , nullptr);
+		m_data = EXCHANGE(other.m_data, nullptr);
 		m_capacity = EXCHANGE(other.m_capacity, -1);
-		m_filling  = EXCHANGE(other.m_filling , -1);
+		m_filling = EXCHANGE(other.m_filling, -1);
 	}
 
 	void reassign_data(const template_vector_<T>& other)
@@ -213,13 +177,13 @@ protected:
 			apply(other, [](const T& v) {return v; });
 		else
 			m_allocator.const_copy(other.m_data, m_data, filling());
-			// memcpy(m_data, other.m_data, filling() * sizeof(T));
+		// memcpy(m_data, other.m_data, filling() * sizeof(T));
 	}
 public:
 	static T reduce(const template_vector_<T>& vector, std::function<T(const T&, const T&)> reduce_f, T init_value = T{ 0 });
 
 	static bool all(const template_vector_<T>& vector, std::function<bool(const T&)> condition_f);
-	
+
 	static bool any(const template_vector_<T>& vector, std::function<bool(const T&)> condition_f);
 
 	static  template_vector_<T> filter(const template_vector_<T>& vector, std::function<bool(const T&)> condition_f);
@@ -241,7 +205,7 @@ public:
 
 	template<typename T1>
 	static combine_values<T, T1>combine(const T& left, const template_vector_<T>& right, std::function<T1(const T&, const T&)> combine_f);
-	
+
 	template<typename T1>
 	static combine_values<T, T1>combine(const template_vector_<T>& left, const T& right, std::function<T1(const T&, const T&)> combine_f);
 
@@ -251,7 +215,7 @@ public:
 		return template_vector_::reduce(values, reduce_f, init_value);
 	}
 
-	bool all(std::function<bool(const T&)> condition_f) 
+	bool all(std::function<bool(const T&)> condition_f)
 	{
 		return template_vector_::all((*this), condition_f);
 	}
@@ -265,7 +229,7 @@ public:
 		for (I32 index : indices()) m_data[index] = fill_f(index);
 	}
 
-	void apply(const combine_values<T, T> combiner) 
+	void apply(const combine_values<T, T> combiner)
 	{
 		I32 index = 0;
 		for (const T value : combiner)
@@ -277,14 +241,14 @@ public:
 
 	void apply(const template_vector_<T>& vector, std::function<T(const T&)>  apply_f) {
 		I32 index = 0;
-		for(const T& value: vector.values())
+		for (const T& value : vector.values())
 		{
 			if (index == filling()) break;
 			unchecked_access(index++) = apply_f(value);
 		}
 	}
 
-	void apply(std::function<T(const T&)>  apply_f) 
+	void apply(std::function<T(const T&)>  apply_f)
 	{
 		apply((*this), apply_f);
 	}
@@ -309,13 +273,13 @@ public:
 		return template_vector_::filter((*this), condition_f);
 	}
 
-	vector_indices indices() const{
-		if(is_slice())
+	vector_indices indices() const {
+		if (is_slice())
 			return vector_indices((*m_slice).begin(), (*m_slice).end(), (*m_slice).step());
 		return vector_indices(0, this->filling(), 1);
 	};
 
-	vector_values<T> values() const{
+	vector_values<T> values() const {
 		return vector_values<T>(m_data, indices());
 	};
 
@@ -366,16 +330,16 @@ public:
 		m_data = _new_values;
 	}
 
-	template_vector_<T>& clear() 
+	template_vector_<T>& clear()
 	{
-		m_filling = 0; 
+		m_filling = 0;
 		return (*this);
 	}
 
 	I32 index_of(const T& value)const
 	{
 		I32 index = 0;
-		for (const T& val: values())
+		for (const T& val : values())
 		{
 			index++;
 			if (val == value)break;
@@ -418,8 +382,8 @@ public:
 		m_data[m_filling++] = std::move(value);
 		return (*this);
 	}
-	
-	template_vector_<T>& remove_at(const I32 index) 
+
+	template_vector_<T>& remove_at(const I32 index)
 	{
 		if (is_slice())
 		{
@@ -435,7 +399,7 @@ public:
 		m_filling--;
 		return (*this);
 	}
-		
+
 	template_vector_<T>& insert(const I32 index, const T& value)
 	{
 		if (is_slice())
@@ -460,7 +424,7 @@ public:
 
 	template_vector_<T>& insert(const I32 index, T&& value)
 	{
-		if (is_slice()) 
+		if (is_slice())
 		{
 			(*m_slice).source().insert((*m_slice).source_index(index), std::move(value));
 			(*m_slice).shift_end(1);
@@ -481,29 +445,29 @@ public:
 	}
 
 	template_vector_<T>const& operator&()const { return (*this); }
-	
+
 	template_vector_<T>const* operator*()const { return this; }
-	
-	template_vector_<T>& operator&(){ return (*this); }
-	
-	template_vector_<T>* operator*(){ return this; }
+
+	template_vector_<T>& operator&() { return (*this); }
+
+	template_vector_<T>* operator*() { return this; }
 
 	T* data() { return m_data; }
-	
+
 	const T* data() const { return m_data; }
-	
+
 	template_vector_<T>& operator=(template_vector_<T>const& other)
 	{
 		reassign_data(other);
 		return (*this);
 	}
-	
+
 	template_vector_<T>& operator=(template_vector_<T>&& other) noexcept
 	{
 		exchange_data(std::move(other));
 		return (*this);
 	}
-	
+
 	T& operator[](const I32 index)
 	{
 		if (!in_range(index))
@@ -513,7 +477,7 @@ public:
 				std::to_string(filling()) + "}");
 		return unchecked_access(index);
 	}
-	
+
 	const T& operator[](const I32 index)const
 	{
 		if (!in_range(index))
@@ -523,12 +487,12 @@ public:
 				std::to_string(filling()) + "}");
 		return unchecked_access(index);
 	}
-	
+
 	template_vector_<T> operator[](const slice& indices)
 	{
 		return template_vector_(indices, *this);
 	}
-	
+
 	const template_vector_<T> operator[](const slice& indices)const
 	{
 		return template_vector_(indices, *this);
@@ -538,24 +502,24 @@ public:
 	{
 		reassign_data(other);
 	};
-	
-	template_vector_(template_vector_&& other)
+
+	template_vector_(template_vector_&& other) noexcept
 	{
 		exchange_data(std::move(other));
 	};
-	
+
 	template_vector_(const I32 cap)
 	{
-		m_filling  = cap;
+		m_filling = cap;
 		m_capacity = (I32)(cap * VECTOR_SIZE_UPSCALE);
-		m_data     = alloc(m_capacity);
+		m_data = alloc(m_capacity);
 	};
 
 	template_vector_()
 	{
-		m_filling  = 0;
+		m_filling = 0;
 		m_capacity = MINIMAL_VECTOR_SIZE;
-		m_data     = alloc(m_capacity);
+		m_data = alloc(m_capacity);
 	};
 
 	template_vector_(const std::initializer_list<T>& values) :template_vector_()
@@ -569,21 +533,21 @@ public:
 	// 	push_back(values...);
 	// };
 
-	template_vector_(const vector_values<T>& values):template_vector_(){
+	template_vector_(const vector_values<T>& values) :template_vector_() {
 		for (const T& value : values) push_back(value);
 	};
 
 	template<typename T1, typename T2>
-	template_vector_(const map_values<T1, T2>& values) : template_vector_<T2>(){
+	template_vector_(const map_values<T1, T2>& values) : template_vector_<T2>() {
 		for (const T2 value : values) push_back(value);
 	};
 
 	template<typename T1, typename T2>
-	template_vector_(const combine_values<T1, T2>& values) : template_vector_<T2>(){
+	template_vector_(const combine_values<T1, T2>& values) : template_vector_<T2>() {
 		for (const T2 value : values) push_back(value);
 	};
-	
-	~template_vector_(){
+
+	~template_vector_() {
 		if (is_slice())
 		{
 			delete m_slice;
@@ -591,7 +555,7 @@ public:
 		};
 		dealloc();
 	}
-	
+
 	template <typename U>
 	friend std::ostream& operator<<(std::ostream& steram, const template_vector_<U>& pair);
 
@@ -599,11 +563,11 @@ public:
 	friend bool operator == (const template_vector_<U>& lhs, const template_vector_<U>& rhs);
 
 protected:
-	template_vector_(const slice& slice, template_vector_& source){
-		m_slice    = new slice_object(slice, source.is_slice() ? source.m_slice->source() : source);
-		m_filling  = (*m_slice).length();
+	template_vector_(const slice& slice, template_vector_& source) {
+		m_slice = new slice_object(slice, source.is_slice() ? source.m_slice->source() : source);
+		m_filling = (*m_slice).length();
 		m_capacity = source.capacity();
-		m_data     = (*m_slice).source().m_data;
+		m_data = (*m_slice).source().m_data;
 	};
 };
 
@@ -611,7 +575,7 @@ template <typename U>
 inline std::ostream& operator<<(std::ostream& steram, const template_vector_<U>& vector)
 {
 	steram << "{ ";
-	for (const I32& index: vector.indices()) steram << vector.unchecked_access(index) << (index != vector.filling() - 1 ? ", " : "");
+	for (const I32& index : vector.indices()) steram << vector.unchecked_access(index) << (index != vector.filling() - 1 ? ", " : "");
 	steram << " }";
 	return steram;
 }
@@ -619,7 +583,7 @@ inline std::ostream& operator<<(std::ostream& steram, const template_vector_<U>&
 template<typename T>
 inline T template_vector_<T>::reduce(const template_vector_<T>& vector, std::function<T(const T&, const T&)> reduce_f, T init_value)
 {
-	for (const T& value: vector.values()) init_value = reduce_f(init_value, value);
+	for (const T& value : vector.values()) init_value = reduce_f(init_value, value);
 	return init_value;
 }
 
@@ -639,7 +603,7 @@ bool template_vector_<T>::any(const template_vector_<T>& vector, std::function<b
 
 template<typename T>
 inline  template_vector_<T>  template_vector_<T>::filter(const template_vector_<T>& vector, std::function<bool(const T&)> condition_f)
-{	
+{
 	template_vector_<T> filtered_vector;
 	for (const T& item : vector.values()) if (condition_f(item)) filtered_vector.push_back(item);
 	return filtered_vector;
@@ -675,9 +639,9 @@ inline map_values<T, T1> template_vector_<T>::map(const template_vector_<T>& lef
 
 template<typename T>
 template<typename T1>
-combine_values<T, T1>template_vector_<T>::combine(const template_vector_<T>& left, 
-												  const template_vector_<T>& right,
-												  std::function<T1(const T&, const T&)> combine_f)
+combine_values<T, T1>template_vector_<T>::combine(const template_vector_<T>& left,
+	const template_vector_<T>& right,
+	std::function<T1(const T&, const T&)> combine_f)
 {
 	return combine_values<T, T1>(zip(left, right), combine_f);
 }
@@ -685,20 +649,20 @@ combine_values<T, T1>template_vector_<T>::combine(const template_vector_<T>& lef
 template<typename T>
 template<typename T1>
 combine_values<T, T1>template_vector_<T>::combine(const T& left, const template_vector_<T>& right,
-												  std::function<T1(const T&, const T&)> combine_f)
+	std::function<T1(const T&, const T&)> combine_f)
 {
 	return combine_values<T, T1>(zip(left, right), combine_f);
 }
 
 template<typename T>
 template<typename T1>
-combine_values<T, T1>template_vector_<T>::combine(const template_vector_<T>& left, 
-												  const T& right, std::function<T1(const T&, const T&)> combine_f)
+combine_values<T, T1>template_vector_<T>::combine(const template_vector_<T>& left,
+	const T& right, std::function<T1(const T&, const T&)> combine_f)
 {
 	return combine_values<T, T1>(zip(left, right), combine_f);
 }
 template<typename U>
-bool operator == (const template_vector_<U>& lhs, const template_vector_<U>& rhs) 
+bool operator == (const template_vector_<U>& lhs, const template_vector_<U>& rhs)
 {
 	return (lhs.filling() == rhs.filling()) && (lhs.m_data == rhs.m_data);
 }

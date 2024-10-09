@@ -188,10 +188,7 @@ namespace MathUtils
                 return true;
             }
             
-            public override string ToString()
-            {
-                return ToRationalStr(IntPart, Numerator, Denominator, false);
-            }
+            public override string ToString() => ToRationalStr(IntPart, Numerator, Denominator, false);
 
             public int Numerator => _numerator;
             public int Denominator => _denominator;
@@ -206,10 +203,7 @@ namespace MathUtils
 
             public RationalNumber(RationalNumber other): this(other.IntPart, other.Numerator, other.Denominator){}
 
-            public RationalNumber(double value)
-            {
-              DecimalToRational(value, out _intPart, out _numerator, out _denominator);
-            }
+            public RationalNumber(double value) => DecimalToRational(value, out _intPart, out _numerator, out _denominator);
         }
 
     }
