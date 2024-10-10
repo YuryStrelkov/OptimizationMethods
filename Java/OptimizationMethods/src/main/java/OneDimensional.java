@@ -13,9 +13,7 @@ public final class OneDimensional {
         }
         double center;
         int iteration = 0;
-        for (; iteration != maxIterations; iteration++) {
-            if (Math.abs(right - left) < 2 * eps)
-                break;
+        for (; iteration != maxIterations && Math.abs(right - left) > 2 * eps; iteration++) {
             center = (right + left) * 0.5;
             if (function.call(center + 1e-1 * eps) > function.call(center - 1e-1 * eps))
                 right = center;
@@ -49,9 +47,7 @@ public final class OneDimensional {
         x_r = left + (right - left) * NumericCommon.PSI;
         f_l = function.call(x_l);
         f_r = function.call(x_r);
-        for (; iteration != maxIterations; iteration++) {
-            if (Math.abs(right - left) < 2 * eps)
-                break;
+        for (; iteration != maxIterations && Math.abs(right - left) > 2 * eps; iteration++) {
             if (f_l > f_r) {
                 left = x_l;
                 x_l = x_r;
@@ -88,10 +84,10 @@ public final class OneDimensional {
             left = right;
             right = tmp;
         }
-        double x_l, x_r, f_l, f_r, value, fib_t, fib_1 = 1.0, fib_2 = 1.0;
+        double x_l, x_r, f_l, f_r, condition, fib_t, fib_1 = 1.0, fib_2 = 1.0;
         int iterations = 0;
-        value = (right - left) / eps;
-        while (fib_2 < value) {
+        condition = (right - left) / eps;
+        while (fib_2 < condition) {
             iterations++;
             fib_t = fib_1;
             fib_1 = fib_2;
