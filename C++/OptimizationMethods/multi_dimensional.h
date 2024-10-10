@@ -12,17 +12,16 @@ static numerics::vector_f64 conj_gradient_descend(function_nd function, const nu
 static numerics::vector_f64 newtone_raphson      (function_nd function, const numerics::vector_f64& x_start, const F64 eps = N_DIM_ACCURACY, const I32 max_iters = N_DIM_ITERS_MAX);
 
 
-// Ìåòîäû n-ìåðíîé äèõîòîìèè, çîëîòîãî ñå÷åíèÿ è Ôèáîíà÷÷è îïðåäåëÿþò ìèíèìóì ñòðîãî âäîëü íàïðàâëåíèÿ èç  x_0 â x_1
-// ò.å., åñëè èñòèííûé ìèíèìóì ôóíêöèè íà ýòîì íàïðàâëåíèè íå ëåæèò, ìåòîä âñ¸ ðàâíî íàéä¸ò ìèíèìàëüíîå çíà÷åíèå, íî îíî 
-// áóäåò îòëè÷àòüñÿ îò èñòèííîãî ìèíèìóìà
+// ÃŒÃ¥Ã²Ã®Ã¤Ã» n-Ã¬Ã¥Ã°Ã­Ã®Ã© Ã¤Ã¨ÃµÃ®Ã²Ã®Ã¬Ã¨Ã¨, Ã§Ã®Ã«Ã®Ã²Ã®Ã£Ã® Ã±Ã¥Ã·Ã¥Ã­Ã¨Ã¿ Ã¨ Ã”Ã¨Ã¡Ã®Ã­Ã Ã·Ã·Ã¨ Ã®Ã¯Ã°Ã¥Ã¤Ã¥Ã«Ã¿Ã¾Ã² Ã¬Ã¨Ã­Ã¨Ã¬Ã³Ã¬ Ã±Ã²Ã°Ã®Ã£Ã® Ã¢Ã¤Ã®Ã«Ã¼ Ã­Ã Ã¯Ã°Ã Ã¢Ã«Ã¥Ã­Ã¨Ã¿ Ã¨Ã§  x_0 Ã¢ x_1
+// Ã².Ã¥., Ã¥Ã±Ã«Ã¨ Ã¨Ã±Ã²Ã¨Ã­Ã­Ã»Ã© Ã¬Ã¨Ã­Ã¨Ã¬Ã³Ã¬ Ã´Ã³Ã­ÃªÃ¶Ã¨Ã¨ Ã­Ã  Ã½Ã²Ã®Ã¬ Ã­Ã Ã¯Ã°Ã Ã¢Ã«Ã¥Ã­Ã¨Ã¨ Ã­Ã¥ Ã«Ã¥Ã¦Ã¨Ã², Ã¬Ã¥Ã²Ã®Ã¤ Ã¢Ã±Â¸ Ã°Ã Ã¢Ã­Ã® Ã­Ã Ã©Ã¤Â¸Ã² Ã¬Ã¨Ã­Ã¨Ã¬Ã Ã«Ã¼Ã­Ã®Ã¥ Ã§Ã­Ã Ã·Ã¥Ã­Ã¨Ã¥, Ã­Ã® Ã®Ã­Ã® 
+// Ã¡Ã³Ã¤Ã¥Ã² Ã®Ã²Ã«Ã¨Ã·Ã Ã²Ã¼Ã±Ã¿ Ã®Ã² Ã¨Ã±Ã²Ã¨Ã­Ã­Ã®Ã£Ã® Ã¬Ã¨Ã­Ã¨Ã¬Ã³Ã¬Ã 
 static numerics::vector_f64 bisect(function_nd function, const numerics::vector_f64& left, const numerics::vector_f64& right, const F64 eps, const I32 max_iterations)
 {
 	numerics::vector_f64 x_c, dir, lhs(left), rhs(right);
 	dir = numerics::vector_f64::direction(lhs, rhs) * eps;
 	I32 iteration = 0;
-	for (; iteration != max_iterations; iteration++)
+	for (; iteration != max_iterations && numerics::vector_f64::distance(lhs, rhs) > 2 * eps; iteration++)
 	{
-		if (numerics::vector_f64::distance(lhs, rhs) < 2 * eps) break;
 		x_c = (lhs + rhs) * 0.5;
 		if (function(x_c - dir) > function(x_c + dir))
 			lhs = x_c;
@@ -74,30 +73,26 @@ static numerics::vector_f64 golden_ratio(function_nd function, const numerics::v
 
 static numerics::vector_f64 fibonacci(function_nd function, const numerics::vector_f64& left, const numerics::vector_f64& right, const F64 eps)
 {
-	numerics::vector_f64 x_l, x_r;
 	numerics::vector_f64 lhs(left), rhs(right);
-	F64 f_l, f_r, value, fib_t{ 0.0 }, fib_1{ 1.0 }, fib_2{ 1.0 };
+	F64 condition = numerics::vector_f64::distance(lhs, rhs) / eps;
+	F64 fib_t{ 0.0 }, fib_1{ 1.0 }, fib_2{ 1.0 };
 	I32 iterations{ 0 };
-	value = numerics::vector_f64::distance(lhs, rhs) / eps;
-	while (fib_2 < value)
+	while (fib_2 < condition)
 	{
 		iterations++;
 		fib_t = fib_1;
 		fib_1 = fib_2;
 		fib_2 += fib_t;
 	}
-	x_l = lhs + (rhs - lhs) * ((fib_2 - fib_1) / fib_2);
-	x_r = lhs + (rhs - lhs) * (fib_1 / fib_2);
-
-	f_l = function(x_l);
-	f_r = function(x_r);
-
-	fib_t = fib_2 - fib_1;
-	fib_2 = fib_1;
-	fib_1 = fib_t;
-
+	numerics::vector_f64 x_l = lhs + (rhs - lhs) * ((fib_2 - fib_1) / fib_2);
+	numerics::vector_f64 x_r = lhs + (rhs - lhs) * (fib_1 / fib_2);
+	F64 f_l = function(x_l);
+	F64 f_r = function(x_r);
 	for (I32 index = iterations; index > 0; index--)
 	{
+		fib_t = fib_2 - fib_1;
+		fib_2 = fib_1;
+		fib_1 = fib_t;
 		if (f_l > f_r)
 		{
 			lhs = x_l;
@@ -114,9 +109,6 @@ static numerics::vector_f64 fibonacci(function_nd function, const numerics::vect
 			x_l = lhs + (rhs - lhs) * ((fib_2 - fib_1) / fib_2);
 			f_l = function(x_l);
 		}
-		fib_t = fib_2 - fib_1;
-		fib_2 = fib_1;
-		fib_1 = fib_t;
 		// #if _DEBUG
 		// 	   std::cout << "\nfibonacchi [a, b] range: " << (right - left) << "\n";
 		// #endif
@@ -128,9 +120,9 @@ static numerics::vector_f64 fibonacci(function_nd function, const numerics::vect
 	return (rhs + lhs) * 0.5;
 }
 
-// Ïîêîîðäèíàòíûé ñïóñê, ãðàäèåíòíûé ñïóñê è ñïóñê ñ ïîìîùüþ ñîïðÿæ¸ííûõ ãðàäèåíòîâ, îïðåäåëÿþò
-// ìèíèìàëüíîå çíà÷åíèå ôóíêöèè òîëüêî ïî îäíîé íà÷àëüíîé òî÷êå x_start.
-// Ïîýòîìó íå çàâèñÿò îò âûáîðà íàïðàâëåíèÿ.
+// ÃÃ®ÃªÃ®Ã®Ã°Ã¤Ã¨Ã­Ã Ã²Ã­Ã»Ã© Ã±Ã¯Ã³Ã±Ãª, Ã£Ã°Ã Ã¤Ã¨Ã¥Ã­Ã²Ã­Ã»Ã© Ã±Ã¯Ã³Ã±Ãª Ã¨ Ã±Ã¯Ã³Ã±Ãª Ã± Ã¯Ã®Ã¬Ã®Ã¹Ã¼Ã¾ Ã±Ã®Ã¯Ã°Ã¿Ã¦Â¸Ã­Ã­Ã»Ãµ Ã£Ã°Ã Ã¤Ã¨Ã¥Ã­Ã²Ã®Ã¢, Ã®Ã¯Ã°Ã¥Ã¤Ã¥Ã«Ã¿Ã¾Ã²
+// Ã¬Ã¨Ã­Ã¨Ã¬Ã Ã«Ã¼Ã­Ã®Ã¥ Ã§Ã­Ã Ã·Ã¥Ã­Ã¨Ã¥ Ã´Ã³Ã­ÃªÃ¶Ã¨Ã¨ Ã²Ã®Ã«Ã¼ÃªÃ® Ã¯Ã® Ã®Ã¤Ã­Ã®Ã© Ã­Ã Ã·Ã Ã«Ã¼Ã­Ã®Ã© Ã²Ã®Ã·ÃªÃ¥ x_start.
+// ÃÃ®Ã½Ã²Ã®Ã¬Ã³ Ã­Ã¥ Ã§Ã Ã¢Ã¨Ã±Ã¿Ã² Ã®Ã² Ã¢Ã»Ã¡Ã®Ã°Ã  Ã­Ã Ã¯Ã°Ã Ã¢Ã«Ã¥Ã­Ã¨Ã¿.
 static numerics::vector_f64 per_coord_descend(function_nd function, const numerics::vector_f64& x_start, const F64 eps, const I32 max_iters)
 {
 	numerics::vector_f64 x_0(x_start);
