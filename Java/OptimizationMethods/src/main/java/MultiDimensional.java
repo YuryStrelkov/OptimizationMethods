@@ -17,9 +17,7 @@ public class MultiDimensional {
         DoubleVector rhs = new DoubleVector(right);
         DoubleVector x_c, dir = DoubleVector.direction(lhs, rhs).mul(eps);
         int iteration = 0;
-        for (; iteration != maxIterations; iteration++) {
-            if (DoubleVector.distance(rhs, lhs) < 2 * eps)
-                break;
+        for (; iteration != maxIterations && DoubleVector.distance(rhs, lhs) > 2 * eps; iteration++) {
             x_c = DoubleVector.add(rhs, lhs).mul(0.5);
             if (function.call(DoubleVector.add(x_c, dir)) > function.call(DoubleVector.sub(x_c, dir)))
                 rhs = x_c;
