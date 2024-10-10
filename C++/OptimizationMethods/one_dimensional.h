@@ -34,10 +34,8 @@ static F64 golden_ratio(function_1d function, F64 left, F64 right, const F64 eps
 	F64 x_r = left  + (right - left) * PSI;
 	F64 f_l = function(x_l);
 	F64 f_r = function(x_r);
-	for (; iteration != max_iterations; iteration++)
+	for (; iteration != max_iterations && abs(right - left) > 2 * eps; iteration++)
 	{
-		if (abs(right - left) < 2 * eps)
-			break;
 		if (f_l > f_r)
 		{
 			left = x_l;
