@@ -92,10 +92,10 @@ public class MultiDimensional {
         DoubleVector x_r = DoubleVector.add(lhs, DoubleVector.mul(DoubleVector.sub(rhs, lhs), fib_1 / fib_2));
         double f_l = function.call(x_l);
         double f_r = function.call(x_r);
-        fib_t = fib_2 - fib_1;
-        fib_2 = fib_1;
-        fib_1 = fib_t;
         for (int index = iterations; index > 0; index--) {
+            fib_t = fib_2 - fib_1;
+            fib_2 = fib_1;
+            fib_1 = fib_t;
             if (f_l > f_r) {
                 lhs = x_l;
                 x_l = x_r;
@@ -109,9 +109,6 @@ public class MultiDimensional {
                 x_l = DoubleVector.add(lhs, DoubleVector.mul(DoubleVector.sub(rhs, lhs), (fib_2 - fib_1) / fib_2));
                 f_l = function.call(x_l);
             }
-            fib_t = fib_2 - fib_1;
-            fib_2 = fib_1;
-            fib_1 = fib_t;
         }
         if (NumericCommon.SHOW_ZERO_ORDER_METHODS_DEBUG_LOG) {
             System.out.printf("goldenRatio::function arg range    : %s\n", DoubleVector.sub(rhs, lhs).magnitude());
