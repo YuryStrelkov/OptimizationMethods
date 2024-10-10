@@ -58,7 +58,7 @@ namespace OptimizationMethods
                 }
             }
 #if DEBUG
-            Console.WriteLine($"GoldenRatio iterations number : {cntr}");
+            Console.WriteLine($"GoldenRatio iterations number : {iteration + 2}");
             Console.WriteLine($"GoldenRatio argument range    : {rhs - lhs}");
 #endif
             return (rhs + lhs) * 0.5;
@@ -107,7 +107,7 @@ namespace OptimizationMethods
                 }
             }
 #if DEBUG
-            Console.WriteLine($"Fibonacci iterations number : {cntr}");
+            Console.WriteLine($"Fibonacci iterations number : {iterations + 2}");
             Console.WriteLine($"Fibonacci argument range    : {rhs - lhs}");
 #endif
             return (rhs + lhs) * 0.5;
