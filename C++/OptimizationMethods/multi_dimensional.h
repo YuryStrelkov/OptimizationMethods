@@ -38,13 +38,11 @@ static numerics::vector_f64 bisect(function_nd function, const numerics::vector_
 static numerics::vector_f64 golden_ratio(function_nd function, const numerics::vector_f64& left, const numerics::vector_f64& right, const F64 eps, const I32 max_iterations)
 {
 	numerics::vector_f64 lhs(left), rhs(right);
-	numerics::vector_f64 x_l, x_r;
-	F64 f_l, f_r;
 	I32 iteration = 0;
-	x_l = rhs - (rhs - lhs) * PSI;
-	x_r = lhs + (rhs - lhs) * PSI;
-	f_l = function(x_l);
-	f_r = function(x_r);
+	numerics::vector_f64 x_l = rhs - (rhs - lhs) * PSI;
+	numerics::vector_f64 x_r = lhs + (rhs - lhs) * PSI;
+	F64 f_l = function(x_l);
+	F64 f_r = function(x_r);
 	for (; iteration != max_iterations && numerics::vector_f64::distance(lhs, rhs) > 2 * eps; iteration++)
 	{
 		if (f_l > f_r)
