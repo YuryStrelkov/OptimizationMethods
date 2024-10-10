@@ -33,13 +33,11 @@ namespace OptimizationMethods
         {
             Vector lhs = new Vector(_lhs);
             Vector rhs = new Vector(_rhs);
-            Vector x_l, x_r;
-            double f_l, f_r;
+            Vector x_l = rhs - (rhs - lhs) * NumericCommon.PSI;
+            Vector x_r = lhs + (rhs - lhs) * NumericCommon.PSI;
+            double f_l = targetFunction(x_l);
+            double f_r = targetFunction(x_r);
             int iteration = 0;
-            x_l = rhs - (rhs - lhs) * NumericCommon.PSI;
-            x_r = lhs + (rhs - lhs) * NumericCommon.PSI;
-            f_l = targetFunction(x_l);
-            f_r = targetFunction(x_r);
             for (; iteration != iterations && Vector.Distance(rhs, lhs) > 2 * accuracy; iteration++)
             {
                 if (f_l > f_r)
@@ -71,8 +69,7 @@ namespace OptimizationMethods
         {
             Vector lhs = new Vector(_lhs);
             Vector rhs = new Vector(_rhs);
-            Vector x_l, x_r;
-            double f_l, f_r, fib_t = 0.0, fib_1 = 1.0, fib_2 = 1.0;
+            double fib_t = 0.0, fib_1 = 1.0, fib_2 = 1.0;
             double condition = Vector.Distance(rhs, lhs) / accuracy;
             int iterations = 0;
             while (fib_2 < condition)
@@ -82,11 +79,11 @@ namespace OptimizationMethods
                 fib_1 = fib_2;
                 fib_2 += fib_t;
             }
-            x_l = lhs + (rhs - lhs) * ((fib_2 - fib_1) / fib_2);
-            x_r = lhs + (rhs - lhs) * (fib_1 / fib_2);
+            Vector x_l = lhs + (rhs - lhs) * ((fib_2 - fib_1) / fib_2);
+            Vector x_r = lhs + (rhs - lhs) * (fib_1 / fib_2);
 
-            f_l = targetFunction(x_l);
-            f_r = targetFunction(x_r);
+            double f_l = targetFunction(x_l);
+            double f_r = targetFunction(x_r);
             for (int index = iterations; index > 0; index--)
             {
                 fib_t = fib_2 - fib_1;
