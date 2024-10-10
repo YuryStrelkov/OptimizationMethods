@@ -176,7 +176,9 @@ namespace MathUtils
       
         public static IEnumerable<TemplatePair<T1, T2>> Zip<T1, T2>(IEnumerable<T1> left, IEnumerable<T2> right) where T1: IEquatable<T1> where T2 : IEquatable<T2> => left.Zip(right);
         
-        public static void Apply<T1>(TemplateVector<T1> vector, ApplyFunction<T1> function) where T1 : IEquatable<T1>, new() => vector.Apply(function);
+        public static void Apply<T1>(TemplateVector<T1> vector, ApplyFunction<T1> function) where T1 : IEquatable<T1>, new() {
+            for(int index = 0; index < vector.Count; index++)vector._data[index] = function(vector._data[index]);
+        }
         
         public static void Fill <T1>(TemplateVector<T1> vector, FillingFunction<T1> function) where T1 : IEquatable<T1>, new() => vector.Fill(function);
         
