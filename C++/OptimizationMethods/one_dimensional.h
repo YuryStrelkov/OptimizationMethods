@@ -11,10 +11,8 @@ static F64 bisect(function_1d function, F64 left, F64 right, const F64 eps, cons
 	if (left > right) std::swap(left, right);
 	F64 x_c = 0.0;
 	I32 iteration = 0;
-	for (; iteration != max_iterations; iteration++)
+	for (; iteration != max_iterations && abs(right - left) > 2 * eps; iteration++)
 	{
-		if (abs(right - left) < 2 * eps)
-			break;
 		x_c = (right + left) * 0.5;
 		if (function(x_c - eps * 1e-1) > function(x_c + eps * 1e-1))
 			left = x_c;
@@ -31,12 +29,11 @@ static F64 bisect(function_1d function, F64 left, F64 right, const F64 eps, cons
 static F64 golden_ratio(function_1d function, F64 left, F64 right, const F64 eps, const I32 max_iterations)
 {
 	if (left > right) std::swap(left, right);
-	F64 x_l, x_r, f_l, f_r;
 	I32 iteration = 0;
-	x_l = right - (right - left) * PSI;
-	x_r = left  + (right - left) * PSI;
-	f_l = function(x_l);
-	f_r = function(x_r);
+	F64 x_l = right - (right - left) * PSI;
+	F64 x_r = left  + (right - left) * PSI;
+	F64 f_l = function(x_l);
+	F64 f_r = function(x_r);
 	for (; iteration != max_iterations; iteration++)
 	{
 		if (abs(right - left) < 2 * eps)
@@ -68,28 +65,27 @@ static F64 golden_ratio(function_1d function, F64 left, F64 right, const F64 eps
 static F64 fibonacci(function_1d function, F64 left, F64 right, const F64 eps)
 {
 	if (left > right) std::swap(left, right);
-	F64 x_l, x_r, f_l, f_r, value, fib_t{ 0.0 }, fib_1{ 1.0 }, fib_2{ 1.0 };
+	F64 condition = (right - left) / eps;
+	F64 fib_t{ 0.0 }, fib_1{ 1.0 }, fib_2{ 1.0 };
 	I32 iterations{ 0 };
-	value = (right - left) / eps;
-	while (fib_2 < value) 
+	while (fib_2 < condition) 
 	{
 		iterations++;
 		fib_t = fib_1;
 		fib_1 = fib_2;
 		fib_2 += fib_t;
 	}
-	x_l = left + (right - left) * ((fib_2 - fib_1) / fib_2);
-	x_r = left + (right - left) * (          fib_1 / fib_2);
+	F64 x_l = left + (right - left) * ((fib_2 - fib_1) / fib_2);
+	F64 x_r = left + (right - left) * (          fib_1 / fib_2);
 	
-	f_l = function(x_l);
-	f_r = function(x_r);
+	F64 f_l = function(x_l);
+	F64 f_r = function(x_r);
 
-	fib_t = fib_2 - fib_1;
-	fib_2 = fib_1;
-	fib_1 = fib_t;
-	
 	for(I32 index = iterations; index; index--)
 	{
+		fib_t = fib_2 - fib_1;
+		fib_2 = fib_1;
+		fib_1 = fib_t;
 		if (f_l > f_r)
 		{
 			left = x_l;
@@ -106,9 +102,6 @@ static F64 fibonacci(function_1d function, F64 left, F64 right, const F64 eps)
 			x_l = left + (right - left) * ((fib_2 - fib_1) / fib_2);
 			f_l = function(x_l);
 		}
-		fib_t = fib_2 - fib_1;
-		fib_2 = fib_1;
-		fib_1 = fib_t;
 #if _DEBUG
 	   std::cout << "\nfibonacchi [a, b] range: " << (right - left) << "\n";
 #endif
