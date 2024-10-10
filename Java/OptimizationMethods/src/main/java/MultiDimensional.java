@@ -2,8 +2,6 @@ import functionalInterfaces.IFunctionND;
 import mathUtils.NumericCommon;
 import mathUtils.DoubleVector;
 import mathUtils.DoubleMatrix;
-
-
 import java.util.Objects;
 
 @SuppressWarnings("all")
@@ -48,8 +46,7 @@ public class MultiDimensional {
         double f_l = function.call(x_l);
         double f_r = function.call(x_r);
         int iteration = 0;
-        for (; iteration != maxIterations; iteration++) {
-            if (DoubleVector.distance(rhs, lhs) < 2 * eps) break;
+        for (; iteration != maxIterations && DoubleVector.distance(rhs, lhs) > 2 * eps; iteration++) {
             if (f_l > f_r) {
                 lhs = x_l;
                 x_l = x_r;
@@ -82,10 +79,10 @@ public class MultiDimensional {
     public static DoubleVector fibonacci(IFunctionND function, DoubleVector left, DoubleVector right, double eps) {
         DoubleVector lhs = new DoubleVector(left);
         DoubleVector rhs = new DoubleVector(right);
-        double value, fib_t, fib_1 = 1.0, fib_2 = 1.0;
+        double condition, fib_t, fib_1 = 1.0, fib_2 = 1.0;
         int iterations = 0;
-        value = DoubleVector.distance(rhs, lhs) / eps;
-        while (fib_2 < value) {
+        condition = DoubleVector.distance(rhs, lhs) / eps;
+        while (fib_2 < condition) {
             iterations++;
             fib_t = fib_1;
             fib_1 = fib_2;
