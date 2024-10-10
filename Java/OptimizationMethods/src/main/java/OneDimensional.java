@@ -95,15 +95,12 @@ public final class OneDimensional {
         }
         x_l = left + (right - left) * ((fib_2 - fib_1) / fib_2);
         x_r = left + (right - left) * (fib_1 / fib_2);
-
         f_l = function.call(x_l);
         f_r = function.call(x_r);
-
-        fib_t = fib_2 - fib_1;
-        fib_2 = fib_1;
-        fib_1 = fib_t;
-
         for (int index = iterations; index > 0; index--) {
+            fib_t = fib_2 - fib_1;
+            fib_2 = fib_1;
+            fib_1 = fib_t;
             if (f_l > f_r) {
                 left = x_l;
                 f_l = f_r;
@@ -117,9 +114,6 @@ public final class OneDimensional {
                 x_l = left + (right - left) * ((fib_2 - fib_1) / fib_2);
                 f_l = function.call(x_l);
             }
-            fib_t = fib_2 - fib_1;
-            fib_2 = fib_1;
-            fib_1 = fib_t;
         }
         if (NumericCommon.SHOW_ZERO_ORDER_METHODS_DEBUG_LOG) {
             System.out.printf("fibonacci::function probes count : %s\n", 2 + iterations);
