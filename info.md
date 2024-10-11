@@ -81,7 +81,7 @@
 
 ## Лабораторная работа №2. Методы многомерного поиска нулевого порядка.
 
-1. Для языков программирования **c++**, **java**, **c#** использовать набры классов из [**"numerics"**](https://github.com/YuryStrelkov/OptimizationMethods/tree/master/C%2B%2B/OptimizationMethods), **"mathUtils"**[here](https://github.com/YuryStrelkov/OptimizationMethods/tree/master/Java), **"MathUtils"**[here](https://github.com/YuryStrelkov/OptimizationMethods/tree/master/C%23).
+1. Для языков программирования **c++**, **java**, **c#** использовать набры классов из [**"numerics"**](https://github.com/YuryStrelkov/OptimizationMethods/tree/master/C%2B%2B/OptimizationMethods/numerics), [**"mathUtils"**]([https://github.com/YuryStrelkov/OptimizationMethods/tree/master/Java](https://github.com/YuryStrelkov/OptimizationMethods/tree/master/Java/OptimizationMethods/src/main/java/mathUtils)),[**"MathUtils"**](https://github.com/YuryStrelkov/OptimizationMethods/tree/master/C%23).
 2. Дихотомия
 3. Золотое сечение
 4. Фибоначчи
