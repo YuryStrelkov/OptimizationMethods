@@ -83,13 +83,13 @@
 
 1. Для языков программирования **c++**, **java**, **c#** использовать набры классов из [**"numerics"**](https://github.com/YuryStrelkov/OptimizationMethods/tree/master/C%2B%2B/OptimizationMethods/numerics), [**"mathUtils"**](https://github.com/YuryStrelkov/OptimizationMethods/tree/master/Java/OptimizationMethods/src/main/java/mathUtils),[**"MathUtils"**](https://github.com/YuryStrelkov/OptimizationMethods/tree/master/C%23/OptimizationMethods/MathUtils).
 2. **Дихотомия** или **метод половинного деления** - алгоритм необходимо модифицировать для поиска.... Алгоритм поиска можно свести к следующим основным шагам:
-   - Определяем вектор направления по формуле \vec{dir}=\frac{\vec{rhs}-\vec{lhs}}{|\vec{rhs}-\vec{lhs}|}\varepsilon;
+   - Определяем вектор направления по формуле $$\vec{dir}=\frac{\vec{rhs}-\vec{lhs}}{|\vec{rhs}-\vec{lhs}|}\varepsilon$$;
    - Переходим в цикл поиска, который ограничен по точности $$\varepsilon$$ и количеству итераций **maxIterations**;
-   - Определяем центральную точку **промежутка неопределённости**: $$x_{c}=\frac{lhs+rhs}{2}$$ и рассчитываем функцию в точках $$x_{1}=x_{c}-\varepsilon$$; $$x_{2}=x_{c}+\varepsilon$$;
-   - Если $$f\left(x_{c}-\varepsilon\right)>f\left(x_{c}+\varepsilon\right)$$ преобразуем **промежуток неопределённости** в: $$\left[rhs,b\right]$$;
-   - Если $$f\left(x_{c}-\varepsilon\right)<f\left(x_{c}+\varepsilon\right)$$ преобразуем **промежуток неопределённости** в: $$\left[a,lhs\right]$$;
-   - Продолжаем до тех пор, пока $$|rhs-lhs|<2\varepsilon$$;
-   - Возвращаем результат $$\frac{lhs+rhs}{2}$$.
+   - Определяем центральную точку **промежутка неопределённости**: $$x_{c}=\frac{\vec{lhs}+\vec{rhs}}{2}$$ и рассчитываем функцию в точках $$x_{1}=x_{c}-\vec{dir}$$; $$x_{2}=x_{c}+\vec{dir}$$;
+   - Если $$f\left(x_{c}-\varepsilon\right)>f\left(x_{c}+\varepsilon\right)$$ преобразуем **промежуток неопределённости** в: $$\left[\vec{rhs},b\right]$$;
+   - Если $$f\left(x_{c}-\varepsilon\right)<f\left(x_{c}+\varepsilon\right)$$ преобразуем **промежуток неопределённости** в: $$\left[a,\vec{lhs}\right]$$;
+   - Продолжаем до тех пор, пока $$|rhs-\vec{lhs}|<2\varepsilon$$;
+   - Возвращаем результат $$\frac{\vec{lhs}+\vec{rhs}}{2}$$.
 4. Золотое сечение
 5. Фибоначчи
 6. По-координатный спуск
