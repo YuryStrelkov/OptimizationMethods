@@ -22,7 +22,9 @@
    - Определяем левую и правую точку разбиения отрезка: $$x_{r}=lhs+\psi\left(rhs-lhs\right)$$, $$x_{l}=rhs-\psi\left(rhs-lhs\right)$$;
    - В точках $$x_{l},x_{r}$$ делаем ** измерения целевой функции**: $$f_{l}=f\left(x_{l}\right)$$, $$f_{r}=f\left(x_{r}\right)$$;
    - Переходим в цикл поиска, который ограничен по точности $$\varepsilon$$ и количеству итераций **maxIterations**.
-   - Если $$f\left(x_{l}\right)>f\left(x_{r}\right)$$ преобразуем **промежуток неопределённости** и остальные параметры: $$\left[lhs=x_{l},b\right], x_{l}=x_{r},f_{l}=f_{r},x_{r}=lhs+\psi\left(rhs-lhs\right),f_{r}=f\left(x_{r}\right)$$;
+   - Если $$f\left(x_{l}\right)>f\left(x_{r}\right)$$ преобразуем **промежуток неопределённости** и остальные параметры: $$\left[lhs=x_{l},rhs\right], x_{l}=x_{r},f_{l}=f_{r},x_{r}=lhs+\psi\left(rhs-lhs\right),f_{r}=f\left(x_{r}\right)$$;
+   - Если $$f\left(x_{l}\right)<f\left(x_{r}\right)$$ преобразуем **промежуток неопределённости**: $$\left[lhs,rhs=x_{r}\right], x_{r}=x_{l},f_{r}=f_{l},x_{l}=rhs-\psi\left(rhs-lhs\right),f_{l}=f\left(x_{l}\right)$$;
+   - Продолжаем до тех пор, пока $$|rhs-lhs|<2\varepsilon$$.
 5. Фибоначчи
 
 ## Лабораторная работа №2. Методы многомерного поиска нулевого порядка.
