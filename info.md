@@ -86,9 +86,9 @@
    - Определяем вектор направления по формуле $$\vec{dir}=\frac{\vec{rhs}-\vec{lhs}}{|\vec{rhs}-\vec{lhs}|}\varepsilon$$;
    - Переходим в цикл поиска, который ограничен по точности $$\varepsilon$$ и количеству итераций **maxIterations**;
    - Определяем центральную точку **промежутка неопределённости**: $$\vec{x_{c}}=\frac{\vec{lhs}+\vec{rhs}}{2}$$ и рассчитываем функцию в точках $$\vec{x_{1}}=\vec{x_{c}}-\vec{dir}$$; $$\vec{x_{2}}=\vec{x_{c}}+\vec{dir}$$;
-   - Если $$f\left(\vec{x_{c}}-\vec{dir}\right)>f\left(\vec{x_{c}}+\vec{dir}\right)$$ преобразуем **промежуток неопределённости** в: $$\left[\vec{rhs},b\right]$$;
-   - Если $$f\left(\vec{x_{c}}-\vec{dir}\right)<f\left(\vec{x_{c}}+\vec{dir}\right)$$ преобразуем **промежуток неопределённости** в: $$\left[a,\vec{lhs}\right]$$;
-   - Продолжаем до тех пор, пока $$|rhs-\vec{lhs}|<2\varepsilon$$;
+   - Если $$f\left(\vec{x_{c}}-\vec{dir}\right)>f\left(\vec{x_{c}}+\vec{dir}\right)$$ преобразуем **промежуток неопределённости** в: $$\left[\vec{x_{c}}, \vec{rhs}\right]$$;
+   - Если $$f\left(\vec{x_{c}}-\vec{dir}\right)<f\left(\vec{x_{c}}+\vec{dir}\right)$$ преобразуем **промежуток неопределённости** в: $$\left[\vec{lhs}, \vec{x_{c}}\right]$$;
+   - Продолжаем до тех пор, пока $$|\vec{rhs}-\vec{lhs}|<2\varepsilon$$;
    - Возвращаем результат $$\frac{\vec{lhs}+\vec{rhs}}{2}$$.
 4. Золотое сечение
 5. Фибоначчи
