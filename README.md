@@ -212,9 +212,9 @@
 $$\lambda_{i}=\ \ \ \lambda,\text{if}\ \ \ f\left(\vec{x_{i}}+\varepsilon\vec{e_{\text{rem}\left(i,n\right)}}\right)>f\left(\vec{x_{i}}+\varepsilon\vec{e_{\text{rem}\left(i,n\right)}}\right)$$,  
 $$\lambda_{i}=-\lambda,\text{if}\ \ \ f\left(\vec{x_{i}}+\varepsilon\vec{e_{\text{rem}\left(i,n\right)}}\right)<f\left(\vec{x_{i}}+\varepsilon\vec{e_{\text{rem}\left(i,n\right)}}\right)$$.
  Определяем мнимум **целевой фунции** на **полученном выше промежутке неопределённости** (можно исполльзовать любую из трёх модификаций методов нулевого порядка, написаннную ранее):
-     $$\vec{x_{i+1}} = argmin\left(f\left(\left[\vec{x_{i+1}},\vec{x_{i+1}}\pm\lambda\vec{e_{\text{rem}\left(i,n\right)}}\right]\right)\right)$$.
-   - Продолжаем до тех пор, пока $$|\vec{rhs}-\vec{lhs}|<2\varepsilon$$;
-   - Возвращаем результат $$\frac{\vec{lhs}+\vec{rhs}}{2}$$.
+     $$\vec{x_{i+1}} = argmin\left(f\left(\left[\vec{x_{i}},\vec{x_{i}}\pm\lambda\vec{e_{\text{rem}\left(i,n\right)}}\right]\right)\right)$$.
+   - Продолжаем до тех пор, пока $$|\vec{x_{i+1}}-\vec{x_{i}}|<2\varepsilon$$;
+   - Возвращаем результат $$\vec{x_{i + 1}}$$.
 ## Лабораторная работа №3. Методы многомерного поиска высших порядков. Функции штрафа.
 
 	6) Градиентный спуск спуск
