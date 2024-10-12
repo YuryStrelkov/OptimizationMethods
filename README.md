@@ -83,7 +83,10 @@
 
 1. Для языков программирования **c++**, **java**, **c#** использовать набры классов из [**"numerics"**](https://github.com/YuryStrelkov/OptimizationMethods/tree/master/C%2B%2B/OptimizationMethods/numerics), [**"mathUtils"**](https://github.com/YuryStrelkov/OptimizationMethods/tree/master/Java/OptimizationMethods/src/main/java/mathUtils),[**"MathUtils"**](https://github.com/YuryStrelkov/OptimizationMethods/tree/master/C%23/OptimizationMethods/MathUtils).
 2. **Дихотомия** или **метод половинного деления** - алгоритм необходимо модифицировать для поиска.... Алгоритм поиска можно свести к следующим основным шагам:
-   - Определяем вектор направления по формуле $$\vec{dir}=\frac{\vec{rhs}-\vec{lhs}}{|\vec{rhs}-\vec{lhs}|}\varepsilon$$\ Пример определения этого вектора на **C++**: ```numerics::vector_f64 dir = numerics::vector_f64::direction(lhs, rhs) * eps;```\ На **Java**:```DoubleVector dir = DoubleVector.direction(lhs, rhs).mul(eps);```\На **C#**:```Vector dir = Vector.Direction(lhs, rhs) * accuracy;```;
+   - Определяем вектор направления по формуле $$\vec{dir}=\frac{\vec{rhs}-\vec{lhs}}{|\vec{rhs}-\vec{lhs}|}\varepsilon$$
+   Пример определения этого вектора на **C++**: ```numerics::vector_f64 dir = numerics::vector_f64::direction(lhs, rhs) * eps;```
+   На **Java**:```DoubleVector dir = DoubleVector.direction(lhs, rhs).mul(eps);```
+   На **C#**:```Vector dir = Vector.Direction(lhs, rhs) * accuracy;```;
    - Переходим в цикл поиска, который ограничен по точности $$\varepsilon$$ и количеству итераций **maxIterations**;
    - Определяем центральную точку **промежутка неопределённости**: $$\vec{x_{c}}=\frac{\vec{lhs}+\vec{rhs}}{2}$$ и рассчитываем функцию в точках $$\vec{x_{1}}=\vec{x_{c}}-\vec{dir}$$; $$\vec{x_{2}}=\vec{x_{c}}+\vec{dir}$$;
    - Если $$f\left(\vec{x_{c}}-\vec{dir}\right)>f\left(\vec{x_{c}}+\vec{dir}\right)$$ преобразуем **промежуток неопределённости** в: $$\left[\vec{x_{c}}, \vec{rhs}\right]$$;
