@@ -99,7 +99,8 @@
      $$L_{n-1}, L_{n}\rightarrow L_{n-2}, L_{n-1}$$;  
    - Если $$f\left(x_{l}\right)>f\left(x_{r}\right)$$ преобразуем **промежуток неопределённости** и остальные параметры:
      $$\left[lhs=x_{l}, rhs\right]$$;  
-     $$x_{l}=x_{r}$$;$$f_{l}=f_{r}$$;  
+     $$x_{l}=x_{r}$$;  
+     $$f_{l}=f_{r}$$;  
      $$x_{r}=lhs+\frac{L_{n-1}}{L_{n}}\left(rhs-lhs\right))$$;  
      $$f_{r}=f\left(x_{r}\right)$$.  
    - Если $$f\left(x_{l}\right)<f\left(x_{r}\right)$$ преобразуем **промежуток неопределённости** и остальные параметры:
