@@ -1,10 +1,13 @@
-package mathUtils;
-import functionalInterfaces.*;
+package example.mathUtils;
+import example.functionalInterfaces.*;
+import lombok.Getter;
+
 import java.util.Iterator;
 import java.util.Arrays;
 
 
 @SuppressWarnings("all")
+@Getter
 public class TemplateVector<T> implements Iterable<T>, Cloneable {
     // later :: parallel ops...
     // https://raygun.com/blog/java-performance-optimization-tips/
@@ -260,7 +263,9 @@ public class TemplateVector<T> implements Iterable<T>, Cloneable {
     }
 
     public void fill(IFillFunction<T> fillFunction) {
-        for (final int index : new IndicesIterator<>(this)) this._data[index] = fillFunction.call(index);
+        for (final int index : new IndicesIterator<>(this)) {
+            this._data[index] = fillFunction.call(index);
+        }
     }
 
     public void apply(Iterable<T> sequence, IForEachApplyFunction<T> applyFunction) {

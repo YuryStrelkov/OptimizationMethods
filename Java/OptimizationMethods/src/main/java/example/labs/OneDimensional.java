@@ -1,5 +1,7 @@
-import functionalInterfaces.IFunction1D;
-import mathUtils.NumericCommon;
+package example.labs;
+
+import example.functionalInterfaces.IFunction1D;
+import example.mathUtils.NumericCommon;
 
 public final class OneDimensional {
     ////////////////////

@@ -1,14 +1,16 @@
-package mathUtils;
+package example.mathUtils;
 
 @SuppressWarnings("all")
 public final class Slice {
     private final int _end;
     private final int _begin;
     private final int _step;
+
     //exclusive index
     public int end() {
         return _end;
     }
+
     //inclusive index
     public int begin() {
         return _begin;
@@ -27,9 +29,9 @@ public final class Slice {
     }
 
     public Slice(final int begin, final int end, final int step) {
-        this._step  = step; // == 0 ? 1 : step;
+        this._step = step; // == 0 ? 1 : step;
         this._begin = begin;
-        this._end   = end;
+        this._end = end;
     }
 
     @Override
@@ -40,14 +42,14 @@ public final class Slice {
     }
 
     public boolean equals(Slice slice) {
-        if(slice.begin() != begin())return false;
-        if(slice.end()   != end() )return false;
-        if(slice.step()  != step())return false;
+        if (slice.begin() != begin()) return false;
+        if (slice.end() != end()) return false;
+        if (slice.step() != step()) return false;
         return true;
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return step() == 1 ? String.format("%s:%s", begin(), end()) : String.format("%s:%s:%s", begin(), end(), step());
     }
 }

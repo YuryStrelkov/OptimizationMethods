@@ -1,5 +1,5 @@
-package functionalInterfaces;
-import mathUtils.DoubleVector;
+package example.functionalInterfaces;
+import example.mathUtils.DoubleVector;
 
 @FunctionalInterface
 public interface IFunctionND{

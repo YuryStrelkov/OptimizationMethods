@@ -1,4 +1,4 @@
-package mathUtils;
+package example.mathUtils;
 
 @SuppressWarnings("all")
 public class NumericCommon {

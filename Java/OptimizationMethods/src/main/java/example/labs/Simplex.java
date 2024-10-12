@@ -1,15 +1,8 @@
-import mathUtils.*;
+package example.labs;
 
-enum Sign {
-    Equal,
-    Less,
-    More
-}
-
-enum SimplexProblemType {
-    Min,
-    Max,
-}
+import example.labs.enums.Sign;
+import example.labs.enums.SimplexProblemType;
+import example.mathUtils.*;
 
 ////////////////////
 /// Lab. work #5 ///
@@ -19,11 +12,11 @@ public class Simplex {
 
     private int maxIterations = NumericCommon.ITERATIONS_COUNT_LOW;
 
-    public int getMaxIterations(){
+    public int getMaxIterations() {
         return maxIterations;
     }
 
-    public void setMaxIterations(int value){
+    public void setMaxIterations(int value) {
         maxIterations = NumericUtils.clamp(value, 10, NumericCommon.ITERATIONS_COUNT_HIGH);
     }
 
@@ -61,7 +54,7 @@ public class Simplex {
         return boundsMatrix;
     }
 
-    public final  DoubleVector boundsVector() {
+    public final DoubleVector boundsVector() {
         return boundsVector;
     }
 
@@ -272,7 +265,7 @@ public class Simplex {
         if (mode == SimplexProblemType.Max) {
             simD.applyEnumerate(pricesVector, (i, v) -> i < pricesVector.size() ? -v : 0.0);
         } else {
-            simD.applyEnumerate(pricesVector, (i, v)-> i < pricesVector.size() ? v : 0.0);
+            simD.applyEnumerate(pricesVector, (i, v) -> i < pricesVector.size() ? v : 0.0);
         }
         simplexTable.addRow(simD);
         // Если целевая функуция не была модифицирована
@@ -292,7 +285,7 @@ public class Simplex {
             for (int row = 0; row < simplexTable.rowsCount(); row++) {
                 if (simplexTable.get(row, fModArgId) == 0) continue;
                 double arg = simplexTable.get(lastRowId, fModArgId) / simplexTable.get(row, fModArgId);
-                simplexTable.row(lastRowId).sub(DoubleVector.mul(arg, simplexTable.row(row)));
+                simplexTable.row(lastRowId).sub(DoubleVectorUtils.mul(arg, simplexTable.row(row)));
                 break;
             }
         }
@@ -380,7 +373,7 @@ public class Simplex {
     public DoubleVector solve(SimplexProblemType mode) {
         this.mode = mode;
 
-        System.out.printf("Simplex problem type : %s\n", mode);
+        System.out.printf("enjoy.labs.Simplex problem type : %s\n", mode);
 
         buildSimplexTable();
 
@@ -397,11 +390,11 @@ public class Simplex {
 
         if (excludeModArgs()) {
             // второй этап, если задача должна решаться двух проходным(двух этапным) алгоритмом
-            System.out.println("Simplex table after args exclude:");
+            System.out.println("enjoy.labs.Simplex table after args exclude:");
             System.out.println(this);
         }
 
-        while ((!isPlanOptimal()) || (getMaxIterations() == iteration)){
+        while ((!isPlanOptimal()) || (getMaxIterations() == iteration)) {
             iteration++;
 
             mainCol = getMainCol();
@@ -414,7 +407,7 @@ public class Simplex {
 
             if (mainRow == -1) {
                 // Невозможность определить ведущую строку свидейтельствует о том, что обрасть поиска неограничена
-                System.out.println("Unable to get main row. Simplex is probably boundless...");
+                System.out.println("Unable to get main row. enjoy.labs.Simplex is probably boundless...");
                 return null;
             }
 
@@ -426,7 +419,7 @@ public class Simplex {
 
             for (int i = 0; i < simplexTable.rowsCount(); i++) {
                 if (i == mainRow) continue;
-                simplexTable.row(i).sub(DoubleVector.mul(simplexTable.get(i, mainCol), mainRowVector));
+                simplexTable.row(i).sub(DoubleVectorUtils.mul(simplexTable.get(i, mainCol), mainRowVector));
             }
             // solution = currentSimplexSolution();
             if (NumericCommon.SHOW_SIMPLEX_DEBUG_LOG) {
@@ -441,7 +434,7 @@ public class Simplex {
             System.out.printf("solution: %s\n", NumericUtils.toRationalStr(solution));
             return solution;
         }
-        System.out.println("Simplex is unresolvable");
+        System.out.println("enjoy.labs.Simplex is unresolvable");
         // значение целевой функции не равно ее значению от найденного плана
         return null;
     }
@@ -483,7 +476,7 @@ public class Simplex {
         }
 
         inequalities = new TemplateVector<>(b.size());
-        inequalities.fill(v->Sign.Less);
+        inequalities.fill(v -> Sign.Less);
 
         naturalArgsIndices = new TemplateVector<>();
         basisArgsIndices = new TemplateVector<>();

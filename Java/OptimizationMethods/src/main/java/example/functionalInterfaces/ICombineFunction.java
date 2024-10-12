@@ -1,4 +1,4 @@
-package functionalInterfaces;
+package example.functionalInterfaces;
 
 @FunctionalInterface
 public interface ICombineFunction <T1, T2>{
