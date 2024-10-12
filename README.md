@@ -70,12 +70,17 @@
    - Возвращаем результат $$\frac{lhs+rhs}{2}$$.
 3. Метод поиска **Фибоначчи** - алгоритм поиска экстремума функции нулевого порядка, который использует пропорцию пары чисел фибоначии для разбиения **промежутка неопределённости**. В отличии от двух методов выше позволяет заранее определить количество итераций метода для достижения поставленной точности по формуле $$L_{n}>\frac{lhs+rhs}{\varepsilon}$$, здесь $$n$$ - номер числа фибоначии/количество итераций. **Метод Фибоначчи** работает точнее, чем **золотое сечение** при одинаковом количестве **измерений функций**.чем  Количество **измерений целевой функции** равно количеству итераций метода + 2. Алгоритм поиска можно свести к следующим основным шагам:
    - Определяем пару чисел фибоначии $$L_{n-1}, L_{n}$$ и номер числа $$n$$, где $$L_{n}>\frac{lhs+rhs}{\varepsilon}$$;
-   - Определяем левую и правую точку разбиения отрезка: $$x_{r}=lhs+\frac{L_{n-1}}{L_{n}}\left(rhs-lhs\right)$$, $$x_{l}=lhs+\frac{L_{n}-L_{n-1}}{L_{n}}\left(rhs-lhs\right)$$;
-   - В точках $$x_{l},x_{r}$$ делаем **измерения целевой функции**: $$f_{l}=f\left(x_{l}\right)$$, $$f_{r}=f\left(x_{r}\right)$$;
+   - Определяем левую и правую точку разбиения отрезка:
+     $$x_{r}=lhs+\frac{L_{n-1}}{L_{n}}\left(rhs-lhs\right)$$, $$x_{l}=lhs+\frac{L_{n}-L_{n-1}}{L_{n}}\left(rhs-lhs\right)$$;
+   - В точках $$x_{l},x_{r}$$ делаем **измерения целевой функции**:
+     $$f_{l}=f\left(x_{l}\right)$$, $$f_{r}=f\left(x_{r}\right)$$;
    - Переходим в цикл поиска, который ограничен по количеству итераций **maxIterations**;
-   - Делаем сдвиг пары чисел фибоначчи: $$L_{n-1}, L_{n}\rightarrow L_{n-2}, L_{n-1}$$;
-   - Если $$f\left(x_{l}\right)>f\left(x_{r}\right)$$ преобразуем **промежуток неопределённости** и остальные параметры: $$\left[lhs=x_{l}, rhs\right], x_{l}=x_{r}; f_{l}=f_{r}, x_{r}=lhs+\frac{L_{n-1}}{L_{n}}\left(rhs-lhs\right)), f_{r}=f\left(x_{r}\right)$$;
-   - Если $$f\left(x_{l}\right)<f\left(x_{r}\right)$$ преобразуем **промежуток неопределённости** и остальные параметры: $$\left[lhs, rhs=x_{r}\right], x_{r}=x_{l}; f_{r}=f_{l}, x_{l}=lhs+\frac{L_{n}-L_{n-1}}{L_{n}}\left(rhs-lhs\right), f_{l}=f\left(x_{l}\right)$$;
+   - Делаем сдвиг пары чисел фибоначчи:
+      $$L_{n-1}, L_{n}\rightarrow L_{n-2}, L_{n-1}$$;
+   - Если $$f\left(x_{l}\right)>f\left(x_{r}\right)$$ преобразуем **промежуток неопределённости** и остальные параметры:
+      $$\left[lhs=x_{l}, rhs\right], x_{l}=x_{r}; f_{l}=f_{r}, x_{r}=lhs+\frac{L_{n-1}}{L_{n}}\left(rhs-lhs\right)), f_{r}=f\left(x_{r}\right)$$;
+   - Если $$f\left(x_{l}\right)<f\left(x_{r}\right)$$ преобразуем **промежуток неопределённости** и остальные параметры:
+      $$\left[lhs, rhs=x_{r}\right], x_{r}=x_{l}; f_{r}=f_{l}, x_{l}=lhs+\frac{L_{n}-L_{n-1}}{L_{n}}\left(rhs-lhs\right), f_{l}=f\left(x_{l}\right)$$;
    - Продолжаем до тех пор, пока $$|rhs-lhs|<2\varepsilon$$;
    - Возвращаем результат $$\frac{lhs+rhs}{2}$$.
 
@@ -84,17 +89,17 @@
 1. Для языков программирования **c++**, **java**, **c#** использовать набры классов из [**"numerics"**](https://github.com/YuryStrelkov/OptimizationMethods/tree/master/C%2B%2B/OptimizationMethods/numerics), [**"mathUtils"**](https://github.com/YuryStrelkov/OptimizationMethods/tree/master/Java/OptimizationMethods/src/main/java/mathUtils),[**"MathUtils"**](https://github.com/YuryStrelkov/OptimizationMethods/tree/master/C%23/OptimizationMethods/MathUtils).
 2. **Дихотомия** или **метод половинного деления** - алгоритм необходимо модифицировать для поиска.... Алгоритм поиска можно свести к следующим основным шагам:
    - Определяем вектор направления по формуле $$\vec{dir}=\frac{\vec{rhs}-\vec{lhs}}{|\vec{rhs}-\vec{lhs}|}\varepsilon$$
-      - Пример определения этого вектора направления **C++**: ```numerics::vector_f64 dir = numerics::vector_f64::direction(lhs, rhs) * eps;```
-      - Пример определения этого вектора направления **Java**:```DoubleVector dir = DoubleVector.direction(lhs, rhs).mul(eps);```
-      - Пример определения этого вектора направления **C#**:```Vector dir = DoubleVector.Direction(lhs, rhs) * accuracy;```
+      - Пример определения вектора направления **C++**: ```numerics::vector_f64 dir = numerics::vector_f64::direction(lhs, rhs) * eps;```
+      - Пример определения вектора направления **Java**: ```DoubleVector dir = DoubleVector.direction(lhs, rhs).mul(eps);```
+      - Пример определения вектора направления **C#**: ```Vector dir = DoubleVector.Direction(lhs, rhs) * accuracy;```
    - Переходим в цикл поиска, который ограничен по точности $$\varepsilon$$ и количеству итераций **maxIterations**;
    - Определяем центральную точку **промежутка неопределённости**: $$\vec{x_{c}}=\frac{\vec{lhs}+\vec{rhs}}{2}$$ и рассчитываем функцию в точках $$\vec{x_{1}}=\vec{x_{c}}-\vec{dir}$$; $$\vec{x_{2}}=\vec{x_{c}}+\vec{dir}$$;
    - Если $$f\left(\vec{x_{c}}-\vec{dir}\right)>f\left(\vec{x_{c}}+\vec{dir}\right)$$ преобразуем **промежуток неопределённости** в: $$\left[\vec{x_{c}}, \vec{rhs}\right]$$;
    - Если $$f\left(\vec{x_{c}}-\vec{dir}\right)<f\left(\vec{x_{c}}+\vec{dir}\right)$$ преобразуем **промежуток неопределённости** в: $$\left[\vec{lhs}, \vec{x_{c}}\right]$$;
    - Продолжаем до тех пор, пока $$|\vec{rhs}-\vec{lhs}|<2\varepsilon$$;
       - Пример определения модуля вектора **C++**: ```F64 vector_length = numerics::vector_f64::distance(lhs, rhs);```
-      - Пример определения модуля вектора **Java**:```double vectorLength = DoubleVector.distance(lhs, rhs);```
-      - Пример определения модуля вектора **C#**:```double vectorLength = DoubleVector.Distance(lhs, rhs);```
+      - Пример определения модуля вектора **Java**: ```double vectorLength = DoubleVector.distance(lhs, rhs);```
+      - Пример определения модуля вектора **C#**: ```double vectorLength = DoubleVector.Distance(lhs, rhs);```
    - Возвращаем результат $$\frac{\vec{lhs}+\vec{rhs}}{2}$$.
 4. **Золотое сечение** - алгоритм поиска экстремума функции нулевого порядка, который использует пропорцию золотого сечения для разбиения **промежутка неопределённости**. Имеет меньшую вычислительную сложность, чем **метод дихотомии** при одинаковых условиях (**lhs**, **rhs** и **eps**). Количество **измерений целевой функции** равно количеству итераций метода + 2. Алгоритм поиска можно свести к следующим основным шагам:
    - Определяем левую и правую точку разбиения отрезка: $$\vec{x_{r}}=\vec{lhs}+\psi\left(\vec{rhs}-\vec{lhs}\right)$$, $$\vec{x_{l}}=\vec{rhs}-\psi\left(\vec{rhs}-\vec{lhs}\right)$$;
@@ -114,14 +119,12 @@
    - Если $$f\left(\vec{x_{l}}\right)<f\left(\vec{x_{r}}\right)$$ преобразуем **промежуток неопределённости** и остальные параметры: $$\left[\vec{lhs}, \vec{rhs}=\vec{x_{r}}\right], \vec{x_{r}}=\vec{x_{l}}; f_{r}=f_{l}, \vec{x_{l}}=\vec{lhs}+\frac{L_{n}-L_{n-1}}{L_{n}}\left(\vec{rhs} - \vec{lhs}\right), f_{l}=f\left(\vec{x_{l}}\right)$$;
    - Продолжаем до тех пор, пока $$|\vec{rhs} - \vec{lhs}|<2\varepsilon$$;
    - Возвращаем результат $$\frac{\vec{lhs}+\vec{rhs}}{2}$$.
-5. Фибоначчи
 6. По-координатный спуск
  
 ## Лабораторная работа №3. Методы многомерного поиска высших порядков. Функции штрафа.
 
 	6) Градиентный спуск спуск
 	7) метод сопряжённых градиентов
-	8) Определение типа mat_mn(c++)/Matrix(c#) и вспомогательных функций и операторов к нему.
 	9) Метод Ньютона-Рафсона.
 	10)Функции внешнего и внутреннего штрафа.
  
