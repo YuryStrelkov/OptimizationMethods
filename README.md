@@ -100,7 +100,9 @@
       - Пример определения вектора направления **Java**: ```DoubleVector dir = DoubleVector.direction(lhs, rhs).mul(eps);```
       - Пример определения вектора направления **C#**: ```Vector dir = DoubleVector.Direction(lhs, rhs) * accuracy;```
    - Переходим в цикл поиска, который ограничен по точности $$\varepsilon$$ и количеству итераций **maxIterations**;
-   - Определяем центральную точку **промежутка неопределённости**: $$\vec{x_{c}}=\frac{\vec{lhs}+\vec{rhs}}{2}$$ и рассчитываем функцию в точках $$\vec{x_{1}}=\vec{x_{c}}-\vec{dir}$$; $$\vec{x_{2}}=\vec{x_{c}}+\vec{dir}$$;
+   - Определяем центральную точку **промежутка неопределённости**: $$\vec{x_{c}}=\frac{\vec{lhs}+\vec{rhs}}{2}$$ и рассчитываем функцию в точках
+     $$\vec{x_{1}}=\vec{x_{c}}-\vec{dir}$$;  
+     $$\vec{x_{2}}=\vec{x_{c}}+\vec{dir}$$.  
    - Если $$f\left(\vec{x_{c}}-\vec{dir}\right)>f\left(\vec{x_{c}}+\vec{dir}\right)$$ преобразуем **промежуток неопределённости** в:
      $$\left[\vec{x_{c}}, \vec{rhs}\right]$$;
    - Если $$f\left(\vec{x_{c}}-\vec{dir}\right)<f\left(\vec{x_{c}}+\vec{dir}\right)$$ преобразуем **промежуток неопределённости** в:
@@ -118,13 +120,13 @@
      $$f_{l}=f\left(\vec{x_{l}}\right)$$;  
      $$f_{r}=f\left(\vec{x_{r}}\right)$$.  
    - Переходим в цикл поиска, который ограничен по точности $$\varepsilon$$ и количеству итераций **maxIterations**;
-   - Если $$f\left(\vec{x_{l}}\right)>f\left(\vec{x_{r}}\right)$$ преобразуем **промежуток неопределённости** и остальные параметры: 		 
+   - Если $$f\left(\vec{x_{l}}\right)>f\left(\vec{x_{r}}\right)$$ преобразуем **промежуток неопределённости** и остальные параметры:  
      $$\left[\vec{lhs}=\vec{x_{l}},\vec{rhs}\right]$$;  
      $$\vec{x_{l}}=\vec{x_{r}}$$,  
      $$\vec{f_{l}}=\vec{f_{r}}$$;  
      $$\vec{x_{r}}=\vec{lhs}+\psi\left(\vec{rhs}-\vec{lhs}\right)$$;  
      $$f_{r}=f\left(\vec{x_{r}}\right)$$.  
-   - Если $$f\left(\vec{x_{l}}\right)<f\left(\vec{x_{r}}\right)$$ преобразуем **промежуток неопределённости** и остальные параметры: 
+   - Если $$f\left(\vec{x_{l}}\right)<f\left(\vec{x_{r}}\right)$$ преобразуем **промежуток неопределённости** и остальные параметры:  
      $$\left[\vec{lhs},\vec{rhs}=\vec{x_{r}}\right]$$;  
      $$\vec{x_{r}}=\vec{x_{l}}$$;  
      $$\vec{f_{r}}=\vec{f_{l}}$$;  
