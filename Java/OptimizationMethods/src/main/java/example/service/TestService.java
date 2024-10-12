@@ -189,73 +189,80 @@ public class TestService {
         return sb.toString();
     }
 
-    public DoubleMatrixDto invertMatrix(DoubleMatrixDto dto) {
+    public DoubleMatrixDto invertMatrix(DoubleMatrixDto dto, boolean rational, boolean fullRational) {
         DoubleMatrix invert = DoubleMatrixUtils.invert(dto2Matrix(dto));
 
         if (Objects.isNull(invert)) {
             return null;
         }
 
-        return matrix2dto(invert);
+        return matrix2dto(invert, rational, fullRational);
     }
 
-    public DoubleMatrixDto mulMatrix(MatrixOperationDto dto) {
+    public DoubleMatrixDto mulMatrix(MatrixOperationDto dto, boolean rational, boolean fullRational) {
         DoubleMatrixDto leftMx = dto.getLeftMx();
         DoubleMatrixDto rightMx = dto.getRightMx();
         Double leftD = dto.getLeftD();
         Double rightD = dto.getRightD();
 
         if (Objects.nonNull(leftMx) && Objects.nonNull(rightMx)) {
-            return matrix2dto(DoubleMatrixUtils.mul(dto2Matrix(leftMx), dto2Matrix(rightMx)));
+            return matrix2dto(DoubleMatrixUtils.mul(dto2Matrix(leftMx), dto2Matrix(rightMx)), rational, fullRational);
         }
 
         if (Objects.nonNull(leftMx) && Objects.nonNull(rightD)) {
-            return matrix2dto(DoubleMatrixUtils.mul(dto2Matrix(leftMx), rightD));
+            return matrix2dto(DoubleMatrixUtils.mul(dto2Matrix(leftMx), rightD), rational, fullRational);
         }
 
         if (Objects.nonNull(rightMx) && Objects.nonNull(leftD)) {
-            return matrix2dto(DoubleMatrixUtils.mul(leftD, dto2Matrix(rightMx)));
+            return matrix2dto(DoubleMatrixUtils.mul(leftD, dto2Matrix(rightMx)), rational, fullRational);
         }
 
         throw new IllegalArgumentException("unexpected arg");
     }
 
     private static DoubleMatrix dto2Matrix(DoubleMatrixDto dto) {
-        List<DoubleVectorDto> vectors = dto.getVectors();
+        List<DoubleVectorDto> rows = dto.getRows();
 
         // todo mb remove check
         int vectorSize = 0;
-        for (DoubleVectorDto vectorDto : vectors) {
+        for (DoubleVectorDto vectorDto : rows) {
             if (vectorSize != 0 && vectorDto.getSize() != vectorSize) {
                 throw new IllegalArgumentException("Vectors need to have the same size");
             }
             vectorSize = vectorDto.getSize();
         }
 
-        return new DoubleMatrix(vectors.stream()
+        return new DoubleMatrix(rows.stream()
                 .map(TestService::dto2Vector)
                 .toArray(DoubleVector[]::new));
     }
 
-    private static DoubleMatrixDto matrix2dto(DoubleMatrix matrix) {
+    private static DoubleMatrixDto matrix2dto(DoubleMatrix matrix, boolean rational, boolean fullRational) {
         DoubleMatrixDto matrixDto = new DoubleMatrixDto();
-        matrixDto.setVectors(new ArrayList<>());
+        matrixDto.setRows(new ArrayList<>());
 
         for (int i = 0; i < matrix.rowsCount(); i++) {
-            matrixDto.getVectors().add(vector2dto(matrix.row(i)));
+            matrixDto.getRows().add(vector2dto(matrix.row(i), rational, fullRational));
         }
         return matrixDto;
     }
 
     private static DoubleVector dto2Vector(DoubleVectorDto dto) {
-        return new DoubleVector(dto.getPoints());
+        return new DoubleVector(dto.getRow());
     }
 
-    private static DoubleVectorDto vector2dto(DoubleVector vector) {
+    private static DoubleVectorDto vector2dto(DoubleVector vector, boolean rational, boolean fullRational) {
         DoubleVectorDto vectorDto = new DoubleVectorDto();
-        vectorDto.setPoints(new ArrayList<>());
-        for (int i = 0; i < vector.size(); i++) {
-            vectorDto.getPoints().add(vector.get(i));
+        if (rational) {
+            vectorDto.setRowStr(new ArrayList<>());
+            for (int i = 0; i < vector.size(); i++) {
+                vectorDto.getRowStr().add(NumericUtils.toRationalStr(vector.get(i), fullRational));
+            }
+        } else {
+            vectorDto.setRow(new ArrayList<>());
+            for (int i = 0; i < vector.size(); i++) {
+                vectorDto.getRow().add(vector.get(i));
+            }
         }
         return vectorDto;
     }

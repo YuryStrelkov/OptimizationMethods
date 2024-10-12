@@ -9,6 +9,6 @@ import java.util.List;
 @Getter
 public class DoubleMatrixDto {
 
-    private List<DoubleVectorDto> vectors;
+    private List<DoubleVectorDto> rows;
 
 }

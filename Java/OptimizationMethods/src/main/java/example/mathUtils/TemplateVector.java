@@ -1,13 +1,12 @@
 package example.mathUtils;
-import example.functionalInterfaces.*;
-import lombok.Getter;
 
-import java.util.Iterator;
+import example.functionalInterfaces.*;
+
 import java.util.Arrays;
+import java.util.Iterator;
 
 
 @SuppressWarnings("all")
-@Getter
 public class TemplateVector<T> implements Iterable<T>, Cloneable {
     // later :: parallel ops...
     // https://raygun.com/blog/java-performance-optimization-tips/

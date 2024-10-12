@@ -34,12 +34,16 @@ public class TestController {
     }
 
     @PostMapping("matrix-invert")
-    public DoubleMatrixDto invertMatrix(@RequestBody DoubleMatrixDto dto) {
-        return testService.invertMatrix(dto);
+    public DoubleMatrixDto invertMatrix(@RequestBody DoubleMatrixDto dto,
+                                        @RequestParam(value = "rational", required = false) boolean rational,
+                                        @RequestParam(value = "fullRational", required = false) boolean fullRational) {
+        return testService.invertMatrix(dto, rational, fullRational);
     }
 
     @PostMapping("matrix-mul")
-    public DoubleMatrixDto mulMatrix(@RequestBody MatrixOperationDto dto) {
-        return testService.mulMatrix(dto);
+    public DoubleMatrixDto mulMatrix(@RequestBody MatrixOperationDto dto,
+                                     @RequestParam(value = "rational", required = false) boolean rational,
+                                     @RequestParam(value = "fullRational", required = false) boolean fullRational) {
+        return testService.mulMatrix(dto, rational, fullRational);
     }
 }
