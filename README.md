@@ -121,12 +121,12 @@
      Пример определения вектора направления **Java**: ```DoubleVector dir = DoubleVector.direction(lhs, rhs).mul(eps);```  
      Пример определения вектора направления **C#**: ```Vector dir = DoubleVector.Direction(lhs, rhs) * accuracy;```  
    - Переходим в цикл поиска, который ограничен по точности $$\varepsilon$$ и количеству итераций **maxIterations**;
-   - Определяем центральную точку **промежутка неопределённости**: $$\vec{x_{c}}=\frac{\vec{lhs}+\vec{rhs}}{2}$$ и рассчитываем функцию в точках
-     $$\vec{x_{1}}=\vec{x_{c}}-\vec{dir}$$;  
-     $$\vec{x_{2}}=\vec{x_{c}}+\vec{dir}$$.  
-   - Если $$f\left(\vec{x_{c}}-\vec{dir}\right)>f\left(\vec{x_{c}}+\vec{dir}\right)$$ преобразуем **промежуток неопределённости** в:
+   - Определяем центральную точку **промежутка неопределённости**: $$\vec{x_{c}}=\frac{\vec{lhs}+\vec{rhs}}{2}$$ и рассчитываем функцию в точках:  
+     $$\vec{x_{l}}=\vec{x_{c}}-\vec{dir}$$;  
+     $$\vec{x_{r}}=\vec{x_{c}}+\vec{dir}$$.  
+   - Если $$f\left(\vec{x_{l}}\right)>f\left(\vec{x_{r}}\right)$$ преобразуем **промежуток неопределённости** в:
      $$\left[\vec{x_{c}}, \vec{rhs}\right]$$;
-   - Если $$f\left(\vec{x_{c}}-\vec{dir}\right)<f\left(\vec{x_{c}}+\vec{dir}\right)$$ преобразуем **промежуток неопределённости** в:
+   - Если $$f\left(\vec{x_{l}}\right)<f\left(\vec{x_{r}}\right)$$ преобразуем **промежуток неопределённости** в:
      $$\left[\vec{lhs}, \vec{x_{c}}\right]$$;
    - Продолжаем до тех пор, пока $$|\vec{rhs}-\vec{lhs}|<2\varepsilon$$;  
      Пример определения модуля вектора **C++**: ```F64 vector_length = numerics::vector_f64::distance(lhs, rhs);```  
