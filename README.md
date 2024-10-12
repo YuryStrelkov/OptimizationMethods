@@ -209,7 +209,8 @@
      $$\vec{x_{1}} = argmin\left(f\left(\left[\vec{x}_{0},\vec{x}_{0}\pm\lambda\vec{e}_{0}\right]\right)\right)$$, после чего повторяем те же действия для $$\vec{e_{1}}$$.
    - Обобщая итерационную последовательность моно прийти к следующему описанию перехода от $$i$$ шага к $$i+1$$ шагу:  
      Исследуем на монотонность точку $$\vec{x_{i}}$$  водоль орта $$\vec{e_{i}}$$, определяя тем самым $$\lambda_{i}$$:
-$$\lambda_{i}=\lambda\begin{cases}\,\,\,1,f\left(\vec{x}_{i}+\varepsilon\vec{e}_{i}\right)>f\left(\vec{x}_{i}+\varepsilon\vec{e}_{i}\right)\\-1,f\left(\vec{x}_{i}+\varepsilon\vec{e}_{i}\right)<f\left(\vec{x}_{i}+\varepsilon\vec{e}_{i}\right)\end{cases}$$
+$$\lambda_{i}=\lambda,\text{if}f\left(\vec{x}_{i}+\varepsilon\vec{e}_{i}\right)>f\left(\vec{x}_{i}+\varepsilon\vec{e}_{i}\right)$$,  
+$$\lambda_{i}=-\lambda,\text{if}f\left(\vec{x}_{i}+\varepsilon\vec{e}_{i}\right)<f\left(\vec{x}_{i}+\varepsilon\vec{e}_{i}\right)$$.
 ## Лабораторная работа №3. Методы многомерного поиска высших порядков. Функции штрафа.
 
 	6) Градиентный спуск спуск
