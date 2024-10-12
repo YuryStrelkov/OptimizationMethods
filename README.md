@@ -208,9 +208,9 @@
    - Определяем мнимум **целевой фунции** на **полученном выше промежутке неопределённости** (можно исполльзовать любую из трёх модификаций методов нулевого порядка, написаннную ранее):
      $$\vec{x_{1}} = argmin\left(f\left(\left[\vec{x_{0}},\vec{x_{0}}\pm\lambda\vec{e_{0}}\right]\right)\right)$$, после чего повторяем те же действия для $$\vec{e_{1}}$$.
    - Обобщая итерационную последовательность моно прийти к следующему описанию перехода от $$i$$ шага к $$i+1$$ шагу:  
-     Исследуем на монотонность точку $$\vec{x_{i}}$$ ( $$\vec{x_{i}} \in\mathbb{R}^{n}$$)  водоль орта $$\vec{e_{i\%n}}$$, определяя тем самым $$\lambda_{i}$$:  
-$$\lambda_{i}=\ \ \ \lambda,\text{if}\ \ \ f\left(\vec{x_{i}}+\varepsilon\vec{e_{i}}\right)>f\left(\vec{x_{i}}+\varepsilon\vec{e_{i}}\right)$$,  
-$$\lambda_{i}=-\lambda,\text{if}\ \ \ f\left(\vec{x_{i}}+\varepsilon\vec{e_{i}}\right)<f\left(\vec{x_{i}}+\varepsilon\vec{e_{i}}\right)$$.
+     Исследуем на монотонность точку $$\vec{x_{i}}$$ ( $$\vec{x_{i}} \in\mathbb{R}^{n}$$)  водоль орта $$\vec{e_{\text{rem}\left(i,n\right)}}$$, определяя тем самым $$\lambda_{i}$$:  
+$$\lambda_{i}=\ \ \ \lambda,\text{if}\ \ \ f\left(\vec{x_{i}}+\varepsilon\vec{e_{\text{rem}\left(i,n\right)}}\right)>f\left(\vec{x_{i}}+\varepsilon\vec{e_{\text{rem}\left(i,n\right)}}\right)$$,  
+$$\lambda_{i}=-\lambda,\text{if}\ \ \ f\left(\vec{x_{i}}+\varepsilon\vec{e_{\text{rem}\left(i,n\right)}}\right)<f\left(\vec{x_{i}}+\varepsilon\vec{e_{\text{rem}\left(i,n\right)}}\right)$$.
 ## Лабораторная работа №3. Методы многомерного поиска высших порядков. Функции штрафа.
 
 	6) Градиентный спуск спуск
