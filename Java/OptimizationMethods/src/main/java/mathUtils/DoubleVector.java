@@ -1,5 +1,5 @@
 package mathUtils;
-import functionalInterfaces.IFunctionND;
+import mathUtils.functionalInterfaces.IFunctionND;
 
 
 @SuppressWarnings("all")

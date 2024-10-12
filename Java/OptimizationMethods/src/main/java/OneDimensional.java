@@ -1,4 +1,4 @@
-import functionalInterfaces.IFunction1D;
+import mathUtils.functionalInterfaces.IFunction1D;
 import mathUtils.NumericCommon;
 
 public final class OneDimensional {

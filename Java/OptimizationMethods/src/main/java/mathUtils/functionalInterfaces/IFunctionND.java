@@ -1,4 +1,4 @@
-package functionalInterfaces;
+package mathUtils.functionalInterfaces;
 import mathUtils.DoubleVector;
 
 @FunctionalInterface

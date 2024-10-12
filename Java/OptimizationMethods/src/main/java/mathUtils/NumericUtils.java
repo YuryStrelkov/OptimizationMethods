@@ -1,6 +1,6 @@
 package mathUtils;
-import functionalInterfaces.IFunction1D;
-import functionalInterfaces.IFunctionND;
+import mathUtils.functionalInterfaces.IFunction1D;
+import mathUtils.functionalInterfaces.IFunctionND;
 
 
 @SuppressWarnings("all")

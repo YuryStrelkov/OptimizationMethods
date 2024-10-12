@@ -1,6 +1,6 @@
 package mathUtils;
 
-import functionalInterfaces.IFunctionND;
+import mathUtils.functionalInterfaces.IFunctionND;
 import java.util.Objects;
 
 

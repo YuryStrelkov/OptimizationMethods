@@ -40,12 +40,12 @@ namespace MathUtils
             return (x - 5) * (x - 2); // min at point x = 3.5
         }
 
-        public static double TestFunc2D(Vector x)
+        public static double TestFunc2D(DoubleVector x)
         {
             return (x[0] - 5) * x[0] + (x[1] - 3) * x[1]; // min at point x = 2.5, y = 1.5
         }
 
-        public static double TestFuncND(Vector x)
+        public static double TestFuncND(DoubleVector x)
         {
             double val = 0.0;
 
@@ -173,7 +173,7 @@ namespace MathUtils
         }
 
 
-        public static string ToRationalStr(IEnumerable<double> vector, bool fullRational = true) => $"{{{string.Join(", ", vector.Map(v => ToRationalStr(v, fullRational)))}}}";
+        public static string ToRationalStr(IEnumerable<double> DoubleVector, bool fullRational = true) => $"{{{string.Join(", ", DoubleVector.Map(v => ToRationalStr(v, fullRational)))}}}";
 
         public struct RationalNumber: IEquatable<RationalNumber>
         {

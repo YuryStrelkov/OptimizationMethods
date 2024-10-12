@@ -56,22 +56,22 @@ namespace OptimizationMethods
         /// <summary>
         /// Симплекс таблица
         /// </summary>
-        private Matrix _simplexTable;
+        private DoubleMatrix _simplexTable;
 
         /// <summary>
         /// матрица ограничений
         /// </summary>
-        private Matrix _boundsMatrix;
+        private DoubleMatrix _boundsMatrix;
 
         /// <summary>
         /// вектор ограничений
         /// </summary>
-        private Vector _boundsVector;
+        private DoubleVector _boundsVector;
 
         /// <summary>
         /// вектор стоимостей
         /// </summary>
-        private Vector _pricesVector;
+        private DoubleVector _pricesVector;
 
         /// <summary>
         /// режим поиска решения
@@ -97,7 +97,7 @@ namespace OptimizationMethods
             /// Проверяем значения последней строки сиплекс-разностей
             /// на положительность. Если все положительны, то план оптимален.
             /// </summary>
-            Vector row = _simplexTable[_simplexTable.NRows - 1];
+            DoubleVector row = _simplexTable[_simplexTable.NRows - 1];
             bool optimal = true;
             for (int index = 0; index < row.Count - 1; index++) 
             {
@@ -128,7 +128,7 @@ namespace OptimizationMethods
         /// <returns></returns>
         private int GetMainCol()
         {
-            Vector row = _simplexTable[_simplexTable.NRows - 1];
+            DoubleVector row = _simplexTable[_simplexTable.NRows - 1];
 
             double delta = 0;
 
@@ -143,7 +143,7 @@ namespace OptimizationMethods
 
             if (IsTargetFuncModified() && index == -1)
             {
-                Vector row_add = _simplexTable[_simplexTable.NRows - 2];
+                DoubleVector row_add = _simplexTable[_simplexTable.NRows - 2];
 
                 foreach (int id in _naturalArgsIds)
                 {
@@ -282,7 +282,7 @@ namespace OptimizationMethods
         ///(-c|0)  F(x,c)
         private void BuildSimplexTable()
         {
-            _simplexTable = new Matrix(_boundsMatrix);
+            _simplexTable = new DoubleMatrix(_boundsMatrix);
             _naturalArgsIds.Clear();
             _basisArgs.Clear();
             _fModArgs.Clear();
@@ -333,7 +333,7 @@ namespace OptimizationMethods
             /// Построение симплекс разностей
             /// </summary>
 
-            Vector s_deltas = new Vector(_simplexTable.NCols);
+            DoubleVector s_deltas = new DoubleVector(_simplexTable.NCols);
 
             if (mode == SimplexProblemType.Max)
             {
@@ -355,7 +355,7 @@ namespace OptimizationMethods
             /// <summary>
             /// Если всё же была...
             /// </summary>
-            Vector s_deltas_add = new Vector(_simplexTable.NCols);
+            DoubleVector s_deltas_add = new DoubleVector(_simplexTable.NCols);
             for (int j = 0; j < _simplexTable.NCols; j++)  s_deltas_add[j] = 0.0; //  ???
             foreach (int fModArgsId in _fModArgs) s_deltas_add[fModArgsId] = 1.0;
             _simplexTable.AddRow(s_deltas_add);
@@ -414,23 +414,23 @@ namespace OptimizationMethods
 
         public int NaturalArgsN() => _pricesVector.Count;
 
-        public Matrix BoundsMatrix() => _boundsMatrix;
+        public DoubleMatrix BoundsMatrix() => _boundsMatrix;
 
-        public Vector BoundsCoeffs() => _boundsVector;
+        public DoubleVector BoundsCoeffs() => _boundsVector;
 
-        public Vector PricesCoeffs() => _pricesVector;
+        public DoubleVector PricesCoeffs() => _pricesVector;
 
         public List<Sign> Inequations() => _inequalities;
 
         public List<int> BasisArgsuments() => _basisArgs;
 
-        public Matrix SimplexTable() => _simplexTable;
+        public DoubleMatrix SimplexTable() => _simplexTable;
 
-        public Vector CurrentSimplexSolution(bool only_natural_args = false)
+        public DoubleVector CurrentSimplexSolution(bool only_natural_args = false)
         {
             int count = only_natural_args ? NaturalArgsN() : _simplexTable.NCols - 1;
             
-            Vector solution = new Vector(count);
+            DoubleVector solution = new DoubleVector(count);
 
             for (int i = 0; i < _basisArgs.Count; i++)
             {
@@ -440,7 +440,7 @@ namespace OptimizationMethods
             }
             return solution;
         }
-        public string SimplexToString()//Matrix table, List<int> basis)
+        public string SimplexToString()//DoubleMatrix table, List<int> basis)
         {
             if (_simplexTable.NRows == 0) return "";
 
@@ -460,7 +460,7 @@ namespace OptimizationMethods
 
             int n_row = -1;
 
-            foreach (Vector row in _simplexTable.Rows)
+            foreach (DoubleVector row in _simplexTable.Rows)
             {
                 n_row++;
 
@@ -508,13 +508,13 @@ namespace OptimizationMethods
             return sb.ToString();
         }
 
-        public Vector Solve(SimplexProblemType mode = SimplexProblemType.Max)
+        public DoubleVector Solve(SimplexProblemType mode = SimplexProblemType.Max)
         {
             this.mode = mode;
 
             Console.WriteLine($"SimplexProblemType : {SimplexProblemType.Max.ToString()}\n");
 
-            Vector solution = new Vector(NaturalArgsN());
+            DoubleVector solution = new DoubleVector(NaturalArgsN());
 
             BuildSimplexTable();
 
@@ -583,7 +583,7 @@ namespace OptimizationMethods
             /// значение целевой функции не равно ее значению от найденного плана
             return null;
         }
-        public Simplex(Matrix a, Vector c, List<Sign> ineq, Vector b)
+        public Simplex(DoubleMatrix a, DoubleVector c, List<Sign> ineq, DoubleVector b)
         {
             if (b.Count != ineq.Count) throw new Exception("Error simplex creation :: b.size() != inequation.size()");
             if (a.NRows != ineq.Count) throw new Exception("Error simplex creation :: A.rows_number() != inequation.size()");
@@ -597,7 +597,7 @@ namespace OptimizationMethods
             _pricesVector   = c;
             _inequalities   = ineq;
         }
-        public Simplex(Matrix a, Vector c, Vector b)
+        public Simplex(DoubleMatrix a, DoubleVector c, DoubleVector b)
         {
             if (b.Count != b.Count) throw new Exception("Error simplex creation :: b.size() != bouns_coeffs.size()");
             if (a.NCols != c.Count) throw new Exception("Error simplex creation :: A.cols_number() != price_coeffs.size()");

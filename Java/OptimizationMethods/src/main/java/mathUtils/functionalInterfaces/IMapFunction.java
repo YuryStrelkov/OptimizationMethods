@@ -1,4 +1,4 @@
-package functionalInterfaces;
+package mathUtils.functionalInterfaces;
 
 @FunctionalInterface
 public interface IMapFunction<T1, T2>{

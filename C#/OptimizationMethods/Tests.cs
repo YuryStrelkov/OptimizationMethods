@@ -9,7 +9,7 @@ namespace OptimizationMethods
     {
         public static void VectorTest() 
         {
-            Vector b = new Vector(5.0, 6.0, 8.0);
+            DoubleVector b = new DoubleVector(5.0, 6.0, 8.0);
             Console.Write("///////////////////////////////////////////\n");
             Console.Write("////////         VectorTest        ////////\n");
             Console.Write("///////////////////////////////////////////\n");
@@ -45,8 +45,8 @@ namespace OptimizationMethods
             Console.WriteLine(  "//////// MultiDimensionalMethodsTest ////////");
             Console.WriteLine(  "/////////////////////////////////////////////\n");
 
-            Vector x_1 = new Vector(0.0, 0.0);
-            Vector x_0 = new Vector(5.0, 3.0);
+            DoubleVector x_1 = new DoubleVector(0.0, 0.0);
+            DoubleVector x_0 = new DoubleVector(5.0, 3.0);
 
             Console.WriteLine($"x_0 = {x_0},\nx_1 = {x_1}\n") ;
             Console.WriteLine($"BiSect                 : {MultiDimensional.BiSect             (NumericUtils.TestFunc2D, x_1, x_0)}");
@@ -69,26 +69,26 @@ namespace OptimizationMethods
             Console.WriteLine(  "////////////////////////////\n");
 
             ///У меня всё работает, у вас мой класс тоже заработает
-            Matrix matrix = new Matrix(new Vector(8.0, 1.0, 6.0), new Vector(3.0, 5.0, 7.0), new Vector(4.0, 9.0, 2.0));
-            Console.WriteLine(matrix);
-            Console.WriteLine($"\nmatrix + matrix:\n{ matrix + matrix }\n");
-            Console.WriteLine($"\nmatrix - matrix:\n{ matrix - matrix }\n");
-            Console.WriteLine($"\nmatrix * matrix:\n{ matrix * matrix }\n");
-            Matrix l, u;
-            Matrix.LU(ref matrix, out l, out u);
-            Console.WriteLine($"\nL  matrix:\n{l}");
-            Console.WriteLine($"\nU  matrix:\n{u}");
-            Console.WriteLine($"\nL * U - matrix:\n{l * u - matrix}");
-            Vector b = new Vector(1.0, 2.0, 3.0);
+            DoubleMatrix DoubleMatrix = new DoubleMatrix(new DoubleVector(8.0, 1.0, 6.0), new DoubleVector(3.0, 5.0, 7.0), new DoubleVector(4.0, 9.0, 2.0));
+            Console.WriteLine(DoubleMatrix);
+            Console.WriteLine($"\nmatrix + DoubleMatrix:\n{ DoubleMatrix + DoubleMatrix }\n");
+            Console.WriteLine($"\nmatrix - DoubleMatrix:\n{ DoubleMatrix - DoubleMatrix }\n");
+            Console.WriteLine($"\nmatrix * DoubleMatrix:\n{ DoubleMatrix * DoubleMatrix }\n");
+            DoubleMatrix l, u;
+            DoubleMatrix.LU(ref DoubleMatrix, out l, out u);
+            Console.WriteLine($"\nL  DoubleMatrix:\n{l}");
+            Console.WriteLine($"\nU  DoubleMatrix:\n{u}");
+            Console.WriteLine($"\nL * U - DoubleMatrix:\n{l * u - DoubleMatrix}");
+            DoubleVector b = new DoubleVector(1.0, 2.0, 3.0);
             /// x = {0.05, 0.3, 0.05};
-            Vector x = Matrix.Linsolve(matrix, b);
-            Console.WriteLine($"\nx vector:\n{x}");
-            Console.WriteLine($"\nAx - b:\n{matrix * x - b}");
-            Console.WriteLine($"\nA*inv(A):\n{matrix / matrix}");
-            Matrix matrix_ = new Matrix(new Vector(8.0, 1.0, 6.0), new Vector(3.0, 5.0, 7.0));
+            DoubleVector x = DoubleMatrix.Linsolve(DoubleMatrix, b);
+            Console.WriteLine($"\nx DoubleVector:\n{x}");
+            Console.WriteLine($"\nAx - b:\n{DoubleMatrix * x - b}");
+            Console.WriteLine($"\nA*inv(A):\n{DoubleMatrix / DoubleMatrix}");
+            DoubleMatrix matrix_ = new DoubleMatrix(new DoubleVector(8.0, 1.0, 6.0), new DoubleVector(3.0, 5.0, 7.0));
             Console.WriteLine($"\nnon rect mat:\n{matrix_}");
-            Console.WriteLine($"\nnon rect mat mul by transposed it self :\n{matrix_ * Matrix.Transpose(matrix_)}");
-            Matrix m = Matrix.Hessian(NumericUtils.TestFuncND, new Vector(0.0, 0.0, 0.0));
+            Console.WriteLine($"\nnon rect mat mul by transposed it self :\n{matrix_ * DoubleMatrix.Transpose(matrix_)}");
+            DoubleMatrix m = DoubleMatrix.Hessian(NumericUtils.TestFuncND, new DoubleVector(0.0, 0.0, 0.0));
             Console.WriteLine($"\nHessian(MultiDimensional.TestFuncND):\n{m}");
         }
         public static void NumericTests()
@@ -98,7 +98,7 @@ namespace OptimizationMethods
             Console.WriteLine(  "//////////////////////////////\n");
             double[] numbers = { 1.666, 0.666, -3.0, -0.125, 3.769, -1.666, -0.666, 3.0, 0.125, -3.769 };
             foreach(double number in numbers) Console.WriteLine($"number = {number} = {new RationalNumber(number)}");
-            Vector b = new Vector(1.412, 2.33, -3.75);
+            DoubleVector b = new DoubleVector(1.412, 2.33, -3.75);
             Console.WriteLine(b);
             Console.WriteLine(NumericUtils.ToRationalStr(b, false));
         }
@@ -109,14 +109,14 @@ namespace OptimizationMethods
             Console.WriteLine(  "//////// SimplexTest ////////");
             Console.WriteLine(  "/////////////////////////////\n");
 
-            Vector b = new Vector(40.0, 28.0, 14.0);
-            Vector c = new Vector(2.0, 3.0);
+            DoubleVector b = new DoubleVector(40.0, 28.0, 14.0);
+            DoubleVector c = new DoubleVector(2.0, 3.0);
 
-            Matrix A = new Matrix
+            DoubleMatrix A = new DoubleMatrix
             (
-              new Vector(-2.0, 6.0),
-              new Vector( 3.0, 2.0),
-              new Vector( 2.0,-1.0)
+              new DoubleVector(-2.0, 6.0),
+              new DoubleVector( 3.0, 2.0),
+              new DoubleVector( 2.0,-1.0)
             );
 
             Console.WriteLine(" f(x,c) =  2x1 + 3x2;\n arg_max = {4, 8}, f(arg_max) = 32");
@@ -129,7 +129,7 @@ namespace OptimizationMethods
 
             Console.WriteLine("\n f(x,c) = -2x1 + 3x2;\n arg_min = {7, 0}, f(arg_min) =-14\n");
 
-            Simplex sym_1 = new Simplex(A, new Vector(-2.0, 3.0), new List<Sign>() { Sign.Less, Sign.Less, Sign.Less }, b);
+            Simplex sym_1 = new Simplex(A, new DoubleVector(-2.0, 3.0), new List<Sign>() { Sign.Less, Sign.Less, Sign.Less }, b);
             sym_1.Solve(SimplexProblemType.Min);
 
 
@@ -138,11 +138,11 @@ namespace OptimizationMethods
             Console.WriteLine(" |-2x1 + 6x2 >= 40");
             Console.WriteLine(" | 3x1 + 2x2 >= 28");
             Console.WriteLine(" | 2x1 -  x2 >= 14\n");
-            Simplex sym_2 = new Simplex(A, new Vector(2.0, 1.0), new List<Sign>() { Sign.More, Sign.More, Sign.More }, b);
+            Simplex sym_2 = new Simplex(A, new DoubleVector(2.0, 1.0), new List<Sign>() { Sign.More, Sign.More, Sign.More }, b);
             sym_2.Solve(SimplexProblemType.Min);
             Console.WriteLine(" f(x,c) =  -2x1 - x2;\n arg_min = {62/5, 54/5}, f(arg_max) = -35 3/5");
 
-            Simplex sym_3 = new Simplex(A, new Vector(-2.0, -1.0), new List<Sign>() { Sign.More, Sign.More, Sign.More }, b);
+            Simplex sym_3 = new Simplex(A, new DoubleVector(-2.0, -1.0), new List<Sign>() { Sign.More, Sign.More, Sign.More }, b);
             sym_3.Solve(SimplexProblemType.Max);
             Console.WriteLine(" f(x,c) =  2x1 + 3x2;\n arg_min = {none, none}, f(arg_max) = none");
             Simplex sym_4 = new Simplex(A, c, new List<Sign>() { Sign.Equal, Sign.Equal, Sign.Equal }, b);

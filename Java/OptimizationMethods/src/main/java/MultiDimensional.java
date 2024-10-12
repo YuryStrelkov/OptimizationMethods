@@ -1,4 +1,4 @@
-import functionalInterfaces.IFunctionND;
+import mathUtils.functionalInterfaces.IFunctionND;
 import mathUtils.NumericCommon;
 import mathUtils.DoubleVector;
 import mathUtils.DoubleMatrix;
@@ -23,7 +23,7 @@ public class MultiDimensional {
                 lhs = x_c;
         }
         if (NumericCommon.SHOW_ZERO_ORDER_METHODS_DEBUG_LOG) {
-            System.out.printf("biSect::function arg range    : %s\n", DoubleVector.sub(rhs, lhs).magnitude());
+            System.out.printf("biSect::function arg range    : %s\n", DoubleVector.distance(rhs, lhs));
             System.out.printf("biSect::function probes count : %s\n", 2 * iteration);
         }
         return DoubleVector.add(rhs, lhs).mul(0.5);
@@ -62,7 +62,7 @@ public class MultiDimensional {
             }
         }
         if (NumericCommon.SHOW_ZERO_ORDER_METHODS_DEBUG_LOG) {
-            System.out.printf("goldenRatio::function arg range    : %s\n", DoubleVector.sub(rhs, lhs).magnitude());
+            System.out.printf("goldenRatio::function arg range    : %s\n", DoubleVector.distance(rhs, lhs));
             System.out.printf("goldenRatio::function probes count : %s\n", 2 + iteration);
         }
         return DoubleVector.add(rhs, lhs).mul(0.5);
@@ -111,7 +111,7 @@ public class MultiDimensional {
             }
         }
         if (NumericCommon.SHOW_ZERO_ORDER_METHODS_DEBUG_LOG) {
-            System.out.printf("goldenRatio::function arg range    : %s\n", DoubleVector.sub(rhs, lhs).magnitude());
+            System.out.printf("goldenRatio::function arg range    : %s\n", DoubleVector.distance(rhs, lhs));
             System.out.printf("goldenRatio::function probes count : %s\n", 2 + iterations);
         }
         return DoubleVector.add(rhs, lhs).mul(0.5);

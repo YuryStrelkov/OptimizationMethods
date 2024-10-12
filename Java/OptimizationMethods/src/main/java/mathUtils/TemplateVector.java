@@ -1,5 +1,6 @@
 package mathUtils;
-import functionalInterfaces.*;
+import mathUtils.functionalInterfaces.*;
+
 import java.util.Iterator;
 import java.util.Arrays;
 
