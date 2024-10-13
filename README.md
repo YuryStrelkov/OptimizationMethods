@@ -238,7 +238,7 @@ $$\lambda_{i}=-\lambda,\text{if}\ \ \ f\left(\vec{x_{i}}+\varepsilon\vec{e_{\tex
 2. **Метод Ньютона-Рафсона**  
    **Метод Ньютона-Рафсона** представляет собой итерационный алгоритм, который можно предстваить в виде следующей рекурентной последовательности:
    $$\vec{x_{i+1}}=\vec{x_{i}}-H^{-1}\left(\vec{x_{i}}\right)\vec{\nabla}\bullet f\left(\vec{x_{i}}\right)$$,
-   здесь $$H\left(\vec{x_{i}}\right)$$ - матрица Гёссе в точке $$\vec{x_{i}}$$, матричный элемент которой $$h_{i, j}\left(\vec{x_{i}}\right)$$ равен $$h_{i, j}\left(\vec{x_{i}}\right) = \frac{\partial f\left(\vec{x}\right)}{\partial x_{i}\partial x_{j}}$$.  
+   здесь $$H\left(\vec{x_{i}}\right)$$ - матрица Гёссе в точке $$\vec{x_{i}}$$, матричный элемент которой $$h_{i, j}\left(\vec{x_{i}}\right)$$ равен $$h_{i, j}\left(\vec{x}\right) = \frac{\partial^2 f\left(\vec{x}\right)}{\partial x_{i}\partial x_{j}}$$.  
     Метод можно свести к следующим основным шагам:
    - Выбираем начальную точку $$\vec{x_{0}}$$;
    - Опеределяем переход из точки $$\vec{x_{i}}$$ в точку $$\vec{x_{i+1}}$$:  
