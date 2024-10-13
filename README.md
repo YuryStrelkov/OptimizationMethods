@@ -222,7 +222,13 @@ $$\lambda_{i}=-\lambda,\text{if}\ \ \ f\left(\vec{x_{i}}+\varepsilon\vec{e_{\tex
    - Возвращаем результат $$\vec{x_{i + 1}}$$.
 ## Лабораторная работа №3. Методы многомерного поиска высших порядков. Функции штрафа.
 1. **Градиентный спуск спуск**  
-   **Градиентный спуск спуск** представляет собой итерационный алгоритм, который можно предстваить в виде следующей рекурентной последовательности: $$\vec{x_{i+1}}=\vec{x_{i}}+\lambda\vec{\nabla}\bullet f\left(\vec{x_{i}}\right)$$, где $$\lambda=\text{argmin}\left(f\left(\left[\vec{x_{i}},\vec{x_{i}}+\lambda\vec{\nabla}\bullet f\left(\vec{x_{i}}\right)\right]\right)\right)$$, здесь $$\vec{\nabla}\bullet f\left(\vec{x}\right)$$ - вектор $$i$$-ый элемент которого: $$\frac{\partial f\left(\vec{x}\right)}{\partial x_{i}}$$.  
+   **Градиентный спуск спуск** представляет собой итерационный алгоритм, который можно предстваить в виде следующей рекурентной последовательности: $$\vec{x_{i+1}}=\vec{x_{i}}+\lambda\vec{\nabla}\bullet f\left(\vec{x_{i}}\right)$$, где $$\lambda=\text{argmin}\left(f\left(\left[\vec{x_{i}},\vec{x_{i}}+\lambda\vec{\nabla}\bullet f\left(\vec{x_{i}}\right)\right]\right)\right)$$, здесь $$\vec{\nabla}\bullet f\left(\vec{x}\right)$$ - вектор градиента скалярной функции вектороного аргумента, $$i$$-ый элемент которого: $$\frac{\partial f\left(\vec{x}\right)}{\partial x_{i}}$$.
+        Пример определения модуля вектора **C++** (используется центральный разностный аналог $$\frac{df\left(x\right)}{dx}=\frac{f\left(x+dx\right)-f\left(x-dx\right)}{2dx}$$ с $$dx=10^{-6}$$):  
+     ```numerics::vector_f64 gradient = numerics::vector_f64::gradient(function, point);```  
+     Пример определения модуля вектора **Java** (используется центральный разностный аналог с $$dx=10^{-6}$$):  
+     ```DoubleVector gradient = DoubleVector.Gradient(function, point);```  
+     Пример определения модуля вектора **C#** (используется центральный разностный аналог с $$dx=10^{-6}$$):  
+     ```DoubleVector gradient = DoubleVector.Gradient(function, point);```  
    Для упрощения реализации метода, допускается использовать $$\lambda = 1.0$$. Метод можно свести к следующим основным шагам:
    - Выбираем начальную точку $$\vec{x_{0}}$$ и начальную длину шага $$\lambda$$ вдоль градиента;
    - Опеределяем переход из точки $$\vec{x_{i}}$$ в точку $$\vec{x_{i+1}}$$:  
@@ -232,10 +238,19 @@ $$\lambda_{i}=-\lambda,\text{if}\ \ \ f\left(\vec{x_{i}}+\varepsilon\vec{e_{\tex
    - Продолжаем до тех пор, пока $$|\vec{x_{i+1}}-\vec{x_{i}}|<2\varepsilon$$;
    - Возвращаем результат $$\vec{x_{i + 1}}$$.
 3. **Метод сопряжённых градиентов**  
-   $$\vec{x_{i+1}}=\vec{x_{i}}+\lambda\vec{\nabla}\bullet f\left(\vec{x_{i}}\right)$$
+**Метод сопряжённых градиентов** представляет собой итерационный алгоритм, который можно предстваить в виде следующей рекурентной последовательности, для которой на первом шаге мы определяем:  
+$$\vec{S_{0}}=-\left(\vec{\nabla}\bullet f\left(\vec{x_{0}}\right)\right)$$;
+Двигаемся в направлении градиента:  
+$$\vec{x_{1}}=\vec{x_{0}}+\lambda_{1}\vec{S_{0}}$$;
+Следующий шаг определим в виде:
+$$\vec{S_{1}}=-\left(\vec{\nabla}\bullet f\left(\vec{x_{1}}\right)\right)+\omega_{1}\vec{S_{0}}.$$
+Обобщая можно записать последовательность в виде:  
+$$\vec{S_{i}}=-\left(\vec{\nabla}\bullet f\left(\vec{x_{i}}\right)\right)+\omega_{i}\vec{S_{i-1}}=-\left(\vec{\nabla}\bullet f\left(\vec{x_{i}}\right)\right)+\frac{\left\Vert \vec{\nabla}\bullet f\left(\vec{x_{i}}\right)\right\Vert ^{2}}{\left\Vert \vec{\nabla}\bullet f\left(\vec{x_{i-1}}\right)\right\Vert ^{2}}\vec{S_{i-1}};$$  
+$$\vec{x_{i+1}}=\vec{x_{i}}+\lambda_{i+1}\vec{S_{i}}.$$
+
    - Продолжаем до тех пор, пока $$|\vec{x_{i+1}}-\vec{x_{i}}|<2\varepsilon$$;
    - Возвращаем результат $$\vec{x_{i + 1}}$$.
-2. **Метод Ньютона-Рафсона**  
+4. **Метод Ньютона-Рафсона**  
    **Метод Ньютона-Рафсона** представляет собой итерационный алгоритм, который можно предстваить в виде следующей рекурентной последовательности:
    $$\vec{x_{i+1}}=\vec{x_{i}}-H^{-1}\left(\vec{x_{i}}\right)\vec{\nabla}\bullet f\left(\vec{x_{i}}\right)$$,
    здесь $$H\left(\vec{x_{i}}\right)$$ - матрица Гёссе в точке $$\vec{x_{i}}$$, матричный элемент которой $$h_{i, j}\left(\vec{x_{i}}\right)$$ равен $$h_{i, j}\left(\vec{x}\right) = \frac{\partial^2 f\left(\vec{x}\right)}{\partial x_{i}\partial x_{j}}$$, а так же $$H^{T}\left(\vec{x}\right) = H\left(\vec{x}\right)$$.  
@@ -245,6 +260,6 @@ $$\lambda_{i}=-\lambda,\text{if}\ \ \ f\left(\vec{x_{i}}+\varepsilon\vec{e_{\tex
    $$\vec{x_{i+1}}=\vec{x_{i}}-H^{-1}\left(\vec{x_{i}}\right)\vec{\nabla}\bullet f\left(\vec{x_{i}}\right)$$.
    - Продолжаем до тех пор, пока $$|\vec{x_{i+1}}-\vec{x_{i}}|<2\varepsilon$$;
    - Возвращаем результат $$\vec{x_{i + 1}}$$.
-4. **Функции внешнего и внутреннего штрафа**
+5. **Функции внешнего и внутреннего штрафа**
  
 ## Лабораторная работа №4. Задача линейного программирования
