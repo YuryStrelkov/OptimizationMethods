@@ -24,7 +24,7 @@ public class DoubleVectorDto {
     @JsonIgnore
     private int size;
 
-    @Schema(accessMode = Schema.AccessMode.WRITE_ONLY)
+    @Schema(accessMode = Schema.AccessMode.READ_WRITE, example = "[-1, 2.5, -1.2]")
     @JsonProperty(value = "row", access = JsonProperty.Access.WRITE_ONLY)
     public void setRow(List<Double> row) {
         this.row = row;
