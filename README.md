@@ -276,7 +276,7 @@ $$\vec{x_{i+1}}=\vec{x_{i}}+\lambda_{i+1}\vec{S_{i}}.$$
      Пример определения матрицы Гессе функции в точке для **Java**:  
      ```DoubleMatrix hessian = DoubleMatrix.hessian(function, point);```  
      Пример определения матрицы Гессе функции в точке для **C#**:  
-     ```DoubleMatrix hessian = DoubleMatrix.Hessian(function, point);```
+     ```DoubleMatrix hessian = DoubleMatrix.Hessian(function, point);```  
    **Метод поиска можно свести к следующим основным шагам**:
    - Выбираем начальную точку $$\vec{x_{0}}$$;
    - Опеределяем переход из точки $$\vec{x_{i}}$$ в точку $$\vec{x_{i+1}}$$:  
