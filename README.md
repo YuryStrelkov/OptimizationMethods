@@ -222,11 +222,17 @@ $$\lambda_{i}=-\lambda,\text{if}\ \ \ f\left(\vec{x_{i}}+\varepsilon\vec{e_{\tex
    - Возвращаем результат $$\vec{x_{i + 1}}$$.
 ## Лабораторная работа №3. Методы многомерного поиска высших порядков. Функции штрафа.
 1. **Градиентный спуск спуск**
-   $$\vec{x_{i+1}}=\vec{x_{i}}+\lambda\left(\vec{\nabla}\bullet f\left(\vec{x_{i}}\right)\right)^{T}$$
-2. **Метод сопряжённых градиентов**
-   $$\vec{x_{i+1}}=\vec{x_{i}}+\lambda\left(\vec{\nabla}\bullet f\left(\vec{x_{i}}\right)\right)^{T}$$
+   $$\vec{x_{i+1}}=\vec{x_{i}}+\lambda\vec{\nabla}\bullet f\left(\vec{x_{i}}\right)$$
+   - Продолжаем до тех пор, пока $$|\vec{x_{i+1}}-\vec{x_{i}}|<2\varepsilon$$;
+   - Возвращаем результат $$\vec{x_{i + 1}}$$.
+3. **Метод сопряжённых градиентов**
+   $$\vec{x_{i+1}}=\vec{x_{i}}+\lambda\vec{\nabla}\bullet f\left(\vec{x_{i}}\right)$$
+   - Продолжаем до тех пор, пока $$|\vec{x_{i+1}}-\vec{x_{i}}|<2\varepsilon$$;
+   - Возвращаем результат $$\vec{x_{i + 1}}$$.
 2. **Метод Ньютона-Рафсона**
-   $$\vec{x_{i+1}}=\vec{x_{i}}+\lambda\left(\vec{\nabla}\bullet f\left(\vec{x_{i}}\right)\right)^{T}$$
-3. **Функции внешнего и внутреннего штрафа**
+   $$\vec{x_{i+1}}=\vec{x_{i}}-H^{-1}\left(\vec{x_{i}}\right)\vec{\nabla}f\left(\vec{x_{i}}\right).$$
+   - Продолжаем до тех пор, пока $$|\vec{x_{i+1}}-\vec{x_{i}}|<2\varepsilon$$;
+   - Возвращаем результат $$\vec{x_{i + 1}}$$.
+4. **Функции внешнего и внутреннего штрафа**
  
 ## Лабораторная работа №4. Задача линейного программирования
