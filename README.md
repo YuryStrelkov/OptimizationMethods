@@ -221,8 +221,8 @@ $$\lambda_{i}=-\lambda,\text{if}\ \ \ f\left(\vec{x_{i}}+\varepsilon\vec{e_{\tex
    - Продолжаем до тех пор, пока $$|\vec{x_{i+1}}-\vec{x_{i}}|<2\varepsilon$$;
    - Возвращаем результат $$\vec{x_{i + 1}}$$.
 ## Лабораторная работа №3. Методы многомерного поиска высших порядков. Функции штрафа.
-1. **Градиентный спуск спуск**
-   $$\vec{x_{i+1}}=\vec{x_{i}}+\lambda\vec{\nabla}\bullet f\left(\vec{x_{i}}\right)$$
+1. **Градиентный спуск спуск**  
+   **Градиентный спуск спуск** представляет собой итерационную последовательность следующего вида:   $$\vec{x_{i+1}}=\vec{x_{i}}+\lambda\vec{\nabla}\bullet f\left(\vec{x_{i}}\right)$$,  где $$\lambda = argmin\left(f\left(\left[\vec{x_{i}}, \vec{x_{i}}+\lambda\vec{\nabla}\bullet f\left(\vec{x_{i}}\right)]\right)\right)$$
    - Продолжаем до тех пор, пока $$|\vec{x_{i+1}}-\vec{x_{i}}|<2\varepsilon$$;
    - Возвращаем результат $$\vec{x_{i + 1}}$$.
 3. **Метод сопряжённых градиентов**
