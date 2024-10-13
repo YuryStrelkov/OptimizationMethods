@@ -134,7 +134,7 @@
      Пример определения вектора направления **Java**:  
      ```DoubleVector dir = DoubleVector.direction(lhs, rhs).mul(eps);```  
      Пример определения вектора направления **C#**:  
-     ```Vector dir = DoubleVector.Direction(lhs, rhs) * accuracy;```  
+     ```DoubleVector dir = DoubleVector.Direction(lhs, rhs) * eps;```  
    - Переходим в цикл поиска, который ограничен по точности $$\varepsilon$$ и количеству итераций **maxIterations**;
    - Определяем центральную точку **промежутка неопределённости**: $$\vec{x_{c}}=\frac{\vec{lhs}+\vec{rhs}}{2}$$ и рассчитываем функцию в точках:  
      $$\vec{x_{l}}=\vec{x_{c}}-\vec{dir}$$;  
@@ -144,11 +144,11 @@
    - Если $$f\left(\vec{x_{l}}\right)<f\left(\vec{x_{r}}\right)$$ преобразуем **промежуток неопределённости** в:
      $$\left[\vec{lhs}, \vec{x_{c}}\right]$$;
    - Продолжаем до тех пор, пока $$|\vec{rhs}-\vec{lhs}|<2\varepsilon$$;  
-     Пример определения модуля вектора **C++**:  
+     Пример определения расстояния между двумя векторами для **C++**:  
      ```F64 vector_length = numerics::vector_f64::distance(lhs, rhs);```  
-     Пример определения модуля вектора **Java**:  
+     Пример определения расстояния между двумя векторами для **Java**:  
      ```double vectorLength = DoubleVector.distance(lhs, rhs);```  
-     Пример определения модуля вектора **C#**:  
+     Пример определения расстояния между двумя векторами для **C#**:  
      ```double vectorLength = DoubleVector.Distance(lhs, rhs);```  
    - Возвращаем результат $$\frac{\vec{lhs}+\vec{rhs}}{2}$$.
 2. **Золотое сечение**  
@@ -201,7 +201,7 @@
      $$f_{l}=f\left(\vec{x_{l}}\right)$$.  
    - Продолжаем до тех пор, пока $$|\vec{rhs} - \vec{lhs}|<2\varepsilon$$;
    - Возвращаем результат $$\frac{\vec{lhs}+\vec{rhs}}{2}$$.
-6. **Метод покоординатного спуска**  
+4. **Метод покоординатного спуска**  
    Метод покоординатного спуска позволяет обнаружить эстремум **целевой функции** путём последовательного поиска по направлениям орт пространства, которому принадлежит аргумент функции. Алгоритму необходимо указать точку из которой мы начинаем поис $$\vec{x_{0}}$$, количество итераций, точность $$\varepsilon$$ и длину шага $$\lambda$$ поиска вдоль одного орта. Алгоритм поиска можно свести к следующим основным шагам:
    - Исследуем **целевую функцию** на монотонность в окрестности точки $$\vec{x_{0}}$$ водоль орта $$\vec{e_{0}}$$  
      $$\vec{x_{l}}=\vec{x_{0}}-\varepsilon\vec{e_{0}}$$;  
@@ -222,12 +222,12 @@ $$\lambda_{i}=-\lambda,\text{if}\ \ \ f\left(\vec{x_{i}}+\varepsilon\vec{e_{\tex
    - Возвращаем результат $$\vec{x_{i + 1}}$$.
 ## Лабораторная работа №3. Методы многомерного поиска высших порядков. Функции штрафа.
 1. **Градиентный спуск спуск**  
-   **Градиентный спуск спуск** представляет собой итерационный алгоритм, который можно предстваить в виде следующей рекурентной последовательности: $$\vec{x_{i+1}}=\vec{x_{i}}+\lambda\vec{\nabla}\bullet f\left(\vec{x_{i}}\right)$$, где $$\lambda=\text{argmin}\left(f\left(\left[\vec{x_{i}},\vec{x_{i}}+\lambda\vec{\nabla}\bullet f\left(\vec{x_{i}}\right)\right]\right)\right)$$, здесь $$\vec{\nabla}\bullet f\left(\vec{x}\right)$$ - вектор градиента скалярной функции вектороного аргумента, $$i$$-ый элемент которого: $$\frac{\partial f\left(\vec{x}\right)}{\partial x_{i}}$$.
-        Пример определения модуля вектора **C++** (используется центральный разностный аналог $$\frac{df\left(x\right)}{dx}=\frac{f\left(x+dx\right)-f\left(x-dx\right)}{2dx}$$ с $$dx=10^{-6}$$):  
+   **Градиентный спуск спуск** представляет собой итерационный алгоритм, который можно предстваить в виде следующей рекурентной последовательности: $$\vec{x_{i+1}}=\vec{x_{i}}+\lambda\vec{\nabla}\bullet f\left(\vec{x_{i}}\right)$$, где $$\lambda=\text{argmin}\left(f\left(\left[\vec{x_{i}},\vec{x_{i}}+\lambda\vec{\nabla}\bullet f\left(\vec{x_{i}}\right)\right]\right)\right)$$, здесь $$\vec{\nabla}\bullet f\left(\vec{x}\right)$$ - вектор градиента скалярной функции вектороного аргумента, $$i$$-ый элемент которого: $$\frac{\partial f\left(\vec{x}\right)}{\partial x_{i}}$$. Для языков программирования: **C++**, **Java**, **C#**, реализован рассчёт градиента функции в точке. Производные выражаются через центральный разностный аналог $$\frac{df\left(x\right)}{dx}=\frac{f\left(x+dx\right)-f\left(x-dx\right)}{2dx}$$ с $$dx=10^{-6}$$.
+     Пример определения градиента функции в точке для**C++**:  
      ```numerics::vector_f64 gradient = numerics::vector_f64::gradient(function, point);```  
-     Пример определения модуля вектора **Java** (используется центральный разностный аналог с $$dx=10^{-6}$$):  
-     ```DoubleVector gradient = DoubleVector.Gradient(function, point);```  
-     Пример определения модуля вектора **C#** (используется центральный разностный аналог с $$dx=10^{-6}$$):  
+     Пример определения градиента функции в точке для **Java**:  
+     ```DoubleVector gradient = DoubleVector.gradient(function, point);```  
+     Пример определения градиента функции в точке для **C#**:  
      ```DoubleVector gradient = DoubleVector.Gradient(function, point);```  
    Для упрощения реализации метода, допускается использовать $$\lambda = 1.0$$. Метод можно свести к следующим основным шагам:
    - Выбираем начальную точку $$\vec{x_{0}}$$ и начальную длину шага $$\lambda$$ вдоль градиента;
@@ -237,24 +237,39 @@ $$\lambda_{i}=-\lambda,\text{if}\ \ \ f\left(\vec{x_{i}}+\varepsilon\vec{e_{\tex
      $$\lambda=\text{argmin}\left(f\left(\left[\vec{x_{i}},\vec{x_{i}}+\lambda\vec{\nabla}\bullet f\left(\vec{x_{i}}\right)\right]\right)\right)$$;
    - Продолжаем до тех пор, пока $$|\vec{x_{i+1}}-\vec{x_{i}}|<2\varepsilon$$;
    - Возвращаем результат $$\vec{x_{i + 1}}$$.
-3. **Метод сопряжённых градиентов**  
+2. **Метод сопряжённых градиентов**  
 **Метод сопряжённых градиентов** представляет собой итерационный алгоритм, который можно предстваить в виде следующей рекурентной последовательности, для которой на первом шаге мы определяем:  
 $$\vec{S_{0}}=-\left(\vec{\nabla}\bullet f\left(\vec{x_{0}}\right)\right)$$;
 Двигаемся в направлении градиента:  
-$$\vec{x_{1}}=\vec{x_{0}}+\lambda_{1}\vec{S_{0}}$$;
-Следующий шаг определим в виде:
+$$\vec{x_{1}}=\vec{x_{0}}+\lambda_{1}\vec{S_{0}}$$;  
+$$\lambda=\text{argmin}\left(f\left[\vec{x_{i}},\vec{x_{0}}+\lambda_{1}\vec{S_{0}}\right]\right)$$;  
+Следующий шаг определим в виде:  
 $$\vec{S_{1}}=-\left(\vec{\nabla}\bullet f\left(\vec{x_{1}}\right)\right)+\omega_{1}\vec{S_{0}}.$$
 Обобщая можно записать последовательность в виде:  
 $$\vec{S_{i}}=-\left(\vec{\nabla}\bullet f\left(\vec{x_{i}}\right)\right)+\omega_{i}\vec{S_{i-1}}=-\left(\vec{\nabla}\bullet f\left(\vec{x_{i}}\right)\right)+\frac{\left\Vert \vec{\nabla}\bullet f\left(\vec{x_{i}}\right)\right\Vert ^{2}}{\left\Vert \vec{\nabla}\bullet f\left(\vec{x_{i-1}}\right)\right\Vert ^{2}}\vec{S_{i-1}};$$  
-$$\vec{x_{i+1}}=\vec{x_{i}}+\lambda_{i+1}\vec{S_{i}}.$$
-
+$$\vec{x_{i+1}}=\vec{x_{i}}+\lambda_{i+1}\vec{S_{i}}.$$  
+Метод поиска можно свести к следующим основным шагам:
+   - Выбираем начальную точку $$\vec{x_{0}}$$;
+   - Определяем вектор $$\vec{S_{0}}$$:
+     $$\vec{S_{0}}=-\left(\vec{\nabla}\bullet f\left(\vec{x_{0}}\right)\right)$$;
+   - Переходим к новой точке: $$\vec{x_{1}}$$:  
+     $$\vec{x_{1}}=\vec{x_{0}}+\lambda_{1}\vec{S_{0}}$$;
+   - Продолжаем итерации по формулам:  
+     $$\vec{S_{i}}=-\left(\vec{\nabla}\bullet f\left(\vec{x_{i}}\right)\right)+\omega_{i}\vec{S_{i-1}}=-\left(\vec{\nabla}\bullet f\left(\vec{x_{i}}\right)\right)+\frac{\left\Vert \vec{\nabla}\bullet f\left(\vec{x_{i}}\right)\right\Vert ^{2}}{\left\Vert \vec{\nabla}\bullet f\left(\vec{x_{i-1}}\right)\right\Vert ^{2}}\vec{S_{i-1}};$$  
+$$\vec{x_{i+1}}=\vec{x_{i}}+\lambda_{i+1}\vec{S_{i}}.$$  
    - Продолжаем до тех пор, пока $$|\vec{x_{i+1}}-\vec{x_{i}}|<2\varepsilon$$;
    - Возвращаем результат $$\vec{x_{i + 1}}$$.
 4. **Метод Ньютона-Рафсона**  
    **Метод Ньютона-Рафсона** представляет собой итерационный алгоритм, который можно предстваить в виде следующей рекурентной последовательности:
    $$\vec{x_{i+1}}=\vec{x_{i}}-H^{-1}\left(\vec{x_{i}}\right)\vec{\nabla}\bullet f\left(\vec{x_{i}}\right)$$,
-   здесь $$H\left(\vec{x_{i}}\right)$$ - матрица Гёссе в точке $$\vec{x_{i}}$$, матричный элемент которой $$h_{i, j}\left(\vec{x_{i}}\right)$$ равен $$h_{i, j}\left(\vec{x}\right) = \frac{\partial^2 f\left(\vec{x}\right)}{\partial x_{i}\partial x_{j}}$$, а так же $$H^{T}\left(\vec{x}\right) = H\left(\vec{x}\right)$$.  
-    Метод можно свести к следующим основным шагам:
+   здесь $$H\left(\vec{x_{i}}\right)$$ - матрица Гёссе в точке $$\vec{x_{i}}$$, матричный элемент которой $$h_{i, j}\left(\vec{x_{i}}\right)$$ равен $$h_{i, j}\left(\vec{x}\right) = \frac{\partial^2 f\left(\vec{x}\right)}{\partial x_{i}\partial x_{j}}$$, а так же $$H^{T}\left(\vec{x}\right) = H\left(\vec{x}\right)$$. Для языков программирования: **C++**, **Java**, **C#**, реализован рассчёт матрицы Гессе функции в точке. Вторые частные производные выражаются через центральный разностный аналог $$\frac{df\left(x\right)}{dx}=\frac{f\left(x+dx\right)-f\left(x-dx\right)}{2dx}$$ с $$dx=10^{-6}$$.
+     Пример определения матрицы Гессе функции в точке для **C++**:  
+     ```numerics::matrix_f64 hessian = numerics::matrix_f64::hessian(function, point);```  
+     Пример определения матрицы Гессе функции в точке для **Java**:  
+     ```DoubleMatrix hessian = DoubleMatrix.hessian(function, point);```  
+     Пример определения матрицы Гессе функции в точке для **C#**:  
+     ```DoubleMatrix hessian = DoubleMatrix.Hessian(function, point);```    
+    Метод поиска можно свести к следующим основным шагам:
    - Выбираем начальную точку $$\vec{x_{0}}$$;
    - Опеределяем переход из точки $$\vec{x_{i}}$$ в точку $$\vec{x_{i+1}}$$:  
    $$\vec{x_{i+1}}=\vec{x_{i}}-H^{-1}\left(\vec{x_{i}}\right)\vec{\nabla}\bullet f\left(\vec{x_{i}}\right)$$.
