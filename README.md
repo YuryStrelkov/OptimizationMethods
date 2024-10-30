@@ -330,13 +330,13 @@ $$\varPhi\left(\lambda,\vec{x}\right)=-\lambda\sum_{j=1}^{m}ln\left(\varphi_{j}\
  - выбираем необходимую точность $$\varepsilon$$;
  - параметр $$\lambda$$ выбирается в виде убывающей последовательности $$\lambda_{j}\rightarrow_{j\rightarrow\infty}0$$(Для упрощения реализции можно принять $$\lambda$$ равной единице);
  - Тогда для первой итерации имеем:  
-$$F\left(\vec{x},\lambda_{1}\right)=f\left(\vec{x}\right)+\lambda_{1}\sum_{j=1}^{m}\frac{1}{\varphi_{j}\left(\vec{x}\right)}$$.
+   $$F\left(\vec{x},\lambda_{1}\right)=f\left(\vec{x}\right)+\lambda_{1}\sum_{j=1}^{m}\frac{1}{\varphi_{j}\left(\vec{x}\right)}$$.
  - Легко видеть, что задача безусловной минимизации для k итерации запишется в виде:  
-   $$\vec{x_{min}}=\underset{\vec{x}}{argmin}\left(f\left(\vec{x}\right)+\sum_{j}^{m}\frac{1}{\varphi_{j}\left(\vec{x}\right)}\right)$$
-   Каждая точка вида $$\vec{x_{min}}$$ используется в качестве начальной точки для $$i+1$$ итерации.
+   $$\vec{x_{min}} = $$\vec{x_{i + 1}} =\underset{\vec{x}}{argmin}\left(f\left(\vec{x_{i}}\right)+\sum_{j}^{m}\frac{1}{\varphi_{j}\left(\vec{x_{i}}\right)}\right)$$
+ - Каждая точка вида $$\vec{x_{min}}$$ используется в качестве начальной точки для $$i+1$$ итерации.
    Как только выполнится условие:
    $$\lambda_{k}\sum_{j}^{m}\frac{1}{\varphi_{j}\left(\vec{x}\right)}\leq\varepsilon$$;  
    Останавливаем поиск, возвращаем минимальное значение:
-   $$\vec{x}\left(\lambda_{k}\right)$$.
+   $$\vec{x}$$.
  
 ## Лабораторная работа №4. Задача линейного программирования
