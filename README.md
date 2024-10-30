@@ -321,6 +321,22 @@ $$F\left(\vec{x}\right)=f\left(\vec{x}\right)+\lambda\sum_{j=1}^{m}\frac{1}{\var
  Метод применяется для решения задач оптимизации с ограничениями в виде неравенств. Идея внутреннего штрафа предполагает, что значения штрафных функций начинают неограниченно возрастать при приближении к границе допустимой области $$G$$. Можно определить функцию внутреннего штрафа $$\varPhi\left(\lambda,\vec{x}\right)$$ в виде:  
  - $$0,\text{if},\vec{x}\in G;$$
  - $$\infty,\text{if},\vec{x}\notin G,\lambda\rightarrow0;$$
- - $$\infty,\text{if},\vec{x}\in G,\vec{x}\rightarrow\partial G.$$
+ - $$\infty,\text{if},\vec{x}\in G,\vec{x}\rightarrow\partial G.$$  
+В качестве внутренних штрафных функций можно использовать, например, такие:  
+$$\varPhi\left(\lambda,\vec{x}\right)=\lambda\sum_{j=1}^{m}\frac{1}{\varphi_{j}\left(\vec{x}\right)}$$;  
+$$\varPhi\left(\lambda,\vec{x}\right)=-\lambda\sum_{j=1}^{m}ln\left(\varphi_{j}\left(\vec{x}\right)\right)$$;  
+Алгоритм метода внутренних штрафных можно свести к следующим основным шагам:
+ - В качестве начальной точки $$x_{0}$$ выбираем точку принадлежащую области $$G$$ и достаточно удалённую от ее границ;
+ - выбираем необходимую точность $$\varepsilon$$;
+ - параметр $$\lambda$$ выбирается в виде убывающей последовательности $$\lambda_{j}\rightarrow_{j\rightarrow\infty}0$$(Для упрощения реализции можно принять $$\lambda$$ равной единице);
+ - Тогда для первой итерации имеем:  
+$$F\left(\vec{x},\lambda_{1}\right)=f\left(\vec{x}\right)+\lambda_{1}\sum_{j=1}^{m}\frac{1}{\varphi_{j}\left(\vec{x}\right)}$$.
+ - Легко видеть, что задача безусловной минимизации для k итерации запишется в виде:  
+   $$\vec{x_{min}}=\underset{\vec{x}}{argmin}\left(f\left(\vec{x}\right)+\sum_{j}^{m}\frac{1}{\varphi_{j}\left(\vec{x}\right)}\right)$$
+   Каждая точка вида $$\vec{x_{min}}$$ используется в качестве начальной точки для $$i+1$$ итерации.
+   Как только выполнится условие:
+   $$\lambda_{k}\sum_{j}^{m}\frac{1}{\varphi_{j}\left(\vec{x}\right)}\leq\varepsilon$$;  
+   Останавливаем поиск, возвращаем минимальное значение:
+   $$\vec{x}\left(\lambda_{k}\right)$$.
  
 ## Лабораторная работа №4. Задача линейного программирования
