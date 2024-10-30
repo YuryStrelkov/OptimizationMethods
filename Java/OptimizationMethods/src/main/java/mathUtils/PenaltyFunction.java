@@ -65,7 +65,6 @@ public final class PenaltyFunction implements IFunctionND {
     public double call(final DoubleVector arg) {
         double result = target() == null ? 0.0 : target().call(arg);
         switch (penaltyFunctionMixMode()){
-            // case 0 /*SUM*/ : for (IFunctionND bound: _boundaries) result += bound.call(arg); break;
             case 1 /*MUL*/ : for (IFunctionND bound: _boundaries) result *= bound.call(arg); break;
             case 2 /*MAX*/ : for (IFunctionND bound: _boundaries) result = Math.max(result, bound.call(arg)); break;
             case 3 /*MIN*/ : for (IFunctionND bound: _boundaries) result = Math.min(result, bound.call(arg)); break;
