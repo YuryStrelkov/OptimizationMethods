@@ -330,7 +330,7 @@ $$\varPhi\left(\lambda,\vec{x}\right)=-\lambda\sum_{j=1}^{m}ln\left(\varphi_{j}\
  - выбираем необходимую точность $$\varepsilon$$;
  - параметр $$\lambda$$ выбирается в виде убывающей последовательности $$\lambda_{j}\rightarrow_{j\rightarrow\infty}0$$(Для упрощения реализции можно принять $$\lambda$$ равной единице);
  - Легко видеть, что задача безусловной минимизации для k итерации запишется в виде:  
-   \vec{x_{min}}=\underset{\vec{x}}{argmin}\left(f\left(\vec{x}\right)+\sum_{j}^{m}\frac{1}{\varphi_{j}\left(\vec{x}\right)}\right);
+   $$\vec{x_{min}}=\underset{\vec{x}}{argmin}\left(f\left(\vec{x}\right)+\sum_{j}^{m}\frac{1}{\varphi_{j}\left(\vec{x}\right)}\right)$$;
  - Для задачи безусловной оптимизации выполняем поиск любым методом сногомерного поиска;  
  - Завершаем работу алгоритма поиска сразу, как только выполнится условие $$|\vec{x_{i+1}}-\vec{x_{i}}|<2\varepsilon$$.
 
