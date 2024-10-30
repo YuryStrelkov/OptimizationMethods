@@ -346,8 +346,16 @@ $$g_{i}\left(\vec{x}\right)<0, i=1:m$$;
 $$h_{i}\left(\vec{x}\right)=0, i=1:k$$;  
 заключается в составлении функции штрафа:  
 $$\varPhi\left(\lambda,\vec{x}\right)=\lambda_{k}\left(\sum_{i}^{m}\varphi_{i}\left(g_{i}\left(\vec{x}\right)\right)+\sum_{j=1}^{k}\psi_{j}\left(h_{j}\left(\vec{x}\right)\right)\right)$$  
-и к переходу к задаче безусловной оптимизации:
-$$F\left(\lambda,\vec{x}\right)=f\left(\vec{x}\right)+\varPhi\left(\lambda,\vec{x}\right)=f\left(\vec{x}\right)+\lambda_{k}\left(\sum_{i}^{m}\varphi_{i}\left(g_{i}\left(\vec{x}\right)\right)+\sum_{j}^{k}\psi_{j}\left(h_{j}\left(\vec{x}\right)\right)\right)$$
-к последовательности задач по поиску экстремума без ограничений:  
- 
+и к переходу к задаче безусловной оптимизации:  
+$$F\left(\lambda,\vec{x}\right)=f\left(\vec{x}\right)+\varPhi\left(\lambda,\vec{x}\right)=f\left(\vec{x}\right)+\lambda_{k}\left(\sum_{i}^{m}\varphi_{i}\left(g_{i}\left(\vec{x}\right)\right)+\sum_{j}^{k}\psi_{j}\left(h_{j}\left(\vec{x}\right)\right)\right)$$  
+Наиболее часто используемым видом функции внешнего штрафа является:  
+$$\varPhi\left(\lambda,\vec{x}\right)=\lambda_{k}\left(\sum_{i=1}^{m}\left[\text{max}\left(0,g_{i}\left(\vec{x}\right)\right)\right]^{2}+\sum_{j=1}^{k}\left[h_{j}\left(\vec{x}\right)\right]^{2}\right)$$.
+Алгоритм метода внешних штрафных можно свести к следующим основным шагам:
+ - В качестве начальной точки $$x_{0}$$ выбираем точку принадлежащую области $$G$$ и достаточно удалённую от ее границ;
+ - выбираем необходимую точность $$\varepsilon$$;
+ - параметр $$\lambda$$ выбирается в виде убывающей последовательности $$\lambda_{j}\rightarrow_{j\rightarrow\infty}0$$(Для упрощения реализции можно принять $$\lambda$$ равной единице);
+ - Легко видеть, что задача безусловной минимизации для k итерации запишется в виде:  
+$$\vec{x_{min}}=\underset{\vec{x}}{argmin}\left(f\left(\vec{x}\right)+\left(\sum_{i}^{m}\varphi_{i}\left(g_{i}\left(\vec{x}\right)\right)+\sum_{j}^{k}\psi_{j}\left(h_{j}\left(\vec{x}\right)\right)\right)\right)$$;
+ - Для задачи безусловной оптимизации выполняем поиск любым методом сногомерного поиска;  
+ - Завершаем работу алгоритма поиска сразу, как только выполнится условие $$|\vec{x_{i+1}}-\vec{x_{i}}|<2\varepsilon$$.
 ## Лабораторная работа №4. Задача линейного программирования
