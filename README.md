@@ -120,14 +120,14 @@
      $$x_{l}=x_{r}$$;  
      $$f_{l}=f_{r}$$;  
      $$x_{r}=lhs+\frac{L_{n-1}}{L_{n}}\left(rhs-lhs\right))$$;  
-   - Если $$|x_{r} - x_{l}| < \vardelta$$, то $$x_{r} += \vardelta$$ и $$x_{l} -= \vardelta$$;
+   - Если $$|x_{r} - x_{l}| < \varDelta$$, то $$x_{r} = x_{r} + \varDelta$$, где $$\varDelta$$ - мера близости двух точек $$x_{r}, x_{l}$$, например $$\varDelta = \frac{rhs - lhs}{100}$$;  
      $$f_{r}=f\left(x_{r}\right)$$.  
    - Если $$f\left(x_{l}\right)<f\left(x_{r}\right)$$ преобразуем **промежуток неопределённости** и остальные параметры:
      $$\left[lhs, rhs=x_{r}\right]$$;  
      $$x_{r}=x_{l}$$;  
      $$f_{r}=f_{l}$$;  
      $$x_{l}=lhs+\frac{L_{n}-L_{n-1}}{L_{n}}\left(rhs-lhs\right)$$;  
-   - Если $$|x_{r} - x_{l}| < \vardelta$$, то $$x_{r} += \vardelta$$ и $$x_{l} -= \vardelta$$;
+   - Если $$|x_{r} - x_{l}| < \varDelta$$, то $$x_{l} = x_{l} - \varDelta$$;  
      $$f_{l}=f\left(x_{l}\right)$$.  
    - Возвращаем результат $$\frac{lhs+rhs}{2}$$;
    - Возвращаем количество измерений **целевой функции** и достигнутую точность $$\frac{|rhs-lhs|}{2}$$.
