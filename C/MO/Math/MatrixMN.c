@@ -8,7 +8,12 @@
 #define M_AT(matrix, row, col)((matrix)->data->beg + (matrix)->cols * row + col)
 #define MBEG(matrix)((matrix)->data->beg)
 #define MEND(matrix)(((matrix)->data->beg + ((matrix)->rows * (matrix)->cols)))
-
+inline uint8_t checkSizes(const struct MatrixMN* lhs, const struct MatrixMN* rhs)
+{
+	if ((lhs && rhs))
+		return lhs->cols == rhs->cols && lhs->rows == rhs->rows;
+	return 0;
+}
 void mMultNaive(struct MatrixMN ** res, const struct MatrixMN* lhs, const struct MatrixMN* rhs)
 {
 	if(mInit(res, lhs->rows, rhs->cols))
@@ -242,7 +247,7 @@ void     mAddDouble(struct MatrixMN** lhs, double                 rhs)
 }
 void     mAddMatrix(struct MatrixMN** lhs, const struct MatrixMN* rhs) 
 {
-	if (*lhs && rhs) vAddVector(&(*lhs)->data, rhs->data);
+	if (checkSizes(*lhs, rhs)) vAddVector(&(*lhs)->data, rhs->data);
 }
 void     mSubDouble(struct MatrixMN** lhs, double                 rhs)
 {
@@ -250,7 +255,7 @@ void     mSubDouble(struct MatrixMN** lhs, double                 rhs)
 }
 void     mSubMatrix(struct MatrixMN** lhs, const struct MatrixMN* rhs) 
 {
-	if (*lhs && rhs) vSubVector(&(*lhs)->data, rhs->data);
+	if (checkSizes(*lhs, rhs)) vSubVector(&(*lhs)->data, rhs->data);
 }
 void     mMulDouble(struct MatrixMN** lhs, double                 rhs) 
 {
@@ -258,6 +263,10 @@ void     mMulDouble(struct MatrixMN** lhs, double                 rhs)
 }
 void     mMulMatrix(struct MatrixMN** lhs, const struct MatrixMN* rhs)
 {
+	struct MatrixMN* res = NULL;
+	mMulMatrixMatrix(&res, lhs, rhs);
+	mCopy(lhs, res);
+	mDesrtoy(&res);
 }
 void     mDivDouble(struct MatrixMN** lhs, double                 rhs) 
 {
@@ -265,6 +274,10 @@ void     mDivDouble(struct MatrixMN** lhs, double                 rhs)
 }
 void     mDivMatrix(struct MatrixMN** lhs, const struct MatrixMN* rhs) 
 {
+	struct MatrixMN* res = NULL;
+	mDivMatrixMatrix(&res, lhs, rhs);
+	mCopy(lhs, res);
+	mDesrtoy(&res);
 }
 
 void     mAddMatrixDouble(struct MatrixMN** res, const struct MatrixMN* lhs, double                 rhs)
@@ -277,7 +290,9 @@ void     mAddDoubleMatrix(struct MatrixMN** res, double                 lhs, con
 }
 void     mAddMatrixMatrix(struct MatrixMN** res, const struct MatrixMN* lhs, const struct MatrixMN* rhs)
 {
-	if (mCopy(res, rhs)) vAddVector(&(*res)->data, (lhs)->data);
+	if(checkSizes(lhs, rhs))
+		if (mCopy(res, rhs))
+			vAddVector(&(*res)->data, (lhs)->data);
 }
 void     mSubMatrixDouble(struct MatrixMN** res, const struct MatrixMN* lhs, double                 rhs)
 {
@@ -289,7 +304,9 @@ void     mSubDoubleMatrix(struct MatrixMN** res, double                 lhs, con
 }
 void     mSubMatrixMatrix(struct MatrixMN** res, const struct MatrixMN* lhs, const struct MatrixMN* rhs)
 {
-	if (mCopy(res, lhs)) vSubVector(&(*res)->data, (rhs)->data);
+	if (checkSizes(lhs, rhs))
+		if (mCopy(res, lhs))
+			vSubVector(&(*res)->data, (rhs)->data);
 }
 void     mMulMatrixDouble(struct MatrixMN** res, const struct MatrixMN* lhs, double                 rhs)
 {
@@ -340,10 +357,10 @@ void     mMulVectorMatrix(struct VectorN** res, const struct VectorN* lhs, const
 				(*res)->beg[col] += lhs->beg[col] * rhs->data->beg[row * rhs->cols + col];
 	}
 }
-				 
+
 uint8_t  mLtMatrixMatrix(const struct MatrixMN* lhs, const struct MatrixMN* rhs)
 {
-	return (lhs && rhs) ? vLtVectorVector(lhs->data, rhs->data) : 0;
+	return checkSizes(lhs, rhs) ? vLtVectorVector(lhs->data, rhs->data) : 0;
 }
 uint8_t  mLtMatrixDouble(const struct MatrixMN* lhs, double                 rhs)
 {
@@ -356,7 +373,7 @@ uint8_t  mLtDoubleMatrix(double                 lhs, const struct MatrixMN* rhs)
 				 
 uint8_t  mGtMatrixMatrix(const struct MatrixMN* lhs, const struct MatrixMN* rhs)
 {
-	return (lhs && rhs) ? vGtVectorVector(lhs->data, rhs->data) : 0;
+	return checkSizes(lhs, rhs) ? vGtVectorVector(lhs->data, rhs->data) : 0;
 }
 uint8_t  mGtMatrixDouble(const struct MatrixMN* lhs, double                 rhs)
 {
@@ -369,7 +386,7 @@ uint8_t  mGtDoubleMatrix(double                 lhs, const struct MatrixMN* rhs)
 				 
 uint8_t  mLeMatrixMatrix(const struct MatrixMN* lhs, const struct MatrixMN* rhs)
 {
-	return (lhs && rhs) ? vLeVectorVector(lhs->data, rhs->data) : 0;
+	return checkSizes(lhs, rhs) ? vLeVectorVector(lhs->data, rhs->data) : 0;
 }
 uint8_t  mLeMatrixDouble(const struct MatrixMN* lhs, double                 rhs)
 {
@@ -382,7 +399,7 @@ uint8_t  mLeDoubleMatrix(double                 lhs, const struct MatrixMN* rhs)
 				 																																	 
 uint8_t  mGeMatrixMatrix(const struct MatrixMN* lhs, const struct MatrixMN* rhs)
 {
-	return (lhs && rhs) ? vGeVectorVector(lhs->data, rhs->data) : 0;
+	return checkSizes(lhs, rhs) ? vGeVectorVector(lhs->data, rhs->data) : 0;
 }
 uint8_t  mGeMatrixDouble(const struct MatrixMN* lhs, double                 rhs)
 {
