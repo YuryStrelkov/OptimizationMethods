@@ -499,7 +499,8 @@ public final class DoubleMatrix extends TemplateVector<DoubleVector> {
     public static DoubleMatrix transpose(DoubleMatrix mat) {
         DoubleMatrix trans = new DoubleMatrix(mat.colsCount(), mat.rowsCount());
         for (int row = 0; row < mat.rowsCount(); row++)
-            for (int col = 0; col < mat.colsCount(); col++) trans.uncheckedSet(col, row, mat.uncheckedGet(row, col));
+            for (int col = 0; col < mat.colsCount(); col++)
+                trans.uncheckedSet(col, row, mat.uncheckedGet(row, col));
         return trans;
     }
 
