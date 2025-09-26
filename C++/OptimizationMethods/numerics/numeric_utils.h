@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "linalg/numeric_vector.h"
 
 static int get_factorial(const I32 number) {

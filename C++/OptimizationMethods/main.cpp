@@ -1,4 +1,4 @@
-#include "test.h"
+ï»¿#include "test.h"
 
 ////////////////////
 /// Lab. work #1 ///
@@ -43,7 +43,7 @@ static void  lab_2(function_nd function)
 
 	std::cout << "{ x, y } = agrmin((x - 2) * (x - 2) + (y - 2) * (y - 2))\n";
 	std::cout << "x_0 = " << x_0 << ", x_1 = " << x_1 << "\n";
-	///  Äëÿ ðåàëèçàöèè ïî-êîîðäèíòàíîãî ñïóñêà íåîáõîäèìî ðåàëèçîâàòü îäèí èç ñëåäóþùèõ òðåõ ìåòîäîâ äëÿ ðàáîòû ñ vec_n
+	///  Ð”Ð»Ñ Ñ€ÐµÐ°Ð»Ð¸Ð·Ð°Ñ†Ð¸Ð¸ Ð¿Ð¾-ÐºÐ¾Ð¾Ñ€Ð´Ð¸Ð½Ñ‚Ð°Ð½Ð¾Ð³Ð¾ ÑÐ¿ÑƒÑÐºÐ° Ð½ÐµÐ¾Ð±Ñ…Ð¾Ð´Ð¸Ð¼Ð¾ Ñ€ÐµÐ°Ð»Ð¸Ð·Ð¾Ð²Ð°Ñ‚ÑŒ Ð¾Ð´Ð¸Ð½ Ð¸Ð· ÑÐ»ÐµÐ´ÑƒÑŽÑ‰Ð¸Ñ… Ñ‚Ñ€ÐµÑ… Ð¼ÐµÑ‚Ð¾Ð´Ð¾Ð² Ð´Ð»Ñ Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹ Ñ vec_n
 	std::cout << "bisect                : " << bisect      (function, x_1, x_0, ACCURACY) << "\n";
 	std::cout << "golden_ratio          : " << golden_ratio(function, x_1, x_0, ACCURACY) << "\n";
 	std::cout << "fibonacci             : " << fibonacci   (function, x_1, x_0, ACCURACY) << "\n";
@@ -73,18 +73,18 @@ static void  lab_3(function_nd function)
 /// Lab. work #4 ///
 ////////////////////
 
-/// Ïðèìåð ïðèìåíåíèÿ ôóíêöèé øòðàôà
-/// Óëîâèå 1
+/// ÐŸÑ€Ð¸Ð¼ÐµÑ€ Ð¿Ñ€Ð¸Ð¼ÐµÐ½ÐµÐ½Ð¸Ñ Ñ„ÑƒÐ½ÐºÑ†Ð¸Ð¹ ÑˆÑ‚Ñ€Ð°Ñ„Ð°
+/// Ð£Ð»Ð¾Ð²Ð¸Ðµ 1
 static F64 psi1(const numerics::vector_f64& args)
 {
 	return 1 / (5 - args[0] * 2 + args[1] * 3);
 }
-/// Óëîâèå 1
+/// Ð£Ð»Ð¾Ð²Ð¸Ðµ 1
 static F64 psi2(const numerics::vector_f64& args)
 {
 	return 1 / (6 + args[0] * 3 - args[1]);
 }
-///Èøåì ìèíèìóì ôóíêöèè  Testf2 ïðè óñëîâèè Psi1 è Psi2(Ýòî âíóòðåííèé øòðàô)
+///Ð˜ÑˆÐµÐ¼ Ð¼Ð¸Ð½Ð¸Ð¼ÑƒÐ¼ Ñ„ÑƒÐ½ÐºÑ†Ð¸Ð¸  Testf2 Ð¿Ñ€Ð¸ ÑƒÑÐ»Ð¾Ð²Ð¸Ð¸ Psi1 Ð¸ Psi2(Ð­Ñ‚Ð¾ Ð²Ð½ÑƒÑ‚Ñ€ÐµÐ½Ð½Ð¸Ð¹ ÑˆÑ‚Ñ€Ð°Ñ„)
 static F64 bouded_func(const numerics::vector_f64& args)
 {
 	return test_func_2(args) + psi2(args) + psi1(args);
@@ -96,7 +96,7 @@ static void  lab_4(function_nd function)
 	std::cout <<   "////////////////////\n\n";
 	numerics::vector_f64 x_start = { -12.0, -15.0 };
 	std::cout << "newtone_raphson       : " << newtone_raphson(function, x_start, ACCURACY) << "\n";
-	//Ïîèñê ìèíèìóìà ôóíêöèè ïðè íàëè÷èè ôóíêöèé øòðàôà
+	//ÐŸÐ¾Ð¸ÑÐº Ð¼Ð¸Ð½Ð¸Ð¼ÑƒÐ¼Ð° Ñ„ÑƒÐ½ÐºÑ†Ð¸Ð¸ Ð¿Ñ€Ð¸ Ð½Ð°Ð»Ð¸Ñ‡Ð¸Ð¸ Ñ„ÑƒÐ½ÐºÑ†Ð¸Ð¹ ÑˆÑ‚Ñ€Ð°Ñ„Ð°
 	std::cout << "newtone_raphson       : " << newtone_raphson(bouded_func, x_start, ACCURACY) << "\n";
 }
 

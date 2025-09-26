@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <inttypes.h>
 
 typedef struct VectorN;
@@ -79,11 +79,13 @@ uint8_t  mGeDoubleMatrix(double,                 const struct MatrixMN*);  // sc
 /// <summary>
 ///  Matrix functions
 /// </summary>
-void     mHessian (struct MatrixMN**, struct VectorN*, double(*)(const struct VectorN*));
-uint8_t  mLinsolve(struct VectorN **, const struct MatrixMN*, const struct VectorN*);
-uint8_t  mInvert  (struct MatrixMN**, const struct MatrixMN*);
-uint8_t  mLU      (struct VectorN **, struct MatrixMN**, const struct MatrixMN*); // matrix1 >= matrix2
-void     mIdentity(struct MatrixMN**, size_t, size_t);
-void     mOnes    (struct MatrixMN**, size_t, size_t);
-void     mZeros   (struct MatrixMN**, size_t, size_t);
-double   mTrace   (const struct MatrixMN*); // matrix1 >= matrix2
+void     mHessian    (struct MatrixMN**, struct VectorN*, double(*)(const struct VectorN*));
+uint8_t  mLinsolve   (struct VectorN **, const struct MatrixMN*, const struct VectorN*);
+uint8_t  mInvert     (struct MatrixMN**, const struct MatrixMN*);
+uint8_t  mLU         (struct VectorN **, struct MatrixMN**, const struct MatrixMN*); // matrix1 >= matrix2
+void     mIdentity   (struct MatrixMN**, size_t, size_t);
+void     mOnes       (struct MatrixMN**, size_t, size_t);
+void     mZeros      (struct MatrixMN**, size_t, size_t);
+double   mTrace      (const struct MatrixMN*); 
+double   mDeterminant(const struct MatrixMN* matrix);
+void     mTranspose(struct MatrixMN** transposed, const struct MatrixMN* matrix);

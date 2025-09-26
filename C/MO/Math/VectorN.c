@@ -1,4 +1,4 @@
-#include "VectorN.h"
+﻿#include "VectorN.h"
 #include "Constatnts.h"
 #include <corecrt_malloc.h>
 #include <stdio.h>

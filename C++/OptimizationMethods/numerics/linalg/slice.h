@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef __SLICE_H__
 #define __SLICE_H__
 #include "../common.h"

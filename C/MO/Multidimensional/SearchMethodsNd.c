@@ -1,4 +1,4 @@
-#include "../Math/Constatnts.h"
+﻿#include "../Math/Constatnts.h"
 #include "../Math/VectorN.h"
 #include "../Math/MatrixMN.h"
 #include "SearchMethodsNd.h"

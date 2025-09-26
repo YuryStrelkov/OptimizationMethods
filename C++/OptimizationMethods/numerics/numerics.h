@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef __NUMERICS_H__
 #define __NUMERICS_H__
 #include "linalg/numeric_matrix.h"

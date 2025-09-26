@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #ifndef __NUMERIC_MATRIX_H__
 #define __NUMERIC_MATRIX_H__
 #include "numeric_vector.h"
@@ -31,7 +31,7 @@ public:
 			m_matrix =*src;
 			m_index = start_index;
 		}
-		// Унаследовано через iterator_
+		// РЈРЅР°СЃР»РµРґРѕРІР°РЅРѕ С‡РµСЂРµР· iterator_
 		bool                operator==(const rows_iterator& other) const { return m_index == other.m_index; }
 		bool                operator!=(const rows_iterator& other) const { return !(*this == other); }
 		rows_iterator&      operator++()    { m_index++; return *this; }
@@ -45,7 +45,7 @@ public:
 		numeric_matrix_<T>* m_matrix;
 	public:
 		matrix_rows(numeric_matrix_<T>& src) :m_matrix(*src) {}
-		// Унаследовано через iterable_
+		// РЈРЅР°СЃР»РµРґРѕРІР°РЅРѕ С‡РµСЂРµР· iterable_
 		rows_iterator begin() { return rows_iterator(*m_matrix, 0); }
 		rows_iterator end()   { return rows_iterator(*m_matrix, m_matrix->rows_count()); }
 	};
@@ -63,7 +63,7 @@ public:
 			m_matrix = *src;
 			m_index = start_index;
 		}
-		// Унаследовано через iterator_
+		// РЈРЅР°СЃР»РµРґРѕРІР°РЅРѕ С‡РµСЂРµР· iterator_
 		bool                operator==(const cols_iterator& other) const { return m_index == other.m_index; }
 		bool                operator!=(const cols_iterator& other) const { return !(*this == other); }
 		cols_iterator&      operator++()                                 { m_index++; return *this; }
@@ -77,7 +77,7 @@ public:
 		numeric_matrix_<T>* m_matrix;
 	public:
 		matrix_cols(numeric_matrix_<T>& src) :m_matrix(*src) {}
-		// Унаследовано через iterable_
+		// РЈРЅР°СЃР»РµРґРѕРІР°РЅРѕ С‡РµСЂРµР· iterable_
 		cols_iterator begin() { return cols_iterator(*m_matrix, 0); }
 		cols_iterator end() { return cols_iterator(*m_matrix, m_matrix->rows_count()); }
 	};

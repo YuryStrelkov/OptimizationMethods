@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef __NUMERIC_VECTOR_H__
 #define __NUMERIC_VECTOR_H__
 #include <cmath>

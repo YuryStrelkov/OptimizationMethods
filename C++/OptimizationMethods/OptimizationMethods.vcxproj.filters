@@ -41,9 +41,6 @@
     <ClInclude Include="simplex.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="main.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
     <ClInclude Include="numerics\common.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
@@ -72,9 +69,6 @@
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="numerics\linalg\template_vector_allocator.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="vector_t.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

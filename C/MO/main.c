@@ -1,4 +1,4 @@
-#include "Multidimensional/SearchMethodsNd.h"
+п»ї#include "Multidimensional/SearchMethodsNd.h"
 #include "Unidimensional/SearchMethods.h"
 #include "Math/VectorN.h"
 #include "Math/MatrixMN.h"
@@ -17,7 +17,9 @@ double testNd(const struct VectorN* x)
 		res += (*beg - 3.0) * (*beg - 3.0);
 	return res;
 }
-
+/// <summary>
+/// Р›.Р  1
+/// </summary>
 inline void zeroOrderMethods() 
 {
 	struct SearchResult* result = NULL;
@@ -32,8 +34,10 @@ inline void zeroOrderMethods()
 
 	destroyResult(&result);
 }
-
-inline void zeroOrderMethodsNd()
+/// <summary>
+/// Р›.Р  2 / Р›.Р  3(Р±РµР· С€С‚СЂР°С„РЅС‹С… С„СѓРЅРєС†РёР№)
+/// </summary>
+inline void searchMethodsNd()
 {
 	struct SearchResultNd* result = NULL;
 	struct VectorN* lhs   = vNewFrom(2, 0.00, 0.00);
@@ -69,31 +73,31 @@ inline void zeroOrderMethodsNd()
 void vectorUsageExample()
 {
 	/// <summary>
-	/// Работа с функциями вектора
+	/// Р Р°Р±РѕС‚Р° СЃ С„СѓРЅРєС†РёСЏРјРё РІРµРєС‚РѕСЂР°
 	/// </summary>
-	struct VectorN* delta = vNewFrom(6, 0.0, 1.3333333333, 2.566, 1222.3, 0.111, 1.04); //Инициализаия через список (6-число элементов списка)
-	vPrint(delta, rarionalPrintf);// Вывод вектора в консоль
-	struct VectorN* vector = NULL; vInit(&vector, 5); //Инициализаия через размер
-	vAppend(&vector, 0.5); vPrint(vector, NULL); // Вставка в конец списка
-	vAppend(&vector, 0.5); vPrint(vector, NULL); // Вставка в конец списка
-	vAppendRange(&vector, delta->beg, delta->end); vPrint(vector, rarionalPrintf); //Вставка диапазона в конец списка
-	vInsert(&vector, 2, 1.0); // Вставка по индексу
-	vInsert(&vector, 2, 2.0); // Вставка по индексу
-	vInsert(&vector, 2, 3.0); // Вставка по индексу
-	vInsert(&vector, 2, 4.0); // Вставка по индексу
-	vInsert(&vector, 2, 5.0); // Вставка по индексу
-	vInsert(&vector, 2, 6.0); // Вставка по индексу
-	vInsert(&vector, 2, 7.0); // Вставка по индексу
-	vInsert(&vector, 2, 8.0); // Вставка по индексу
-	vInsert(&vector, 2, 9.0); // Вставка по индексу
-	vInsert(&vector, 2, 10.5);// Вставка по индексу
-	vPrint(vector, rarionalPrintf);
+	struct VectorN* delta = vNewFrom(6, 0.0, 1.3333333333, 2.566, 1222.3, 0.111, 1.04); //РРЅРёС†РёР°Р»РёР·Р°РёСЏ С‡РµСЂРµР· СЃРїРёСЃРѕРє (6-С‡РёСЃР»Рѕ СЌР»РµРјРµРЅС‚РѕРІ СЃРїРёСЃРєР°)
+	vPrint(delta, rationalPrintf);// Р’С‹РІРѕРґ РІРµРєС‚РѕСЂР° РІ РєРѕРЅСЃРѕР»СЊ
+	struct VectorN* vector = NULL; vInit(&vector, 5); //РРЅРёС†РёР°Р»РёР·Р°РёСЏ С‡РµСЂРµР· СЂР°Р·РјРµСЂ
+	vAppend(&vector, 0.5); vPrint(vector, NULL); // Р’СЃС‚Р°РІРєР° РІ РєРѕРЅРµС† СЃРїРёСЃРєР°
+	vAppend(&vector, 0.5); vPrint(vector, NULL); // Р’СЃС‚Р°РІРєР° РІ РєРѕРЅРµС† СЃРїРёСЃРєР°
+	vAppendRange(&vector, delta->beg, delta->end); vPrint(vector, rationalPrintf); //Р’СЃС‚Р°РІРєР° РґРёР°РїР°Р·РѕРЅР° РІ РєРѕРЅРµС† СЃРїРёСЃРєР°
+	vInsert(&vector, 2, 1.0); // Р’СЃС‚Р°РІРєР° РїРѕ РёРЅРґРµРєСЃСѓ
+	vInsert(&vector, 2, 2.0); // Р’СЃС‚Р°РІРєР° РїРѕ РёРЅРґРµРєСЃСѓ
+	vInsert(&vector, 2, 3.0); // Р’СЃС‚Р°РІРєР° РїРѕ РёРЅРґРµРєСЃСѓ
+	vInsert(&vector, 2, 4.0); // Р’СЃС‚Р°РІРєР° РїРѕ РёРЅРґРµРєСЃСѓ
+	vInsert(&vector, 2, 5.0); // Р’СЃС‚Р°РІРєР° РїРѕ РёРЅРґРµРєСЃСѓ
+	vInsert(&vector, 2, 6.0); // Р’СЃС‚Р°РІРєР° РїРѕ РёРЅРґРµРєСЃСѓ
+	vInsert(&vector, 2, 7.0); // Р’СЃС‚Р°РІРєР° РїРѕ РёРЅРґРµРєСЃСѓ
+	vInsert(&vector, 2, 8.0); // Р’СЃС‚Р°РІРєР° РїРѕ РёРЅРґРµРєСЃСѓ
+	vInsert(&vector, 2, 9.0); // Р’СЃС‚Р°РІРєР° РїРѕ РёРЅРґРµРєСЃСѓ
+	vInsert(&vector, 2, 10.5);// Р’СЃС‚Р°РІРєР° РїРѕ РёРЅРґРµРєСЃСѓ
+	vPrint(vector, rationalPrintf);
 	
 	struct VectorN* lhs = vNewFrom(6, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0);
 	struct VectorN* rhs = vNewFrom(6, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0);
 	struct VectorN* res = vNewFrom(6);
 	/// <summary>
-	/// Математические операции с векторами
+	/// РњР°С‚РµРјР°С‚РёС‡РµСЃРєРёРµ РѕРїРµСЂР°С†РёРё СЃ РІРµРєС‚РѕСЂР°РјРё
 	/// </summary>
 	printf("lhs + rhs : "); vAddVectorVector(&res, lhs, rhs); vPrint(res, NULL);
 	printf("lhs - rhs : "); vSubVectorVector(&res, lhs, rhs); vPrint(res, NULL);
@@ -108,7 +112,7 @@ void vectorUsageExample()
 	printf("scl * rhs : "); vMulDoubleVector(&res, 1.0, lhs); vPrint(res, NULL);
 	printf("scl / rhs : "); vDivDoubleVector(&res, 1.0, lhs); vPrint(res, NULL);
 	/// <summary>
-	/// Очистка памяти
+	/// РћС‡РёСЃС‚РєР° РїР°РјСЏС‚Рё
 	/// </summary>
 	vDesrtoy(&vector);
 	vDesrtoy(&delta);
@@ -156,36 +160,42 @@ void matrixUsageExample()
 		0.1419, 0.0318, 0.6463, 0.6991, 0.4733, 0.1299, 0.0838, 0.3998, 0.5132, 0.1112, 0.1690, 0.7757, 0.5502, 0.1848, 0.5079, 0.6241
 	);
 	/// <summary>
-	/// Математические операции с матрицами
+	/// РњР°С‚РµРјР°С‚РёС‡РµСЃРєРёРµ РѕРїРµСЂР°С†РёРё СЃ РјР°С‚СЂРёС†Р°РјРё
 	/// </summary>
 	struct MatrixMN* res = mNew(4,4);
-	printf("lhs + rhs :\n"); mAddMatrixMatrix(&res, lhs, rhs); mPrint(res, rarionalPrintf);
-	printf("lhs - rhs :\n"); mSubMatrixMatrix(&res, lhs, rhs); mPrint(res, rarionalPrintf);
-	printf("lhs * rhs :\n"); mMulMatrixMatrix(&res, lhs, rhs); mPrint(res, rarionalPrintf);
-  printf("lhs / rhs :\n"); mDivMatrixMatrix(&res, lhs, rhs); mPrint(res, rarionalPrintf);
-	printf("lhs + scl :\n"); mAddMatrixDouble(&res, lhs, 1.0); mPrint(res, rarionalPrintf);
-	printf("lhs - scl :\n"); mSubMatrixDouble(&res, lhs, 1.0); mPrint(res, rarionalPrintf);
-	printf("lhs * scl :\n"); mMulMatrixDouble(&res, lhs, 1.0); mPrint(res, rarionalPrintf);
-	printf("lhs / scl :\n"); mDivMatrixDouble(&res, lhs, 1.0); mPrint(res, rarionalPrintf);
-	printf("scl + rhs :\n"); mAddDoubleMatrix(&res, 1.0, lhs); mPrint(res, rarionalPrintf);
-	printf("scl - rhs :\n"); mSubDoubleMatrix(&res, 1.0, lhs); mPrint(res, rarionalPrintf);
-	printf("scl * rhs :\n"); mMulDoubleMatrix(&res, 1.0, lhs); mPrint(res, rarionalPrintf);
-	printf("scl / rhs :\n"); mDivDoubleMatrix(&res, 1.0, lhs); mPrint(res, rarionalPrintf);
+	printf("lhs + rhs :\n"); mAddMatrixMatrix(&res, lhs, rhs); mPrint(res, rationalPrintf);
+	printf("lhs - rhs :\n"); mSubMatrixMatrix(&res, lhs, rhs); mPrint(res, rationalPrintf);
+	printf("lhs * rhs :\n"); mMulMatrixMatrix(&res, lhs, rhs); mPrint(res, rationalPrintf);
+  printf("lhs / rhs :\n"); mDivMatrixMatrix(&res, lhs, rhs); mPrint(res, rationalPrintf);
+	printf("lhs + scl :\n"); mAddMatrixDouble(&res, lhs, 1.0); mPrint(res, rationalPrintf);
+	printf("lhs - scl :\n"); mSubMatrixDouble(&res, lhs, 1.0); mPrint(res, rationalPrintf);
+	printf("lhs * scl :\n"); mMulMatrixDouble(&res, lhs, 1.0); mPrint(res, rationalPrintf);
+	printf("lhs / scl :\n"); mDivMatrixDouble(&res, lhs, 1.0); mPrint(res, rationalPrintf);
+	printf("scl + rhs :\n"); mAddDoubleMatrix(&res, 1.0, lhs); mPrint(res, rationalPrintf);
+	printf("scl - rhs :\n"); mSubDoubleMatrix(&res, 1.0, lhs); mPrint(res, rationalPrintf);
+	printf("scl * rhs :\n"); mMulDoubleMatrix(&res, 1.0, lhs); mPrint(res, rationalPrintf);
+	printf("scl / rhs :\n"); mDivDoubleMatrix(&res, 1.0, lhs); mPrint(res, rationalPrintf);
 	/// <summary>
-	/// Вставка в конец строки/стобца
+	/// Р’СЃС‚Р°РІРєР° РІ РєРѕРЅРµС† СЃС‚СЂРѕРєРё/СЃС‚РѕР±С†Р°
 	/// </summary>
 	struct MatrixMN* res1 = NULL; mIdentity(&res1, 4, 4);
 	struct VectorN * col  = NULL; vInit(&col, res1->rows);
-	mAppendCol(&res1, col); mPrint(res1, rarionalPrintf);
+	mAppendCol(&res1, col); mPrint(res1, rationalPrintf);
 	struct VectorN* row = NULL; vInit(&row, res1->cols);
-	mAppendRow(&res1, row); mPrint(res1, rarionalPrintf);
+	mAppendRow(&res1, row); mPrint(res1, rationalPrintf);
 	/// <summary>
-	/// Очистка памяти
+  /// РўСЂР°РЅСЃРїРѕРЅРёСЂРѕРІР°РЅРёРµ РјР°С‚СЂРёС†С‹
+  /// </summary>
+	struct MatrixMN* trans = NULL;
+	mTranspose(&trans, res1); mPrint(trans, rationalPrintf);
+	/// <summary>
+	/// РћС‡РёСЃС‚РєР° РїР°РјСЏС‚Рё
 	/// </summary>
 	mDesrtoy(&lhs);
 	mDesrtoy(&rhs);
 	mDesrtoy(&res);
 	mDesrtoy(&res1);
+	mDesrtoy(&trans);
 	vDesrtoy(&col);
 	vDesrtoy(&row);
 }
@@ -195,6 +205,6 @@ int main()
 	matrixUsageExample();
 	vectorUsageExample();
 	zeroOrderMethods();
-	zeroOrderMethodsNd();
+	searchMethodsNd();
 	return 0;
 }

@@ -1,4 +1,4 @@
-#ifndef __VECTOR_N__
+﻿#ifndef __VECTOR_N__
 #define __VECTOR_N__
 #include <inttypes.h>
 

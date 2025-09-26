@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #ifndef __RATIONAL_H__
 #define __RATIONAL_H__
 #include "../common.h"
@@ -10,13 +10,13 @@ struct lmat {
 	lmat() : m00(1), m01(0), m10(0), m11(1) {}
 };
 /// <summary>
-/// Конвертирует десятичную запись числа в рациональную, например, для числа 1.666 получим 1 2/3
+/// РљРѕРЅРІРµСЂС‚РёСЂСѓРµС‚ РґРµСЃСЏС‚РёС‡РЅСѓСЋ Р·Р°РїРёСЃСЊ С‡РёСЃР»Р° РІ СЂР°С†РёРѕРЅР°Р»СЊРЅСѓСЋ, РЅР°РїСЂРёРјРµСЂ, РґР»СЏ С‡РёСЃР»Р° 1.666 РїРѕР»СѓС‡РёРј 1 2/3
 /// </summary>
-/// <param name="value">исходное число</param>
-/// <param name="rational_part">целые части</param>
-/// <param name="numerator">числитель</param>
-/// <param name="denominator">знаменатель</param>
-/// <param name="max_den">максимально допустимый знаменатель</param>
+/// <param name="value">РёСЃС…РѕРґРЅРѕРµ С‡РёСЃР»Рѕ</param>
+/// <param name="rational_part">С†РµР»С‹Рµ С‡Р°СЃС‚Рё</param>
+/// <param name="numerator">С‡РёСЃР»РёС‚РµР»СЊ</param>
+/// <param name="denominator">Р·РЅР°РјРµРЅР°С‚РµР»СЊ</param>
+/// <param name="max_den">РјР°РєСЃРёРјР°Р»СЊРЅРѕ РґРѕРїСѓСЃС‚РёРјС‹Р№ Р·РЅР°РјРµРЅР°С‚РµР»СЊ</param>
 static void decimal_to_rational(const F64& value, I32& rational_part, I32& numerator, I32& denominator, const I32 max_den = MAX_DENOMINATOR)
 {
 	lmat mat;

@@ -148,7 +148,6 @@
     <ClInclude Include="numerics\linalg\template_vector_allocator.h" />
     <ClInclude Include="numerics\numerics.h" />
     <ClInclude Include="numerics\common.h" />
-    <ClInclude Include="main.h" />
     <ClInclude Include="multi_dimensional.h" />
     <ClInclude Include="numerics\linalg\numeric_matrix.h" />
     <ClInclude Include="numerics\numeric_utils.h" />
@@ -160,7 +159,6 @@
     <ClInclude Include="numerics\linalg\template_vector.h" />
     <ClInclude Include="test.h" />
     <ClInclude Include="numerics\linalg\vector_iterators.h" />
-    <ClInclude Include="vector_t.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

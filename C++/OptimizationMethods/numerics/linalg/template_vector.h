@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef __TEMPLATE_VECTOR_H__
 #define __TEMPLATE_VECTOR_H__
 #include "../common.h"

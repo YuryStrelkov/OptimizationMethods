@@ -1,4 +1,4 @@
-#ifndef __SEARH_METHODS_ND__
+﻿#ifndef __SEARH_METHODS_ND__
 #define __SEARH_METHODS_ND__
 #include <inttypes.h>
 

@@ -1,4 +1,4 @@
-#ifndef __SEARH_METHODS_1D__
+﻿#ifndef __SEARH_METHODS_1D__
 #define __SEARH_METHODS_1D__
 #include <inttypes.h>
 typedef double (*function1d)(double);

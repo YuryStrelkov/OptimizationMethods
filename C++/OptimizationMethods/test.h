@@ -1,22 +1,22 @@
-#pragma once
+п»ї#pragma once
 #include "multi_dimensional.h"
 #include "one_dimensional.h"
 #include "numerics/numeric_utils.h"
 #include "simplex.h"
 
-// тестовая унимодальная одномерная функция с минимумом в точке {2} 
+// С‚РµСЃС‚РѕРІР°СЏ СѓРЅРёРјРѕРґР°Р»СЊРЅР°СЏ РѕРґРЅРѕРјРµСЂРЅР°СЏ С„СѓРЅРєС†РёСЏ СЃ РјРёРЅРёРјСѓРјРѕРј РІ С‚РѕС‡РєРµ {2} 
 static F64 test_function_1d(const F64 x)
 {
 	return  x * (x - 5);
 }
 
-// тестовая унимодальная двумерная функция с минимумом в точке {2,2} 
+// С‚РµСЃС‚РѕРІР°СЏ СѓРЅРёРјРѕРґР°Р»СЊРЅР°СЏ РґРІСѓРјРµСЂРЅР°СЏ С„СѓРЅРєС†РёСЏ СЃ РјРёРЅРёРјСѓРјРѕРј РІ С‚РѕС‡РєРµ {2,2} 
 static F64 test_function_2d(const numerics::vector_f64& args)
 {
 	return (args[0] - 5) * args[0] + (args[1] - 3) * args[1];
 }
 
-// тестовая унимодальная n - мерная функция с минимумом в точке {2,...,2} 
+// С‚РµСЃС‚РѕРІР°СЏ СѓРЅРёРјРѕРґР°Р»СЊРЅР°СЏ n - РјРµСЂРЅР°СЏ С„СѓРЅРєС†РёСЏ СЃ РјРёРЅРёРјСѓРјРѕРј РІ С‚РѕС‡РєРµ {2,...,2} 
 static F64 test_function_nd(const numerics::vector_f64& args)
 {
 	F64  val = 0;
@@ -40,9 +40,9 @@ static void one_dimensional_methods_test()
 	// std::cout << "bisect      : " << rational::rational_number(bisect      (test_function_1d, x_0, x_1, ACCURACY)) << "\n";
 	// std::cout << "golden_ratio: " << rational::rational_number(golden_ratio(test_function_1d, x_0, x_1, ACCURACY)) << "\n";
 	// std::cout << "fibonacci   : " << rational::rational_number(fibonacci   (test_function_1d, x_0, x_1, ACCURACY)) << "\n";
-	std::cout << "bisect      : " << bisect      (test_function_1d, x_0, x_1, ACCURACY) << "\n";
-	std::cout << "golden_ratio: " << golden_ratio(test_function_1d, x_0, x_1, ACCURACY * 0.7) << "\n";
-	std::cout << "fibonacci   : " << fibonacci   (test_function_1d, x_0, x_1, ACCURACY) << "\n";
+	std::cout << bisect      (test_function_1d, x_0, x_1, ACCURACY) << "\n";
+	std::cout << golden_ratio(test_function_1d, x_0, x_1, ACCURACY * 0.7) << "\n";
+	std::cout << fibonacci   (test_function_1d, x_0, x_1, ACCURACY) << "\n";
 }
 
 static void multi_dimensional_methods_test()
@@ -102,7 +102,7 @@ static void simplex_method_test()
 	sm::simplex sym_4(numerics::matrix_f64({ -2, 6, 3, 2, 2,-1 },3, 2), {2, 3}, {sm::MORE_EQUAL, sm::MORE_EQUAL, sm::MORE_EQUAL}, {40, 28, 14});
 	sym_4.solve(SIMPLEX_MAX);
 	std::cout << "/////////////////////////////\n" << std::endl;
-	// f(x,c) = 2x1 + 3x2 -> arg_min = {62/5, 54/5}, f(arg_min) = 57 1/5 , arg_max = {-, -}, f(arg_max) = - (не работает учёт неограниченности) 
+	// f(x,c) = 2x1 + 3x2 -> arg_min = {62/5, 54/5}, f(arg_min) = 57 1/5 , arg_max = {-, -}, f(arg_max) = - (РЅРµ СЂР°Р±РѕС‚Р°РµС‚ СѓС‡С‘С‚ РЅРµРѕРіСЂР°РЅРёС‡РµРЅРЅРѕСЃС‚Рё) 
 	//
 	//         -2x1 + 6x2 = 40 
 	//          3x1 + 2x2 = 28

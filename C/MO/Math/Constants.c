@@ -1,4 +1,4 @@
-#include "Constatnts.h"
+﻿#include "Constatnts.h"
 #include <stdio.h>
 #include <math.h>
 
@@ -25,7 +25,7 @@ int defaultPrintf(double val)
 	return printf("%*.4lf", 10, val);
 }
 
-int rarionalPrintf(double val)
+int rationalPrintf(double val)
 {
   long number[3];
   decimalToRational(val, number);

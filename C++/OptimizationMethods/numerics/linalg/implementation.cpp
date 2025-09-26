@@ -1,4 +1,4 @@
-#include "numeric_matrix.h"
+﻿#include "numeric_matrix.h"
 #include "numeric_vector.h"
 #include "slice.h"
 #include "../rational/rational.h"

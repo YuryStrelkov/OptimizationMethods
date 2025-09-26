@@ -1,4 +1,4 @@
-#include "rational.h"
+﻿#include "rational.h"
 NUMERICS_NAMESPACE_BEGIN
 std::ostream& operator<<(std::ostream& stream, const rational_number& number)
 {

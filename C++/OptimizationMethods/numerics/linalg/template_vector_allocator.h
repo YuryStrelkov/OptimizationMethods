@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef __TEMPLATE_VECTOR_ALLOCATOR__
 #define __TEMPLATE_VECTOR_ALLOCATOR__
 #include "..\common.h"

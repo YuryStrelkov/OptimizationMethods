@@ -1,4 +1,4 @@
-#include "../Math/Constatnts.h"
+﻿#include "../Math/Constatnts.h"
 #include "SearchMethods.h"
 #include <malloc.h>
 #include <math.h>

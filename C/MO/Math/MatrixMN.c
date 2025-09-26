@@ -1,4 +1,4 @@
-#include "Constatnts.h"
+﻿#include "Constatnts.h"
 #include "MatrixMN.h"
 #include "VectorN.h"
 #include <corecrt_malloc.h>
@@ -22,6 +22,7 @@ void mMultNaive(struct MatrixMN ** res, const struct MatrixMN* lhs, const struct
 		const uint64_t colsA = lhs->cols;
 		const uint64_t rowsB = rhs->rows;
 		const uint64_t colsB = rhs->cols;
+#pragma omp parallel for
 		for (uint64_t row = 0; row < rowsA; ++row)
 			for (uint64_t col = 0; col < colsB; ++col)
 				for (uint64_t index = 0; index < colsA; ++index)
@@ -342,6 +343,7 @@ void     mMulMatrixVector(struct VectorN** res, const struct MatrixMN* lhs, cons
 	if (lhs && rhs && (lhs)->cols == (rhs)->size) 
 	{
 		vInit(res, lhs->rows);
+#pragma omp parallel for
 		for (uint64_t row = 0; row < lhs->rows; ++row)
 			for (uint64_t col = 0; col < lhs->cols; ++col)
 				(*res)->beg[row] += lhs->data->beg[row * lhs->cols + col] * rhs->beg[col];
@@ -352,6 +354,7 @@ void     mMulVectorMatrix(struct VectorN** res, const struct VectorN* lhs, const
 	if (lhs && rhs && (rhs)->rows == (lhs)->size)
 	{
 		vInit(res, rhs->cols);
+#pragma omp parallel for
 		for (uint64_t col = 0; col < rhs->cols; ++col)
 			for (uint64_t row = 0; row < rhs->rows; ++row)
 				(*res)->beg[col] += lhs->beg[col] * rhs->data->beg[row * rhs->cols + col];
@@ -461,6 +464,7 @@ inline void    _invert   (struct MatrixMN** inv,     const struct VectorN* indic
 		return;
 	if(!mInit(inv, lu->rows, lu->cols))
 		return;
+#pragma omp parallel for
 	for (uint64_t col = 0; col < lu->cols; ++col)
 	{
 		bVector->beg[col] = 1.0;
@@ -492,6 +496,7 @@ void     mHessian (struct MatrixMN** hess, const struct VectorN * point, double(
 	if (point)
 	{
 		mInit(hess, point->size, point->size);
+#pragma omp parallel for
 		for (uint64_t row = 0; row < (*hess)->rows; ++row)
 			for (uint64_t col = 0; col <= row; ++col)
 			{
@@ -512,12 +517,14 @@ uint8_t  mLinsolve(struct VectorN**  res, const struct MatrixMN*matA, const stru
 		{
 			if (!mInit(res, lu->rows, lu->cols))
 			{
+#pragma omp parallel for
 				for (uint64_t i = 0; i < lu->rows; i++)
 				{
 					(*res)->beg[i] = vecB->beg[(uint64_t)(indices->beg[i])];
 					for (uint64_t k = 0; k < i; k++)
 						(*res)->beg[i] -= *M_AT(lu, i, k) * (*res)->beg[k];
 				}
+#pragma omp parallel for
 				for (int64_t i = lu->cols - 1; i >= 0; i--) {
 					for (uint64_t k = i + 1; k < lu->cols; k++)
 						(*res)->beg[i] -= *M_AT(lu, i, k) * (*res)->beg[k];
@@ -567,7 +574,63 @@ double   mTrace   (const struct MatrixMN* matrix)
 {
 	double result = 0;
 	if (matrix) 
+#pragma omp parallel for
 		for (uint64_t index = 0; index < MIN(matrix->rows, matrix->cols); ++index)
 			result += *M_AT(matrix, index, index);
 	return result;
+}
+
+double   mDeterminant(const struct MatrixMN* matrix)
+{
+	if (matrix == NULL)
+		return 0.0;
+	if (matrix->cols != matrix->rows)
+		return 0.0;
+	struct MatrixMN* copy = NULL;
+	double det = 0.0;
+	if (mCopy(&copy, matrix)) 
+	{
+		det = 1.0;
+		uint64_t row, col, pivot;
+		for (row = 0; row < copy->rows; ++row) {
+			pivot = row;
+			for (col = row + 1; col < copy->rows; ++col) {
+				if (fabs(*M_AT(copy, col, row)) > fabs(*M_AT(copy, pivot, row))) {
+					pivot = col;
+				}
+			}
+			if (pivot != row) {
+				const double tmp = *M_AT(copy, pivot, col);
+				 *M_AT(copy, pivot, col) = *M_AT(copy, row, col);
+				 *M_AT(copy, row, col) = tmp;
+				det *= -1.0;
+			}
+			if (fabs(*M_AT(copy, row, row)) < accuracy) {
+				return 0.0;
+			}
+			det *= *M_AT(copy, row, row);
+			for (uint64_t j = row + 1; j < copy->rows; ++j) {
+				const double factor = *M_AT(copy, j, row) / *M_AT(copy, row, row);
+				for (uint64_t k = row + 1; k < copy->rows; ++k) {
+					*M_AT(copy, j, k) = *M_AT(copy, j, k) - factor * (*M_AT(copy, row, k));
+				}
+			}
+		}
+		mDesrtoy(&copy);
+	}
+	return det;
+}
+
+void mTranspose(struct MatrixMN** transposed, const struct MatrixMN* matrix) {
+	if (matrix) 
+	{
+		if(mInit(transposed, matrix->cols, matrix->rows))
+			#pragma omp parallel for
+			for (uint64_t index = 0; index < matrix->data->size; ++index)
+			{
+				const uint64_t row = index / matrix->rows;
+				const uint64_t col = index % matrix->rows;
+				*M_AT(*transposed, col, row) = *M_AT(matrix, col, row);
+			}
+	}
 }
