@@ -423,9 +423,11 @@ inline uint8_t _lu       (struct VectorN**  indices, struct MatrixMN** lu, const
 	mCopy(lu, src);
 	vInit(indices, src->cols + 1);
 	uint64_t i, j, k, imax, resolution = src->cols;
+
 	double maxA, absA;
 	for (i = 0; i <= resolution; i++)
 		*((*indices)->beg + i) = i;
+
 	//Unit permutation matrix, P[N] initialized with N
 	for (i = 0; i < resolution; i++) {
 		maxA = 0.0;
@@ -468,17 +470,17 @@ inline void    _invert   (struct MatrixMN** inv,     const struct VectorN* indic
 	for (uint64_t col = 0; col < lu->cols; ++col)
 	{
 		bVector->beg[col] = 1.0;
-		for (uint64_t i = 0; i < lu->rows; i++)
+		for (uint64_t row = 0; row < lu->rows; row++)
 		{
-			*M_AT(*inv, i, col) = bVector->beg[(uint64_t)(indices->beg[i])];
-			for (uint64_t k = 0; k < i; k++)
-				*M_AT(*inv, i, col) -= *M_AT(lu, i, k) * *M_AT(*inv, k, col);
+			*M_AT(*inv, row, col) = bVector->beg[(uint64_t)(indices->beg[row])];
+			for (uint64_t k = 0; k < row; k++)
+				*M_AT(*inv, row, col) -= *M_AT(lu, row, k) * *M_AT(*inv, k, col);
 		}
 
-		for (int64_t i = lu->cols - 1; i >= 0; i--) {
-			for (uint64_t k = i + 1; k < lu->cols; k++)
-				*M_AT(*inv, i, col) -= *M_AT(lu, i, k) * *M_AT(*inv, k, col);
-			*M_AT(*inv, i, col) /= *M_AT(lu, i, i);
+		for (int64_t row = lu->cols - 1; row >= 0; row--) {
+			for (uint64_t k = row + 1; k < lu->cols; k++)
+				*M_AT(*inv, row, col) -= *M_AT(lu, row, k) * *M_AT(*inv, k, col);
+			*M_AT(*inv, row, col) /= *M_AT(lu, row, row);
 		}
 		bVector->beg[col] = 0.0;
 	}

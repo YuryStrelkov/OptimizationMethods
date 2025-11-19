@@ -29,7 +29,6 @@ if (vCapacity(*vect) == (*vect)->size)             \
 	*vect = copy;																		 \
 }
 
-
 inline void upscaleVector(struct VectorN** vect)
 {
 	if (vCapacity(*vect) == (*vect)->size)
@@ -40,41 +39,6 @@ inline void upscaleVector(struct VectorN** vect)
 		vDesrtoy(vect);
 		*vect = copy;
 	}
-}
-
-inline uint8_t _isZero(double value)
-{
-	return fabs(value) < 1e-9;
-}
-
-inline uint8_t _gt(double lhs, double rhs)
-{
-	return lhs > rhs;
-}
-
-inline uint8_t _ge(double lhs, double rhs)
-{
-	return _gt(lhs, rhs) || _isZero(lhs - rhs);
-}
-
-inline uint8_t _lt(double lhs, double rhs)
-{
-	return lhs < rhs;
-}
-
-inline uint8_t _le(double lhs, double rhs)
-{
-	return _lt(lhs, rhs) || _isZero(lhs - rhs);
-}
-
-inline double _mul(double lhs, double rhs)
-{
-	return lhs * rhs;
-}
-
-inline double _difMul(double lhs, double rhs)
-{
-	return (rhs - lhs) * (rhs - lhs);
 }
 
 inline void _swap(double* lhs, double* rhs)
@@ -174,7 +138,7 @@ uint8_t         vEquals                   (const struct VectorN* lhs, const stru
 		const double* endRhs = VEND(rhs);
 		uint8_t equals = 1;
 		for (; begLhs != endLhs && begRhs != endRhs && equals; ++begLhs, ++begRhs)
-			equals = _isZero(*begLhs - *begRhs);
+			equals = isZero(*begLhs - *begRhs);
 		return equals;
 	}
 	return 0;
@@ -321,7 +285,7 @@ uint64_t        vIndexOf                  (struct VectorN* vect, double value)
 		const double* beg = VBEG(vect);
 		const double* end = VEND(vect);
 		for (; beg != end; ++beg)
-			if (_isZero(*beg - value))
+			if (isZero(*beg - value))
 				break;
 		if (beg == end)
 			return -1;
@@ -638,22 +602,22 @@ void            vDivVectorVector          (struct VectorN** res, const struct Ve
 				        								          
 uint8_t         vLtVectorVector           (const struct VectorN* lhs, const struct VectorN* rhs)
 {
-	return vLogicalReduceVectorVector(lhs, rhs, _lt);
+	return vLogicalReduceVectorVector(lhs, rhs, lt);
 }
 				        								           
 uint8_t         vLtVectorDouble           (const struct VectorN* lhs, double rhs)
 {
-	return vLogicalReduceVectorDouble(lhs, rhs, _lt);
+	return vLogicalReduceVectorDouble(lhs, rhs, lt);
 }
 				        								           
 uint8_t         vLtDoubleVector           (double lhs, const struct VectorN* rhs)
 {
-	return vLogicalReduceDoubleVector(lhs, rhs, _lt);
+	return vLogicalReduceDoubleVector(lhs, rhs, lt);
 }
 				        								           
 uint8_t         vGtVectorVector           (const struct VectorN* lhs, const struct VectorN* rhs)
 {
-	return vLogicalReduceVectorVector(lhs, rhs, _gt);
+	return vLogicalReduceVectorVector(lhs, rhs, gt);
 }
 				        								           
 uint8_t         vGtVectorDouble           (const struct VectorN* lhs, double rhs)
@@ -662,42 +626,42 @@ uint8_t         vGtVectorDouble           (const struct VectorN* lhs, double rhs
 				        								           
 uint8_t         vGtDoubleVector           (double lhs, const struct VectorN* rhs)
 {
-	return vLogicalReduceDoubleVector(lhs, rhs, _gt);
+	return vLogicalReduceDoubleVector(lhs, rhs, gt);
 }
 				        								           
 uint8_t         vLeVectorVector           (const struct VectorN* lhs, const struct VectorN* rhs)
 {
-	return vLogicalReduceVectorVector(lhs, rhs, _le);
+	return vLogicalReduceVectorVector(lhs, rhs, le);
 }
 				        								           
 uint8_t         vLeVectorDouble           (const struct VectorN* lhs, double rhs)
 {
-	return vLogicalReduceVectorDouble(lhs, rhs, _le);
+	return vLogicalReduceVectorDouble(lhs, rhs, le);
 }
 				        								           
 uint8_t         vLeDoubleVector           (double lhs, const struct VectorN* rhs)
 {
-	return vLogicalReduceDoubleVector(lhs, rhs, _le);
+	return vLogicalReduceDoubleVector(lhs, rhs, le);
 }
 				        								           
 uint8_t         vGeVectorVector           (const struct VectorN* lhs, const struct VectorN* rhs)
 {
-	return vLogicalReduceVectorVector(lhs, rhs, _ge);
+	return vLogicalReduceVectorVector(lhs, rhs, ge);
 }
 				        								           
 uint8_t         vGeVectorDouble           (const struct VectorN* lhs, double rhs)
 {
-	return vLogicalReduceVectorDouble(lhs, rhs, _ge);
+	return vLogicalReduceVectorDouble(lhs, rhs, ge);
 }
 				        								           
 uint8_t         vGeDoubleVector           (double lhs, const struct VectorN* rhs)
 {
-	return vLogicalReduceDoubleVector(lhs, rhs, _ge);
+	return vLogicalReduceDoubleVector(lhs, rhs, ge);
 }
 				        								          
 double          vDot                      (const struct VectorN* lhs, const struct VectorN* rhs)
 {
-	return vReduceVectorVector(lhs, rhs, _mul);
+	return vReduceVectorVector(lhs, rhs, mul);
 }
 				        			                    
 double          vLength                   (const struct VectorN*vect) 
@@ -707,7 +671,7 @@ double          vLength                   (const struct VectorN*vect)
 			          				                  
 double          vDistance                 (const struct VectorN* lhs, const struct VectorN* rhs)
 {
-	return sqrt(vReduceVectorVector(lhs, rhs, _difMul));
+	return sqrt(vReduceVectorVector(lhs, rhs, difMul));
 }
 			          					                
 void            vDirection                (struct VectorN** direction, const struct VectorN* from, const struct VectorN* to)

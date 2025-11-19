@@ -85,3 +85,39 @@ void decimalToRational(double value, long number[3])
     number[2] = (long)m10;
   }
 }
+
+
+uint8_t isZero(double value)
+{
+  return fabs(value) < 1e-9;
+}
+
+uint8_t gt(double lhs, double rhs)
+{
+  return lhs > rhs;
+}
+
+uint8_t ge(double lhs, double rhs)
+{
+  return gt(lhs, rhs) || isZero(lhs - rhs);
+}
+
+uint8_t lt(double lhs, double rhs)
+{
+  return lhs < rhs;
+}
+
+uint8_t le(double lhs, double rhs)
+{
+  return lt(lhs, rhs) || isZero(lhs - rhs);
+}
+
+double mul(double lhs, double rhs)
+{
+  return lhs * rhs;
+}
+
+double difMul(double lhs, double rhs)
+{
+  return (rhs - lhs) * (rhs - lhs);
+}
