@@ -222,7 +222,7 @@ class Slice {
     const elements = this.#array;
     const begin = this.#start;
     const step = this.#step;
-    const size = ((this.#end - this.#start) / this.#step) | 0;
+    const size = this.size;
     return {
       next() {
         currentIndex++;
