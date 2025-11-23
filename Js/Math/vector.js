@@ -211,6 +211,17 @@ class Vector {
   #capacity;
   #filling;
 
+  
+
+ static #evalOperandsCase(lhs, rhs){
+    var operandsCase = 0;
+    operandsCase |= lhs instanceof Vector ? VECTOR_AS_LEFT_OPERAND : 0;
+    operandsCase |= rhs instanceof Vector ? VECTOR_AS_RIGHT_OPERAND : 0;
+    operandsCase |= isNumber(lhs) ? SCALAR_AS_LEFT_OPERAND : 0;
+    operandsCase |= isNumber(rhs) ? SCALAR_AS_RIGHT_OPERAND : 0;
+    return operandsCase;
+ }
+
   /**
    * Ensures that the internal storage has at least the specified capacity.
    * If the current capacity is zero, initializes the storage with a default size.
@@ -275,30 +286,31 @@ class Vector {
    * @returns {this} The modified vector instance after applying the operation.
    * @throws {TypeError} If the operatorType is not supported.
    */
-  leftScalarOperator(left, operatorType) {
+  rhsScalarOperator(rhs, operatorType) {
     switch (operatorType) {
       case OPERATOR_ADD:
         this.forEach((val) => {
-          return val + left;
+          return val + rhs;
         });
         break;
       case OPERATOR_SUB:
         this.forEach((val) => {
-          return val - left;
+          return val - rhs;
         });
         break;
       case OPERATOR_MUL:
         this.forEach((val) => {
-          return val * left;
+          return val * rhs;
         });
         break;
       case OPERATOR_DIV:
+        rhs = 1.0 / rhs;
         this.forEach((val) => {
-          return val / left;
+          return val * rhs;
         });
         break;
       default:
-        vectorOperatorTypeError(typeof left, operatorType);
+        vectorOperatorTypeError(typeof rhs, operatorType);
     }
     return this;
   }
@@ -309,35 +321,35 @@ class Vector {
    * Supported operations are addition, subtraction, multiplication, and division.
    * The operation is determined by `operatorType`.
    *
-   * @param {number} right - The scalar value to use as the left operand in the operation.
+   * @param {number} lhs - The scalar value to use as the left operand in the operation.
    * @param {string} operatorType - The type of operation to perform. Should be one of OPERATOR_ADD, OPERATOR_SUB, OPERATOR_MUL, or OPERATOR_DIV.
    * @returns {this} Returns the modified vector instance.
    * @throws {TypeError} Throws if the operatorType is invalid.
    */
-  rightScalarOperator(right, operatorType) {
+  lhsScalarOperator(lhs, operatorType) {
     switch (operatorType) {
       case OPERATOR_ADD:
         this.forEach((val) => {
-          return right + val;
+          return lhs + val;
         });
         break;
       case OPERATOR_SUB:
         this.forEach((val) => {
-          return right - val;
+          return lhs - val;
         });
         break;
       case OPERATOR_MUL:
         this.forEach((val) => {
-          return right * val;
+          return lhs * val;
         });
         break;
       case OPERATOR_DIV:
         this.forEach((val) => {
-          return right / val;
+          return lhs / val;
         });
         break;
       default:
-        vectorOperatorTypeError(typeof right, operatorType);
+        vectorOperatorTypeError(typeof lhs, operatorType);
     }
     return this;
   }
@@ -353,32 +365,32 @@ class Vector {
    * @returns {Vector} The modified current vector after applying the operation.
    * @throws {TypeError} If the operatorType is invalid.
    */
-  leftVectorOperator(left, operatorType) {
-    let nItems = Math.min(this.#filling, left.#filling);
+  rhsVectorOperator(rhs, operatorType) {
+    let nItems = Math.min(this.#filling, rhs.#filling);
     var index = 0;
     switch (operatorType) {
       case OPERATOR_ADD:
         this.forEach((value) => {
-          return index < nItems ? left.#data[index++] + value : value;
+          return index < nItems ? value + rhs.#data[index++] : value;
         });
         break;
       case OPERATOR_SUB:
         this.forEach((value) => {
-          return index < nItems ? left.#data[index++] - value : value;
+          return index < nItems ? value - rhs.#data[index++] : value;
         });
         break;
       case OPERATOR_MUL:
         this.forEach((value) => {
-          return index < nItems ? left.#data[index++] * value : value;
+          return index < nItems ? value * rhs.#data[index++] : value;
         });
         break;
       case OPERATOR_DIV:
         this.forEach((value) => {
-          return index < nItems ? left.#data[index++] / value : value;
+          return index < nItems ? value / rhs.#data[index++] : value;
         });
         break;
       default:
-        vectorOperatorTypeError(typeof left, operatorType);
+        vectorOperatorTypeError(typeof rhs, operatorType);
     }
     return this;
   }
@@ -400,24 +412,18 @@ class Vector {
    */
   static binaryOperator(lhs, rhs, operatorType) {
 
-    var operandsCase = 0;
-    operandsCase |= lhs instanceof Vector ? VECTOR_AS_LEFT_OPERAND : 0;
-    operandsCase |= rhs instanceof Vector ? VECTOR_AS_RIGHT_OPERAND : 0;
-    operandsCase |= isNumber(lhs) ? SCALAR_AS_LEFT_OPERAND : 0;
-    operandsCase |= isNumber(rhs) ? SCALAR_AS_RIGHT_OPERAND : 0;
-
-    switch (operandsCase) {
+    switch (Vector.#evalOperandsCase(lhs, rhs)) {
       case VECTOR_VECTOR_OPERATOR:
         var result = lhs.copy();
-        return result.leftVectorOperator(rhs, operatorType);
+        return result.rhsVectorOperator(rhs, operatorType);
 
       case VECTOR_SCALAR_OPERATOR:
         var result = lhs.copy();
-        return result.leftScalarOperator(rhs, operatorType);
+        return result.rhsScalarOperator(rhs, operatorType);
       
       case SCALAR_VECTOR_OPERATOR:
         var result = rhs.copy();
-        return result.rightScalarOperator(lhs, operatorType);
+        return result.lhsScalarOperator(lhs, operatorType);
       
       default:
         console.error(
@@ -431,7 +437,7 @@ class Vector {
   /**
    * Applies a unary operator to the current vector instance with the provided operand.
    * If the operand is a Vector, delegates to leftVectorOperator.
-   * If the operand is a number, delegates to leftScalarOperator.
+   * If the operand is a number, delegates to rhsScalarOperator.
    * Throws an error if the operand type is unsupported.
    *
    * @param {Vector|number} other - The operand to apply the operator with.
@@ -442,10 +448,10 @@ class Vector {
    */
   unaryOperator(other, operatorType) {
     if(other instanceof Vector)
-      return this.leftVectorOperator(other, operatorType);
+      return this.rhsVectorOperator(other, operatorType);
 
     if(isNumber(other))
-      return this.leftScalarOperator(other, operatorType);
+      return this.rhsScalarOperator(other, operatorType);
 
     vectorOperatorTypeError(typeof other, operatorType);
   }

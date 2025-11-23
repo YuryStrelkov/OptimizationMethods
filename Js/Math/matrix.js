@@ -158,6 +158,23 @@ class Matrix extends Vector {
       );
   }
 
+  static #evalOperandCase(lhs, rhs){
+    var operandsCase = 0;
+    operandsCase |=
+      lhs instanceof Vector && !(lhs instanceof Matrix)
+        ? VECTOR_AS_LEFT_OPERAND
+        : 0;
+    operandsCase |=
+      rhs instanceof Vector && !(rhs instanceof Matrix)
+        ? VECTOR_AS_RIGHT_OPERAND
+        : 0;
+    operandsCase |= lhs instanceof Matrix ? MATRIX_AS_LEFT_OPERAND : 0;
+    operandsCase |= rhs instanceof Matrix ? MATRIX_AS_RIGHT_OPERAND : 0;
+    operandsCase |= isNumber(lhs) ? SCALAR_AS_LEFT_OPERAND : 0;
+    operandsCase |= isNumber(rhs) ? SCALAR_AS_RIGHT_OPERAND : 0;
+    return operandsCase;
+  }
+
   static #multiplication(lhs, rhs) {
     if (lhs.cols != rhs.rows)
       throw new Error("Error matrix multiplication::a.cols != b.rows");
@@ -177,7 +194,7 @@ class Matrix extends Vector {
     return result;
   }
 
-  static #vectorMultiplicationLeft(matrix, vector) {
+  static lhsVectorMultiplication(matrix, vector) {
     if (matrix.cols != vector.size)
       throw new Error("Error matrix multiplication::a.cols != b.rows");
     var result = new Matrix(matrix.rows, 1);
@@ -194,7 +211,7 @@ class Matrix extends Vector {
     return result;
   }
 
-  static #vectorMultiplicationRight(vector, matrix) {
+  static rhsVectorMultiplication(vector, matrix) {
     if (matrix.rows != vector.size)
       throw new Error("Error matrix multiplication::a.cols != b.rows");
     var result = new Matrix(1, matrix.cols);
@@ -228,7 +245,8 @@ class Matrix extends Vector {
   }
 
   unaryOperator(other, operatorType) {
-    if (isNumber(other)) super.unaryOperator(other, operatorType);
+    if (isNumber(other))
+      super.unaryOperator(other, operatorType);
     else if (other instanceof Matrix) {
       switch (operatorType) {
         case OPERATOR_ADD:
@@ -250,25 +268,12 @@ class Matrix extends Vector {
           break;
       }
     } else if (other instanceof Vector)
-      this.swap(Matrix.#vectorMultiplicationLeft(this, other));
+      this.swap(Matrix.lhsVectorMultiplication(this, other));
     return this;
   }
 
   static binaryOperator(lhs, rhs, operatorType) {
-    var operandsCase = 0;
-    operandsCase |=
-      lhs instanceof Vector && !(lhs instanceof Matrix)
-        ? VECTOR_AS_LEFT_OPERAND
-        : 0;
-    operandsCase |=
-      rhs instanceof Vector && !(rhs instanceof Matrix)
-        ? VECTOR_AS_RIGHT_OPERAND
-        : 0;
-    operandsCase |= lhs instanceof Matrix ? MATRIX_AS_LEFT_OPERAND : 0;
-    operandsCase |= rhs instanceof Matrix ? MATRIX_AS_RIGHT_OPERAND : 0;
-    operandsCase |= isNumber(lhs) ? SCALAR_AS_LEFT_OPERAND : 0;
-    operandsCase |= isNumber(rhs) ? SCALAR_AS_RIGHT_OPERAND : 0;
-    switch (operandsCase) {
+    switch (Matrix.#evalOperandCase(lhs, rhs)) {
       case VECTOR_VECTOR_OPERATOR:
       case SCALAR_VECTOR_OPERATOR:
       case VECTOR_SCALAR_OPERATOR:
@@ -280,10 +285,10 @@ class Matrix extends Vector {
         return result.unaryOperator(rhs, operatorType);
       case SCALAR_MATRIX_OPERATOR:
         var result = rhs.copy();
-        result.rightScalarOperator(lhs, operatorType);
+        result.rhsScalarOperator(lhs, operatorType);
         return result;
       case VECTOR_MATRIX_OPERATOR:
-        return Matrix.#vectorMultiplicationRight(lhs, rhs);
+        return Matrix.rhsVectorMultiplication(lhs, rhs);
       default:
         console.error(
           new Error(
