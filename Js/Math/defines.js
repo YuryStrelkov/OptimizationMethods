@@ -1,7 +1,7 @@
 const VECTOR_TYPE_ID = 1;
 const MATRIX_TYPE_ID = 2;
 
-const NUMERIC_ACCURACY = 1e-12;
+const NUMERIC_ACCURACY = 1e-6;
 const OPERATOR_ADD = 0;
 const OPERATOR_SUB = 1;
 const OPERATOR_MUL = 2;

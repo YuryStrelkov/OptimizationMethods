@@ -1,5 +1,8 @@
-const { Vector } = require("./Math/vector.js");
-const { Matrix } = require("./Math/matrix.js");
+// const { Vector } = require("./Math/vector.js");
+// const { Matrix } = require("./Math/matrix.js");
+
+import { Vector } from './Math/vector.js';
+import { Matrix } from './Math/matrix.js';
 
 const func = (x) => {
     return Vector.dot(x, x);
@@ -7,10 +10,10 @@ const func = (x) => {
 
 const vectorMathOperations = () => {
     console.log("<<<<mathOperations>>>>");
-    v1 = new Vector();
-    v2 = new Vector();
-    v3 = new Vector();
-    v3.pushBack(1.0).pushBack(1.0);
+    var v1 = new Vector();
+    var v2 = new Vector();
+    var v3 = new Vector();
+    v3.pushBack(1.0).pushBack(1.0).pushBack(1.0).pushBack(1.0);
     v1.pushBack(1.0).pushBack(2.0).pushBack(3.0).pushBack(4.0).pushBack(5.0);
     v2.pushBack(5.0).pushBack(4.0).pushBack(3.0).pushBack(2.0).pushBack(1.0);
     console.log(`v1 :                ${v1.toString()}`);
@@ -30,12 +33,13 @@ const vectorMathOperations = () => {
     console.log(`|v1, v2| :          ${Vector.distance(v1, v2).toString()}`);
     console.log(`direction(v1, v2) : ${Vector.direction(v1, v2).toString()}`);
     console.log(`dot(v1, v2) :       ${Vector.dot(v1, v2).toString()}`);
-    console.log(`gradient(f(x)) :    ${Vector.gradient(func, v3).toString()}`);
+    console.log(`gradient(f(x)) :\n${Vector.gradient(func, v3).toString()}`);
+    console.log(`hessian (f(x)) :\n${Matrix.hessian(func, v3).toString()}`);
 };
 
 const listOperations = () => {
     console.log("<<<<listOperations>>>>");
-    v = new Vector();
+    var v = new Vector();
     v.pushBack(1.0).pushBack(2.0).pushBack(3.0).pushBack(4.0).pushBack(5.0);
     console.log(`vector:            ${v.toString()}`);
     console.log(`v.indexOf(4.0):    ${v.indexOf(4.0)}`);
@@ -127,6 +131,7 @@ const MethodTypes = {
     Bisection: "Bisection",
     GoldenRatio: "GoldenRatio",
     Fibonacci: "Fibonacci",
+    СoordinateDescent: "СoordinateDescent",
     None: "None",
 };
 
@@ -135,23 +140,12 @@ class MethodResult {
     iterations;
     result;
     accuracy;
-
-    get probes() {
-        switch (this.method) {
-            case MethodTypes.Bisection:
-                return this.iterations * 2;
-            case MethodTypes.GoldenRatio:
-                return this.iterations + 2;
-            case MethodTypes.Fibonacci:
-                return this.iterations + 2;
-            default:
-                return 0;
-        }
-    }
-
+    probes;
+    
     clear() {
         this.method = MethodTypes.None;
         this.iterations = 0;
+        this.probes = 0;
         this.result = null;
         this.accuracy = 0.0;
     }
@@ -171,6 +165,15 @@ const testFunction = (x) => {
     return Vector.dot(Vector.sub(x, 1.0), x);
 };
 
+/// Для вектора размерности N минимум будет раполгаться в точке с коодиной: x_min = [0.0, 0.5, 1.0, 1.5, ..., N / 2]. 
+const testFunction1 = (vect) => {
+    var res = 0.;
+    var index = 0;
+    for(var item of vect)
+        res += item * (item - index++);
+    return res;
+};
+
 const bisection = (result, target, lhs, rhs, accuracy, iterations) => {
     if (!(lhs instanceof Vector && rhs instanceof Vector)) return;
     result.clear();
@@ -186,6 +189,7 @@ const bisection = (result, target, lhs, rhs, accuracy, iterations) => {
         if (fl < fr) rhs = xc;
         else lhs = xc;
     }
+    result.probes = result.iterations * 2;
     result.result = Vector.add(rhs, lhs).mulEqual(0.5);
 };
 
@@ -220,6 +224,7 @@ const goldenRatio = (result, target, lhs, rhs, accuracy, iterations) => {
             f_l = target(x_l);
         }
     }
+    result.probes = result.iterations + 2;
     result.result = Vector.add(rhs, lhs).mulEqual(0.5);
 };
 
@@ -272,11 +277,71 @@ const fibonacci = (result, target, lhs, rhs, accuracy) => {
     result.result = Vector.add(rhs, lhs).mulEqual(0.5);
     result.accuracy = Vector.distance(rhs, lhs);
     result.iterations = iterations;
+    result.probes = result.iterations + 2;
+};
+
+
+
+export const coordinateDescent = (result, target, xStart, accuracy=1e-6, maxIterations=1000) => {
+    if (!(xStart instanceof Vector))
+         return;
+    result.clear();
+    result.method = MethodTypes.СoordinateDescent;
+    var currPoint  = xStart.copy();
+    var nextPoint  = xStart.copy();
+    const lambdaStep = 1.0; // возможно закрываем build-in переменную
+    const dimensions = currPoint.size; //размерность вектора (есть специальный Get метод)
+    var currResult = new MethodResult();
+    var optimalCoordinatesCount = 0; // Количество проекций, которые удовлетворяют условию |currPoint - nextPoint| < 2 * eps
+
+    for (result.iterations = 0; result.iterations < maxIterations; result.iterations++) {
+        // Получем индекс прокекции вдоль которой идёт поиск на текущей итерации 
+        const itemIndex = result.iterations % dimensions; 
+        // Создаем точки для исследования
+        // Не делаем дополнительных копий. Модифицируем currPoint
+        currPoint.set(itemIndex, currPoint.get(itemIndex) - accuracy);
+        var fl = target(currPoint);
+        currPoint.set(itemIndex, currPoint.get(itemIndex) + 2 * accuracy);
+        var fr = target(currPoint);
+        currPoint.set(itemIndex, currPoint.get(itemIndex) - accuracy);
+
+        // Определяем промежуток неопределённости
+        nextPoint.assign(currPoint); // nextPoint = currPoint;
+        nextPoint.set   (itemIndex, nextPoint.get(itemIndex) + (fl > fr ? lambdaStep: -lambdaStep));
+        // Ищем минимум на промежутке
+        fibonacci(currResult, target, currPoint, nextPoint, accuracy);
+        result.accuracy = Math.max(result.accuracy, currResult.accuracy);
+        result.probes += currResult.iterations;
+
+        // Проверяем сходимость // не сработает для функций с выраженной овражностью.
+        // В случае, когда поиск начинается в точке, где вдоль искомого направления частная производная равна или близка к нулю, указанное ниже условие сразу остановит поиск.
+        if(Math.abs(currPoint.get(itemIndex) - currResult.result.get(itemIndex)) < 2 * accuracy)
+            optimalCoordinatesCount++;
+        else
+            optimalCoordinatesCount = 0;
+
+        if(optimalCoordinatesCount == dimensions)
+                break;
+
+        currPoint.assign(currResult.result);
+        // Проверяем сходимость // не сработает для функций с выраженной овражностью.
+        // В случае, когда поиск начинается в точке, где вдоль искомого направления частная производная равна или близка к нулю, указанное ниже условие сразу остановит поиск.
+        // if (result.iterations > 0) {
+        //     result.accuracy = Vector.distance(x, xStart);
+        //     if (result.accuracy < 2 * accuracy) {
+        //         break;
+        //     }
+        // }
+        // 
+        // xStart = x.copy();
+    }
+    result.result = (currResult.result); 
 };
 
 const main = () => {
     // listOperations();
-    // vectorMathOperations();
+    vectorMathOperations();
+    return;
     // matrixMathOperations();
     var result = new MethodResult();
     var accuracy = 1e-3;
@@ -292,6 +357,11 @@ const main = () => {
     goldenRatio(result, testFunction, lhs, rhs, accuracy, iterations);
     console.log(result.toString());
     fibonacci(result, testFunction, lhs, rhs, 2 * accuracy);
+    console.log(result.toString());
+
+    var point = new Vector();
+    point.pushBack(-4.0).pushBack(-3.0).pushBack(-2.0).pushBack(-1.0).pushBack(0.0);
+    coordinateDescent(result, testFunction1, point,  accuracy);
     console.log(result.toString());
 };
 

@@ -734,7 +734,8 @@ class Vector {
     if((other instanceof Vector && other !== this) || isIterable(other)) 
     {
       this.clear();
-      for(var value of other)this.pushBack(value);
+      for(var value of other)
+        this.pushBack(value);
     }
     return this;
   }
@@ -872,11 +873,11 @@ class Vector {
 
   static partial(func, arg, index, step = NUMERIC_ACCURACY) {
     if(arg instanceof Vector){
-      arg.set(index, arg.get(index) + step);
+      arg.setUnchecked(index, arg.getUnchecked(index) + step);
       var fr = func(arg);
-      arg.set(index, arg.get(index) - 2.0 * step);
+      arg.setUnchecked(index, arg.getUnchecked(index) - 2.0 * step);
       var fl = func(arg);
-      arg.set(index, arg.get(index) + step);
+      arg.setUnchecked(index, arg.getUnchecked(index) + step);
       return (fr - fl) / (step * 2.0);
     }
     console.log(new Error(`Vector::partial::unsupported operands types.
@@ -888,12 +889,12 @@ class Vector {
 
   static partial2(func, arg, index1, index2, step = NUMERIC_ACCURACY) {
     if(arg instanceof Vector){
-      arg.set(index1, arg.get(index2) + step);
+      arg.setUnchecked(index2, arg.getUnchecked(index2) + step);
       var fr = Vector.partial(func, arg, index1, step);
-      arg.set(index1, arg.get(index2) - 2.0 * step);
+      arg.setUnchecked(index2, arg.getUnchecked(index2) - 2.0 * step);
       var fl = Vector.partial(func, arg, index1, step);
-      arg.set(index1, arg.get(index2) + step);
-      return (fr - fl) / (step * 2.0);
+      arg.setUnchecked(index2, arg.getUnchecked(index2) + step);
+      return (fr - fl) / step * 0.5;
     }
     console.log(new Error(`Vector::partial::unsupported operands types.
                            Type of func: \"${typeof func}\", 

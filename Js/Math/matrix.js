@@ -540,7 +540,8 @@ class Matrix extends Vector {
       for (var row = 0; row < res.rows; ++row) {
         for (var col = 0; col <= row; ++col) {
           var val = Vector.partial2(functionND, point, row, col, step);
-          res.setUnchecked(row, col, val).setUnchecked(col, row, val);
+          res.setUnchecked(row, col, val);
+          res.setUnchecked(col, row, val);
         }
       }
       return res;
